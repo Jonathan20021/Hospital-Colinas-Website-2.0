@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /includes/
+Disallow: /storage/
+Disallow: /database/
+
+Sitemap: https://colinashospital.com/sitemap.xml

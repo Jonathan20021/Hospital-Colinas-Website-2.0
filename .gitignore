@@ -1,0 +1,24 @@
+# OS / IDE
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+php-server.err.log
+php-server.out.log
+
+# Local env / secrets
+.env
+.env.local
+*.env
+
+# Large source video (use videohospital-web.mp4 instead; 187MB exceeds GitHub limit)
+assets/site/assets/videohospital-BsNC9-JF.mp4
+assets/source/videohospital-BsNC9-JF.mp4
+
+# Temp / build
+/tmp/
+*.tmp
+*.bak

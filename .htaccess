@@ -1,0 +1,64 @@
+# Hospital General Las Colinas — clean URLs
+Options +FollowSymLinks -MultiViews
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Skip everything for admin/ and api/ — they keep using .php internally
+    RewriteRule ^admin(/|$) - [L]
+    RewriteRule ^api(/|$) - [L]
+
+    # Redirect public *.php requests to clean URL (preserves bookmarks)
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteCond %{THE_REQUEST} \s/+([^?\s]+?)\.php([?\s]) [NC]
+    RewriteRule ^ /%1 [R=301,L,NE]
+
+    # Skip rewrites when the request matches a real file or directory
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Pretty routes
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
+    RewriteRule ^medico/([a-zA-Z0-9_\-]+)/?$ medico.php?slug=$1 [L,QSA]
+    RewriteRule ^directorio-medico/?$ directorio-medico.php [L,QSA]
+    RewriteRule ^directorio/?$ directorio-medico.php [L,QSA,R=301]
+    RewriteRule ^noticias/?$ noticias.php [L,QSA]
+    RewriteRule ^noticias/([a-zA-Z0-9_\-]+)/?$ noticia.php?slug=$1 [L,QSA]
+    RewriteRule ^sala-de-prensa/?$ noticias.php [L,QSA,R=301]
+
+    # Fallback: any unknown path → home (so SPA-like deep links don't break)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Cache static assets aggressively
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType image/png "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType image/x-icon "access plus 30 days"
+    ExpiresByType video/mp4 "access plus 30 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType font/woff2 "access plus 90 days"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json image/svg+xml
+</IfModule>
+
+# Block direct access to PHP includes
+<FilesMatch "^(helpers|data|doctors|db|auth)\.php$">
+    Require all denied
+</FilesMatch>
