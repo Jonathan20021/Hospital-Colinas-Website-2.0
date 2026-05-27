@@ -301,8 +301,10 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                 </form>
 
                 <script>
-                    window.PORTAL_DOCTOR_ID = <?= $docId ?>;
-                    window.AGENDAR_HCAPTCHA = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
+                    window.PORTAL_DOCTOR_ID    = <?= $docId ?>;
+                    window.AGENDAR_HCAPTCHA    = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
+                    window.AGENDAR_SLOTS_URL   = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
+                    window.AGENDAR_SUBMIT_URL  = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
                 </script>
             <?php endif; ?>
 

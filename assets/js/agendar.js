@@ -23,27 +23,66 @@
     const minDate = today.toISOString().slice(0,10);
     const maxDate = new Date(today.getTime() + 30 * 86400000).toISOString().slice(0,10);
 
-    fetch(`/api/agendar-slots.php?doctor_id=${doctorId}&date_from=${minDate}&date_to=${maxDate}&slot_minutes=30`)
-        .then(r => r.json())
-        .then(r => {
-            loader.classList.add('hidden');
-            picker.classList.remove('hidden');
-            if (!r.success) {
-                picker.innerHTML = `<p class="portal-empty-text">${r.message || 'No se pudieron cargar los horarios.'}</p>`;
-                return;
-            }
-            daysData = r.data?.days || {};
-            if (Object.keys(daysData).length === 0) {
-                picker.innerHTML = '<p class="portal-empty-text">No hay horarios disponibles en los próximos 30 días.</p>';
-                return;
-            }
-            render();
-        })
-        .catch(e => {
-            loader.classList.add('hidden');
-            picker.classList.remove('hidden');
-            picker.innerHTML = `<p class="portal-empty-text">Error: ${e.message}</p>`;
-        });
+    const slotsBase = window.AGENDAR_SLOTS_URL || '/api/agendar-slots.php';
+    const slotsUrl  = `${slotsBase}?doctor_id=${doctorId}&date_from=${minDate}&date_to=${maxDate}&slot_minutes=30`;
+
+    function showError(msg, canRetry) {
+        loader.classList.add('hidden');
+        picker.classList.remove('hidden');
+        picker.innerHTML = `
+            <div class="portal-empty">
+                <i data-lucide="calendar-x" class="h-10 w-10"></i>
+                <p>${msg}</p>
+                ${canRetry ? '<button type="button" class="btn btn-outline" id="slot-retry"><i data-lucide="refresh-cw" class="h-4 w-4"></i> Reintentar</button>' : ''}
+                <p class="portal-hint" style="margin-top:1rem">También puedes llamarnos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.</p>
+            </div>`;
+        if (window.lucide) lucide.createIcons();
+        const retry = document.getElementById('slot-retry');
+        if (retry) retry.addEventListener('click', loadSlots);
+    }
+
+    function loadSlots() {
+        loader.classList.remove('hidden');
+        picker.classList.add('hidden');
+        picker.innerHTML = '';
+
+        const ctrl = new AbortController();
+        const timeoutId = setTimeout(() => ctrl.abort(), 25000);
+
+        fetch(slotsUrl, { signal: ctrl.signal, headers: { 'Accept': 'application/json' } })
+            .then(async r => {
+                clearTimeout(timeoutId);
+                const ct = r.headers.get('content-type') || '';
+                if (!ct.includes('application/json')) {
+                    const text = await r.text();
+                    throw new Error(`Respuesta inválida del servidor (HTTP ${r.status}).`);
+                }
+                return r.json();
+            })
+            .then(r => {
+                loader.classList.add('hidden');
+                picker.classList.remove('hidden');
+                if (!r.success) {
+                    showError(r.message || 'No se pudieron cargar los horarios disponibles.', true);
+                    return;
+                }
+                daysData = r.data?.days || {};
+                if (Object.keys(daysData).length === 0) {
+                    picker.innerHTML = '<p class="portal-empty-text">No hay horarios disponibles en los próximos 30 días.</p>';
+                    return;
+                }
+                render();
+            })
+            .catch(e => {
+                clearTimeout(timeoutId);
+                const msg = e.name === 'AbortError'
+                    ? 'La carga tomó demasiado tiempo. Verifica tu conexión e intenta de nuevo.'
+                    : `No se pudieron cargar los horarios: ${e.message}`;
+                showError(msg, true);
+            });
+    }
+
+    loadSlots();
 
     function render() {
         const monthName = new Date(viewYear, viewMonth, 1)
@@ -173,9 +212,10 @@
         }
 
         try {
-            const r = await fetch('/api/guest-appointment.php', {
+            const submitUrl = window.AGENDAR_SUBMIT_URL || '/api/guest-appointment.php';
+            const r = await fetch(submitUrl, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify(payload),
             });
             const j = await r.json();
