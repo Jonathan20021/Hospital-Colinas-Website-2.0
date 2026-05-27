@@ -13,6 +13,7 @@ php-server.out.log
 .env
 .env.local
 *.env
+includes/config.local.php
 
 # Large source video (use videohospital-web.mp4 instead; 187MB exceeds GitHub limit)
 assets/site/assets/videohospital-BsNC9-JF.mp4

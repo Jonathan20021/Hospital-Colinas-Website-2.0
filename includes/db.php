@@ -1,5 +1,12 @@
 <?php
 
+(static function (): void {
+    $localConfig = __DIR__ . '/config.local.php';
+    if (is_file($localConfig)) {
+        require_once $localConfig;
+    }
+})();
+
 function db_config(): array
 {
     return [
