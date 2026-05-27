@@ -40,13 +40,31 @@ $add('Constante PORTAL_API_VERIFY_TLS', defined('PORTAL_API_VERIFY_TLS'),
 // ── 3. Conectividad TCP a la VIP ────────────────────────────────────────────
 $parsed = $base ? parse_url($base) : [];
 $host   = $parsed['host'] ?? '';
-$port   = $parsed['port'] ?? ($parsed['scheme'] === 'https' ? 443 : 80);
+$port   = $parsed['port'] ?? (($parsed['scheme'] ?? '') === 'https' ? 443 : 80);
+
+// IP saliente del hosting (útil cuando hay que pedir apertura en Fortinet)
+$outboundIp = '?';
+$ipCh = curl_init('https://api.ipify.org');
+curl_setopt_array($ipCh, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 5, CURLOPT_SSL_VERIFYPEER => false]);
+$ipRes = curl_exec($ipCh);
+if ($ipRes && filter_var(trim($ipRes), FILTER_VALIDATE_IP)) $outboundIp = trim($ipRes);
+curl_close($ipCh);
 
 if ($host) {
     $errno = 0; $errstr = '';
     $sock = @fsockopen($host, $port, $errno, $errstr, 8);
-    if ($sock) { fclose($sock); $add("Conectividad TCP a $host:$port", true, 'puerto abierto'); }
-    else        { $add("Conectividad TCP a $host:$port", false, "no responde — $errstr (errno $errno). Firewall del hosting o la VIP filtra esta IP."); }
+    if ($sock) {
+        fclose($sock);
+        $add("Conectividad TCP a $host:$port", true, "puerto abierto. IP saliente de este servidor: $outboundIp");
+    } else {
+        $hint = '';
+        if ($errno === 111) {
+            $hint = " · Connection refused = el servidor remoto rechaza activamente (no es timeout). Causa probable: la VIP de Fortinet filtra por IP origen. Pide al equipo de TI del hospital agregar esta IP del hosting al policy de la VIP: $outboundIp → 186.149.243.228:20443.";
+        } elseif ($errno === 110 || stripos($errstr, 'timed out') !== false) {
+            $hint = " · Timeout = no hay respuesta. Causa probable: la IP no es alcanzable desde Internet o el firewall descarta paquetes (no responde). Verifica que la VIP esté UP y que la regla NAT esté habilitada.";
+        }
+        $add("Conectividad TCP a $host:$port", false, "no responde — $errstr (errno $errno). IP saliente del hosting: $outboundIp." . $hint);
+    }
 } else {
     $add('Conectividad TCP a la VIP', false, 'No hay host en PORTAL_API_BASE.');
 }
