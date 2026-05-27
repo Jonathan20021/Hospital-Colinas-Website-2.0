@@ -349,6 +349,10 @@
     gap: .5rem;
     color: #6b7280; padding: 2rem 1rem;
 }
+/* Higher specificity than `.portal-slot-loader { display:flex }` so the hidden
+   state actually wins when toggled via JS (display:flex was overriding .hidden). */
+.portal-slot-loader.hidden,
+.portal-slot-loader[hidden] { display: none; }
 .portal-slot-loader-text { font-weight: 500; }
 
 /* Slow-loading state: replaces the spinner after 8s — clearer + actionable */
@@ -501,8 +505,8 @@
     font-size: 1rem;
     color: #0f172a;
     margin: 0 0 .75rem;
-    text-transform: capitalize;
 }
+.cal-times h3::first-letter { text-transform: uppercase; }
 .cal-times-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
@@ -535,7 +539,8 @@
     border: 1px solid #a7f3d0;
 }
 .portal-confirm-box p { margin: 0; color: #047857; font-size: .85rem; font-weight: 600; }
-.portal-confirm-box h3 { margin: .35rem 0 0; color: #0f172a; font-size: 1.25rem; text-transform: capitalize; }
+.portal-confirm-box h3 { margin: .35rem 0 0; color: #0f172a; font-size: 1.25rem; }
+.portal-confirm-box h3::first-letter { text-transform: uppercase; }
 
 /* ─────────────────────────────────────────────────────────────────
    UI uplift: agendar / portal shared
