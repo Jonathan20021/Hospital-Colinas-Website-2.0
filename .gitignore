@@ -31,3 +31,9 @@ node_modules/
 
 # cPanel deploy marker (escrito por .cpanel.yml; no es código fuente)
 .deployed-at
+
+# Runtime storage (rate-limit buckets, caches) — son archivos generados,
+# no código fuente. Si quedan tracked, git los marca como modificados en
+# cada request y cPanel bloquea el Deploy HEAD Commit.
+/storage/ai-rate/
+/storage/cache/
