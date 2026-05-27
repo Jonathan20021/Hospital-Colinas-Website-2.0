@@ -16,6 +16,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                         <i data-lucide="cross" class="h-4 w-4"></i>
                         Emergencias 24/7
                     </a>
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="utility-link utility-portal">
+                        <i data-lucide="user-round-cog" class="h-4 w-4"></i>
+                        Portal del paciente
+                    </a>
                     <a href="<?= e(base_url('pacientes')) ?>" class="utility-link">
                         <i data-lucide="users-round" class="h-4 w-4"></i>
                         Pacientes y visitantes
@@ -23,10 +27,6 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="utility-link">
                         <i data-lucide="user-round-check" class="h-4 w-4"></i>
                         Profesionales médicos
-                    </a>
-                    <a href="<?= e(base_url('#buscar-atencion')) ?>" class="utility-link">
-                        <i data-lucide="search" class="h-4 w-4"></i>
-                        Buscar
                     </a>
                 </div>
             </div>
@@ -62,6 +62,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="nav-search" aria-label="Buscar">
                         <i data-lucide="search" class="h-4 w-4"></i>
                     </a>
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="btn btn-outline nav-cta nav-cta-portal">
+                        <i data-lucide="user-round" class="h-4 w-4"></i>
+                        Portal de paciente
+                    </a>
                     <button type="button" class="js-open-appointment btn btn-green nav-cta">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
@@ -93,7 +97,11 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="mobile-link">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
                     </a>
-                    <button type="button" class="js-open-appointment mt-3 btn btn-green w-full justify-center">
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="mt-3 btn btn-outline w-full justify-center">
+                        <i data-lucide="user-round" class="h-4 w-4"></i>
+                        Portal de paciente
+                    </a>
+                    <button type="button" class="js-open-appointment mt-2 btn btn-green w-full justify-center">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
                     </button>
@@ -144,6 +152,7 @@ function render_public_footer(array $assets, array $contact, string $year): void
             <div>
                 <h3 class="footer-title">Pacientes y visitantes</h3>
                 <ul class="footer-list">
+                    <li><a href="<?= e(base_url('portal/login.php')) ?>"><strong>🩺 Portal del paciente</strong></a></li>
                     <li><a href="<?= e(base_url('tu-visita')) ?>">Tu visita</a></li>
                     <li><a href="<?= e(base_url('preparacion-para-tu-cita')) ?>">Preparación para tu cita</a></li>
                     <li><a href="<?= e(base_url('seguros-aceptados')) ?>">Seguros aceptados</a></li>

@@ -108,9 +108,6 @@ portal_layout_begin('Agendar cita', 'agendar');
                             <?php if (!empty($d['office_name'])): ?>
                                 <p><i data-lucide="map-pin" class="h-3.5 w-3.5"></i> <?= e($d['office_name']) ?></p>
                             <?php endif; ?>
-                            <?php if (!empty($d['consultation_cost']) && (float)$d['consultation_cost'] > 0): ?>
-                                <p><i data-lucide="banknote" class="h-3.5 w-3.5"></i> Consulta: $<?= e(number_format((float)$d['consultation_cost'], 2)) ?></p>
-                            <?php endif; ?>
                             <p class="portal-hint">Horario: <?= e(substr($d['schedule_start'], 0, 5)) ?>–<?= e(substr($d['schedule_end'], 0, 5)) ?></p>
                         </div>
                         <a href="?specialty_id=<?= $selectedSpec ?>&doctor_id=<?= (int)$d['id'] ?>" class="btn btn-green">Ver fechas →</a>
@@ -121,8 +118,30 @@ portal_layout_begin('Agendar cita', 'agendar');
         <a href="?" class="portal-text-link mt-4 block">← Cambiar especialidad</a>
     </div>
 
-<?php else: ?>
-    <!-- Paso 3: fecha + confirmar -->
+<?php else:
+    // Buscar info del medico seleccionado en la lista ya cargada
+    $selectedDoctor = null;
+    foreach ($doctors as $d) {
+        if ((int)$d['id'] === $selectedDoc) { $selectedDoctor = $d; break; }
+    }
+?>
+    <!-- Paso 3: medico + calendario + confirmar -->
+    <?php if ($selectedDoctor): ?>
+        <div class="portal-card portal-doctor-summary">
+            <div class="portal-doctor-icon"><i data-lucide="user-round" class="h-7 w-7"></i></div>
+            <div>
+                <p class="section-label">Agendando con</p>
+                <h2><?= e($selectedDoctor['name']) ?></h2>
+                <p class="portal-hint"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($selectedDoctor['specialty']) ?>
+                    <?php if (!empty($selectedDoctor['office_name'])): ?>
+                        · <i data-lucide="map-pin" class="h-3.5 w-3.5"></i> <?= e($selectedDoctor['office_name']) ?>
+                    <?php endif; ?>
+                </p>
+            </div>
+            <a href="?specialty_id=<?= $selectedSpec ?>" class="portal-text-link portal-change-link">Cambiar médico</a>
+        </div>
+    <?php endif; ?>
+
     <div class="portal-card" data-doctor-id="<?= $selectedDoc ?>">
         <h2 class="portal-section-title">Selecciona fecha y hora</h2>
 
@@ -130,12 +149,7 @@ portal_layout_begin('Agendar cita', 'agendar');
             <i data-lucide="loader-2" class="h-5 w-5 animate-spin"></i> Cargando horarios disponibles…
         </div>
 
-        <div id="slot-picker" class="portal-slot-picker hidden">
-            <div class="portal-slot-days" id="slot-days"></div>
-            <div class="portal-slot-times" id="slot-times">
-                <p class="portal-hint">Selecciona primero un día.</p>
-            </div>
-        </div>
+        <div id="slot-picker" class="portal-slot-picker hidden"></div>
 
         <form method="POST" class="mt-6 hidden" id="confirm-form">
             <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
@@ -143,18 +157,18 @@ portal_layout_begin('Agendar cita', 'agendar');
             <input type="hidden" name="appointment_time" id="appointment_time">
 
             <div class="portal-confirm-box">
-                <p>Confirmación:</p>
+                <p>Cita seleccionada:</p>
                 <h3 id="confirm-when">—</h3>
             </div>
 
             <label class="form-label mt-4" for="notes">Motivo o detalles (opcional)</label>
             <textarea name="notes" id="notes" rows="3" class="form-input" placeholder="Cuéntale al médico el motivo de la consulta"></textarea>
 
-            <div class="mt-4 flex gap-3">
+            <div class="mt-4 flex gap-3 items-center">
                 <button type="submit" class="btn btn-green" <?= portal_email_verified() ? '' : 'disabled' ?>>
                     <i data-lucide="check" class="h-4 w-4"></i> Confirmar cita
                 </button>
-                <a href="?specialty_id=<?= $selectedSpec ?>" class="portal-text-link self-center">← Cambiar médico</a>
+                <a href="?specialty_id=<?= $selectedSpec ?>" class="portal-text-link">← Cambiar médico</a>
             </div>
         </form>
     </div>
