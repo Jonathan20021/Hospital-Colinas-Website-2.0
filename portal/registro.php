@@ -9,7 +9,12 @@ if (portal_is_logged_in()) {
 $errors = null;
 $message = null;
 $success = null;
-$values = ['name' => '', 'email' => '', 'phone' => '', 'cedula' => ''];
+$values = [
+    'name'   => '',
+    'email'  => trim((string)($_GET['email']  ?? '')),
+    'phone'  => '',
+    'cedula' => trim((string)($_GET['cedula'] ?? '')),
+];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     portal_csrf_check();

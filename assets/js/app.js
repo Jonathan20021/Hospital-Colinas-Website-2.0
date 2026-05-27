@@ -136,7 +136,7 @@
                 if (spec) {
                     try { sessionStorage.setItem('portal_default_specialty', spec); } catch (e) {}
                 }
-                window.location.href = '/portal/login.php';
+                window.location.href = '/agendar';
             });
         });
 
