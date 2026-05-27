@@ -55,7 +55,7 @@ function portal_layout_begin(string $title, string $active = ''): void {
         <a class="skip-link" href="#contenido">Saltar al contenido</a>
         <?php render_public_header($assets, $contact, ''); ?>
 
-        <div class="portal-shell">
+        <div class="portal-shell <?= portal_is_logged_in() ? 'portal-shell-app' : 'portal-shell-auth' ?>">
             <?php if (portal_is_logged_in()): ?>
                 <aside class="portal-sidebar" aria-label="Menú del paciente">
                     <div class="portal-profile">
