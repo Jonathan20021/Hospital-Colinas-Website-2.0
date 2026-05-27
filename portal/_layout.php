@@ -58,13 +58,22 @@ function portal_layout_begin(string $title, string $active = ''): void {
         <?php render_public_header($assets, $contact, ''); ?>
 
         <div class="portal-shell <?= portal_is_logged_in() ? 'portal-shell-app' : 'portal-shell-auth' ?>">
-            <?php if (portal_is_logged_in()): ?>
+            <?php if (portal_is_logged_in()):
+                $pName = (string)(portal_patient()['name'] ?? '');
+                // Iniciales del paciente para el avatar (máx 2 letras)
+                $parts = preg_split('/\s+/', trim($pName)) ?: [];
+                $initials = '';
+                foreach ($parts as $p) { if ($p !== '' && strlen($initials) < 2) $initials .= mb_substr($p, 0, 1, 'UTF-8'); }
+                $initials = $initials !== '' ? mb_strtoupper($initials, 'UTF-8') : '?';
+                // Nombre amigable: title case primera y segunda palabra
+                $friendlyName = trim(mb_convert_case(mb_strtolower($pName, 'UTF-8'), MB_CASE_TITLE, 'UTF-8'));
+            ?>
                 <aside class="portal-sidebar" aria-label="Menú del paciente">
                     <div class="portal-profile">
-                        <div class="portal-avatar"><i data-lucide="user-round" class="h-6 w-6"></i></div>
+                        <div class="portal-avatar portal-avatar-initials"><?= e($initials) ?></div>
                         <div>
                             <p class="portal-greeting">Hola,</p>
-                            <p class="portal-name"><?= e((portal_patient()['name'] ?? '')) ?></p>
+                            <p class="portal-name" title="<?= e($friendlyName) ?>"><?= e($friendlyName) ?></p>
                         </div>
                     </div>
                     <nav class="portal-nav" aria-label="Navegación del portal">
