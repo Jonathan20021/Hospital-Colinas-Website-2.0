@@ -21,6 +21,8 @@ DirectoryIndex index.php
 
     # Pretty routes
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
+    RewriteRule ^portal/?$ portal/index.php [L,QSA]
+    RewriteRule ^portal/([a-zA-Z0-9_\-]+)/?$ portal/$1.php [L,QSA]
     RewriteRule ^medico/([a-zA-Z0-9_\-]+)/?$ medico.php?slug=$1 [L,QSA]
     RewriteRule ^directorio-medico/?$ directorio-medico.php [L,QSA]
     RewriteRule ^directorio/?$ directorio-medico.php [L,QSA,R=301]

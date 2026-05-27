@@ -1,0 +1,83 @@
+<?php
+/**
+ * Proxy server-side para acciones AJAX del portal.
+ * El navegador llama a este archivo (mismo origen) y este reenvía
+ * a la API interna usando el JWT del paciente guardado en sesión.
+ *
+ * El navegador NUNCA ve el token ni la URL interna de la VIP.
+ *
+ * Formato de request:
+ *   POST /api/portal-proxy.php
+ *   {
+ *     "method": "GET" | "POST" | "PUT" | "DELETE",
+ *     "path":   "/portal/doctors/123/slots",
+ *     "query":  { ... }   // opcional (para GET)
+ *     "body":   { ... }   // opcional
+ *   }
+ *
+ * Validación de CSRF: header X-CSRF-Token.
+ */
+
+require_once __DIR__ . '/../includes/helpers.php';
+require_once __DIR__ . '/../includes/portal_client.php';
+require_once __DIR__ . '/../includes/portal_session.php';
+
+header('Content-Type: application/json; charset=utf-8');
+
+// Limita rutas permitidas para evitar acceso a endpoints internos
+$allowedPrefixes = [
+    '/portal/auth/logout',
+    '/portal/auth/resend-verification',
+    '/portal/auth/verify-email',
+    '/portal/me',
+    '/portal/doctors',
+    '/portal/specialties',
+];
+
+$payload = json_decode(file_get_contents('php://input'), true) ?? [];
+$method  = strtoupper((string)($payload['method'] ?? ''));
+$path    = '/' . ltrim((string)($payload['path'] ?? ''), '/');
+$query   = $payload['query'] ?? [];
+$body    = $payload['body']  ?? [];
+
+if (!in_array($method, ['GET','POST','PUT','DELETE'], true)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Método inválido.']);
+    exit;
+}
+
+$allowed = false;
+foreach ($allowedPrefixes as $p) {
+    if (str_starts_with($path, $p)) { $allowed = true; break; }
+}
+if (!$allowed) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Ruta no permitida desde el proxy.']);
+    exit;
+}
+
+// CSRF + sesión para todas las llamadas autenticadas
+$needsAuth = !in_array($path, ['/portal/auth/verify-email', '/portal/auth/resend-verification'], true);
+
+if ($needsAuth) {
+    portal_csrf_check();
+    if (!portal_is_logged_in()) {
+        http_response_code(401);
+        echo json_encode(['success' => false, 'message' => 'Sesión expirada.']);
+        exit;
+    }
+}
+
+$token = portal_token();
+$res = portal_api_call($method, $path, $method === 'GET' ? $query : $body, $token);
+
+// Si el upstream devuelve 401, limpiar sesión local
+if ($res['status'] === 401 && $needsAuth) {
+    portal_logout();
+}
+
+http_response_code($res['status'] ?: 502);
+echo $res['raw'] !== '' ? $res['raw'] : json_encode([
+    'success' => false,
+    'message' => $res['message'] ?? 'Error al contactar con la API.',
+]);
