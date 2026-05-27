@@ -104,14 +104,34 @@ $openaiMessages = array_merge(
     $cleaned
 );
 
-$result = ai_run_conversation($openaiMessages, $settings, 6);
+$result = ai_run_conversation($openaiMessages, $settings, 10);
 
 if (!$result['ok']) {
+    // Loggear tool_log y error en ai_conversations para depurar
+    if (db_ready()) {
+        try {
+            $sessionId = $_SESSION['ai_session'] ?? bin2hex(random_bytes(16));
+            $_SESSION['ai_session'] = $sessionId;
+            $stmt = db()->prepare('INSERT INTO ai_conversations (session_id, role, content, tokens, ip_address) VALUES (?, ?, ?, ?, ?)');
+            $userMessage = end($cleaned);
+            $stmt->execute([$sessionId, 'user', $userMessage['content'], null, $ip]);
+            $errSummary = '❌ ERROR: ' . ($result['error'] ?? 'desconocido');
+            if (!empty($result['tool_log'])) {
+                $errSummary .= "\nTools ejecutados:\n";
+                foreach ($result['tool_log'] as $t) {
+                    $errSummary .= '  - ' . $t['name'] . ' args=' . json_encode($t['args'], JSON_UNESCAPED_UNICODE)
+                                . ' result=' . substr(json_encode($t['result'], JSON_UNESCAPED_UNICODE), 0, 300) . "\n";
+                }
+            }
+            $stmt->execute([$sessionId, 'system', $errSummary, null, $ip]);
+        } catch (Throwable) {}
+    }
     http_response_code(502);
     echo json_encode([
         'ok' => false,
         'error' => 'El asistente no pudo responder en este momento.',
         'detail' => $result['error'] ?? null,
+        'tools' => array_map(fn($t) => ['name' => $t['name'], 'ok' => $t['result']['ok'] ?? false, 'error' => $t['result']['error'] ?? null], $result['tool_log'] ?? []),
     ]);
     exit;
 }
