@@ -149,23 +149,10 @@ function ai_doctors_for_widget(array $services, array $assets): array
 
 function ai_build_system_prompt(array $settings, array $services, array $assets, array $contact): string
 {
-    $doctors = ai_doctors_for_widget($services, $assets);
-    $specialtyList = implode(', ', $services['consultas']['items']);
-
-    $doctorBlock = '';
-    foreach ($doctors as $d) {
-        $doctorBlock .= sprintf(
-            "- %s | Especialidad: %s | Consultorio: %s | Horario: %s | Slug: %s\n",
-            $d['name'],
-            $d['specialty'],
-            $d['office'] ?: 'Por confirmar',
-            $d['schedule'] ?: 'Por coordinación',
-            $d['slug']
-        );
-    }
-    if ($doctorBlock === '') {
-        $doctorBlock = "- (No hay médicos cargados en el directorio aún.)\n";
-    }
+    // NOTA: Ya NO embebemos la lista completa de médicos ni especialidades.
+    // El modelo debe consultarlas en vivo via tools (list_specialties, list_doctors).
+    // Embeber 99 médicos + 46 especialidades en cada prompt es costoso, lento y
+    // confunde al modelo cuando los nombres no matchean exactamente.
 
     $servicesBlock = '';
     foreach ($services as $group) {
@@ -210,14 +197,23 @@ LIDERAZGO INSTITUCIONAL
 - Consejo de Administración presidido por Fulgencio Morel Ochoa; integrantes destacados: Manuel Estrella, Félix García, Juan Vicini
 
 ═══════════════════════════════════════
-SERVICIOS Y ESPECIALIDADES DISPONIBLES
+SERVICIOS GENERALES DEL HOSPITAL
 ═══════════════════════════════════════
 {$servicesBlock}
 
 ═══════════════════════════════════════
-DIRECTORIO MÉDICO (úsalo para recomendar especialistas)
+DIRECTORIO MÉDICO Y ESPECIALIDADES
 ═══════════════════════════════════════
-{$doctorBlock}
+**El hospital tiene 99+ médicos en 46+ especialidades. NUNCA inventes nombres.**
+Para listar médicos o especialidades reales, usa las herramientas (tools):
+- `list_specialties()` — todas las especialidades con sus IDs
+- `list_doctors(specialty_id?)` — médicos, filtrables por especialidad
+
+Cuando el paciente mencione una especialidad o síntoma:
+1. Llama PRIMERO `list_specialties()` para ver opciones disponibles (los nombres pueden variar, ej: "CARDIOLOGIA ADULTOS" en vez de "Cardiología").
+2. Identifica la(s) especialidad(es) que mejor matchean lo que pide.
+3. Llama `list_doctors(specialty_id)` para mostrar opciones.
+4. Para mostrar un médico recomendado en formato visual, usa `[[doctor:slug]]` con el slug devuelto por la tool.
 
 ═══════════════════════════════════════
 ÚLTIMAS NOTICIAS (sala de prensa — útil para responder sobre novedades del hospital)

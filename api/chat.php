@@ -117,6 +117,7 @@ if (!$result['ok']) {
 }
 
 $reply = (string) $result['content'];
+$toolLog = $result['tool_log'] ?? [];
 
 if (db_ready()) {
     try {
@@ -129,6 +130,11 @@ if (db_ready()) {
         $userMessage = end($cleaned);
         $stmt->execute([$sessionId, 'user', $userMessage['content'], null, $ip]);
         $tokens = $result['usage']['total_tokens'] ?? null;
+        // Si hubo tool calls, guardamos un resumen como mensaje 'system' para depurar
+        if (!empty($toolLog)) {
+            $toolSummary = '🔧 TOOL CALLS: ' . implode(' → ', array_map(fn($t) => $t['name'] . '(' . substr(json_encode($t['args'], JSON_UNESCAPED_UNICODE), 0, 80) . ') ' . ($t['result']['ok'] ?? false ? 'OK' : 'ERR'), $toolLog));
+            $stmt->execute([$sessionId, 'system', $toolSummary, null, $ip]);
+        }
         $stmt->execute([$sessionId, 'assistant', $reply, $tokens, $ip]);
     } catch (Throwable) {
         // Persistence is best-effort — never block the response.
@@ -139,4 +145,5 @@ echo json_encode([
     'ok' => true,
     'reply' => $reply,
     'usage' => $result['usage'] ?? null,
+    'tools' => array_map(fn($t) => ['name' => $t['name'], 'ok' => $t['result']['ok'] ?? false], $toolLog),
 ]);
