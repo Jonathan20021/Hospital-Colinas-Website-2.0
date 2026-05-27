@@ -21,10 +21,19 @@ function base_url(string $path = ''): string
     if ($base === null) {
         $script = $_SERVER['SCRIPT_NAME'] ?? '';
         $dir = str_replace('\\', '/', dirname($script));
+        // Si el script vive en /admin/* o /portal/*, la base "lógica"
+        // del sitio público sigue siendo la raíz (un nivel arriba).
+        if (preg_match('#^(.*?)/(admin|portal)$#', $dir, $m)) {
+            $dir = $m[1] === '' ? '/' : $m[1];
+        }
         $base = ($dir === '/' || $dir === '\\' || $dir === '.' || $dir === '') ? '/' : $dir . '/';
     }
     if ($path === '') {
         return $base;
+    }
+    // Devolver tal cual URLs absolutas, data URLs, mailto, tel, etc.
+    if (preg_match('#^(?:[a-z][a-z0-9+\-.]*:|//)#i', $path)) {
+        return $path;
     }
     if ($path[0] === '#' || $path[0] === '?') {
         return $base . $path;
