@@ -129,7 +129,6 @@ $serviceDirectory = [
 $leadershipDirector = [
     'name' => 'Dr. Rafael Sánchez Cárdenas',
     'role' => 'Director General',
-    'credentials' => 'Ex-Ministro de Salud Pública de la República Dominicana',
     'bio' => 'Lidera la operación clínica y administrativa del hospital con un enfoque en calidad, ética y atención humanizada.',
     'initials' => 'RS',
 ];
@@ -142,10 +141,6 @@ $leadershipGerencias = [
     ['area' => 'Servicios Generales', 'icon' => 'building-2', 'desc' => 'Infraestructura, mantenimiento, abastecimiento y operación de soporte.'],
 ];
 
-$leadershipBoard = [
-    'president' => 'Fulgencio Morel Ochoa',
-    'members' => ['Manuel Estrella', 'Félix García', 'Juan Vicini'],
-];
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
@@ -595,7 +590,6 @@ $leadershipBoard = [
                     <div class="leader-meta">
                         <span class="leader-role"><i data-lucide="crown" class="h-3.5 w-3.5"></i> <?= e($leadershipDirector['role']) ?></span>
                         <h3><?= e($leadershipDirector['name']) ?></h3>
-                        <p class="leader-credentials"><i data-lucide="award" class="h-4 w-4"></i><?= e($leadershipDirector['credentials']) ?></p>
                         <p class="leader-bio"><?= e($leadershipDirector['bio']) ?></p>
                     </div>
                 </article>
@@ -617,17 +611,6 @@ $leadershipBoard = [
                     <?php endforeach; ?>
                 </div>
 
-                <aside class="board-strip" aria-label="Consejo de Administración">
-                    <div class="board-intro">
-                        <span><i data-lucide="landmark" class="h-4 w-4"></i> Consejo de Administración</span>
-                        <strong>Presidido por <?= e($leadershipBoard['president']) ?></strong>
-                    </div>
-                    <ul class="board-members">
-                        <?php foreach ($leadershipBoard['members'] as $member): ?>
-                            <li><i data-lucide="user-round" class="h-3.5 w-3.5"></i><?= e($member) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </aside>
             </div>
         </section>
 
