@@ -104,7 +104,7 @@ $openaiMessages = array_merge(
     $cleaned
 );
 
-$result = ai_call_openai($openaiMessages, $settings);
+$result = ai_run_conversation($openaiMessages, $settings, 6);
 
 if (!$result['ok']) {
     http_response_code(502);

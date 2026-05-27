@@ -255,8 +255,42 @@ CAPACIDADES PRINCIPALES
 1. Responder dudas sobre el hospital, servicios, ubicación, horarios y formas de contacto.
 2. Buscar y recomendar especialistas del directorio según especialidad o necesidad descrita.
 3. Guiar al usuario por la página como un onboarding: presentas brevemente cada sección y haces scroll con `[[scroll:#seccion]]` al final del mensaje.
-4. Orientar sobre cómo agendar una cita (usando el botón `[[action:appointment|Agendar cita]]`).
+4. **Agendar citas en línea directamente en el chat** (ver sección de tools abajo).
 5. Derivar a Emergencias 24/7 cuando corresponda.
+
+═══════════════════════════════════════
+HERRAMIENTAS (TOOL CALLING) — AGENDAR CITAS EN EL CHAT
+═══════════════════════════════════════
+Tienes 4 herramientas disponibles. Úsalas cuando el paciente pida agendar una cita aquí mismo en el chat (en lugar de mandarlo a /agendar):
+
+1. `list_specialties()` — devuelve todas las especialidades con su ID. Llámala si el paciente no sabe qué especialidad necesita o pide ver opciones.
+
+2. `list_doctors(specialty_id)` — devuelve médicos. Filtra por specialty_id cuando ya tengas una elegida. Cada médico tiene `id`, `name`, `specialty`, `schedule`, `office`.
+
+3. `get_doctor_slots(doctor_id)` — devuelve días con horarios libres del médico (próximos 14 días). Formato: `{"days": {"2026-05-29": ["2026-05-29 09:00:00", "..."]}}`. Llámala ANTES de pedir fecha al paciente, para ofrecer opciones reales.
+
+4. `create_appointment(name, cedula, email, phone, doctor_id, appointment_time, notes?)` — crea la cita. Llámala SOLO cuando tengas TODOS los datos confirmados por el paciente. Devuelve `{appointment_id, doctor_name, register_url, ...}`.
+
+**FLUJO RECOMENDADO PARA AGENDAR EN EL CHAT:**
+
+a) Paciente: "quiero agendar una cita" → pregunta qué especialidad necesita. Si no sabe, llama `list_specialties()` y muéstrale 4-5 opciones relevantes a su síntoma (ej: dolor de cabeza → Neurología, Medicina Interna).
+
+b) Cuando elija especialidad → llama `list_doctors(specialty_id)`, muéstrale 2-3 médicos con nombre + horario.
+
+c) Cuando elija médico → llama `get_doctor_slots(doctor_id)`, presenta 3-4 fechas/horas disponibles en formato amigable ("Jueves 28 de mayo, 10:00 AM", etc.).
+
+d) Cuando elija fecha/hora → pide UNO POR UNO sus datos: nombre completo, cédula, email, teléfono. NO los pidas todos a la vez (saturas al paciente).
+
+e) Cuando tengas TODOS los datos → confirma TODO en un solo mensaje ("Voy a agendar: Dr X, Especialidad Y, Jueves 28 a las 10:00 AM, paciente Juan Pérez, ced 123, email ..., tel ... ¿Confirmas?"). Espera "sí".
+
+f) Cuando confirme → llama `create_appointment(...)`. Si OK, da el ID de cita + recordatorio de revisar email + ofrece el link al portal con `[[link:portal/registro.php|Crear cuenta]]` para gestionar futuras citas.
+
+g) Si `create_appointment` falla (horario ya tomado, datos inválidos, etc.) → explica el error y vuelve al paso correspondiente.
+
+**IMPORTANTE:**
+- NUNCA inventes IDs de médico, slugs, fechas u horarios. Siempre úsalos del resultado de las tools.
+- Si el paciente prefiere agendar por la web en vez de chatear, ofrece `[[link:agendar|Agendar en línea]]`.
+- Para emergencias (síntomas graves), NO uses tools — deriva a Emergencias 24/7 inmediatamente.
 
 ═══════════════════════════════════════
 ESTILO DE RESPUESTA
@@ -291,7 +325,119 @@ PROMPT;
     return $prompt;
 }
 
-function ai_call_openai(array $messages, array $settings): array
+function ai_tools_definition(): array
+{
+    return [
+        [
+            'type' => 'function',
+            'function' => [
+                'name' => 'list_specialties',
+                'description' => 'Lista todas las especialidades médicas disponibles en el hospital con sus IDs. Úsala cuando el paciente quiera ver opciones o no sepa qué especialidad necesita.',
+                'parameters' => ['type' => 'object', 'properties' => new stdClass()],
+            ],
+        ],
+        [
+            'type' => 'function',
+            'function' => [
+                'name' => 'list_doctors',
+                'description' => 'Lista los médicos activos del hospital. Filtra por specialty_id si el paciente ya eligió una especialidad. Devuelve nombre, slug, ID, especialidad y horario.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'specialty_id' => ['type' => 'integer', 'description' => 'ID de la especialidad (opcional, si se omite devuelve todos).'],
+                    ],
+                ],
+            ],
+        ],
+        [
+            'type' => 'function',
+            'function' => [
+                'name' => 'get_doctor_slots',
+                'description' => 'Devuelve los días con horarios disponibles para un médico. Cada día tiene un array de horarios libres. Úsala antes de agendar para confirmar disponibilidad real.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'doctor_id' => ['type' => 'integer', 'description' => 'ID del médico.'],
+                        'date_from' => ['type' => 'string', 'description' => 'Fecha inicio YYYY-MM-DD (opcional, default hoy).'],
+                        'date_to'   => ['type' => 'string', 'description' => 'Fecha fin YYYY-MM-DD (opcional, default +14 días).'],
+                    ],
+                    'required' => ['doctor_id'],
+                ],
+            ],
+        ],
+        [
+            'type' => 'function',
+            'function' => [
+                'name' => 'create_appointment',
+                'description' => 'Agenda una cita en el sistema del hospital. Llámala SOLO cuando tengas TODOS los datos del paciente confirmados por él. Devuelve el ID de cita, link para crear cuenta, y datos para enviar al paciente.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name'             => ['type' => 'string', 'description' => 'Nombre completo del paciente.'],
+                        'cedula'           => ['type' => 'string', 'description' => 'Cédula dominicana del paciente.'],
+                        'email'            => ['type' => 'string', 'description' => 'Correo electrónico del paciente.'],
+                        'phone'            => ['type' => 'string', 'description' => 'Teléfono del paciente.'],
+                        'doctor_id'        => ['type' => 'integer', 'description' => 'ID del médico elegido.'],
+                        'appointment_time' => ['type' => 'string', 'description' => 'Fecha y hora exacta en formato YYYY-MM-DD HH:MM:SS, tomada de get_doctor_slots.'],
+                        'notes'            => ['type' => 'string', 'description' => 'Motivo de la consulta (opcional).'],
+                    ],
+                    'required' => ['name', 'cedula', 'email', 'phone', 'doctor_id', 'appointment_time'],
+                ],
+            ],
+        ],
+    ];
+}
+
+function ai_execute_tool(string $name, array $args): array
+{
+    require_once __DIR__ . '/portal_client.php';
+
+    switch ($name) {
+        case 'list_specialties':
+            $r = portal_api_call('GET', '/portal/specialties');
+            return $r['ok'] ? ['ok' => true, 'specialties' => $r['data']] : ['ok' => false, 'error' => $r['message'] ?? 'Error'];
+
+        case 'list_doctors':
+            $q = [];
+            if (!empty($args['specialty_id'])) $q['specialty_id'] = (int)$args['specialty_id'];
+            $r = portal_api_call('GET', '/portal/doctors', $q);
+            if (!$r['ok']) return ['ok' => false, 'error' => $r['message'] ?? 'Error'];
+            // Resumir para no saturar tokens
+            $doctors = array_map(static fn($d) => [
+                'id'            => (int)$d['id'],
+                'slug'          => $d['slug'] ?? null,
+                'name'          => $d['name'],
+                'specialty'     => $d['specialty'],
+                'specialty_id'  => (int)($d['specialty_id'] ?? 0),
+                'schedule'      => substr($d['schedule_start'] ?? '09:00', 0, 5) . '–' . substr($d['schedule_end'] ?? '17:00', 0, 5),
+                'office'        => $d['office_name'] ?? '',
+            ], $r['data'] ?? []);
+            return ['ok' => true, 'doctors' => $doctors, 'count' => count($doctors)];
+
+        case 'get_doctor_slots':
+            $docId = (int)($args['doctor_id'] ?? 0);
+            if (!$docId) return ['ok' => false, 'error' => 'doctor_id requerido'];
+            $q = [
+                'date_from'    => $args['date_from'] ?? date('Y-m-d'),
+                'date_to'      => $args['date_to']   ?? date('Y-m-d', strtotime('+14 days')),
+                'slot_minutes' => 30,
+            ];
+            $r = portal_api_call('GET', "/portal/doctors/$docId/slots", $q);
+            return $r['ok'] ? ['ok' => true, 'slots' => $r['data']] : ['ok' => false, 'error' => $r['message'] ?? 'Error'];
+
+        case 'create_appointment':
+            $payload = array_intersect_key($args, array_flip(['name','cedula','email','phone','doctor_id','appointment_time','notes']));
+            $r = portal_api_call('POST', '/portal/guest/appointments', $payload);
+            if (!$r['ok']) {
+                $errs = $r['errors'] ? ' · ' . json_encode($r['errors'], JSON_UNESCAPED_UNICODE) : '';
+                return ['ok' => false, 'error' => ($r['message'] ?? 'Error') . $errs];
+            }
+            return ['ok' => true, 'appointment' => $r['data']];
+    }
+    return ['ok' => false, 'error' => "Tool '$name' no implementado."];
+}
+
+function ai_call_openai(array $messages, array $settings, bool $withTools = true): array
 {
     $payload = [
         'model' => $settings['model'],
@@ -299,6 +445,10 @@ function ai_call_openai(array $messages, array $settings): array
         'temperature' => $settings['temperature'],
         'max_tokens' => $settings['max_tokens'],
     ];
+    if ($withTools) {
+        $payload['tools'] = ai_tools_definition();
+        $payload['tool_choice'] = 'auto';
+    }
 
     $ch = curl_init('https://api.openai.com/v1/chat/completions');
     curl_setopt_array($ch, [
@@ -331,10 +481,73 @@ function ai_call_openai(array $messages, array $settings): array
         return ['ok' => false, 'error' => $msg];
     }
 
-    $content = $data['choices'][0]['message']['content'] ?? '';
+    $msg = $data['choices'][0]['message'] ?? [];
     return [
-        'ok' => true,
-        'content' => $content,
-        'usage' => $data['usage'] ?? null,
+        'ok'         => true,
+        'message'    => $msg, // mensaje completo (puede tener content y/o tool_calls)
+        'content'    => $msg['content'] ?? '',
+        'tool_calls' => $msg['tool_calls'] ?? null,
+        'usage'      => $data['usage'] ?? null,
+    ];
+}
+
+/**
+ * Conversación completa con auto-resolución de tool calls.
+ * Max $maxHops llamadas a OpenAI para evitar loops infinitos.
+ *
+ * @return array { ok, content, usage, tool_log }
+ */
+function ai_run_conversation(array $messages, array $settings, int $maxHops = 6): array
+{
+    $totalUsage = ['prompt_tokens' => 0, 'completion_tokens' => 0, 'total_tokens' => 0];
+    $toolLog = [];
+
+    for ($hop = 0; $hop < $maxHops; $hop++) {
+        $resp = ai_call_openai($messages, $settings, true);
+        if (!$resp['ok']) return $resp;
+
+        if (!empty($resp['usage'])) {
+            foreach (['prompt_tokens', 'completion_tokens', 'total_tokens'] as $k) {
+                $totalUsage[$k] += (int)($resp['usage'][$k] ?? 0);
+            }
+        }
+
+        $toolCalls = $resp['tool_calls'] ?? null;
+
+        // No hay tools que ejecutar → respuesta final
+        if (empty($toolCalls)) {
+            return [
+                'ok'       => true,
+                'content'  => (string)$resp['content'],
+                'usage'    => $totalUsage,
+                'tool_log' => $toolLog,
+            ];
+        }
+
+        // Agregar el assistant message con tool_calls al historial
+        $messages[] = $resp['message'];
+
+        // Ejecutar cada tool call y agregar resultado
+        foreach ($toolCalls as $call) {
+            $fnName = $call['function']['name'] ?? '';
+            $argsJson = $call['function']['arguments'] ?? '{}';
+            $args = json_decode($argsJson, true) ?: [];
+
+            $result = ai_execute_tool($fnName, $args);
+            $toolLog[] = ['name' => $fnName, 'args' => $args, 'result' => $result];
+
+            $messages[] = [
+                'role'         => 'tool',
+                'tool_call_id' => $call['id'],
+                'content'      => json_encode($result, JSON_UNESCAPED_UNICODE),
+            ];
+        }
+    }
+
+    return [
+        'ok'      => false,
+        'error'   => "Se alcanzó el máximo de iteraciones de tools ($maxHops). Pregunta al paciente que llame al hospital.",
+        'usage'   => $totalUsage,
+        'tool_log'=> $toolLog,
     ];
 }
