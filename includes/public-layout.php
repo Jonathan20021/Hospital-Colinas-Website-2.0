@@ -62,14 +62,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="nav-search" aria-label="Buscar">
                         <i data-lucide="search" class="h-4 w-4"></i>
                     </a>
-                    <a href="<?= e(base_url('portal/login.php')) ?>" class="btn btn-outline nav-cta nav-cta-portal">
-                        <i data-lucide="user-round" class="h-4 w-4"></i>
-                        Portal de paciente
-                    </a>
-                    <button type="button" class="js-open-appointment btn btn-green nav-cta">
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="btn btn-green nav-cta">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
-                    </button>
+                    </a>
                 </div>
 
                 <button id="menuToggle" type="button" class="mobile-toggle" aria-label="Abrir menú" aria-expanded="false">
@@ -97,14 +93,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="mobile-link">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
                     </a>
-                    <a href="<?= e(base_url('portal/login.php')) ?>" class="mt-3 btn btn-outline w-full justify-center">
-                        <i data-lucide="user-round" class="h-4 w-4"></i>
-                        Portal de paciente
-                    </a>
-                    <button type="button" class="js-open-appointment mt-2 btn btn-green w-full justify-center">
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="mt-3 btn btn-green w-full justify-center">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
-                        Agendar cita
-                    </button>
+                        Agendar cita en línea
+                    </a>
                 </nav>
             </div>
         </div>

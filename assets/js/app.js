@@ -125,8 +125,19 @@
             }
         };
 
+        // Todos los CTAs "Agendar cita" del sitio público redirigen al Portal
+        // de Pacientes (login). El modal de solicitud por correo se mantiene
+        // como fallback en el DOM, pero ya no se invoca.
         document.querySelectorAll('.js-open-appointment').forEach((button) => {
-            button.addEventListener('click', openModal);
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                // Si el botón tiene data-specialty, lo guardamos para el portal
+                const spec = button.dataset.specialty || button.dataset.specialtyId;
+                if (spec) {
+                    try { sessionStorage.setItem('portal_default_specialty', spec); } catch (e) {}
+                }
+                window.location.href = '/portal/login.php';
+            });
         });
 
         document.querySelectorAll('.js-close-appointment').forEach((button) => {
