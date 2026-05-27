@@ -51,7 +51,10 @@ admin_header($id ? 'Editar médico' : 'Nuevo médico', 'medicos');
                 <span>Perfil profesional</span>
                 <h2>Datos del médico</h2>
             </div>
-            <button type="submit" class="admin-primary-action">Guardar perfil</button>
+            <button type="submit" class="admin-primary-action">
+                <i data-lucide="save"></i>
+                Guardar perfil
+            </button>
         </div>
 
         <div class="editor-grid">
@@ -145,10 +148,10 @@ admin_header($id ? 'Editar médico' : 'Nuevo médico', 'medicos');
     <aside class="admin-panel editor-side">
         <span>Foto y publicación</span>
         <div class="photo-preview">
-            <img src="../<?= e(doctor_value($doctor ?: [], 'photo_path', 'assets/site/assets/DSC00177-DrupFA59.jpg')) ?>" alt="">
+            <img id="photoPreviewImg" src="../<?= e(doctor_value($doctor ?: [], 'photo_path', 'assets/site/assets/DSC00177-DrupFA59.jpg')) ?>" alt="">
         </div>
         <label class="file-dropzone">
-            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp">
+            <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/webp">
             <i data-lucide="image-plus"></i>
             <strong>Subir foto profesional</strong>
             <small>JPG, PNG o WEBP. Recomendado: retrato vertical bien iluminado.</small>
@@ -158,8 +161,24 @@ admin_header($id ? 'Editar médico' : 'Nuevo médico', 'medicos');
             Destacar en el directorio
         </label>
         <?php if (!empty($doctor['slug'])): ?>
-            <a href="../medico/<?= e($doctor['slug']) ?>" target="_blank" rel="noopener" class="admin-secondary-action">Ver página pública</a>
+            <a href="../medico/<?= e($doctor['slug']) ?>" target="_blank" rel="noopener" class="admin-secondary-action">
+                <i data-lucide="external-link"></i>
+                Ver página pública
+            </a>
         <?php endif; ?>
     </aside>
 </form>
+
+<script>
+document.getElementById('photoInput')?.addEventListener('change', function () {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.addEventListener('load', function () {
+            document.getElementById('photoPreviewImg')?.setAttribute('src', this.result);
+        });
+        reader.readAsDataURL(file);
+    }
+});
+</script>
 <?php admin_footer(); ?>

@@ -58,7 +58,10 @@ admin_header($id ? 'Editar usuario' : 'Nuevo usuario', 'usuarios');
             <span>Cuenta administrativa</span>
             <h2><?= $id ? 'Editar acceso' : 'Crear acceso' ?></h2>
         </div>
-        <button type="submit" class="admin-primary-action">Guardar usuario</button>
+        <button type="submit" class="admin-primary-action">
+            <i data-lucide="save"></i>
+            Guardar usuario
+        </button>
     </div>
 
     <div class="editor-grid two-cols">
