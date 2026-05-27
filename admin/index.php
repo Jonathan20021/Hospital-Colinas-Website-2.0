@@ -2,6 +2,9 @@
 require __DIR__ . '/includes/auth.php';
 require __DIR__ . '/includes/doctors-admin.php';
 require_once __DIR__ . '/../includes/ai.php';
+require_once __DIR__ . '/../includes/portal_client.php';
+require_once __DIR__ . '/../includes/portal_directory.php';
+require_once __DIR__ . '/../includes/doctor_avatar.php';
 require __DIR__ . '/includes/layout.php';
 
 if (!db_ready()) {
@@ -15,9 +18,20 @@ if (!admin_can('dashboard', $currentUser)) {
     exit;
 }
 
-// Estadísticas de Médicos
-$stats = admin_doctor_stats();
-$recentDoctors = array_slice(admin_doctors(), 0, 5);
+// Estadísticas de médicos: live desde la API del hospital (con cache 1h)
+$apiRes = portal_directory_doctors();
+$apiDoctors = $apiRes['ok'] ? $apiRes['data'] : [];
+
+$stats = [
+    'total'    => count($apiDoctors),
+    'active'   => count($apiDoctors),
+    'draft'    => 0,
+    'featured' => count(array_filter($apiDoctors, fn($d) => !empty($d['is_featured']))),
+    'photo'    => count(array_filter($apiDoctors, fn($d) => !empty($d['photo_url']))),
+];
+
+// Últimos modificados: tomamos los destacados primero + alfabético
+$recentDoctors = array_slice($apiDoctors, 0, 5);
 
 // Estadísticas de Colinas IA
 $aiStats = ['queries' => 0, 'sessions' => 0, 'tokens' => 0];
@@ -101,11 +115,11 @@ admin_header('Dashboard', 'dashboard');
     </article>
     <article>
         <div class="admin-stats-info">
-            <span>Borradores</span>
-            <strong><?= e((string) $stats['draft']) ?></strong>
+            <span>Con foto</span>
+            <strong><?= e((string) $stats['photo']) ?></strong>
         </div>
-        <div class="admin-stats-icon" style="color: var(--warning); background-color: var(--warning-light);">
-            <i data-lucide="file-warning"></i>
+        <div class="admin-stats-icon" style="color: #2563eb; background-color: #eff6ff;">
+            <i data-lucide="image"></i>
         </div>
     </article>
     <article>
@@ -194,15 +208,18 @@ admin_header('Dashboard', 'dashboard');
                     </div>
                 <?php endif; ?>
                 
-                <?php foreach ($recentDoctors as $doctor): ?>
-                    <?php $doctorHref = admin_can('doctors', $currentUser) ? 'medico-form.php?id=' . $doctor['id'] : '../medico/' . $doctor['slug']; ?>
-                    <a href="<?= e($doctorHref) ?>" class="admin-list-row" <?= admin_can('doctors', $currentUser) ? '' : 'target="_blank" rel="noopener"' ?>>
-                        <img src="../<?= e($doctor['photo_path'] ?: 'assets/site/assets/DSC00177-DrupFA59.jpg') ?>" alt="">
+                <?php foreach ($recentDoctors as $doctor):
+                    $photo = !empty($doctor['photo_url'])
+                        ? portal_directory_photo_url($doctor['photo_url'])
+                        : doctor_avatar_svg($doctor['name'] ?? 'Médico');
+                ?>
+                    <a href="medicos.php#doc-<?= (int)$doctor['id'] ?>" class="admin-list-row">
+                        <img src="<?= e($photo) ?>" alt="" style="background:#f1f5f9;border-radius:50%">
                         <span>
-                            <strong><?= e(trim(($doctor['title'] ? $doctor['title'] . ' ' : '') . $doctor['first_name'] . ' ' . $doctor['last_name'])) ?></strong>
-                            <small><?= e($doctor['specialty'] ?: 'Sin especialidad') ?></small>
+                            <strong><?= e($doctor['name']) ?></strong>
+                            <small><?= e($doctor['specialty'] ?? 'Sin especialidad') ?></small>
                         </span>
-                        <em class="<?= e($doctor['status']) ?>"><?= e($doctor['status'] === 'active' ? 'publicado' : ($doctor['status'] === 'draft' ? 'borrador' : 'inactivo')) ?></em>
+                        <em class="active">publicado</em>
                     </a>
                 <?php endforeach; ?>
             </div>
@@ -284,17 +301,15 @@ admin_header('Dashboard', 'dashboard');
             </div>
         </div>
 
-        <!-- Próxima Fase -->
+        <!-- Portal de Pacientes (ya operativo) -->
         <div class="admin-panel admin-next-panel">
-            <span>Siguiente fase</span>
-            <h2>Panel del Paciente</h2>
-            <p>La arquitectura del sistema ya cuenta con aislamiento de rutas y control de accesos. La próxima fase permitirá a los pacientes agendar citas en línea, descargar resultados de laboratorio y ver recetas clínicas desde un portal de autogestión integrado.</p>
-            <?php if (admin_can('doctors', $currentUser)): ?>
-                <a href="medico-form.php" class="admin-secondary-action">
-                    <i data-lucide="plus-circle" style="width: 16px; height: 16px;"></i>
-                    Cargar nuevo médico
-                </a>
-            <?php endif; ?>
+            <span>Portal de Pacientes</span>
+            <h2>🩺 Sistema operativo</h2>
+            <p>Los pacientes ya pueden registrarse, verificar su correo y agendar citas con cualquiera de los <?= (int)$stats['total'] ?> médicos del hospital desde el portal público.</p>
+            <a href="<?= e(base_url('portal/login.php')) ?>" target="_blank" rel="noopener" class="admin-secondary-action">
+                <i data-lucide="external-link" style="width: 16px; height: 16px;"></i>
+                Abrir portal del paciente
+            </a>
         </div>
 
     </div>
