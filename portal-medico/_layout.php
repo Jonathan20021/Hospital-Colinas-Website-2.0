@@ -87,6 +87,9 @@ function doctor_layout_begin(string $title, string $active = ''): void {
                         <a href="<?= e(base_url('portal-medico/perfil.php')) ?>" class="doctor-nav-link <?= $active === 'perfil' ? 'is-active' : '' ?>"><i data-lucide="user-cog" class="h-4 w-4"></i>Mi perfil</a>
                         <a href="<?= e(base_url('portal-medico/logout.php')) ?>" class="doctor-nav-link doctor-nav-logout"><i data-lucide="log-out" class="h-4 w-4"></i>Cerrar sesion</a>
                     </nav>
+                    <div class="doctor-sidebar-foot">
+                        <i data-lucide="shield-check" class="h-3 w-3"></i> Conexion segura
+                    </div>
                 </aside>
             <?php endif; ?>
 

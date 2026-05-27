@@ -40,8 +40,11 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
 
     <?php if (!$items): ?>
         <div class="doctor-empty">
-            <i data-lucide="user-x" class="h-10 w-10"></i>
-            <p><?= $q ? 'Ningun paciente coincide con la busqueda.' : 'Aun no tienes pacientes.' ?></p>
+            <div class="doctor-empty-illustration">
+                <i data-lucide="<?= $q ? 'search-x' : 'users' ?>" class="h-7 w-7"></i>
+            </div>
+            <p class="doctor-empty-title"><?= $q ? 'Sin resultados' : 'Aun no tienes pacientes' ?></p>
+            <p><?= $q ? 'Prueba con otro nombre, cedula o telefono.' : 'Tus pacientes apareceran aqui cuando agendes tu primera cita.' ?></p>
         </div>
     <?php else: ?>
         <div class="doctor-table-wrap">

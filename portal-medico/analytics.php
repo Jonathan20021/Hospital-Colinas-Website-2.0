@@ -84,7 +84,13 @@ doctor_layout_begin('Analytics', 'analytics');
 <section class="doctor-card mt-4">
     <header class="doctor-card-header"><h2><i data-lucide="users" class="h-5 w-5"></i> Top pacientes</h2></header>
     <?php if (empty($data['top_patients'])): ?>
-        <div class="doctor-empty"><p>Aun no hay datos suficientes.</p></div>
+        <div class="doctor-empty">
+            <div class="doctor-empty-illustration">
+                <i data-lucide="bar-chart-3" class="h-7 w-7"></i>
+            </div>
+            <p class="doctor-empty-title">Sin datos en este rango</p>
+            <p>Cuando completes mas citas, aqui veras tus pacientes mas frecuentes.</p>
+        </div>
     <?php else: ?>
         <div class="doctor-table-wrap">
             <table class="doctor-table">

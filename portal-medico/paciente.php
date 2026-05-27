@@ -111,8 +111,11 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
 
     <?php if (!$history): ?>
         <div class="doctor-empty">
-            <i data-lucide="file-text" class="h-10 w-10"></i>
-            <p>Aun no hay consultas registradas para este paciente.</p>
+            <div class="doctor-empty-illustration">
+                <i data-lucide="file-text" class="h-7 w-7"></i>
+            </div>
+            <p class="doctor-empty-title">Sin consultas registradas</p>
+            <p>Las consultas y notas medicas apareceran aqui cuando inicies la primera.</p>
         </div>
     <?php else: ?>
         <ol class="doctor-timeline">

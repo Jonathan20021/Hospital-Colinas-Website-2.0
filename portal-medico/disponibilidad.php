@@ -36,7 +36,13 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
             <h2><i data-lucide="calendar-x" class="h-5 w-5"></i> Proximas ausencias (<?= count($absences) ?>)</h2>
         </header>
         <?php if (!$absences): ?>
-            <div class="doctor-empty"><i data-lucide="calendar-check" class="h-10 w-10"></i><p>No tienes ausencias programadas.</p></div>
+            <div class="doctor-empty">
+                <div class="doctor-empty-illustration">
+                    <i data-lucide="calendar-check" class="h-7 w-7"></i>
+                </div>
+                <p class="doctor-empty-title">Sin ausencias programadas</p>
+                <p>Cuando bloquees fechas no disponibles, apareceran aqui.</p>
+            </div>
         <?php else: ?>
             <ul class="doctor-appt-list" id="avail-list">
                 <?php foreach ($absences as $a):
