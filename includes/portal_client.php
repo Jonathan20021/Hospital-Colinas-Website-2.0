@@ -10,6 +10,15 @@
  * El token JWT NUNCA cruza al navegador: vive en $_SESSION (cookie HttpOnly).
  */
 
+// Cargar config.local.php de forma autónoma — las páginas del portal no
+// dependen de db.php (que es donde el sitio público lo carga normalmente).
+(static function (): void {
+    $localConfig = __DIR__ . '/config.local.php';
+    if (is_file($localConfig)) {
+        require_once $localConfig;
+    }
+})();
+
 function portal_api_base(): string {
     return defined('PORTAL_API_BASE') ? rtrim(PORTAL_API_BASE, '/') : 'http://localhost/api';
 }
