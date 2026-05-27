@@ -453,6 +453,14 @@ function ai_execute_tool(string $name, array $args): array
 
         case 'create_appointment':
             $payload = array_intersect_key($args, array_flip(['name','cedula','email','phone','doctor_id','appointment_time','notes']));
+            // Bypass de hCaptcha para llamadas server-to-server desde el chat IA.
+            // El paciente no puede resolver un captcha dentro del chat; el secreto
+            // se compara con `ai_chat_secret` del settings en la API interna.
+            // Se define en includes/config.local.php; si no existe, la API rechaza
+            // por captcha igual que cualquier otro cliente.
+            if (defined('PORTAL_AI_CHAT_SECRET') && PORTAL_AI_CHAT_SECRET !== '') {
+                $payload['_ai_secret'] = PORTAL_AI_CHAT_SECRET;
+            }
             $r = portal_api_call('POST', '/portal/guest/appointments', $payload);
             if (!$r['ok']) {
                 $errs = $r['errors'] ? ' · ' . json_encode($r['errors'], JSON_UNESCAPED_UNICODE) : '';

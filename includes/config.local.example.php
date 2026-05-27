@@ -27,3 +27,12 @@ define('PORTAL_API_VERIFY_TLS', false);
 // con permisos de admin. Solo necesaria si quieres gestionar médicos desde
 // admin/medicos.php del cPanel.
 // define('HOSPITAL_API_KEY', 're_xxxxxxxxxxxxxxx');
+
+// ── Chat IA (Colinas IA) ───────────────────────────────────────────────────
+// Secreto compartido server-to-server para que el chat IA pueda agendar citas
+// guest sin tener que resolver hCaptcha (un LLM no puede resolver un widget de
+// captcha). El valor debe coincidir con el setting `ai_chat_secret` en la
+// tabla `settings` de la API interna del hospital. Si está vacío o no definido,
+// el chat IA NO podrá completar agendamientos — el resto del bot sigue
+// funcionando (info, recomendar médicos, etc.).
+// define('PORTAL_AI_CHAT_SECRET', 'paste-the-64-hex-secret-from-the-hospital-settings-table-here');
