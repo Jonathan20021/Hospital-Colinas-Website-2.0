@@ -1,20 +1,4 @@
 ---
-# cPanel Git Version Control deployment hook.
-#
-# Este sitio usa una configuración "docroot-as-repo": la raíz del repositorio
-# de git ES el document root de Apache (/home2/neetjbte/colinashospital.kyrosrd.com/).
-# Eso significa que un `git pull` (botón "Update from Remote") ya pone todos
-# los archivos en su sitio — no hay paso de copy.
-#
-# El propósito de este archivo es habilitar el botón "Deploy HEAD Commit"
-# en la interfaz de cPanel. Sin .cpanel.yml ese botón no aparece o falla.
-#
-# Las tareas de aquí se ejecutan después del pull. Usamos esto solo para
-# refrescar el opcache de PHP tocando los .php y para dejar un marker de
-# auditoría con la última versión deployada.
 deployment:
   tasks:
-    - export DEPLOYPATH=/home2/neetjbte/colinashospital.kyrosrd.com
-    - /bin/find $DEPLOYPATH -maxdepth 3 -name "*.php" -not -path "*/.git/*" -exec /usr/bin/touch {} +
-    - /bin/date -u +"%Y-%m-%dT%H:%M:%SZ" > $DEPLOYPATH/.deployed-at
-    - /usr/bin/git -C $DEPLOYPATH rev-parse --short HEAD >> $DEPLOYPATH/.deployed-at
+    - /usr/bin/find /home2/neetjbte/colinashospital.kyrosrd.com -maxdepth 3 -name "*.php" -not -path "*/.git/*" -exec /usr/bin/touch {} \;
