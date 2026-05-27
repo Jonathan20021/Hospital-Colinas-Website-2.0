@@ -81,3 +81,56 @@ function portal_api_call(string $method, string $path, array $payload = [], ?str
         'raw'     => $raw,
     ];
 }
+
+/**
+ * Variante para endpoints que devuelven contenido binario (PDF, imágenes).
+ *
+ * @return array { ok:bool, status:int, body:string, content_type:?string, filename:?string }
+ */
+function portal_api_call_binary(string $method, string $path, array $query = [], ?string $token = null): array {
+    $url = portal_api_base() . '/' . ltrim($path, '/');
+    if (strtoupper($method) === 'GET' && $query) {
+        $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($query);
+    }
+
+    $ch = curl_init($url);
+    $headers = ['Accept: application/pdf, application/octet-stream, application/json'];
+    if ($token) $headers[] = 'Authorization: Bearer ' . $token;
+
+    $respHeaders = [];
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST  => strtoupper($method),
+        CURLOPT_HTTPHEADER     => $headers,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_CONNECTTIMEOUT => 8,
+        CURLOPT_SSL_VERIFYPEER => portal_api_verify_tls(),
+        CURLOPT_SSL_VERIFYHOST => portal_api_verify_tls() ? 2 : 0,
+        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_HEADERFUNCTION => function ($ch, $h) use (&$respHeaders) {
+            $len = strlen($h);
+            $parts = explode(':', $h, 2);
+            if (count($parts) === 2) {
+                $respHeaders[strtolower(trim($parts[0]))] = trim($parts[1]);
+            }
+            return $len;
+        },
+    ]);
+    $raw    = curl_exec($ch);
+    $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $filename = null;
+    if (!empty($respHeaders['content-disposition']) &&
+        preg_match('/filename="?([^";]+)"?/i', $respHeaders['content-disposition'], $m)) {
+        $filename = $m[1];
+    }
+
+    return [
+        'ok'           => $status >= 200 && $status < 300 && $raw !== false,
+        'status'       => $status,
+        'body'         => $raw !== false ? $raw : '',
+        'content_type' => $respHeaders['content-type'] ?? null,
+        'filename'     => $filename,
+    ];
+}
