@@ -83,7 +83,7 @@ function doctor_layout_begin(string $title, string $active = ''): void {
                         <a href="<?= e(base_url('portal-medico/consulta.php')) ?>" class="doctor-nav-link <?= $active === 'consulta' ? 'is-active' : '' ?>"><i data-lucide="stethoscope" class="h-4 w-4"></i>Consulta</a>
                         <a href="<?= e(base_url('portal-medico/disponibilidad.php')) ?>" class="doctor-nav-link <?= $active === 'disponibilidad' ? 'is-active' : '' ?>"><i data-lucide="calendar-clock" class="h-4 w-4"></i>Disponibilidad</a>
                         <a href="<?= e(base_url('portal-medico/analytics.php')) ?>" class="doctor-nav-link <?= $active === 'analytics' ? 'is-active' : '' ?>"><i data-lucide="bar-chart-3" class="h-4 w-4"></i>Analytics</a>
-                        <a href="<?= e(base_url('portal-medico/perfil.php')) ?>" class="doctor-nav-link <?= $active === 'perfil' ? 'is-active' : '' ?>"><i data-lucide="user-cog" class="h-4 w-4"></i>Mi perfil</a>
+                        <a href="<?= e(base_url('portal-medico/cuenta.php')) ?>" class="doctor-nav-link <?= $active === 'cuenta' ? 'is-active' : '' ?>"><i data-lucide="shield-check" class="h-4 w-4"></i>Mi cuenta</a>
                         <a href="<?= e(base_url('portal-medico/logout.php')) ?>" class="doctor-nav-link doctor-nav-logout"><i data-lucide="log-out" class="h-4 w-4"></i>Cerrar sesion</a>
                     </nav>
                     <div class="doctor-sidebar-foot">

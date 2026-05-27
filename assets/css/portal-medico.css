@@ -1674,6 +1674,69 @@
     justify-content: center;
 }
 
+/* ── CUENTA / SEGURIDAD ────────────────────────────────────── */
+.doctor-account-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.4rem;
+    border-bottom: 1px solid var(--doc-line);
+}
+.doctor-account-info { min-width: 0; flex: 1; }
+.doctor-account-name {
+    font-family: var(--font-display);
+    font-size: 1.1rem; font-weight: 800;
+    color: var(--doc-text);
+    margin: 0;
+    letter-spacing: -.01em;
+}
+.doctor-account-row {
+    font-size: .85rem;
+    color: var(--doc-muted);
+    margin: .25rem 0 0;
+    display: flex; align-items: center; gap: .35rem;
+    word-break: break-word;
+}
+.doctor-account-row i { color: var(--doc-muted-2); flex-shrink: 0; }
+
+.doctor-account-note {
+    display: flex; gap: .65rem; align-items: flex-start;
+    background: var(--doc-info-soft);
+    color: var(--doc-info);
+    border: 1px solid rgba(29, 78, 216, .15);
+    border-radius: var(--r-md);
+    padding: .85rem 1rem;
+    margin: 1.25rem 1.4rem;
+    font-size: .85rem;
+    line-height: 1.45;
+}
+.doctor-account-note p { margin: 0; flex: 1; }
+.doctor-account-note i { flex-shrink: 0; margin-top: 1px; }
+
+.doctor-card-warning .doctor-card-header h2 i {
+    background: var(--doc-warning-soft);
+    color: var(--doc-warning);
+}
+.doctor-tips {
+    list-style: none; padding: 1.25rem 1.4rem; margin: 0;
+    display: grid; gap: .65rem;
+}
+.doctor-tips li {
+    display: flex; align-items: flex-start; gap: .55rem;
+    font-size: .92rem;
+    color: var(--doc-text-2);
+    line-height: 1.4;
+}
+.doctor-tips li i {
+    color: var(--doc-success);
+    background: var(--doc-success-soft);
+    padding: 4px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    margin-top: 1px;
+}
+
 /* ── HOVER TILT subtle on cards ───────────────────────────── */
 @media (hover: hover) {
     .doctor-kpi,
@@ -1690,3 +1753,157 @@
 .block { display: block; }
 .inline-block { display: inline-block; }
 .align-text-bottom { vertical-align: text-bottom; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+/* Tablet pequeño */
+@media (max-width: 1020px) {
+    .doctor-shell { padding: 1rem; }
+    .doctor-shell-app { gap: 1rem; }
+    .doctor-sidebar {
+        position: static !important;
+        order: -1;
+    }
+    .doctor-sidebar::before { height: 4px; }
+    .doctor-profile { padding: .9rem 1rem .85rem; }
+    .doctor-nav { padding: .65rem .65rem .85rem; }
+    .doctor-grid-2 { gap: 1rem; }
+    .doctor-hero { padding: 1.5rem 1.5rem; }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+    .doctor-shell { padding: .75rem; padding-bottom: 2rem; }
+    .doctor-header { gap: .85rem; margin-bottom: 1.25rem; }
+    .doctor-header h1 { font-size: 1.5rem; }
+    .doctor-hero {
+        padding: 1.25rem 1.25rem;
+        flex-direction: column;
+        align-items: stretch;
+        text-align: left;
+    }
+    .doctor-hero h1 { font-size: 1.4rem; }
+    .doctor-hero-subtitle { font-size: .9rem; }
+    .doctor-hero-actions { width: 100%; }
+    .doctor-hero-actions .doctor-btn { flex: 1; justify-content: center; }
+
+    .doctor-header-actions { width: 100%; }
+    .doctor-header-actions .doctor-btn { flex: 1; justify-content: center; }
+
+    /* Search form: stack input + button */
+    .doctor-search-form { width: 100%; flex-wrap: wrap; }
+    .doctor-input-search { width: 100%; }
+    .doctor-search-clear { right: 12px; }
+    .doctor-search-submit { width: 100%; justify-content: center; }
+
+    /* KPIs: 2 per row */
+    .doctor-kpis { grid-template-columns: repeat(2, 1fr); }
+    .doctor-kpi { padding: 1rem 1.1rem; }
+    .doctor-kpi-value { font-size: 1.7rem; }
+    .doctor-kpi-spark { height: 22px; }
+
+    /* Cards */
+    .doctor-card-header { padding: .85rem 1.1rem; }
+    .doctor-form-pad { padding: 1.1rem 1.1rem; }
+
+    /* Patient header */
+    .doctor-patient-header {
+        padding: 1.25rem;
+        gap: 1rem;
+    }
+    .doctor-patient-info h1 { font-size: 1.35rem; }
+    .doctor-av-xl { width: 64px; height: 64px; font-size: 1.3rem; border-radius: 18px; }
+    .doctor-patient-actions { width: 100%; }
+    .doctor-patient-actions .doctor-btn { flex: 1; justify-content: center; }
+
+    /* Consult */
+    .doctor-consult-header { padding: 1.25rem; }
+    .doctor-consult-header h1 { font-size: 1.35rem; }
+    .doctor-consult-actions { width: 100%; }
+    .doctor-consult-actions .doctor-btn { flex: 1; justify-content: center; }
+    .doctor-sticky-save {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .65rem;
+        bottom: .5rem;
+        padding: .75rem .85rem;
+    }
+    .doctor-sticky-save .doctor-consult-actions { width: 100%; }
+
+    /* Auth */
+    .doctor-auth-wrap { margin: 1.25rem auto 2rem; }
+    .doctor-auth-card, .doctor-auth-aside { padding: 1.75rem 1.5rem; border-radius: 20px; }
+    .doctor-auth-card h1 { font-size: 1.55rem; }
+    .doctor-auth-aside h2 { font-size: 1.55rem; }
+    .doctor-auth-brand i { width: 44px; height: 44px; padding: 10px; }
+
+    /* Timeline today */
+    .doctor-timeline-today-item {
+        grid-template-columns: 60px 1fr;
+        gap: .65rem;
+        padding: .85rem 1rem;
+    }
+    .doctor-timeline-today-item .doctor-timeline-marker { display: none; }
+
+    /* Modal */
+    .doctor-modal { padding: 0; align-items: flex-end; }
+    .doctor-modal-card {
+        max-width: none;
+        border-radius: 20px 20px 0 0;
+        max-height: 92vh;
+    }
+    .doctor-modal-body { padding: 1.1rem; }
+    .doctor-modal-header { padding: 1rem 1.1rem; }
+    .doctor-modal-footer { padding: .85rem 1.1rem; }
+
+    /* Table compaction */
+    .doctor-table thead th { padding: .7rem .85rem; }
+    .doctor-table tbody td { padding: .7rem .85rem; }
+
+    /* Calendar */
+    #doctor-calendar, #doctor-agenda { padding: .5rem .65rem .85rem; min-height: 420px; }
+    #doctor-calendar .fc .fc-toolbar.fc-header-toolbar,
+    #doctor-agenda .fc .fc-toolbar.fc-header-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+    }
+    #doctor-calendar .fc .fc-toolbar-chunk,
+    #doctor-agenda .fc .fc-toolbar-chunk {
+        display: flex; justify-content: center;
+    }
+    #doctor-calendar .fc-evt-title,
+    #doctor-agenda .fc-evt-title { font-size: .66rem; }
+    #doctor-calendar .fc th,
+    #doctor-agenda .fc th { font-size: .65rem; padding: .35rem .15rem; }
+    #doctor-calendar .fc .fc-daygrid-day-number,
+    #doctor-agenda .fc .fc-daygrid-day-number { font-size: .72rem; padding: .25rem .3rem; }
+
+    /* Completion */
+    .doctor-completion { padding: .9rem 1rem; gap: .85rem; }
+    .doctor-completion-ring { width: 52px; height: 52px; }
+    .doctor-completion-ring svg { width: 52px; height: 52px; }
+    .doctor-completion-pct { font-size: .85rem; }
+
+    /* Pacientes table - hide email under name to save space */
+    .doctor-table-patient .doctor-cell-muted { display: none; }
+}
+
+/* Mobile pequeño */
+@media (max-width: 480px) {
+    .doctor-kpis { grid-template-columns: 1fr; }
+    .doctor-grid-3 { grid-template-columns: 1fr; }
+    .doctor-header h1 { font-size: 1.35rem; }
+    .doctor-hero h1 { font-size: 1.25rem; }
+    .doctor-patient-meta { gap: .5rem; }
+    .doctor-patient-meta span { font-size: .8rem; padding: .15rem .45rem; }
+
+    /* PDFs grid 1 col */
+    .doctor-pdf-grid { grid-template-columns: 1fr; padding: 1rem; }
+
+    /* Pagination compacta */
+    .doctor-pagination { flex-direction: column; gap: .65rem; padding: .85rem 1rem; }
+    .doctor-page-btn { flex: 1; justify-content: center; }
+}
