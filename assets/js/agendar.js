@@ -41,22 +41,43 @@
         if (retry) retry.addEventListener('click', loadSlots);
     }
 
+    function resetLoaderToSpinner() {
+        loader.classList.remove('portal-slot-slow');
+        loader.innerHTML = `
+            <i data-lucide="loader-2" class="h-5 w-5 animate-spin"></i>
+            <span class="portal-slot-loader-text">Cargando horarios disponibles…</span>
+        `;
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function showSlowState() {
+        loader.classList.add('portal-slot-slow');
+        loader.innerHTML = `
+            <i data-lucide="clock" class="h-6 w-6"></i>
+            <p>Esto está tardando más de lo normal.</p>
+            <div class="portal-slot-slow-actions">
+                <button type="button" class="btn btn-outline" id="slot-retry-soft">
+                    <i data-lucide="refresh-cw" class="h-4 w-4"></i> Reintentar
+                </button>
+                <a href="tel:18098060444" class="btn btn-secondary">
+                    <i data-lucide="phone" class="h-4 w-4"></i> Llamar (809) 806-0444
+                </a>
+            </div>
+        `;
+        if (window.lucide) lucide.createIcons();
+        document.getElementById('slot-retry-soft')?.addEventListener('click', loadSlots);
+    }
+
     function loadSlots() {
+        resetLoaderToSpinner();
         loader.classList.remove('hidden');
         picker.classList.add('hidden');
         picker.innerHTML = '';
-        const hint = document.getElementById('slot-loader-hint');
-        if (hint) hint.hidden = true;
 
         const ctrl = new AbortController();
-        // After 6s, show the user a soft hint (phone fallback) under the spinner.
-        const softHintId = setTimeout(() => {
-            if (hint) {
-                hint.hidden = false;
-                if (window.lucide) lucide.createIcons();
-            }
-        }, 6000);
-        // Hard timeout — abort the fetch and show the full error state.
+        // After 8s, swap the spinner for an actionable "tarda más de lo normal" panel.
+        const softHintId = setTimeout(showSlowState, 8000);
+        // Hard timeout: abort the fetch and show the full error state.
         const timeoutId = setTimeout(() => ctrl.abort(), 15000);
 
         fetch(slotsUrl, {
@@ -91,7 +112,7 @@
                 clearTimeout(timeoutId);
                 clearTimeout(softHintId);
                 const msg = e.name === 'AbortError'
-                    ? 'La carga tomó demasiado tiempo. Verifica tu conexión e intenta de nuevo, o llámanos directamente.'
+                    ? 'La carga tomó demasiado tiempo. Verifica tu conexión e intenta de nuevo, o llámanos al hospital.'
                     : `No se pudieron cargar los horarios: ${e.message}`;
                 showError(msg, true);
             });

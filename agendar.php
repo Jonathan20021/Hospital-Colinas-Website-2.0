@@ -247,17 +247,9 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
 
                 <div class="portal-card" data-doctor-id="<?= $docId ?>">
                     <h2 class="portal-section-title">Selecciona fecha y hora</h2>
-                    <div class="portal-slot-loader">
-                        <div class="portal-slot-loader-row">
-                            <i data-lucide="loader-2" class="h-5 w-5 animate-spin"></i>
-                            <span>Cargando horarios disponibles…</span>
-                        </div>
-                        <p class="portal-slot-loader-hint" id="slot-loader-hint" hidden>
-                            <i data-lucide="info" class="h-4 w-4"></i>
-                            Esto está tardando más de lo normal. Puedes
-                            <a href="tel:18098060444" class="portal-text-link">llamarnos al (809) 806-0444</a>
-                            para agendar por teléfono.
-                        </p>
+                    <div class="portal-slot-loader" id="slot-loader">
+                        <i data-lucide="loader-2" class="h-5 w-5 animate-spin"></i>
+                        <span class="portal-slot-loader-text">Cargando horarios disponibles…</span>
                     </div>
                     <div id="slot-picker" class="portal-slot-picker hidden"></div>
                 </div>

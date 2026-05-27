@@ -28,3 +28,6 @@ assets/source/videohospital-BsNC9-JF.mp4
 node_modules/
 
 .claude/settings.local.json
+
+# cPanel deploy marker (escrito por .cpanel.yml; no es código fuente)
+.deployed-at
