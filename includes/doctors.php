@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/portal_directory.php';
+require_once __DIR__ . '/doctor_avatar.php';
 
 function fallback_medical_profiles(array $services, array $assets): array
 {
@@ -29,7 +30,7 @@ function fallback_medical_profiles(array $services, array $assets): array
             'specialty' => $specialty,
             'specialty_slug' => slugify($specialty),
             'exequatur' => '',
-            'photo' => $profileImages[$index % count($profileImages)],
+            'photo' => doctor_avatar_svg($name),
             'biography' => 'Atención coordinada por el equipo de ' . $specialty . ' del Hospital General Las Colinas.',
             'education' => '',
             'languages' => 'Español',
@@ -52,12 +53,9 @@ function fallback_medical_profiles(array $services, array $assets): array
  * Mapea el shape de /portal/directory al shape esperado por la landing.
  */
 function map_api_doctor_to_landing(array $r, array $assets): array {
-    $defaultPhotos = [$assets['doctors'], $assets['doctor_secondary'], $assets['ct'], $assets['exam']];
-    $photo = portal_directory_photo_url($r['photo_url'] ?? null);
-    if (!$photo) {
-        // Foto por defecto rotando por id
-        $photo = $defaultPhotos[abs((int)($r['id'] ?? 0)) % count($defaultPhotos)];
-    }
+    $name = $r['name'] ?? 'Médico';
+    $photo = portal_directory_photo_url($r['photo_url'] ?? null)
+          ?: doctor_avatar_svg($name);
     return [
         'id'             => (int)($r['id'] ?? 0),
         'name'           => $r['name'] ?? 'Médico',
@@ -111,7 +109,7 @@ function public_doctors(array $services, array $assets): array
                     'specialty' => $row['specialty'] ?: 'Especialidad médica',
                     'specialty_slug' => $row['specialty_slug'] ?: 'especialidad',
                     'exequatur' => $row['exequatur'] ?: '',
-                    'photo' => $row['photo_path'] ?: $assets['doctors'],
+                    'photo' => $row['photo_path'] ?: doctor_avatar_svg(trim(($row['title'] ? $row['title'] . ' ' : '') . $row['first_name'] . ' ' . $row['last_name'])),
                     'biography' => $row['biography'] ?: 'Perfil médico del Hospital General Las Colinas.',
                     'education' => $row['education'] ?: '',
                     'languages' => $row['languages'] ?: 'Español',

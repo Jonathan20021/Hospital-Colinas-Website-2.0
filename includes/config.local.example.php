@@ -20,3 +20,10 @@ define('PORTAL_API_BASE', 'https://186.149.243.228:20443/api/v1');
 // solo con tu dominio público (TLS válido). Pon true cuando la VIP tenga
 // certificado de CA pública.
 define('PORTAL_API_VERIFY_TLS', false);
+
+// API Key del staff del hospital, para que el admin del cPanel pueda subir
+// fotos de médicos y editar campos del directorio sin tener que loguear.
+// Generarla desde el admin interno del hospital → API Keys → crear nueva,
+// con permisos de admin. Solo necesaria si quieres gestionar médicos desde
+// admin/medicos.php del cPanel.
+// define('HOSPITAL_API_KEY', 're_xxxxxxxxxxxxxxx');
