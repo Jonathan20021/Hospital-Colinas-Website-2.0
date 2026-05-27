@@ -23,3 +23,6 @@ assets/source/videohospital-BsNC9-JF.mp4
 /tmp/
 *.tmp
 *.bak
+
+# Node dependencies
+node_modules/
