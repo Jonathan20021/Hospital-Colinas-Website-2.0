@@ -335,6 +335,7 @@
 
         function openCommand(event) {
             event?.preventDefault();
+            if (!command) return;
             command?.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
             setTimeout(() => commandInput?.focus(), 50);

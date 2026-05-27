@@ -27,6 +27,8 @@ DirectoryIndex index.php
     RewriteRule ^noticias/?$ noticias.php [L,QSA]
     RewriteRule ^noticias/([a-zA-Z0-9_\-]+)/?$ noticia.php?slug=$1 [L,QSA]
     RewriteRule ^sala-de-prensa/?$ noticias.php [L,QSA,R=301]
+    RewriteRule ^servicios/([a-zA-Z0-9_\-]+)/?$ servicio.php?slug=$1 [L,QSA]
+    RewriteRule ^(nosotros|liderazgo-institucional|servicios|instalaciones|pacientes|contacto|tu-visita|preparacion-para-tu-cita|seguros-aceptados|derechos-y-deberes|preguntas-frecuentes|politica-de-privacidad|terminos-de-uso|mapa-del-sitio)/?$ pagina.php?slug=$1 [L,QSA]
 
     # Fallback: any unknown path → home (so SPA-like deep links don't break)
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -59,6 +61,6 @@ DirectoryIndex index.php
 </IfModule>
 
 # Block direct access to PHP includes
-<FilesMatch "^(helpers|data|doctors|db|auth)\.php$">
+<FilesMatch "^(helpers|data|doctors|db|auth|content|public-layout)\.php$">
     Require all denied
 </FilesMatch>

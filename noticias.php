@@ -2,6 +2,7 @@
 require __DIR__ . '/includes/helpers.php';
 require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/news.php';
+require __DIR__ . '/includes/public-layout.php';
 
 news_ensure_schema();
 
@@ -280,42 +281,7 @@ $categories = news_distinct_categories();
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
-            <div>
-                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="footer-logo">
-                <p class="mt-5 text-sm leading-7 text-white/68">Atención médica integral, tecnología avanzada y especialistas para Santiago.</p>
-            </div>
-            <div>
-                <h3 class="footer-title">Sala de prensa</h3>
-                <ul class="footer-list">
-                    <li><a href="<?= e(base_url('noticias')) ?>">Todas las noticias</a></li>
-                    <?php foreach (array_slice($categories, 0, 5) as $cat): ?>
-                        <li><a href="<?= e(base_url('noticias?cat=' . urlencode($cat['category']))) ?>"><?= e($cat['category']) ?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            <div>
-                <h3 class="footer-title">Hospital</h3>
-                <ul class="footer-list">
-                    <li><a href="<?= e(base_url('#nosotros')) ?>">Sobre nosotros</a></li>
-                    <li><a href="<?= e(base_url('#liderazgo')) ?>">Liderazgo</a></li>
-                    <li><a href="<?= e(base_url('directorio-medico')) ?>">Directorio médico</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="footer-title">Contacto</h3>
-                <ul class="footer-list">
-                    <li><a href="tel:18098060444"><?= e($contact['phone']) ?></a></li>
-                    <li><a href="mailto:<?= e($contact['email']) ?>"><?= e($contact['email']) ?></a></li>
-                    <li><?= e($contact['address']) ?></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>© <?= e($year) ?> Hospital General Las Colinas. Todos los derechos reservados.</span>
-        </div>
-    </footer>
+    <?php render_public_footer($assets, $contact, $year); ?>
 
     <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true">
         <div class="modal-panel">

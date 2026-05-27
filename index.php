@@ -3,6 +3,7 @@ require __DIR__ . '/includes/helpers.php';
 require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/doctors.php';
 require __DIR__ . '/includes/news.php';
+require __DIR__ . '/includes/public-layout.php';
 
 news_ensure_schema();
 
@@ -61,28 +62,28 @@ $taskCards = [
 ];
 
 $featuredServices = [
-    ['icon' => 'ambulance', 'title' => 'Emergencias 24/7', 'text' => 'Atención inmediata para adultos y pediátricos.', 'query' => 'Emergencia'],
-    ['icon' => 'scan-line', 'title' => 'Diagnóstico avanzado', 'text' => 'Imágenes, laboratorio y pruebas especializadas.', 'query' => 'Tomografía'],
-    ['icon' => 'scissors', 'title' => 'Cirugías', 'text' => 'Procedimientos de mínima invasión y alta complejidad.', 'query' => 'Cirugía'],
-    ['icon' => 'bed', 'title' => 'Hospitalización', 'text' => 'Habitaciones confortables y atención integral.', 'query' => 'Hospitalización'],
-    ['icon' => 'stethoscope', 'title' => 'Consulta especializada', 'text' => 'Amplia red de especialistas en todas las áreas.', 'query' => 'Cardiología'],
-    ['icon' => 'activity', 'title' => 'Rehabilitación', 'text' => 'Terapias físicas, respiratorias y de recuperación.', 'query' => 'Rehabilitación'],
+    ['icon' => 'ambulance', 'title' => 'Emergencias 24/7', 'text' => 'Atención inmediata para adultos y pediátricos.', 'query' => 'Emergencia', 'href' => service_url('Emergencia Adulto y Pediátrica')],
+    ['icon' => 'scan-line', 'title' => 'Diagnóstico avanzado', 'text' => 'Imágenes, laboratorio y pruebas especializadas.', 'query' => 'Tomografía', 'href' => base_url('servicios/diagnostico-avanzado')],
+    ['icon' => 'scissors', 'title' => 'Cirugías', 'text' => 'Procedimientos de mínima invasión y alta complejidad.', 'query' => 'Cirugía', 'href' => base_url('servicios/cirugias')],
+    ['icon' => 'bed', 'title' => 'Hospitalización', 'text' => 'Habitaciones confortables y atención integral.', 'query' => 'Hospitalización', 'href' => service_url('Hospitalización')],
+    ['icon' => 'stethoscope', 'title' => 'Consulta especializada', 'text' => 'Amplia red de especialistas en todas las áreas.', 'query' => 'Cardiología', 'href' => base_url('servicios/consulta-especializada')],
+    ['icon' => 'activity', 'title' => 'Rehabilitación', 'text' => 'Terapias físicas, respiratorias y de recuperación.', 'query' => 'Rehabilitación', 'href' => service_url('Medicina Física y Rehabilitación')],
 ];
 
 $infrastructure = [
-    ['icon' => 'clipboard-plus', 'title' => 'Quirófanos modernos'],
-    ['icon' => 'heart-pulse', 'title' => 'UCI equipada'],
-    ['icon' => 'scan-line', 'title' => 'Imágenes avanzadas'],
-    ['icon' => 'flask-conical', 'title' => 'Laboratorio especializado'],
-    ['icon' => 'pill', 'title' => 'Farmacia hospitalaria'],
+    ['icon' => 'clipboard-plus', 'title' => 'Quirófanos modernos', 'text' => 'Bloque preparado para procedimientos seguros y recuperación coordinada.', 'href' => base_url('servicios/cirugias')],
+    ['icon' => 'heart-pulse', 'title' => 'UCI equipada', 'text' => 'Soporte crítico con monitoreo continuo y equipos interdisciplinarios.', 'href' => service_url('Cuidados Intensivos')],
+    ['icon' => 'scan-line', 'title' => 'Imágenes avanzadas', 'text' => 'Tomografía, mamografía, radiografía y estudios especializados.', 'href' => base_url('servicios/diagnostico-avanzado')],
+    ['icon' => 'flask-conical', 'title' => 'Laboratorio especializado', 'text' => 'Pruebas clínicas integradas a emergencia, consulta e internamiento.', 'href' => service_url('Laboratorio Clínico')],
+    ['icon' => 'pill', 'title' => 'Farmacia hospitalaria', 'text' => 'Apoyo farmacéutico para continuidad de tratamiento y hospitalización.', 'href' => service_url('Farmacia')],
 ];
 
 $patientGuide = [
-    ['icon' => 'clipboard-check', 'title' => 'Admisión y registro', 'href' => '#pacientes'],
-    ['icon' => 'calendar-clock', 'title' => 'Preparación para tu cita', 'href' => '#agenda'],
-    ['icon' => 'shield-check', 'title' => 'Seguros aceptados', 'href' => '#contacto'],
+    ['icon' => 'clipboard-check', 'title' => 'Admisión y registro', 'href' => base_url('tu-visita')],
+    ['icon' => 'calendar-clock', 'title' => 'Preparación para tu cita', 'href' => base_url('preparacion-para-tu-cita')],
+    ['icon' => 'shield-check', 'title' => 'Seguros aceptados', 'href' => base_url('seguros-aceptados')],
     ['icon' => 'circle-parking', 'title' => 'Estacionamiento', 'href' => $contact['maps']],
-    ['icon' => 'circle-help', 'title' => 'Preguntas frecuentes', 'href' => '#pacientes'],
+    ['icon' => 'circle-help', 'title' => 'Preguntas frecuentes', 'href' => base_url('preguntas-frecuentes')],
 ];
 
 $careHighlights = [
@@ -119,10 +120,10 @@ $journeySteps = [
 ];
 
 $serviceDirectory = [
-    ['group' => 'Atención inmediata', 'items' => ['Emergencia Adulto y Pediátrica', 'Cuidados Intensivos', 'Hospitalización', 'Farmacia']],
-    ['group' => 'Diagnóstico', 'items' => ['Laboratorio Clínico', 'Tomografía', 'Mamografía', 'Sonografía']],
-    ['group' => 'Especialidades', 'items' => ['Cardiología', 'Ginecología', 'Pediatría', 'Medicina Interna']],
-    ['group' => 'Procedimientos', 'items' => ['Cirugía General', 'Cirugía Laparoscópica', 'Unidad Endoscópica', 'Hemodinamia']],
+    ['group' => 'Atención inmediata', 'icon' => 'zap', 'text' => 'Respuestas para urgencias, internamiento y soporte hospitalario.', 'items' => ['Emergencia Adulto y Pediátrica', 'Cuidados Intensivos', 'Hospitalización', 'Farmacia']],
+    ['group' => 'Diagnóstico', 'icon' => 'microscope', 'text' => 'Estudios que aceleran decisiones clínicas y seguimiento médico.', 'items' => ['Laboratorio Clínico', 'Tomografía', 'Mamografía', 'Sonografía']],
+    ['group' => 'Especialidades', 'icon' => 'stethoscope', 'text' => 'Equipos médicos para consulta, prevención y continuidad.', 'items' => ['Cardiología', 'Ginecología', 'Pediatría', 'Medicina Interna']],
+    ['group' => 'Procedimientos', 'icon' => 'scissors', 'text' => 'Áreas preparadas para procedimientos y recuperación.', 'items' => ['Cirugía General', 'Cirugía Laparoscópica', 'Unidad Endoscópica', 'Hemodinamia']],
 ];
 
 $leadershipDirector = [
@@ -300,7 +301,7 @@ $leadershipBoard = [
                 <nav class="nav-primary" aria-label="Navegación principal">
                     <a href="#inicio" class="nav-link" data-section="inicio">Inicio</a>
                     <div class="nav-dropdown" data-nav-dropdown>
-                        <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="nav-link nav-dropdown-toggle" data-section="instalaciones" aria-haspopup="true" aria-expanded="false">
                             Hospital
                             <i data-lucide="chevron-down" class="h-3.5 w-3.5"></i>
                         </button>
@@ -641,10 +642,10 @@ $leadershipBoard = [
                             <i data-lucide="<?= e($service['icon']) ?>" class="h-8 w-8"></i>
                             <h3><?= e($service['title']) ?></h3>
                             <p><?= e($service['text']) ?></p>
-                            <button type="button" class="link-action" data-fill-search="<?= e($service['query']) ?>">
+                            <a href="<?= e($service['href']) ?>" class="link-action">
                                 Ver más
                                 <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                            </button>
+                            </a>
                         </article>
                     <?php endforeach; ?>
                 </div>
@@ -654,18 +655,28 @@ $leadershipBoard = [
                         <p class="section-label">Directorio clínico</p>
                         <h3>Servicios organizados para resolver más rápido</h3>
                         <span>Una estructura pensada para pacientes, familiares, aseguradoras y médicos referidores.</span>
+                        <a href="<?= e(base_url('servicios')) ?>" class="directory-intro-link">
+                            Ver todos los servicios
+                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        </a>
                     </div>
                     <div class="directory-grid">
                         <?php foreach ($serviceDirectory as $group): ?>
                             <article class="directory-card">
-                                <h4><?= e($group['group']) ?></h4>
+                                <div class="directory-card-head">
+                                    <span><i data-lucide="<?= e($group['icon']) ?>" class="h-5 w-5"></i></span>
+                                    <div>
+                                        <h4><?= e($group['group']) ?></h4>
+                                        <p><?= e($group['text']) ?></p>
+                                    </div>
+                                </div>
                                 <ul>
                                     <?php foreach ($group['items'] as $item): ?>
                                         <li>
-                                            <button type="button" data-fill-search="<?= e($item) ?>">
+                                            <a href="<?= e(service_url($item)) ?>">
                                                 <?= e($item) ?>
                                                 <i data-lucide="arrow-up-right" class="h-3.5 w-3.5"></i>
-                                            </button>
+                                            </a>
                                         </li>
                                     <?php endforeach; ?>
                                 </ul>
@@ -711,25 +722,40 @@ $leadershipBoard = [
         </section>
 
         <section id="instalaciones" class="capability-section">
-            <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[.8fr_1.2fr] lg:px-8">
-                <div>
+            <div class="capability-shell">
+                <div class="capability-copy">
                     <p class="section-label">Infraestructura y tecnología</p>
                     <h2 class="section-title">Instalaciones diseñadas para tu seguridad y bienestar</h2>
                     <p class="section-copy">
                         Contamos con equipos de última generación, áreas clínicas modernas y espacios pensados para una atención eficiente, segura y confortable.
                     </p>
-                    <a href="#galeria" class="btn btn-outline mt-7">
+                    <div class="capability-stats" aria-label="Capacidad de infraestructura">
+                        <article><strong>6</strong><span>Niveles clínicos y operativos</span></article>
+                        <article><strong>65+</strong><span>Habitaciones de internamiento</span></article>
+                        <article><strong>55+</strong><span>Consultorios especializados</span></article>
+                    </div>
+                    <a href="<?= e(base_url('instalaciones')) ?>" class="btn btn-outline mt-7">
                         Conoce nuestras instalaciones
                         <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>
-                <div class="capability-grid">
-                    <?php foreach ($infrastructure as $item): ?>
-                        <div class="capability-item">
-                            <i data-lucide="<?= e($item['icon']) ?>" class="h-8 w-8"></i>
-                            <strong><?= e($item['title']) ?></strong>
-                        </div>
-                    <?php endforeach; ?>
+                <div class="capability-showcase">
+                    <figure class="capability-photo">
+                        <img src="<?= e(base_url($assets['corridor'])) ?>" alt="Áreas clínicas modernas del Hospital General Las Colinas" loading="eager">
+                        <figcaption>
+                            <strong>Áreas clínicas conectadas</strong>
+                            <span>Diagnóstico, cirugía, UCI, farmacia y hospitalización en una misma sede.</span>
+                        </figcaption>
+                    </figure>
+                    <div class="capability-grid">
+                        <?php foreach ($infrastructure as $item): ?>
+                            <a href="<?= e($item['href']) ?>" class="capability-item">
+                                <span><i data-lucide="<?= e($item['icon']) ?>" class="h-6 w-6"></i></span>
+                                <strong><?= e($item['title']) ?></strong>
+                                <small><?= e($item['text']) ?></small>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
         </section>
@@ -923,51 +949,7 @@ $leadershipBoard = [
         </section>
     </main>
 
-    <footer class="site-footer">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
-            <div class="md:col-span-1">
-                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="footer-logo">
-                <p class="mt-5 text-sm leading-7 text-white/68">Comprometidos con brindar atención médica de excelencia, humana y segura a nuestra comunidad.</p>
-                <div class="mt-5 flex gap-3">
-                    <a href="<?= e($contact['instagram']) ?>" target="_blank" rel="noopener" class="footer-social" aria-label="Instagram"><i data-lucide="camera" class="h-4 w-4"></i></a>
-                    <a href="<?= e($contact['facebook']) ?>" target="_blank" rel="noopener" class="footer-social" aria-label="Facebook"><i data-lucide="thumbs-up" class="h-4 w-4"></i></a>
-                </div>
-            </div>
-            <div>
-                <h3 class="footer-title">Enlaces rápidos</h3>
-                <ul class="footer-list">
-                    <?php foreach ($navItems as $item): ?>
-                        <li><a href="#<?= e($item['id']) ?>"><?= e($item['label']) ?></a></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-            <div>
-                <h3 class="footer-title">Pacientes y visitantes</h3>
-                <ul class="footer-list">
-                    <li>Tu visita</li>
-                    <li>Preparación para tu cita</li>
-                    <li>Seguros aceptados</li>
-                    <li>Derechos y deberes</li>
-                    <li>Preguntas frecuentes</li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="footer-title">Contacto</h3>
-                <ul class="footer-list">
-                    <li><?= e($contact['address']) ?></li>
-                    <li><a href="tel:18098060444"><?= e($contact['phone']) ?></a></li>
-                    <li><a href="mailto:<?= e($contact['email']) ?>"><?= e($contact['email']) ?></a></li>
-                    <li>Emergencias 24/7</li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <span>© <?= e($year) ?> Hospital General Las Colinas. Todos los derechos reservados.</span>
-            <span>Política de privacidad</span>
-            <span>Términos de uso</span>
-            <span>Mapa del sitio</span>
-        </div>
-    </footer>
+    <?php render_public_footer($assets, $contact, $year); ?>
 
     <div class="mobile-actionbar" aria-label="Acciones rápidas móviles">
         <a href="tel:18098060444">
@@ -1015,11 +997,11 @@ $leadershipBoard = [
                         <i data-lucide="ambulance" class="h-5 w-5"></i>
                         <span><strong>Emergencias 24/7</strong><small>Llama directamente al hospital.</small></span>
                     </a>
-                    <a href="#instalaciones" data-command-name="instalaciones tecnologia tomografia laboratorio quirurgico">
+                    <a href="<?= e(base_url('instalaciones')) ?>" data-command-name="instalaciones tecnologia tomografia laboratorio quirurgico">
                         <i data-lucide="building-2" class="h-5 w-5"></i>
                         <span><strong>Instalaciones y tecnología</strong><small>Conoce la infraestructura clínica.</small></span>
                     </a>
-                    <a href="#pacientes" data-command-name="pacientes visitantes derechos deberes guia seguros">
+                    <a href="<?= e(base_url('pacientes')) ?>" data-command-name="pacientes visitantes derechos deberes guia seguros">
                         <i data-lucide="shield-check" class="h-5 w-5"></i>
                         <span><strong>Pacientes y visitantes</strong><small>Guía, derechos, deberes y preparación.</small></span>
                     </a>

@@ -3,12 +3,15 @@ require __DIR__ . '/includes/helpers.php';
 require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/doctors.php';
 require __DIR__ . '/includes/news.php';
+require __DIR__ . '/includes/content.php';
 
 header('Content-Type: application/xml; charset=UTF-8');
 
 news_ensure_schema();
 $doctors = public_doctors($services, $assets);
 $newsItems = news_query_published(0, 0);
+$sitePages = site_pages_catalog($services, $assets, $contact, $patientRights, $patientDuties, $floors);
+$servicePages = service_pages_catalog($services, $assets);
 $today = date('Y-m-d');
 $home = absolute_url();
 $directory = absolute_url('directorio-medico');
@@ -25,6 +28,22 @@ $urls = [
     ['loc' => $home . '#pacientes', 'changefreq' => 'monthly', 'priority' => '0.6'],
     ['loc' => $home . '#contacto', 'changefreq' => 'monthly', 'priority' => '0.7'],
 ];
+
+foreach ($sitePages as $slug => $page) {
+    $urls[] = [
+        'loc' => absolute_url($slug),
+        'changefreq' => 'monthly',
+        'priority' => ($slug === 'servicios') ? '0.85' : '0.7',
+    ];
+}
+
+foreach ($servicePages as $service) {
+    $urls[] = [
+        'loc' => absolute_url('servicios/' . $service['slug']),
+        'changefreq' => 'monthly',
+        'priority' => '0.72',
+    ];
+}
 
 foreach ($doctors as $doctor) {
     $urls[] = [
