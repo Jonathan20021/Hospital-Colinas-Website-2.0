@@ -44,6 +44,31 @@ doctor_layout_begin('Inicio', 'dashboard');
     </div>
 </section>
 
+<?php
+// Generar sparkline determinista a partir de un seed (no es real-time, pero da textura visual)
+$sparkPath = function(int $seed, int $points = 12): array {
+    $vals = [];
+    srand($seed * 7919);
+    for ($i = 0; $i < $points; $i++) {
+        $vals[] = rand(20, 90);
+    }
+    srand();
+    $W = 100; $H = 26;
+    $step = $W / max(1, ($points - 1));
+    $d = '';
+    foreach ($vals as $i => $v) {
+        $x = $i * $step;
+        $y = $H - (($v / 100) * $H);
+        $d .= ($i === 0 ? 'M' : 'L') . round($x, 1) . ',' . round($y, 1) . ' ';
+    }
+    $fill = $d . 'L' . $W . ',' . $H . ' L0,' . $H . ' Z';
+    return ['line' => trim($d), 'fill' => trim($fill)];
+};
+$sp1 = $sparkPath((int)$stats['today_count'] + 3);
+$sp2 = $sparkPath((int)$stats['pending_count'] + 5);
+$sp3 = $sparkPath((int)$stats['completed_count'] + 11);
+$sp4 = $sparkPath((int)$stats['week_count'] + 7);
+?>
 <section class="doctor-kpis">
     <article class="doctor-kpi doctor-kpi-blue">
         <div class="doctor-kpi-top">
@@ -52,7 +77,10 @@ doctor_layout_begin('Inicio', 'dashboard');
         </div>
         <p class="doctor-kpi-label">Citas de hoy</p>
         <p class="doctor-kpi-value"><?= (int)$stats['today_count'] ?></p>
-        <p class="doctor-kpi-foot">Programadas para esta jornada</p>
+        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #1d4ed8">
+            <path class="spark-fill" d="<?= e($sp1['fill']) ?>"/>
+            <path stroke="currentColor" d="<?= e($sp1['line']) ?>"/>
+        </svg>
     </article>
     <article class="doctor-kpi doctor-kpi-amber">
         <div class="doctor-kpi-top">
@@ -65,7 +93,10 @@ doctor_layout_begin('Inicio', 'dashboard');
         </div>
         <p class="doctor-kpi-label">Pendientes</p>
         <p class="doctor-kpi-value"><?= (int)$stats['pending_count'] ?></p>
-        <p class="doctor-kpi-foot">Por completar</p>
+        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #b45309">
+            <path class="spark-fill" d="<?= e($sp2['fill']) ?>"/>
+            <path stroke="currentColor" d="<?= e($sp2['line']) ?>"/>
+        </svg>
     </article>
     <article class="doctor-kpi doctor-kpi-green">
         <div class="doctor-kpi-top">
@@ -74,7 +105,10 @@ doctor_layout_begin('Inicio', 'dashboard');
         </div>
         <p class="doctor-kpi-label">Completadas</p>
         <p class="doctor-kpi-value"><?= number_format((int)$stats['completed_count']) ?></p>
-        <p class="doctor-kpi-foot">Total historico</p>
+        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #059669">
+            <path class="spark-fill" d="<?= e($sp3['fill']) ?>"/>
+            <path stroke="currentColor" d="<?= e($sp3['line']) ?>"/>
+        </svg>
     </article>
     <article class="doctor-kpi doctor-kpi-violet">
         <div class="doctor-kpi-top">
@@ -83,7 +117,10 @@ doctor_layout_begin('Inicio', 'dashboard');
         </div>
         <p class="doctor-kpi-label">Esta semana</p>
         <p class="doctor-kpi-value"><?= (int)$stats['week_count'] ?></p>
-        <p class="doctor-kpi-foot">Citas programadas</p>
+        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #6d28d9">
+            <path class="spark-fill" d="<?= e($sp4['fill']) ?>"/>
+            <path stroke="currentColor" d="<?= e($sp4['line']) ?>"/>
+        </svg>
     </article>
 </section>
 
@@ -117,16 +154,21 @@ doctor_layout_begin('Inicio', 'dashboard');
                         </div>
                         <div class="doctor-timeline-marker"></div>
                         <a class="doctor-timeline-card" href="<?= e(base_url('portal-medico/consulta.php?appt=' . (int)$a['id'])) ?>">
-                            <p class="doctor-timeline-patient"><?= e($a['patient_name']) ?></p>
-                            <p class="doctor-timeline-meta">
-                                <?php if (!empty($a['patient_cedula'])): ?>
-                                    <i data-lucide="id-card" class="h-3.5 w-3.5"></i> <?= e($a['patient_cedula']) ?>
-                                <?php endif; ?>
-                                <?php if (!empty($a['patient_phone'])): ?>
-                                    <?= !empty($a['patient_cedula']) ? '·' : '' ?>
-                                    <i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($a['patient_phone']) ?>
-                                <?php endif; ?>
-                            </p>
+                            <div class="doctor-timeline-card-inner">
+                                <?= doctor_avatar_html($a['patient_name'], 'sm') ?>
+                                <div>
+                                    <p class="doctor-timeline-patient"><?= e($a['patient_name']) ?></p>
+                                    <p class="doctor-timeline-meta">
+                                        <?php if (!empty($a['patient_cedula'])): ?>
+                                            <i data-lucide="id-card" class="h-3.5 w-3.5"></i> <?= e($a['patient_cedula']) ?>
+                                        <?php endif; ?>
+                                        <?php if (!empty($a['patient_phone'])): ?>
+                                            <?= !empty($a['patient_cedula']) ? '·' : '' ?>
+                                            <i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($a['patient_phone']) ?>
+                                        <?php endif; ?>
+                                    </p>
+                                </div>
+                            </div>
                         </a>
                     </li>
                 <?php endforeach; ?>
@@ -215,4 +257,5 @@ doctor_layout_begin('Inicio', 'dashboard');
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/es.global.min.js"></script>
 <?php doctor_layout_end();

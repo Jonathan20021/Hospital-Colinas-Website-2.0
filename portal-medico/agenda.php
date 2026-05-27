@@ -73,36 +73,10 @@ doctor_layout_begin('Mi agenda', 'agenda');
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/es.global.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const el = document.getElementById('doctor-agenda');
-    if (!el) return;
-    let events = [];
-    try { events = JSON.parse(el.dataset.events || '[]'); } catch (_) {}
-
-    const calendar = new FullCalendar.Calendar(el, {
-        initialView: 'dayGridMonth',
-        locale: 'es',
-        firstDay: 1,
-        height: 640,
-        buttonText: { today: 'Hoy', month: 'Mes', week: 'Semana', day: 'Dia', list: 'Lista' },
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
-        },
-        events,
-        eventClick: (info) => {
-            info.jsEvent.preventDefault();
-            openApptModal(info.event.id);
-        },
-        slotMinTime: '06:00:00',
-        slotMaxTime: '21:00:00',
-        nowIndicator: true,
-    });
-    calendar.render();
-
-    async function openApptModal(id) {
+    window.openApptModal = async function (id) {
         const modal = document.getElementById('appt-modal');
         const body  = document.getElementById('appt-modal-body');
         const foot  = document.getElementById('appt-modal-footer');
@@ -143,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 else alert(c.message || 'Error al cancelar.');
             });
         });
-    }
+    };
 
     document.querySelectorAll('[data-close]').forEach(b => {
         b.addEventListener('click', () => { document.getElementById('appt-modal').hidden = true; });

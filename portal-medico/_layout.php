@@ -23,6 +23,7 @@ require_once __DIR__ . '/../includes/content.php';
 require_once __DIR__ . '/../includes/public-layout.php';
 require_once __DIR__ . '/../includes/portal_client.php';
 require_once __DIR__ . '/../includes/doctor_portal_session.php';
+require_once __DIR__ . '/../includes/doctor_portal_avatars.php';
 
 function doctor_layout_begin(string $title, string $active = ''): void {
     doctor_portal_session_start();
@@ -61,16 +62,14 @@ function doctor_layout_begin(string $title, string $active = ''): void {
             <?php if (doctor_is_logged_in()):
                 $doctor = doctor_current() ?? [];
                 $dName  = (string)($doctor['name'] ?? '');
-                $parts  = preg_split('/\s+/', trim($dName)) ?: [];
-                $initials = '';
-                foreach ($parts as $p) { if ($p !== '' && strlen($initials) < 2) $initials .= mb_substr($p, 0, 1, 'UTF-8'); }
-                $initials = $initials !== '' ? mb_strtoupper($initials, 'UTF-8') : '?';
                 $friendlyName = trim(mb_convert_case(mb_strtolower($dName, 'UTF-8'), MB_CASE_TITLE, 'UTF-8'));
                 $specialty = (string)($doctor['specialty'] ?? '');
+                [$avc1, $avc2] = doctor_avatar_palette($dName);
+                $avInitials = doctor_initials($dName);
             ?>
                 <aside class="doctor-sidebar" aria-label="Menu del medico">
                     <div class="doctor-profile">
-                        <div class="doctor-avatar"><?= e($initials) ?></div>
+                        <div class="doctor-avatar" style="background: linear-gradient(135deg, <?= e($avc1) ?>, <?= e($avc2) ?>);"><?= e($avInitials) ?></div>
                         <div class="doctor-profile-text">
                             <p class="doctor-greeting">Dr/a.</p>
                             <p class="doctor-name" title="<?= e($friendlyName) ?>"><?= e($friendlyName) ?></p>

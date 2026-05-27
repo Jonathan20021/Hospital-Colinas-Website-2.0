@@ -64,12 +64,17 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                     <?php foreach ($items as $p): ?>
                         <tr>
                             <td>
-                                <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$p['id'])) ?>" class="doctor-link-strong">
-                                    <?= e($p['name']) ?>
-                                </a>
-                                <?php if (!empty($p['email'])): ?>
-                                    <div class="doctor-cell-muted"><?= e($p['email']) ?></div>
-                                <?php endif; ?>
+                                <div class="doctor-table-patient">
+                                    <?= doctor_avatar_html($p['name']) ?>
+                                    <div>
+                                        <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$p['id'])) ?>" class="doctor-link-strong doctor-table-patient-name">
+                                            <?= e($p['name']) ?>
+                                        </a>
+                                        <?php if (!empty($p['email'])): ?>
+                                            <div class="doctor-cell-muted"><?= e($p['email']) ?></div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </td>
                             <td><?= e($p['cedula'] ?? '—') ?></td>
                             <td><?= e($p['phone'] ?? '—') ?></td>
@@ -79,7 +84,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                                     <?= e(date('d M Y', strtotime($p['last_visit_at']))) ?>
                                 <?php else: ?>—<?php endif; ?>
                             </td>
-                            <td class="text-right"><strong><?= (int)$p['visits_total'] ?></strong></td>
+                            <td class="text-right"><span class="doctor-visit-chip"><?= (int)$p['visits_total'] ?></span></td>
                             <td>
                                 <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$p['id'])) ?>" class="doctor-table-action" title="Ver historial">
                                     <i data-lucide="chevron-right" class="h-5 w-5"></i>

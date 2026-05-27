@@ -113,20 +113,21 @@ doctor_layout_begin('Consulta medica', 'consulta');
             </div>
         </section>
 
-        <div class="doctor-consult-footer">
-            <span id="save-status" class="doctor-cell-muted"></span>
-            <div class="doctor-consult-actions">
-                <button type="button" class="doctor-btn doctor-btn-outline" id="btn-save">
-                    <i data-lucide="save" class="h-4 w-4"></i> Guardar nota
-                </button>
-                <?php if ($appt['status'] === 'scheduled'): ?>
-                    <button type="button" class="doctor-btn doctor-btn-primary" id="btn-save-complete-bottom">
-                        <i data-lucide="check-circle-2" class="h-4 w-4"></i> Guardar y completar cita
-                    </button>
-                <?php endif; ?>
-            </div>
-        </div>
     </form>
+
+    <div class="doctor-sticky-save">
+        <span id="save-status" class="doctor-save-status"></span>
+        <div class="doctor-consult-actions">
+            <button type="button" class="doctor-btn doctor-btn-outline" id="btn-save">
+                <i data-lucide="save" class="h-4 w-4"></i> Guardar nota
+            </button>
+            <?php if ($appt['status'] === 'scheduled'): ?>
+                <button type="button" class="doctor-btn doctor-btn-primary" id="btn-save-complete-bottom">
+                    <i data-lucide="check-circle-2" class="h-4 w-4"></i> Guardar y completar cita
+                </button>
+            <?php endif; ?>
+        </div>
+    </div>
 
     <?php if (!empty($appt['note_id'])): ?>
         <section class="doctor-card mt-4">
@@ -182,10 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = {};
         fd.forEach((v, k) => { data[k] = v; });
 
-        status.textContent = 'Guardando...';
+        window.doctorAutoSaveHint(status, 'saving');
         const r = await window.doctorApi('POST', '/portal-doctor/me/notes', data);
         if (!r.ok) {
-            status.textContent = '';
+            window.doctorAutoSaveHint(status, 'error');
             alert(r.message || 'Error al guardar.');
             return;
         }
@@ -197,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             location.reload();
         } else {
-            status.textContent = 'Guardado · ' + new Date().toLocaleTimeString();
+            window.doctorAutoSaveHint(status, 'saved');
         }
     }
 

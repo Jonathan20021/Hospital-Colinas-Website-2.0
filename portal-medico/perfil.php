@@ -5,8 +5,42 @@ doctor_require_login();
 $res = portal_api_call('GET', '/portal-doctor/me', [], doctor_token());
 $doctor = $res['data'] ?? [];
 
+// Calcular porcentaje de completitud
+$profileFields = [
+    'phone'             => 'Telefono',
+    'office_name'       => 'Consultorio',
+    'consultation_cost' => 'Costo',
+    'office_address'    => 'Direccion',
+    'languages'         => 'Idiomas',
+    'education'         => 'Educacion',
+    'associations'      => 'Asociaciones',
+    'services'          => 'Servicios',
+    'insurances'        => 'Seguros',
+    'biography'         => 'Biografia',
+];
+$filled = 0; $missing = [];
+foreach ($profileFields as $k => $label) {
+    $v = trim((string)($doctor[$k] ?? ''));
+    if ($v !== '' && $v !== '0' && $v !== '0.00') $filled++;
+    else $missing[] = $label;
+}
+$totalFields = count($profileFields);
+$percent = $totalFields > 0 ? (int)round(($filled / $totalFields) * 100) : 0;
+$ring_r = 28;
+$ring_c = 2 * M_PI * $ring_r;
+$ring_offset = $ring_c * (1 - ($percent / 100));
+
 doctor_layout_begin('Mi perfil', 'perfil');
 ?>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+        <linearGradient id="docGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0d9488"/>
+            <stop offset="100%" stop-color="#1e40af"/>
+        </linearGradient>
+    </defs>
+</svg>
 <header class="doctor-header">
     <div>
         <p class="doctor-eyebrow">Perfil</p>
@@ -14,6 +48,38 @@ doctor_layout_begin('Mi perfil', 'perfil');
         <p class="doctor-subtitle">Esta informacion aparece en el directorio publico y en tus recetas.</p>
     </div>
 </header>
+
+<div class="doctor-completion">
+    <div class="doctor-completion-ring">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle class="bg" cx="32" cy="32" r="<?= $ring_r ?>"></circle>
+            <circle class="fg" cx="32" cy="32" r="<?= $ring_r ?>"
+                stroke-dasharray="<?= round($ring_c, 2) ?>"
+                stroke-dashoffset="<?= round($ring_offset, 2) ?>"></circle>
+        </svg>
+        <span class="doctor-completion-pct"><?= $percent ?>%</span>
+    </div>
+    <div class="doctor-completion-text">
+        <p class="doctor-completion-title">Perfil <?= $percent === 100 ? 'completo' : 'a ' . $percent . '%' ?></p>
+        <p class="doctor-completion-hint">
+            <?php if ($percent === 100): ?>
+                Excelente — toda tu informacion esta actualizada.
+            <?php elseif ($missing): ?>
+                Completa los siguientes campos para mejorar tu presencia en el directorio:
+            <?php endif; ?>
+        </p>
+        <?php if ($missing && $percent < 100): ?>
+            <div class="doctor-completion-pills">
+                <?php foreach (array_slice($missing, 0, 6) as $m): ?>
+                    <span class="doctor-completion-pill"><?= e($m) ?></span>
+                <?php endforeach; ?>
+                <?php if (count($missing) > 6): ?>
+                    <span class="doctor-completion-pill">+<?= count($missing) - 6 ?></span>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
 
 <form id="profile-form" class="doctor-grid-2">
     <div class="doctor-card">
@@ -55,8 +121,8 @@ doctor_layout_begin('Mi perfil', 'perfil');
         </div>
     </div>
 
-    <div class="doctor-form-full doctor-consult-footer">
-        <span id="save-status" class="doctor-cell-muted"></span>
+    <div class="doctor-form-full doctor-sticky-save">
+        <span id="save-status" class="doctor-save-status"></span>
         <button type="submit" class="doctor-btn doctor-btn-primary">
             <i data-lucide="save" class="h-4 w-4"></i> Guardar cambios
         </button>
@@ -70,12 +136,12 @@ document.getElementById('profile-form').addEventListener('submit', async (e) => 
     const data = {};
     fd.forEach((v, k) => { data[k] = v; });
     const status = document.getElementById('save-status');
-    status.textContent = 'Guardando...';
+    window.doctorAutoSaveHint(status, 'saving');
     const r = await window.doctorApi('PUT', '/portal-doctor/me', data);
     if (r.ok) {
-        status.textContent = 'Guardado · ' + new Date().toLocaleTimeString();
+        window.doctorAutoSaveHint(status, 'saved');
     } else {
-        status.textContent = '';
+        window.doctorAutoSaveHint(status, 'error');
         alert(r.message || 'Error');
     }
 });

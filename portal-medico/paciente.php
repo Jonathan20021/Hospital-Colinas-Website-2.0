@@ -19,11 +19,9 @@ $patient = $pRes['data'];
 $hRes = portal_api_call('GET', '/portal-doctor/me/patients/' . $id . '/history', [], doctor_token());
 $history = $hRes['data'] ?? [];
 
-// Iniciales
-$parts = preg_split('/\s+/', trim((string)($patient['name'] ?? ''))) ?: [];
-$initials = '';
-foreach ($parts as $p) { if ($p !== '' && strlen($initials) < 2) $initials .= mb_substr($p, 0, 1, 'UTF-8'); }
-$initials = mb_strtoupper($initials ?: '?', 'UTF-8');
+// Iniciales + gradiente hash deterministico
+$initials = doctor_initials($patient['name'] ?? '');
+[$avc1, $avc2] = doctor_avatar_palette($patient['name'] ?? '');
 
 // Edad
 $age = '';
@@ -36,7 +34,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
 <a href="<?= e(base_url('portal-medico/pacientes.php')) ?>" class="doctor-back-link"><i data-lucide="arrow-left" class="h-4 w-4"></i> Volver a pacientes</a>
 
 <header class="doctor-patient-header">
-    <div class="doctor-avatar doctor-avatar-lg"><?= e($initials) ?></div>
+    <div class="doctor-av doctor-av-xl" style="background: linear-gradient(135deg, <?= e($avc1) ?>, <?= e($avc2) ?>);"><?= e($initials) ?></div>
     <div class="doctor-patient-info">
         <h1><?= e($patient['name']) ?></h1>
         <div class="doctor-patient-meta">
