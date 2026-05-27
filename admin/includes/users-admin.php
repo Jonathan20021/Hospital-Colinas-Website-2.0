@@ -2,7 +2,9 @@
 
 function admin_users(string $query = ''): array
 {
-    $sql = 'SELECT id, name, email, role, is_active, last_login, created_at FROM admin_users';
+    admin_ensure_permissions_schema();
+
+    $sql = 'SELECT id, name, email, role, permissions, is_active, last_login, created_at FROM admin_users';
     $params = [];
 
     if ($query !== '') {
@@ -19,6 +21,8 @@ function admin_users(string $query = ''): array
 
 function admin_get_user(int $id): ?array
 {
+    admin_ensure_permissions_schema();
+
     $stmt = db()->prepare('SELECT * FROM admin_users WHERE id = ? LIMIT 1');
     $stmt->execute([$id]);
     $user = $stmt->fetch();
@@ -33,6 +37,11 @@ function admin_save_user(array $data, ?int $id = null): int
     $email = strtolower(trim($data['email'] ?? ''));
     $password = (string) ($data['password'] ?? '');
     $role = in_array(($data['role'] ?? 'admin'), ['admin', 'editor'], true) ? $data['role'] : 'admin';
+    $rawPermissions = $data['permissions'] ?? [];
+    if ($role !== 'admin' && (!is_array($rawPermissions) || $rawPermissions === [])) {
+        throw new RuntimeException('Selecciona al menos un permiso para este usuario.');
+    }
+    $permissions = admin_normalize_permissions($rawPermissions, $role);
     $isActive = !empty($data['is_active']) ? 1 : 0;
 
     if ($name === '' || $email === '') {
@@ -63,6 +72,7 @@ function admin_save_user(array $data, ?int $id = null): int
         'name' => $name,
         'email' => $email,
         'role' => $role,
+        'permissions' => json_encode($role === 'admin' ? admin_all_permission_keys() : $permissions, JSON_UNESCAPED_SLASHES),
         'is_active' => $isActive,
     ];
 

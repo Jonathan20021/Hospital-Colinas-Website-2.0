@@ -7,7 +7,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+require_admin_permission('news');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: noticias.php');

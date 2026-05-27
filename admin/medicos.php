@@ -8,7 +8,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+require_admin_permission('doctors');
 $query = trim($_GET['q'] ?? '');
 $doctors = admin_doctors($query);
 

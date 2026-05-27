@@ -18,6 +18,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $pdo = db_connect(db_config()['name']);
+            foreach (['permissions' => 'TEXT NULL'] as $column => $definition) {
+                $check = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'admin_users' AND COLUMN_NAME = ?");
+                $check->execute([$column]);
+                if ((int) $check->fetchColumn() === 0) {
+                    $pdo->exec("ALTER TABLE admin_users ADD COLUMN {$column} {$definition} AFTER role");
+                }
+            }
+            $pdo->exec("UPDATE admin_users SET permissions = '[\"dashboard\",\"doctors\",\"news\",\"users\",\"ai\"]' WHERE role = 'admin' AND (permissions IS NULL OR permissions = '')");
+            $pdo->exec("UPDATE admin_users SET permissions = '[\"dashboard\",\"doctors\",\"news\"]' WHERE role <> 'admin' AND (permissions IS NULL OR permissions = '')");
+
             foreach (['insurances' => 'TEXT NULL', 'associations' => 'TEXT NULL'] as $column => $definition) {
                 $check = $pdo->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'doctors' AND COLUMN_NAME = ?");
                 $check->execute([$column]);

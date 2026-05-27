@@ -2,7 +2,7 @@
 require __DIR__ . '/includes/auth.php';
 
 if (admin_current_user()) {
-    header('Location: index.php');
+    header('Location: ' . admin_first_allowed_url());
     exit;
 }
 
@@ -10,7 +10,7 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     if (admin_login($_POST['email'] ?? '', $_POST['password'] ?? '')) {
-        header('Location: index.php');
+        header('Location: ' . admin_first_allowed_url());
         exit;
     }
     $error = 'Credenciales inválidas o base de datos no instalada.';

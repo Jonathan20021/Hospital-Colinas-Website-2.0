@@ -4,12 +4,20 @@ function admin_header(string $title, string $active = 'dashboard'): void
 {
     $user = admin_current_user();
     $primaryActions = [
-        'usuarios' => ['href' => 'usuario-form.php', 'label' => 'Nuevo usuario', 'icon' => 'user-plus'],
-        'medicos' => ['href' => 'medico-form.php', 'label' => 'Nuevo médico', 'icon' => 'plus'],
-        'noticias' => ['href' => 'noticia-form.php', 'label' => 'Nueva noticia', 'icon' => 'plus'],
-        'dashboard' => ['href' => 'medico-form.php', 'label' => 'Nuevo médico', 'icon' => 'plus'],
+        'usuarios' => ['href' => 'usuario-form.php', 'label' => 'Nuevo usuario', 'icon' => 'user-plus', 'permission' => 'users'],
+        'medicos' => ['href' => 'medico-form.php', 'label' => 'Nuevo medico', 'icon' => 'plus', 'permission' => 'doctors'],
+        'noticias' => ['href' => 'noticia-form.php', 'label' => 'Nueva noticia', 'icon' => 'plus', 'permission' => 'news'],
+        'dashboard' => ['href' => 'medico-form.php', 'label' => 'Nuevo medico', 'icon' => 'plus', 'permission' => 'doctors'],
     ];
     $primaryAction = $primaryActions[$active] ?? null;
+    if ($primaryAction && !admin_can($primaryAction['permission'], $user)) {
+        $primaryAction = null;
+    }
+    if ($primaryAction && basename((string) ($_SERVER['SCRIPT_NAME'] ?? '')) === $primaryAction['href']) {
+        $primaryAction = null;
+    }
+
+    $menuItems = admin_permission_definitions();
     ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,30 +34,18 @@ function admin_header(string $title, string $active = 'dashboard'): void
 <body class="admin-body">
     <div class="admin-shell">
         <aside class="admin-sidebar">
-            <a href="index.php" class="admin-brand">
+            <a href="<?= e(admin_first_allowed_url($user)) ?>" class="admin-brand">
                 <img src="../assets/site/logo.png" alt="Hospital General Las Colinas">
             </a>
-            <nav class="admin-nav" aria-label="Administración">
-                <a href="index.php" class="<?= $active === 'dashboard' ? 'is-active' : '' ?>">
-                    <i data-lucide="layout-dashboard"></i>
-                    Dashboard
-                </a>
-                <a href="medicos.php" class="<?= $active === 'medicos' ? 'is-active' : '' ?>">
-                    <i data-lucide="user-round-search"></i>
-                    Médicos
-                </a>
-                <a href="noticias.php" class="<?= $active === 'noticias' ? 'is-active' : '' ?>">
-                    <i data-lucide="newspaper"></i>
-                    Noticias
-                </a>
-                <a href="usuarios.php" class="<?= $active === 'usuarios' ? 'is-active' : '' ?>">
-                    <i data-lucide="shield-user"></i>
-                    Usuarios admin
-                </a>
-                <a href="ai-settings.php" class="<?= $active === 'ai' ? 'is-active' : '' ?>">
-                    <i data-lucide="sparkles"></i>
-                    Colinas IA
-                </a>
+            <nav class="admin-nav" aria-label="Administracion">
+                <?php foreach ($menuItems as $permission => $item): ?>
+                    <?php if (!admin_can($permission, $user)) continue; ?>
+                    <a href="<?= e($item['href']) ?>" class="<?= $active === $item['active'] ? 'is-active' : '' ?>">
+                        <i data-lucide="<?= e($item['icon']) ?>"></i>
+                        <?= e($item['label']) ?>
+                    </a>
+                <?php endforeach; ?>
+                <span class="admin-nav-divider"></span>
                 <a href="../directorio-medico" target="_blank" rel="noopener">
                     <i data-lucide="external-link"></i>
                     Ver directorio
@@ -61,7 +57,8 @@ function admin_header(string $title, string $active = 'dashboard'): void
             </nav>
             <div class="admin-user">
                 <span><?= e($user['name'] ?? 'Administrador') ?></span>
-                <a href="logout.php">Cerrar sesión</a>
+                <small><?= e(($user['role'] ?? 'admin') === 'admin' ? 'Acceso total' : 'Acceso limitado') ?></small>
+                <a href="logout.php">Cerrar sesion</a>
             </div>
         </aside>
         <div class="admin-main">

@@ -8,7 +8,11 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+$currentUser = require_admin();
+if (!admin_can('dashboard', $currentUser)) {
+    header('Location: ' . admin_first_allowed_url($currentUser));
+    exit;
+}
 $stats = admin_doctor_stats();
 $recentDoctors = array_slice(admin_doctors(), 0, 6);
 
@@ -33,6 +37,17 @@ admin_header('Dashboard', 'dashboard');
     </article>
 </section>
 
+<section class="admin-module-grid" aria-label="Módulos habilitados">
+    <?php foreach (admin_permission_definitions() as $permission => $module): ?>
+        <?php if ($permission === 'dashboard' || !admin_can($permission, $currentUser)) continue; ?>
+        <a href="<?= e($module['href']) ?>">
+            <span><i data-lucide="<?= e($module['icon']) ?>"></i></span>
+            <strong><?= e($module['label']) ?></strong>
+            <small><?= e($module['description']) ?></small>
+        </a>
+    <?php endforeach; ?>
+</section>
+
 <section class="admin-dashboard-grid">
     <div class="admin-panel">
         <div class="admin-panel-head">
@@ -40,14 +55,17 @@ admin_header('Dashboard', 'dashboard');
                 <span>Directorio médico</span>
                 <h2>Últimos perfiles editados</h2>
             </div>
-            <a href="medicos.php">Gestionar</a>
+            <?php if (admin_can('doctors', $currentUser)): ?>
+                <a href="medicos.php">Gestionar</a>
+            <?php endif; ?>
         </div>
         <div class="admin-list">
             <?php if (!$recentDoctors): ?>
                 <p class="admin-empty">Aún no hay médicos cargados. Crea el primer perfil para activar el directorio real.</p>
             <?php endif; ?>
             <?php foreach ($recentDoctors as $doctor): ?>
-                <a href="medico-form.php?id=<?= e((string) $doctor['id']) ?>" class="admin-list-row">
+                <?php $doctorHref = admin_can('doctors', $currentUser) ? 'medico-form.php?id=' . $doctor['id'] : '../medico/' . $doctor['slug']; ?>
+                <a href="<?= e($doctorHref) ?>" class="admin-list-row" <?= admin_can('doctors', $currentUser) ? '' : 'target="_blank" rel="noopener"' ?>>
                     <img src="../<?= e($doctor['photo_path'] ?: 'assets/site/assets/DSC00177-DrupFA59.jpg') ?>" alt="">
                     <span>
                         <strong><?= e(trim(($doctor['title'] ? $doctor['title'] . ' ' : '') . $doctor['first_name'] . ' ' . $doctor['last_name'])) ?></strong>
@@ -63,7 +81,9 @@ admin_header('Dashboard', 'dashboard');
         <span>Siguiente fase</span>
         <h2>Panel del paciente</h2>
         <p>La estructura ya separa administración, directorio público y perfiles individuales. La próxima fase puede usar el mismo patrón para pacientes, citas, documentos y resultados.</p>
-        <a href="medico-form.php" class="admin-secondary-action">Cargar médico</a>
+        <?php if (admin_can('doctors', $currentUser)): ?>
+            <a href="medico-form.php" class="admin-secondary-action">Cargar médico</a>
+        <?php endif; ?>
     </aside>
 </section>
 <?php admin_footer(); ?>

@@ -8,7 +8,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+require_admin_permission('doctors');
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $doctor = $id ? admin_get_doctor($id) : null;
 if ($id && !$doctor) {

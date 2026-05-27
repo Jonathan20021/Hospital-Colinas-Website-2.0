@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . '/includes/auth.php';
 
-require_admin();
+require_admin_permission('doctors');
 verify_csrf();
 
 $id = (int) ($_POST['id'] ?? 0);

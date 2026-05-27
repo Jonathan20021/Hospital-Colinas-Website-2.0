@@ -7,7 +7,7 @@ if (!db_ready()) {
     exit;
 }
 
-$currentUser = require_admin();
+$currentUser = require_admin_permission('users');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: usuarios.php');

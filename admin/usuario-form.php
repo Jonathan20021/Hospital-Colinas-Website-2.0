@@ -8,7 +8,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+$currentUser = require_admin_permission('users');
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
 $adminUser = $id ? admin_get_user($id) : null;
 if ($id && !$adminUser) {
@@ -20,6 +20,11 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
     try {
+        $postedRole = $_POST['role'] ?? 'admin';
+        $postedPermissions = is_array($_POST['permissions'] ?? null) ? $_POST['permissions'] : [];
+        if ($id && $id === (int) $currentUser['id'] && $postedRole !== 'admin' && !in_array('users', $postedPermissions, true)) {
+            throw new RuntimeException('No puedes quitarte tu propio acceso a Usuarios admin.');
+        }
         $savedId = admin_save_user($_POST, $id);
         header('Location: usuarios.php?saved=' . $savedId);
         exit;
@@ -33,6 +38,11 @@ function user_value(array $user, string $key, string $default = ''): string
 {
     return (string) ($user[$key] ?? $default);
 }
+
+$permissionDefinitions = admin_permission_definitions();
+$selectedPermissions = $adminUser
+    ? admin_user_permissions($adminUser)
+    : admin_default_permissions_for_role('admin');
 
 admin_header($id ? 'Editar usuario' : 'Nuevo usuario', 'usuarios');
 ?>
@@ -73,6 +83,25 @@ admin_header($id ? 'Editar usuario' : 'Nuevo usuario', 'usuarios');
             <input type="password" name="password" <?= $id ? '' : 'required' ?> minlength="10" autocomplete="new-password">
         </label>
     </div>
+
+    <section class="permission-editor">
+        <div>
+            <span>Permisos por módulo</span>
+            <h3>Acceso al menú administrativo</h3>
+            <p>Selecciona las páginas del panel que este usuario puede abrir. El rol Administrador siempre conserva acceso total.</p>
+        </div>
+        <div class="permission-grid">
+            <?php foreach ($permissionDefinitions as $permission => $definition): ?>
+                <?php $checked = in_array($permission, $selectedPermissions, true); ?>
+                <label class="permission-card">
+                    <input type="checkbox" name="permissions[]" value="<?= e($permission) ?>" <?= $checked ? 'checked' : '' ?>>
+                    <span><i data-lucide="<?= e($definition['icon']) ?>"></i></span>
+                    <strong><?= e($definition['label']) ?></strong>
+                    <small><?= e($definition['description']) ?></small>
+                </label>
+            <?php endforeach; ?>
+        </div>
+    </section>
 
     <label class="check-row user-active-row">
         <input type="checkbox" name="is_active" value="1" <?= user_value($adminUser ?: [], 'is_active', '1') !== '0' ? 'checked' : '' ?>>

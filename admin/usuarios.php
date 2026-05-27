@@ -8,7 +8,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+require_admin_permission('users');
 $query = trim($_GET['q'] ?? '');
 $users = admin_users($query);
 $notice = '';
@@ -46,6 +46,7 @@ admin_header('Usuarios admin', 'usuarios');
                 <tr>
                     <th>Usuario</th>
                     <th>Rol</th>
+                    <th>Permisos</th>
                     <th>Estado</th>
                     <th>Último acceso</th>
                     <th></th>
@@ -63,7 +64,16 @@ admin_header('Usuarios admin', 'usuarios');
                                 </div>
                             </div>
                         </td>
-                        <td><?= e($user['role']) ?></td>
+                        <td><?= e($user['role'] === 'admin' ? 'Administrador' : 'Editor') ?></td>
+                        <td>
+                            <div class="permission-pills">
+                                <?php foreach (admin_user_permissions($user) as $permission): ?>
+                                    <?php $definition = admin_permission_definitions()[$permission] ?? null; ?>
+                                    <?php if (!$definition) continue; ?>
+                                    <span><?= e($definition['label']) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        </td>
                         <td><span class="status-pill <?= $user['is_active'] ? 'is-active' : 'is-inactive' ?>"><?= $user['is_active'] ? 'Activo' : 'Inactivo' ?></span></td>
                         <td><?= e($user['last_login'] ?: 'Sin acceso registrado') ?></td>
                         <td class="admin-actions">

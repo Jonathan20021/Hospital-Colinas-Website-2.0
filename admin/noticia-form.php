@@ -8,7 +8,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+require_admin_permission('news');
 news_ensure_schema();
 
 $id = isset($_GET['id']) ? (int) $_GET['id'] : null;

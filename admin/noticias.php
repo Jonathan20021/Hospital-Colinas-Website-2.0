@@ -8,7 +8,7 @@ if (!db_ready()) {
     exit;
 }
 
-require_admin();
+require_admin_permission('news');
 news_ensure_schema();
 
 $query = trim($_GET['q'] ?? '');

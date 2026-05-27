@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS admin_users (
     email VARCHAR(190) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(40) NOT NULL DEFAULT 'admin',
+    permissions TEXT NULL,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     last_login DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -59,8 +60,8 @@ CREATE TABLE IF NOT EXISTS doctors (
         ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO admin_users (name, email, password_hash, role, is_active)
-SELECT 'Administrador Las Colinas', 'admin@colinashospital.com', '$2y$10$ewB3SDAYily4S4NMABH2aefPxVkmxAcatT4f9zVdwyN5WBPwju8TC', 'admin', 1
+INSERT INTO admin_users (name, email, password_hash, role, permissions, is_active)
+SELECT 'Administrador Las Colinas', 'admin@colinashospital.com', '$2y$10$ewB3SDAYily4S4NMABH2aefPxVkmxAcatT4f9zVdwyN5WBPwju8TC', 'admin', '["dashboard","doctors","news","users","ai"]', 1
 WHERE NOT EXISTS (
     SELECT 1 FROM admin_users WHERE email = 'admin@colinashospital.com'
 );
