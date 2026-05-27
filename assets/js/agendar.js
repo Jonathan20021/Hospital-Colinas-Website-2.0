@@ -45,16 +45,30 @@
         loader.classList.remove('hidden');
         picker.classList.add('hidden');
         picker.innerHTML = '';
+        const hint = document.getElementById('slot-loader-hint');
+        if (hint) hint.hidden = true;
 
         const ctrl = new AbortController();
-        const timeoutId = setTimeout(() => ctrl.abort(), 25000);
+        // After 6s, show the user a soft hint (phone fallback) under the spinner.
+        const softHintId = setTimeout(() => {
+            if (hint) {
+                hint.hidden = false;
+                if (window.lucide) lucide.createIcons();
+            }
+        }, 6000);
+        // Hard timeout — abort the fetch and show the full error state.
+        const timeoutId = setTimeout(() => ctrl.abort(), 15000);
 
-        fetch(slotsUrl, { signal: ctrl.signal, headers: { 'Accept': 'application/json' } })
+        fetch(slotsUrl, {
+            signal: ctrl.signal,
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json' },
+        })
             .then(async r => {
                 clearTimeout(timeoutId);
+                clearTimeout(softHintId);
                 const ct = r.headers.get('content-type') || '';
                 if (!ct.includes('application/json')) {
-                    const text = await r.text();
                     throw new Error(`Respuesta inválida del servidor (HTTP ${r.status}).`);
                 }
                 return r.json();
@@ -75,8 +89,9 @@
             })
             .catch(e => {
                 clearTimeout(timeoutId);
+                clearTimeout(softHintId);
                 const msg = e.name === 'AbortError'
-                    ? 'La carga tomó demasiado tiempo. Verifica tu conexión e intenta de nuevo.'
+                    ? 'La carga tomó demasiado tiempo. Verifica tu conexión e intenta de nuevo, o llámanos directamente.'
                     : `No se pudieron cargar los horarios: ${e.message}`;
                 showError(msg, true);
             });
