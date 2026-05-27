@@ -31,7 +31,9 @@ function portal_layout_begin(string $title, string $active = ''): void {
     global $assets, $contact;
     $assetVersion = (string) max(
         filemtime(__DIR__ . '/../assets/css/app.css'),
-        filemtime(__DIR__ . '/../assets/js/app.js')
+        filemtime(__DIR__ . '/../assets/js/app.js'),
+        @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0
     );
     ?>
     <!DOCTYPE html>
@@ -89,7 +91,9 @@ function portal_layout_end(): void {
     global $assets, $contact;
     $assetVersion = (string) max(
         filemtime(__DIR__ . '/../assets/css/app.css'),
-        filemtime(__DIR__ . '/../assets/js/app.js')
+        filemtime(__DIR__ . '/../assets/js/app.js'),
+        @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0
     );
     ?>
             </main>
