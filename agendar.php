@@ -93,27 +93,107 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                 <!-- Paso 1: Especialidad -->
                 <form method="GET" class="portal-card" id="step1">
                     <h2 class="portal-section-title"><i data-lucide="stethoscope" class="h-5 w-5" style="display:inline-block;vertical-align:-4px;color:#047857;margin-right:.35rem"></i>¿Qué tipo de atención necesitas?</h2>
-                    <div class="agendar-field">
-                        <label class="form-label" for="specialty_id">Selecciona la especialidad que necesitas</label>
-                        <select name="specialty_id" id="specialty_id" class="form-input" required>
-                            <option value="">— Elige una especialidad —</option>
-                            <?php foreach ($specs as $s): ?>
-                                <option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <p class="agendar-hint">
-                            <i data-lucide="info" class="h-4 w-4"></i>
-                            <?= count($specs) ?> especialidades disponibles. Si no sabes cuál elegir, llámanos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.
-                        </p>
-                    </div>
-                    <div class="agendar-actions">
-                        <span class="agendar-actions-spacer"></span>
-                        <button type="submit" class="btn btn-green">
-                            Continuar
-                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+
+                    <div class="agendar-search">
+                        <i data-lucide="search" class="h-4 w-4 agendar-search-icon"></i>
+                        <input
+                            type="search"
+                            id="specialty-search"
+                            class="form-input agendar-search-input"
+                            placeholder="Busca una especialidad (ej. cardiología, pediatría…)"
+                            autocomplete="off"
+                            aria-controls="specialty-list"
+                            aria-label="Buscar especialidad"
+                        >
+                        <button type="button" class="agendar-search-clear" id="specialty-search-clear" aria-label="Limpiar búsqueda" hidden>
+                            <i data-lucide="x" class="h-4 w-4"></i>
                         </button>
                     </div>
+
+                    <ul class="specialty-grid" id="specialty-list" role="list">
+                        <?php foreach ($specs as $s): ?>
+                            <li>
+                                <button type="submit" name="specialty_id" value="<?= (int)$s['id'] ?>"
+                                        class="specialty-card"
+                                        data-search="<?= e(mb_strtolower($s['name'], 'UTF-8')) ?>">
+                                    <span class="specialty-card-icon"><i data-lucide="stethoscope" class="h-5 w-5"></i></span>
+                                    <span class="specialty-card-name"><?= e($s['name']) ?></span>
+                                    <i data-lucide="arrow-right" class="h-4 w-4 specialty-card-arrow"></i>
+                                </button>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+
+                    <p class="specialty-empty" id="specialty-empty" hidden>
+                        <i data-lucide="search-x" class="h-5 w-5"></i>
+                        No encontramos especialidades con ese término. Llámanos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a> y te orientamos.
+                    </p>
+
+                    <noscript>
+                        <div class="agendar-field" style="margin-top:1rem">
+                            <label class="form-label" for="specialty_id">O usa el menú desplegable:</label>
+                            <select name="specialty_id" id="specialty_id" class="form-input" required>
+                                <option value="">— Elige una especialidad —</option>
+                                <?php foreach ($specs as $s): ?>
+                                    <option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <button type="submit" class="btn btn-green mt-3">Continuar</button>
+                        </div>
+                    </noscript>
+
+                    <p class="agendar-hint" style="margin-top:1rem">
+                        <i data-lucide="info" class="h-4 w-4"></i>
+                        <?= count($specs) ?> especialidades disponibles. Si no sabes cuál elegir, llámanos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.
+                    </p>
                 </form>
+
+                <script>
+                (function () {
+                    var input = document.getElementById('specialty-search');
+                    var list  = document.getElementById('specialty-list');
+                    var empty = document.getElementById('specialty-empty');
+                    var clear = document.getElementById('specialty-search-clear');
+                    if (!input || !list) return;
+
+                    var items = Array.prototype.slice.call(list.querySelectorAll('.specialty-card'));
+
+                    function normalize(str) {
+                        return (str || '')
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[̀-ͯ]/g, '');
+                    }
+
+                    function filter() {
+                        var q = normalize(input.value.trim());
+                        var visible = 0;
+                        items.forEach(function (btn) {
+                            var hay = normalize(btn.getAttribute('data-search') || '');
+                            var match = !q || hay.indexOf(q) !== -1;
+                            btn.parentElement.style.display = match ? '' : 'none';
+                            if (match) visible++;
+                        });
+                        empty.hidden = visible !== 0;
+                        clear.hidden = q.length === 0;
+                    }
+
+                    input.addEventListener('input', filter);
+                    clear.addEventListener('click', function () {
+                        input.value = '';
+                        filter();
+                        input.focus();
+                    });
+                    input.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            var firstVisible = items.find(function (b) { return b.parentElement.style.display !== 'none'; });
+                            if (firstVisible) firstVisible.click();
+                        }
+                    });
+                    input.focus();
+                })();
+                </script>
 
             <?php elseif ($step === 2): ?>
                 <!-- Paso 2: Médico -->

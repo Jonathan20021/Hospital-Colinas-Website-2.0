@@ -689,3 +689,120 @@
 @media (max-width: 900px) {
     .portal-shell-app[style] { padding: 1.25rem 1rem !important; }
 }
+
+/* Specialty search + grid (Paso 1) */
+.agendar-search {
+    position: relative;
+    margin: .5rem 0 1rem;
+}
+.agendar-search-icon {
+    position: absolute;
+    left: 1rem; top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+.portal-page .form-input.agendar-search-input {
+    padding-left: 2.75rem;
+    padding-right: 2.75rem;
+    font-size: 1rem;
+    border-radius: 12px;
+}
+.agendar-search-input::-webkit-search-decoration,
+.agendar-search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+.agendar-search-clear {
+    position: absolute;
+    right: .75rem; top: 50%;
+    transform: translateY(-50%);
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 0;
+    background: #e5e7eb;
+    color: #475569;
+    display: grid; place-items: center;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.agendar-search-clear:hover { background: #cbd5e1; color: #0f172a; }
+
+.specialty-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: .75rem;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.specialty-card {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 40px 1fr 20px;
+    align-items: center;
+    gap: .85rem;
+    padding: .9rem 1rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    color: #0f172a;
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s, transform .05s, background .15s;
+}
+.specialty-card:hover {
+    border-color: #047857;
+    background: #f0fdf4;
+    box-shadow: 0 6px 18px rgba(4, 120, 87, .1);
+    transform: translateY(-1px);
+}
+.specialty-card:focus-visible {
+    outline: none;
+    border-color: #047857;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, .2);
+}
+.specialty-card-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: #ecfdf5;
+    color: #047857;
+    display: grid; place-items: center;
+    flex-shrink: 0;
+    transition: background .15s, color .15s;
+}
+.specialty-card:hover .specialty-card-icon {
+    background: #047857; color: #fff;
+}
+.specialty-card-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.specialty-card-arrow {
+    color: #cbd5e1;
+    transition: color .15s, transform .15s;
+}
+.specialty-card:hover .specialty-card-arrow { color: #047857; transform: translateX(2px); }
+
+.specialty-empty {
+    margin: 1.25rem 0 0;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 12px;
+    color: #64748b;
+    text-align: center;
+    font-size: .92rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+}
+.specialty-empty i { color: #94a3b8; }
+
+@media (max-width: 560px) {
+    .specialty-grid { grid-template-columns: 1fr; }
+    .portal-page .form-input.agendar-search-input { font-size: .95rem; }
+}
