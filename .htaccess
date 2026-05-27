@@ -23,6 +23,8 @@ DirectoryIndex index.php
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
     RewriteRule ^portal/?$ portal/index.php [L,QSA]
     RewriteRule ^portal/([a-zA-Z0-9_\-]+)/?$ portal/$1.php [L,QSA]
+    RewriteRule ^portal-medico/?$ portal-medico/index.php [L,QSA]
+    RewriteRule ^portal-medico/([a-zA-Z0-9_\-]+)/?$ portal-medico/$1.php [L,QSA]
     RewriteRule ^agendar/?$ agendar.php [L,QSA]
     RewriteRule ^medico/([a-zA-Z0-9_\-]+)/?$ medico.php?slug=$1 [L,QSA]
     RewriteRule ^directorio-medico/?$ directorio-medico.php [L,QSA]
