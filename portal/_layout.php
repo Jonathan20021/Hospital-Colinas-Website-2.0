@@ -6,6 +6,19 @@
  *     // contenido HTML
  *   portal_layout_end();
  */
+
+// El portal vive bajo /portal/. base_url() del sitio público usa
+// $_SERVER['SCRIPT_NAME'] para calcular su raíz; si lo dejamos como
+// /portal/xxx.php, todos los assets y links del header se generan con
+// /portal/ prefijado (incorrecto). Pretendemos ser /index.php para que
+// la raíz del sitio se calcule como '/' (la raíz real).
+$_SERVER['_PORTAL_ORIG_SCRIPT_NAME'] = $_SERVER['SCRIPT_NAME'] ?? '';
+$_SERVER['SCRIPT_NAME'] = preg_replace(
+    '#/portal/[^/?]*\.php$#',
+    '/index.php',
+    $_SERVER['SCRIPT_NAME'] ?? '/index.php'
+);
+
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/data.php';
 require_once __DIR__ . '/../includes/content.php';
