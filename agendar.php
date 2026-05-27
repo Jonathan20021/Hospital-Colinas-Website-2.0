@@ -76,9 +76,9 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                 <div>
                     <p class="section-label">Agendamiento en línea</p>
                     <h1>Agenda tu consulta médica</h1>
-                    <p class="portal-subtitle">Reserva tu cita con cualquiera de nuestros especialistas. Sin necesidad de crear cuenta.</p>
+                    <p class="portal-subtitle">Reserva tu cita con cualquiera de nuestros especialistas. Sin necesidad de crear cuenta &mdash; te tomará menos de dos minutos.</p>
                 </div>
-                <a href="<?= e(base_url('portal/login.php')) ?>" class="btn btn-outline" style="text-decoration:none">
+                <a href="<?= e(base_url('portal/login.php')) ?>" class="btn btn-outline">
                     <i data-lucide="user-round" class="h-4 w-4"></i> Ya tengo cuenta
                 </a>
             </header>
@@ -92,14 +92,27 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
             <?php if ($step === 1): ?>
                 <!-- Paso 1: Especialidad -->
                 <form method="GET" class="portal-card" id="step1">
-                    <label class="form-label" for="specialty_id">Selecciona la especialidad que necesitas</label>
-                    <select name="specialty_id" id="specialty_id" class="form-input" required>
-                        <option value="">— Elige una especialidad —</option>
-                        <?php foreach ($specs as $s): ?>
-                            <option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <button type="submit" class="btn btn-green mt-4">Continuar</button>
+                    <h2 class="portal-section-title"><i data-lucide="stethoscope" class="h-5 w-5" style="display:inline-block;vertical-align:-4px;color:#047857;margin-right:.35rem"></i>¿Qué tipo de atención necesitas?</h2>
+                    <div class="agendar-field">
+                        <label class="form-label" for="specialty_id">Selecciona la especialidad que necesitas</label>
+                        <select name="specialty_id" id="specialty_id" class="form-input" required>
+                            <option value="">— Elige una especialidad —</option>
+                            <?php foreach ($specs as $s): ?>
+                                <option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <p class="agendar-hint">
+                            <i data-lucide="info" class="h-4 w-4"></i>
+                            <?= count($specs) ?> especialidades disponibles. Si no sabes cuál elegir, llámanos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.
+                        </p>
+                    </div>
+                    <div class="agendar-actions">
+                        <span class="agendar-actions-spacer"></span>
+                        <button type="submit" class="btn btn-green">
+                            Continuar
+                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        </button>
+                    </div>
                 </form>
 
             <?php elseif ($step === 2): ?>

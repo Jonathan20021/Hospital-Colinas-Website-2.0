@@ -503,3 +503,189 @@
 }
 .portal-confirm-box p { margin: 0; color: #047857; font-size: .85rem; font-weight: 600; }
 .portal-confirm-box h3 { margin: .35rem 0 0; color: #0f172a; font-size: 1.25rem; text-transform: capitalize; }
+
+/* ─────────────────────────────────────────────────────────────────
+   UI uplift: agendar / portal shared
+   ───────────────────────────────────────────────────────────────── */
+
+/* Header card: more breathing room, decorative accent, balanced flex */
+.portal-header {
+    position: relative;
+    overflow: hidden;
+    padding: 1.75rem 2rem;
+    background:
+        radial-gradient(120% 80% at 110% -20%, rgba(16, 185, 129, .14), transparent 55%),
+        linear-gradient(135deg, #f0fdf4 0%, #ffffff 65%);
+    border: 1px solid #d1fae5;
+    border-radius: 18px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .03);
+}
+.portal-header > div:first-child { max-width: 640px; }
+.portal-header h1 {
+    margin: .35rem 0 .5rem;
+    font-size: clamp(1.6rem, 2.4vw, 2rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+.portal-header .portal-subtitle { font-size: .98rem; line-height: 1.55; }
+
+/* "Ya tengo cuenta" CTA pill */
+.portal-page .portal-header .btn-outline {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(4px);
+    border-color: #a7f3d0;
+    color: #047857;
+    font-weight: 600;
+    padding: .6rem 1.1rem;
+    border-radius: 999px;
+    box-shadow: 0 1px 2px rgba(4, 120, 87, .08);
+    white-space: nowrap;
+}
+.portal-page .portal-header .btn-outline:hover {
+    background: #ecfdf5;
+    border-color: #047857;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .portal-header { padding: 1.25rem 1.25rem; border-radius: 14px; }
+    .portal-header h1 { font-size: 1.4rem; }
+    .portal-header .portal-subtitle { font-size: .92rem; }
+    .portal-page .portal-header .btn-outline { width: 100%; justify-content: center; }
+}
+
+/* Stepper v2 — connecting lines, larger circles, smooth transitions */
+.portal-steps {
+    display: flex; align-items: center;
+    gap: 0;
+    padding: 1.25rem 1.5rem;
+    list-style: none;
+    margin: .5rem 0 1.25rem;
+    flex-wrap: nowrap;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow-x: auto;
+}
+.portal-steps li {
+    flex: 1 1 0;
+    min-width: 0;
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: .92rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.portal-steps li:not(:last-child)::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 2px;
+    background: #e5e7eb;
+    margin: 0 .85rem;
+    border-radius: 2px;
+    transition: background .2s;
+}
+.portal-steps li.is-done:not(:last-child)::after { background: #10b981; }
+.portal-steps li span {
+    flex-shrink: 0;
+    display: inline-grid;
+    place-items: center;
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #94a3b8;
+    text-align: center;
+    line-height: 1;
+    font-size: .9rem;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px #e5e7eb;
+    transition: background .2s, color .2s, box-shadow .2s, transform .2s;
+}
+.portal-steps li.is-current { color: #0f172a; }
+.portal-steps li.is-current span {
+    background: #047857; color: #fff;
+    box-shadow: 0 0 0 4px rgba(4, 120, 87, .15);
+    transform: scale(1.05);
+}
+.portal-steps li.is-done { color: #047857; }
+.portal-steps li.is-done span {
+    background: #10b981; color: #fff;
+    box-shadow: inset 0 0 0 1px #10b981;
+}
+
+@media (max-width: 600px) {
+    .portal-steps { padding: 1rem; gap: 0; }
+    .portal-steps li { font-size: .82rem; gap: .4rem; }
+    .portal-steps li:not(:last-child)::after { margin: 0 .4rem; }
+    .portal-steps li span { width: 1.7rem; height: 1.7rem; font-size: .8rem; }
+}
+
+/* Custom chevron on the native select */
+.portal-page select.form-input,
+.portal-form select.form-input {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23047857' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px 16px;
+    padding-right: 2.5rem;
+    cursor: pointer;
+}
+.portal-page select.form-input:disabled { cursor: not-allowed; opacity: .6; }
+
+/* Card hover lift (subtle) */
+.portal-card { box-shadow: 0 1px 2px rgba(15, 23, 42, .03); }
+.portal-card:hover { box-shadow: 0 4px 16px rgba(15, 23, 42, .05); }
+
+/* Agendar — actions row + helper text + select wrap */
+.agendar-field { display: flex; flex-direction: column; gap: .5rem; }
+.agendar-hint {
+    margin: .25rem 0 0;
+    font-size: .82rem;
+    color: #64748b;
+    display: flex; align-items: center; gap: .4rem;
+}
+.agendar-hint i { color: #10b981; flex-shrink: 0; }
+.agendar-actions {
+    display: flex; flex-wrap: wrap;
+    gap: .75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed #e5e7eb;
+    align-items: center;
+}
+.agendar-actions .btn { min-width: 160px; justify-content: center; }
+.agendar-actions .btn-green { padding: .85rem 1.5rem; font-weight: 700; }
+.agendar-actions-spacer { flex: 1 1 auto; }
+
+@media (max-width: 560px) {
+    .agendar-actions { flex-direction: column-reverse; align-items: stretch; }
+    .agendar-actions .btn { width: 100%; min-width: 0; }
+    .agendar-actions-spacer { display: none; }
+}
+
+/* Step 2 — doctor list responsive: stack on small screens */
+@media (max-width: 560px) {
+    .portal-doctor {
+        grid-template-columns: 48px 1fr;
+        grid-template-areas:
+            "photo info"
+            "cta cta";
+        row-gap: .75rem;
+    }
+    .portal-doctor > img { grid-area: photo; }
+    .portal-doctor > div { grid-area: info; min-width: 0; }
+    .portal-doctor > a   { grid-area: cta; width: 100%; justify-content: center; }
+}
+
+/* shell breathing room (with header CTA wrap) */
+@media (max-width: 900px) {
+    .portal-shell-app[style] { padding: 1.25rem 1rem !important; }
+}
