@@ -95,3 +95,33 @@ function doctor_csrf_check(): void {
         exit('CSRF token invalido. Recarga la pagina.');
     }
 }
+
+/** Cookie del "dispositivo confiable" (omite 2FA durante N dias). */
+function doctor_trusted_device_token(): ?string {
+    return $_COOKIE['HGLC_DOC_TRUST'] ?? null;
+}
+
+function doctor_set_trusted_device(string $token, ?string $expiresAt): void {
+    if (!$token) return;
+    $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    $exp = $expiresAt ? strtotime($expiresAt) : (time() + 30 * 86400);
+    setcookie('HGLC_DOC_TRUST', $token, [
+        'expires'  => $exp,
+        'path'     => '/',
+        'secure'   => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
+function doctor_clear_trusted_device(): void {
+    $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+    setcookie('HGLC_DOC_TRUST', '', [
+        'expires'  => time() - 3600,
+        'path'     => '/',
+        'secure'   => $secure,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+    unset($_COOKIE['HGLC_DOC_TRUST']);
+}

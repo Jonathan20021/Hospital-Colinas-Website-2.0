@@ -1737,6 +1737,159 @@
     margin-top: 1px;
 }
 
+/* ── LOGIN ENHANCEMENTS (caps lock, loading, security badges) ── */
+.doctor-capslock-hint {
+    display: flex; align-items: center; gap: .35rem;
+    margin: .5rem 0 0;
+    font-size: .78rem;
+    color: var(--doc-warning);
+    font-weight: 600;
+}
+.doctor-capslock-hint i { color: var(--doc-warning); }
+
+.doctor-btn[disabled] { opacity: .8; cursor: not-allowed; pointer-events: none; }
+.doctor-btn-content, .doctor-btn-loading {
+    display: inline-flex; align-items: center; gap: .5rem;
+}
+.doctor-spin { animation: doctor-spin 1s linear infinite; }
+@keyframes doctor-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.doctor-security-badges {
+    display: flex; flex-wrap: wrap; gap: .4rem;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px dashed var(--doc-line-2);
+    justify-content: center;
+}
+.doctor-security-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .3rem .65rem;
+    background: var(--doc-surface-2);
+    border: 1px solid var(--doc-line);
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--doc-muted);
+}
+.doctor-security-badge i { color: var(--doc-success); }
+
+/* ── OTP (codigo de 6 digitos en verificar.php) ───────────── */
+.doctor-otp {
+    display: flex; gap: .55rem;
+    justify-content: center;
+    margin: .35rem 0 .25rem;
+}
+.doctor-otp-slot {
+    width: 48px; height: 56px;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 1.6rem; font-weight: 800;
+    color: var(--doc-text);
+    border: 1.5px solid var(--doc-line-2);
+    border-radius: 12px;
+    background: #fff;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
+    caret-color: var(--doc-brand-1);
+}
+.doctor-otp-slot:focus {
+    outline: none;
+    border-color: var(--doc-brand-1);
+    box-shadow: 0 0 0 4px rgba(13, 148, 136, .14);
+    transform: scale(1.04);
+}
+@media (max-width: 480px) {
+    .doctor-otp-slot { width: 40px; height: 50px; font-size: 1.35rem; }
+    .doctor-otp { gap: .35rem; }
+}
+
+/* ── CHECKBOX (remember device, etc) ──────────────────────── */
+.doctor-check {
+    display: flex; align-items: flex-start; gap: .55rem;
+    font-size: .85rem; color: var(--doc-muted);
+    line-height: 1.45;
+    cursor: pointer;
+}
+.doctor-check input[type="checkbox"] {
+    width: 18px; height: 18px;
+    margin-top: 2px;
+    accent-color: var(--doc-brand-1);
+    flex-shrink: 0;
+}
+.doctor-check span { user-select: none; }
+.doctor-check:hover span { color: var(--doc-text-2); }
+
+.doctor-btn-inline {
+    background: none; border: none;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+
+/* ── LOGIN ACTIVITY (cuenta.php) ─────────────────────────── */
+.doctor-activity-list {
+    list-style: none; padding: 0; margin: 0;
+}
+.doctor-activity-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    gap: .85rem;
+    padding: .8rem 1.2rem;
+    border-bottom: 1px solid var(--doc-line);
+}
+.doctor-activity-row:last-child { border-bottom: none; }
+.doctor-activity-icon {
+    width: 32px; height: 32px;
+    border-radius: 999px;
+    display: flex; align-items: center; justify-content: center;
+}
+.doctor-activity-icon i { width: 16px; height: 16px; }
+.doctor-activity-success .doctor-activity-icon { background: var(--doc-success-soft); color: var(--doc-success); }
+.doctor-activity-failed  .doctor-activity-icon { background: var(--doc-danger-soft);  color: var(--doc-danger); }
+.doctor-activity-meta { min-width: 0; }
+.doctor-activity-title {
+    font-size: .9rem; font-weight: 700; color: var(--doc-text); margin: 0;
+}
+.doctor-activity-sub {
+    font-size: .78rem; color: var(--doc-muted); margin: .15rem 0 0;
+    word-break: break-word;
+}
+.doctor-activity-when {
+    font-size: .78rem; color: var(--doc-muted);
+    text-align: right;
+    white-space: nowrap;
+}
+
+.doctor-device-row {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    align-items: center;
+    gap: .85rem;
+    padding: .9rem 1.2rem;
+    border-bottom: 1px solid var(--doc-line);
+}
+.doctor-device-row:last-child { border-bottom: none; }
+.doctor-device-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--doc-grad-brand-soft);
+    color: var(--doc-brand-1);
+    display: flex; align-items: center; justify-content: center;
+}
+.doctor-device-label { font-weight: 700; color: var(--doc-text); margin: 0; }
+.doctor-device-meta { font-size: .78rem; color: var(--doc-muted); margin: .15rem 0 0; }
+.doctor-device-revoke {
+    border: 1px solid var(--doc-line-2);
+    background: #fff;
+    color: var(--doc-danger);
+    padding: .35rem .65rem;
+    border-radius: 8px;
+    font-size: .78rem; font-weight: 600;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: .3rem;
+}
+.doctor-device-revoke:hover { background: var(--doc-danger-soft); border-color: var(--doc-danger); }
+
 /* ── HOVER TILT subtle on cards ───────────────────────────── */
 @media (hover: hover) {
     .doctor-kpi,

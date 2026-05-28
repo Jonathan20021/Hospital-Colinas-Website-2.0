@@ -155,6 +155,10 @@ doctor_layout_begin('Consulta medica', 'consulta');
                     <i data-lucide="syringe" class="h-6 w-6"></i>
                     <div><strong>Procedimientos</strong><span>Interconsultas / referimientos</span></div>
                 </a>
+                <a class="doctor-pdf-card" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=constancia')) ?>">
+                    <i data-lucide="file-check-2" class="h-6 w-6"></i>
+                    <div><strong>Constancia medica</strong><span>Comprobante completo de consulta</span></div>
+                </a>
             </div>
         </section>
         <script>

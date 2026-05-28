@@ -14,21 +14,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     doctor_csrf_check();
     $emailInput = trim((string)($_POST['email'] ?? ''));
     $password   = (string)($_POST['password'] ?? '');
+    $trustedTok = doctor_trusted_device_token();
 
     $res = portal_api_call('POST', '/portal-doctor/auth/login', [
-        'email'    => $emailInput,
-        'password' => $password,
+        'email'                => $emailInput,
+        'password'             => $password,
+        'trusted_device_token' => $trustedTok,
     ]);
 
-    if ($res['ok']) {
+    if ($res['ok'] && ($res['data']['step'] ?? '') === 'authenticated') {
+        // Dispositivo ya confiable o 2FA desactivado → login directo
         doctor_portal_login_session($res['data']);
         $next = $_GET['next'] ?? base_url('portal-medico/dashboard.php');
         header('Location: ' . $next);
         exit;
-    } else {
-        $message = $res['message'] ?? 'No se pudo iniciar sesion.';
-        $errors  = $res['errors'];
     }
+
+    if ($res['ok'] && ($res['data']['step'] ?? '') === 'verify') {
+        // Necesita 2FA — guardar credenciales temporales en sesion para el verificar.php
+        doctor_portal_session_start();
+        $_SESSION['doctor_pending_login'] = [
+            'email'        => $emailInput,
+            'password'     => $password,        // se elimina al verificar o expira la sesion
+            'email_masked' => $res['data']['email_masked'] ?? '',
+            'expires_at'   => time() + (int)($res['data']['expires_in'] ?? 600),
+            'next'         => $_GET['next'] ?? '',
+        ];
+        header('Location: ' . base_url('portal-medico/verificar.php'));
+        exit;
+    }
+
+    $message = $res['message'] ?? 'No se pudo iniciar sesion.';
+    $errors  = $res['errors'];
 }
 
 doctor_layout_begin('Iniciar sesion', 'login');
@@ -51,7 +68,7 @@ doctor_layout_begin('Iniciar sesion', 'login');
         <?php endif; ?>
         <?= doctor_render_errors($errors) ?>
 
-        <form method="POST" autocomplete="on" class="doctor-form">
+        <form method="POST" autocomplete="on" class="doctor-form" id="login-form">
             <input type="hidden" name="_csrf" value="<?= e(doctor_csrf_token()) ?>">
 
             <label class="doctor-label" for="email">Correo institucional</label>
@@ -68,19 +85,24 @@ doctor_layout_begin('Iniciar sesion', 'login');
                     <i data-lucide="eye" class="h-4 w-4"></i>
                 </button>
             </div>
+            <p id="capslock-hint" class="doctor-capslock-hint" hidden>
+                <i data-lucide="alert-triangle" class="h-3.5 w-3.5"></i> Bloq Mayus esta activado
+            </p>
 
             <div class="doctor-auth-row">
                 <a href="<?= e(base_url('portal-medico/recuperar.php')) ?>" class="doctor-text-link">¿Olvidaste tu contrasena?</a>
             </div>
 
-            <button type="submit" class="doctor-btn doctor-btn-primary mt-6">
-                <i data-lucide="log-in" class="h-4 w-4"></i> Iniciar sesion
+            <button type="submit" class="doctor-btn doctor-btn-primary mt-6" id="login-submit">
+                <span class="doctor-btn-content"><i data-lucide="log-in" class="h-4 w-4"></i> Iniciar sesion</span>
+                <span class="doctor-btn-loading" hidden><i data-lucide="loader-2" class="h-4 w-4 doctor-spin"></i> Verificando...</span>
             </button>
 
-            <p class="doctor-auth-help">
-                Solo personal medico autorizado.<br>
-                ¿Problemas para entrar? Contacta al administrador del hospital.
-            </p>
+            <div class="doctor-security-badges">
+                <span class="doctor-security-badge"><i data-lucide="shield-check" class="h-3.5 w-3.5"></i> Conexion TLS 1.3</span>
+                <span class="doctor-security-badge"><i data-lucide="key-round" class="h-3.5 w-3.5"></i> 2FA por email</span>
+                <span class="doctor-security-badge"><i data-lucide="lock" class="h-3.5 w-3.5"></i> Solo personal autorizado</span>
+            </div>
         </form>
     </div>
 
@@ -90,12 +112,39 @@ doctor_layout_begin('Iniciar sesion', 'login');
             <h2>Tu trabajo, mas simple.</h2>
             <ul class="doctor-auth-points">
                 <li><i data-lucide="calendar-check" class="h-4 w-4"></i> Tu agenda del dia y la semana.</li>
-                <li><i data-lucide="file-text" class="h-4 w-4"></i> Notas medicas y recetas en linea.</li>
+                <li><i data-lucide="file-text" class="h-4 w-4"></i> Notas medicas, recetas y constancias.</li>
                 <li><i data-lucide="users" class="h-4 w-4"></i> Historial clinico de tus pacientes.</li>
                 <li><i data-lucide="bar-chart-3" class="h-4 w-4"></i> Indicadores de tu consulta.</li>
             </ul>
-            <p class="doctor-auth-aside-foot">Conexion cifrada extremo a extremo con la red del hospital.</p>
+            <p class="doctor-auth-aside-foot">Protegido con verificacion en dos pasos y conexion cifrada.</p>
         </div>
     </aside>
 </div>
+
+<script>
+(function () {
+    const form = document.getElementById('login-form');
+    const pwd  = document.getElementById('password');
+    const hint = document.getElementById('capslock-hint');
+    const btn  = document.getElementById('login-submit');
+
+    // Caps Lock detector
+    function updateCaps(e) {
+        const on = e.getModifierState && e.getModifierState('CapsLock');
+        if (hint) hint.hidden = !on;
+    }
+    pwd?.addEventListener('keydown', updateCaps);
+    pwd?.addEventListener('keyup', updateCaps);
+    pwd?.addEventListener('blur', () => { if (hint) hint.hidden = true; });
+
+    // Loading state
+    form?.addEventListener('submit', () => {
+        if (!btn) return;
+        btn.disabled = true;
+        btn.querySelector('.doctor-btn-content').hidden = true;
+        btn.querySelector('.doctor-btn-loading').hidden = false;
+        if (window.lucide) window.lucide.createIcons();
+    });
+})();
+</script>
 <?php doctor_layout_end();

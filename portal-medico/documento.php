@@ -23,19 +23,22 @@ if (!$apptId) {
     exit;
 }
 
-$validTypes = ['rx', 'diagnosis_lab', 'lab', 'procedures'];
+$validTypes = ['rx', 'diagnosis_lab', 'lab', 'procedures', 'constancia'];
 if (!in_array($type, $validTypes, true)) {
     http_response_code(400);
     echo 'Tipo de documento invalido.';
     exit;
 }
 
-$res = portal_api_call_binary(
-    'GET',
-    '/portal-doctor/me/appointments/' . $apptId . '/document.pdf',
-    ['type' => $type, 'theme' => $theme, 'disposition' => $disp],
-    doctor_token()
-);
+// La constancia usa un endpoint distinto (delega al AppointmentPdfGenerator del sistema interno).
+$apiPath = $type === 'constancia'
+    ? '/portal-doctor/me/appointments/' . $apptId . '/constancia.pdf'
+    : '/portal-doctor/me/appointments/' . $apptId . '/document.pdf';
+$apiQuery = $type === 'constancia'
+    ? ['theme' => $theme, 'disposition' => $disp]
+    : ['type' => $type, 'theme' => $theme, 'disposition' => $disp];
+
+$res = portal_api_call_binary('GET', $apiPath, $apiQuery, doctor_token());
 
 if (!$res['ok']) {
     // Si el upstream devuelve JSON de error, mostrarlo legible
