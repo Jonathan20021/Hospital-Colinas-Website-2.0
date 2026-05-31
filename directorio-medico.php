@@ -27,12 +27,15 @@ $directoryValues = [
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Directorio médico | Hospital General Las Colinas, Santiago</title>
-    <meta name="description" content="Directorio médico del Hospital General Las Colinas: <?= e((string) count($medicalProfiles)) ?> especialistas en <?= e((string) count($directorySpecialties)) ?> especialidades. Consulta horarios, consultorios y agenda tu cita en Santiago, RD.">
-    <meta name="keywords" content="directorio medico Santiago, especialistas hospital colinas, médicos República Dominicana, agendar cita Santiago">
+    <meta name="description"
+        content="Directorio médico del Hospital General Las Colinas: <?= e((string) count($medicalProfiles)) ?> especialistas en <?= e((string) count($directorySpecialties)) ?> especialidades. Consulta horarios, consultorios y agenda tu cita en Santiago, RD.">
+    <meta name="keywords"
+        content="directorio medico Santiago, especialistas hospital colinas, médicos República Dominicana, agendar cita Santiago">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#262161">
     <link rel="canonical" href="<?= e(canonical_url()) ?>">
@@ -42,7 +45,8 @@ $directoryValues = [
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Hospital General Las Colinas">
     <meta property="og:title" content="Directorio médico | Hospital General Las Colinas">
-    <meta property="og:description" content="Encuentra a tu especialista entre <?= e((string) count($medicalProfiles)) ?> médicos del Hospital General Las Colinas en Santiago, RD.">
+    <meta property="og:description"
+        content="Encuentra a tu especialista entre <?= e((string) count($medicalProfiles)) ?> médicos del Hospital General Las Colinas en Santiago, RD.">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
     <meta property="og:image" content="<?= e(absolute_url($assets['hero'])) ?>">
@@ -55,7 +59,9 @@ $directoryValues = [
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
 
@@ -83,11 +89,13 @@ $directoryValues = [
             "addressCountry": "DO"
         },
         "medicalSpecialty": [
-            <?php $totalSp = count($directorySpecialties); foreach ($directorySpecialties as $i => $sp): ?>"<?= e($sp['name']) ?>"<?= $i < $totalSp - 1 ? ',' : '' ?><?php endforeach; ?>
+            <?php $totalSp = count($directorySpecialties);
+            foreach ($directorySpecialties as $i => $sp): ?>"<?= e($sp['name']) ?>"<?= $i < $totalSp - 1 ? ',' : '' ?><?php endforeach; ?>
         ]
     }
     </script>
 </head>
+
 <body class="bg-white font-sans text-slate-950 antialiased directory-page">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
@@ -122,22 +130,29 @@ $directoryValues = [
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="brand-logo">
+                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                        class="brand-logo">
                 </a>
 
                 <nav class="nav-primary" aria-label="Navegación principal">
                     <a href="<?= e(base_url('#inicio')) ?>" class="nav-link">Inicio</a>
                     <div class="nav-dropdown" data-nav-dropdown>
-                        <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="nav-link nav-dropdown-toggle" aria-haspopup="true"
+                            aria-expanded="false">
                             Hospital
                             <i data-lucide="chevron-down" class="h-3.5 w-3.5"></i>
                         </button>
                         <div class="nav-dropdown-menu" role="menu">
-                            <a href="<?= e(base_url('#nosotros')) ?>" role="menuitem"><i data-lucide="building-2" class="h-4 w-4"></i>Nosotros</a>
-                            <a href="<?= e(base_url('#liderazgo')) ?>" role="menuitem"><i data-lucide="users-round" class="h-4 w-4"></i>Liderazgo institucional</a>
-                            <a href="<?= e(base_url('#instalaciones')) ?>" role="menuitem"><i data-lucide="hospital" class="h-4 w-4"></i>Instalaciones</a>
-                            <a href="<?= e(base_url('#pacientes')) ?>" role="menuitem"><i data-lucide="heart-handshake" class="h-4 w-4"></i>Pacientes</a>
-                            <a href="<?= e(base_url('#contacto')) ?>" role="menuitem"><i data-lucide="map-pin" class="h-4 w-4"></i>Contacto</a>
+                            <a href="<?= e(base_url('#nosotros')) ?>" role="menuitem"><i data-lucide="building-2"
+                                    class="h-4 w-4"></i>Nosotros</a>
+                            <a href="<?= e(base_url('#liderazgo')) ?>" role="menuitem"><i data-lucide="users-round"
+                                    class="h-4 w-4"></i>Liderazgo institucional</a>
+                            <a href="<?= e(base_url('#instalaciones')) ?>" role="menuitem"><i data-lucide="hospital"
+                                    class="h-4 w-4"></i>Instalaciones</a>
+                            <a href="<?= e(base_url('#pacientes')) ?>" role="menuitem"><i data-lucide="heart-handshake"
+                                    class="h-4 w-4"></i>Pacientes</a>
+                            <a href="<?= e(base_url('#contacto')) ?>" role="menuitem"><i data-lucide="map-pin"
+                                    class="h-4 w-4"></i>Contacto</a>
                         </div>
                     </div>
                     <a href="<?= e(base_url('#servicios')) ?>" class="nav-link">Servicios</a>
@@ -155,7 +170,8 @@ $directoryValues = [
                     </button>
                 </div>
 
-                <button id="menuToggle" type="button" class="mobile-toggle" aria-label="Abrir menú" aria-expanded="false">
+                <button id="menuToggle" type="button" class="mobile-toggle" aria-label="Abrir menú"
+                    aria-expanded="false">
                     <i data-lucide="menu" class="menu-icon h-5 w-5"></i>
                     <i data-lucide="x" class="close-icon hidden h-5 w-5"></i>
                 </button>
@@ -168,7 +184,8 @@ $directoryValues = [
                         <summary>Hospital <i data-lucide="chevron-down" class="h-4 w-4"></i></summary>
                         <div class="mobile-sub">
                             <a href="<?= e(base_url('#nosotros')) ?>" class="mobile-sub-link">Nosotros</a>
-                            <a href="<?= e(base_url('#liderazgo')) ?>" class="mobile-sub-link">Liderazgo institucional</a>
+                            <a href="<?= e(base_url('#liderazgo')) ?>" class="mobile-sub-link">Liderazgo
+                                institucional</a>
                             <a href="<?= e(base_url('#instalaciones')) ?>" class="mobile-sub-link">Instalaciones</a>
                             <a href="<?= e(base_url('#pacientes')) ?>" class="mobile-sub-link">Pacientes</a>
                             <a href="<?= e(base_url('#contacto')) ?>" class="mobile-sub-link">Contacto</a>
@@ -195,7 +212,8 @@ $directoryValues = [
                         Directorio médico
                     </span>
                     <h1>Encuentra el especialista indicado</h1>
-                    <p>Profesionales con experiencia clínica, atención humana y tecnología avanzada. Filtra por nombre, especialidad o servicio.</p>
+                    <p>Profesionales con experiencia clínica, atención humana y tecnología avanzada. Filtra por nombre,
+                        especialidad o servicio.</p>
 
                     <div class="dir-hero-actions">
                         <button type="button" class="btn btn-green btn-lg js-open-appointment">
@@ -241,8 +259,10 @@ $directoryValues = [
 
                 <div class="dir-search-row">
                     <i data-lucide="search" class="h-5 w-5"></i>
-                    <input id="doctorSearch" type="search" placeholder="Ej. Cardiología, García, Pediatría..." autocomplete="off" aria-controls="doctorLivePanel">
-                    <button id="doctorClear" type="button" class="dir-search-clear hidden" aria-label="Limpiar búsqueda">
+                    <input id="doctorSearch" type="search" placeholder="Ej. Cardiología, García, Pediatría..."
+                        autocomplete="off" aria-controls="doctorLivePanel">
+                    <button id="doctorClear" type="button" class="dir-search-clear hidden"
+                        aria-label="Limpiar búsqueda">
                         <i data-lucide="x" class="h-4 w-4"></i>
                     </button>
                     <button type="submit" class="dir-search-submit">
@@ -258,8 +278,10 @@ $directoryValues = [
                     <div id="doctorLiveResults" class="dir-live-grid">
                         <?php foreach ($medicalProfiles as $profile): ?>
                             <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
-                            <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-live-result" data-live-result data-search="<?= e($search) ?>">
-                                <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>" loading="lazy">
+                            <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-live-result"
+                                data-live-result data-search="<?= e($search) ?>">
+                                <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
+                                    loading="lazy">
                                 <span>
                                     <strong><?= e($profile['name']) ?></strong>
                                     <small><?= e($profile['specialty']) ?></small>
@@ -278,7 +300,8 @@ $directoryValues = [
                     <div>
                         <p class="section-label">Profesionales médicos</p>
                         <h2>Equipo clínico de Las Colinas</h2>
-                        <span>Selecciona la especialidad para filtrar el equipo. Cada perfil muestra horarios, consultorio y seguros vigentes.</span>
+                        <span>Selecciona la especialidad para filtrar el equipo. Cada perfil muestra horarios,
+                            consultorio y seguros vigentes.</span>
                     </div>
                     <div class="dir-filter-bar" aria-label="Filtros del directorio">
                         <button type="button" class="is-active" data-doctor-filter="all">
@@ -286,7 +309,8 @@ $directoryValues = [
                             Todos
                         </button>
                         <?php foreach (array_slice($directorySpecialties, 0, 7) as $specialty): ?>
-                            <button type="button" data-doctor-filter="<?= e($specialty['slug']) ?>"><?= e($specialty['name']) ?></button>
+                            <button type="button"
+                                data-doctor-filter="<?= e($specialty['slug']) ?>"><?= e($specialty['name']) ?></button>
                         <?php endforeach; ?>
                     </div>
                 </div>
@@ -296,20 +320,26 @@ $directoryValues = [
                         <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
                         <article class="dir-doctor-card" data-doctor-card data-search="<?= e($search) ?>">
                             <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-doctor-photo">
-                                <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>" loading="lazy">
+                                <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
+                                    loading="lazy">
                                 <span class="dir-doctor-tag"><?= e($profile['specialty']) ?></span>
                             </a>
                             <div class="dir-doctor-body">
-                                <h3><a href="<?= e(base_url('medico/' . $profile['slug'])) ?>"><?= e($profile['name']) ?></a></h3>
-                                <p class="dir-doctor-office"><i data-lucide="map-pin" class="h-3.5 w-3.5"></i><?= e($profile['office']) ?></p>
-                                <p class="dir-doctor-schedule"><i data-lucide="clock-3" class="h-3.5 w-3.5"></i><?= e($profile['schedule']) ?></p>
+                                <h3><a
+                                        href="<?= e(base_url('medico/' . $profile['slug'])) ?>"><?= e($profile['name']) ?></a>
+                                </h3>
+                                <p class="dir-doctor-office"><i data-lucide="map-pin"
+                                        class="h-3.5 w-3.5"></i><?= e($profile['office']) ?></p>
+                                <p class="dir-doctor-schedule"><i data-lucide="clock-3"
+                                        class="h-3.5 w-3.5"></i><?= e($profile['schedule']) ?></p>
                             </div>
                             <div class="dir-doctor-actions">
                                 <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-action-primary">
                                     Ver perfil
                                     <i data-lucide="arrow-right" class="h-4 w-4"></i>
                                 </a>
-                                <button type="button" class="js-open-appointment dir-action-secondary" aria-label="Agendar cita">
+                                <button type="button" class="js-open-appointment dir-action-secondary"
+                                    aria-label="Agendar cita">
                                     <i data-lucide="calendar-days" class="h-4 w-4"></i>
                                 </button>
                             </div>
@@ -346,8 +376,10 @@ $directoryValues = [
                     <p>Acceso conectado a Colinas Mall, con áreas de estacionamiento y orientación.</p>
                     <ul>
                         <li><i data-lucide="map-pin" class="h-4 w-4"></i><?= e($contact['address']) ?></li>
-                        <li><i data-lucide="phone" class="h-4 w-4"></i><a href="tel:18098060444"><?= e($contact['phone']) ?></a></li>
-                        <li><i data-lucide="mail" class="h-4 w-4"></i><a href="mailto:<?= e($contact['email']) ?>"><?= e($contact['email']) ?></a></li>
+                        <li><i data-lucide="phone" class="h-4 w-4"></i><a
+                                href="tel:18098060444"><?= e($contact['phone']) ?></a></li>
+                        <li><i data-lucide="mail" class="h-4 w-4"></i><a
+                                href="mailto:<?= e($contact['email']) ?>"><?= e($contact['email']) ?></a></li>
                     </ul>
                     <div class="dir-location-actions">
                         <a href="<?= e($contact['maps']) ?>" target="_blank" rel="noopener" class="btn btn-green">
@@ -360,9 +392,7 @@ $directoryValues = [
                         </a>
                     </div>
                 </div>
-                <iframe
-                    title="Ubicación del Hospital General Las Colinas"
-                    loading="lazy"
+                <iframe title="Ubicación del Hospital General Las Colinas" loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
                     src="https://www.google.com/maps?q=Hospital%20General%20Las%20Colinas%20Santiago&output=embed"></iframe>
             </div>
@@ -371,7 +401,8 @@ $directoryValues = [
 
     <?php render_public_footer($assets, $contact, $year); ?>
 
-    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="appointmentTitle">
+    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true"
+        aria-labelledby="appointmentTitle">
         <div class="modal-panel">
             <div class="modal-header">
                 <div>
@@ -382,7 +413,8 @@ $directoryValues = [
                     <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
             </div>
-            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>" method="post">
+            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>"
+                method="post">
                 <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                 <div>
                     <label for="name" class="form-label">Nombre completo</label>
@@ -391,7 +423,8 @@ $directoryValues = [
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label for="phone" class="form-label">Teléfono</label>
-                        <input id="phone" name="phone" type="tel" required class="form-input" placeholder="(809) 000-0000">
+                        <input id="phone" name="phone" type="tel" required class="form-input"
+                            placeholder="(809) 000-0000">
                     </div>
                     <div>
                         <label for="date" class="form-label">Fecha preferida</label>
@@ -421,4 +454,5 @@ $directoryValues = [
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 </body>
+
 </html>

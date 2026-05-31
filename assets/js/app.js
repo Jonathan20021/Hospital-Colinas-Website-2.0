@@ -9,6 +9,41 @@
             window.lucide.createIcons();
         }
 
+        // Scroll reveal — motion-safe progressive enhancement.
+        // Above-fold elements show instantly (no flash); below-fold animate in.
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!prefersReduced && 'IntersectionObserver' in window) {
+            document.documentElement.classList.add('reveal-on');
+            const revealSel = '.section-label, .section-title, .section-copy, .hero-kicker,'
+                + ' .hero-copy h1, .hero-copy p, .hero-actions, .hero-assist-panel, .hero-feature,'
+                + ' .task-card, .doctor-card, .news-card, .journey-card, .capability-item,'
+                + ' .tour-card, .guide-link, .directory-card, .finder-panel, .gerencia-card, [data-reveal]';
+            const revealItems = [...document.querySelectorAll(revealSel)];
+            const viewportH = window.innerHeight || document.documentElement.clientHeight;
+            const revealObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    const el = entry.target;
+                    const siblings = el.parentElement
+                        ? [...el.parentElement.children].filter((c) => c.classList.contains('reveal'))
+                        : [el];
+                    const order = Math.max(0, siblings.indexOf(el));
+                    el.style.transitionDelay = Math.min(order * 65, 320) + 'ms';
+                    el.classList.add('is-inview');
+                    obs.unobserve(el);
+                });
+            }, { rootMargin: '0px 0px -7% 0px', threshold: 0.06 });
+            revealItems.forEach((el) => {
+                el.classList.add('reveal');
+                const rect = el.getBoundingClientRect();
+                if (rect.top < viewportH * 0.92 && rect.bottom > 0) {
+                    el.classList.add('is-inview'); // already visible at load
+                } else {
+                    revealObserver.observe(el);
+                }
+            });
+        }
+
         const header = document.getElementById('siteHeader');
         const menuToggle = document.getElementById('menuToggle');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -134,7 +169,7 @@
                 // Si el botón tiene data-specialty, lo guardamos para el portal
                 const spec = button.dataset.specialty || button.dataset.specialtyId;
                 if (spec) {
-                    try { sessionStorage.setItem('portal_default_specialty', spec); } catch (e) {}
+                    try { sessionStorage.setItem('portal_default_specialty', spec); } catch (e) { }
                 }
                 window.location.href = '/agendar';
             });

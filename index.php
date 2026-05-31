@@ -144,12 +144,15 @@ $leadershipGerencias = [
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital General Las Colinas | Atención médica avanzada en Santiago, RD</title>
-    <meta name="description" content="Hospital General Las Colinas en Santiago, Rep. Dominicana: emergencias 24/7, 28+ especialidades médicas, 55+ consultorios, tecnología de diagnóstico avanzada y hospitalización integral.">
-    <meta name="keywords" content="hospital Santiago, hospital colinas, emergencias 24/7 Santiago, especialistas médicos República Dominicana, cardiología, pediatría, ginecología, tomografía Santiago">
+    <meta name="description"
+        content="Hospital General Las Colinas en Santiago, Rep. Dominicana: emergencias 24/7, 28+ especialidades médicas, 55+ consultorios, tecnología de diagnóstico avanzada y hospitalización integral.">
+    <meta name="keywords"
+        content="hospital Santiago, hospital colinas, emergencias 24/7 Santiago, especialistas médicos República Dominicana, cardiología, pediatría, ginecología, tomografía Santiago">
     <meta name="author" content="Hospital General Las Colinas">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#262161">
@@ -165,7 +168,8 @@ $leadershipGerencias = [
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Hospital General Las Colinas">
     <meta property="og:title" content="Hospital General Las Colinas | Atención médica avanzada en Santiago, RD">
-    <meta property="og:description" content="Emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada en Santiago, República Dominicana.">
+    <meta property="og:description"
+        content="Emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada en Santiago, República Dominicana.">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
     <meta property="og:image" content="<?= e(absolute_url($assets['hero'])) ?>">
@@ -176,13 +180,16 @@ $leadershipGerencias = [
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Hospital General Las Colinas | Atención médica avanzada en Santiago, RD">
-    <meta name="twitter:description" content="Emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada.">
+    <meta name="twitter:description"
+        content="Emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada.">
     <meta name="twitter:image" content="<?= e(absolute_url($assets['hero'])) ?>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="<?= e(base_url($assets['hero'])) ?>" fetchpriority="high">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
 
@@ -226,7 +233,8 @@ $leadershipGerencias = [
                     "<?= e($contact['instagram']) ?>"
                 ],
                 "medicalSpecialty": [
-                    <?php $specialtyCount = count($services['consultas']['items']); foreach ($services['consultas']['items'] as $i => $sp): ?>"<?= e($sp) ?>"<?= $i < $specialtyCount - 1 ? ',' : '' ?><?php endforeach; ?>
+                    <?php $specialtyCount = count($services['consultas']['items']);
+                    foreach ($services['consultas']['items'] as $i => $sp): ?>"<?= e($sp) ?>"<?= $i < $specialtyCount - 1 ? ',' : '' ?><?php endforeach; ?>
                 ],
                 "availableService": [
                     {"@type": "MedicalProcedure", "name": "Emergencias 24/7"},
@@ -256,6 +264,7 @@ $leadershipGerencias = [
     }
     </script>
 </head>
+
 <body class="bg-white font-sans text-slate-950 antialiased">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
@@ -290,22 +299,29 @@ $leadershipGerencias = [
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="#inicio" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="brand-logo">
+                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                        class="brand-logo">
                 </a>
 
                 <nav class="nav-primary" aria-label="Navegación principal">
                     <a href="#inicio" class="nav-link" data-section="inicio">Inicio</a>
                     <div class="nav-dropdown" data-nav-dropdown>
-                        <button type="button" class="nav-link nav-dropdown-toggle" data-section="instalaciones" aria-haspopup="true" aria-expanded="false">
+                        <button type="button" class="nav-link nav-dropdown-toggle" data-section="instalaciones"
+                            aria-haspopup="true" aria-expanded="false">
                             Hospital
                             <i data-lucide="chevron-down" class="h-3.5 w-3.5"></i>
                         </button>
                         <div class="nav-dropdown-menu" role="menu">
-                            <a href="#nosotros" role="menuitem"><i data-lucide="building-2" class="h-4 w-4"></i>Nosotros</a>
-                            <a href="#liderazgo" role="menuitem"><i data-lucide="users-round" class="h-4 w-4"></i>Liderazgo institucional</a>
-                            <a href="#instalaciones" role="menuitem"><i data-lucide="hospital" class="h-4 w-4"></i>Instalaciones</a>
-                            <a href="#pacientes" role="menuitem"><i data-lucide="heart-handshake" class="h-4 w-4"></i>Pacientes</a>
-                            <a href="#contacto" role="menuitem"><i data-lucide="map-pin" class="h-4 w-4"></i>Contacto</a>
+                            <a href="#nosotros" role="menuitem"><i data-lucide="building-2"
+                                    class="h-4 w-4"></i>Nosotros</a>
+                            <a href="#liderazgo" role="menuitem"><i data-lucide="users-round"
+                                    class="h-4 w-4"></i>Liderazgo institucional</a>
+                            <a href="#instalaciones" role="menuitem"><i data-lucide="hospital"
+                                    class="h-4 w-4"></i>Instalaciones</a>
+                            <a href="#pacientes" role="menuitem"><i data-lucide="heart-handshake"
+                                    class="h-4 w-4"></i>Pacientes</a>
+                            <a href="#contacto" role="menuitem"><i data-lucide="map-pin"
+                                    class="h-4 w-4"></i>Contacto</a>
                         </div>
                     </div>
                     <a href="#servicios" class="nav-link" data-section="servicios">Servicios</a>
@@ -323,7 +339,8 @@ $leadershipGerencias = [
                     </button>
                 </div>
 
-                <button id="menuToggle" type="button" class="mobile-toggle" aria-label="Abrir menú" aria-expanded="false">
+                <button id="menuToggle" type="button" class="mobile-toggle" aria-label="Abrir menú"
+                    aria-expanded="false">
                     <i data-lucide="menu" class="menu-icon h-5 w-5"></i>
                     <i data-lucide="x" class="close-icon hidden h-5 w-5"></i>
                 </button>
@@ -367,7 +384,8 @@ $leadershipGerencias = [
                     </span>
                     <h1>Atención médica avanzada para Santiago</h1>
                     <p>
-                        Hospital General Las Colinas conecta especialistas, emergencia, diagnóstico y hospitalización en una experiencia clara para pacientes, familias y médicos referidores.
+                        Hospital General Las Colinas conecta especialistas, emergencia, diagnóstico y hospitalización en
+                        una experiencia clara para pacientes, familias y médicos referidores.
                     </p>
 
                     <div class="hero-actions">
@@ -392,18 +410,21 @@ $leadershipGerencias = [
                     <div class="hero-assist-panel" aria-label="Capacidades principales">
                         <a href="#buscar-atencion" class="hero-assist-item">
                             <i data-lucide="stethoscope" class="h-5 w-5"></i>
-                            <span><strong>Especialidades</strong><small>Consulta especializada y servicios clínicos.</small></span>
+                            <span><strong>Especialidades</strong><small>Consulta especializada y servicios
+                                    clínicos.</small></span>
                         </a>
                         <a href="<?= e(base_url('directorio-medico')) ?>" class="hero-assist-item">
                             <i data-lucide="users-round" class="h-5 w-5"></i>
-                            <span><strong>Profesionales médicos</strong><small>Directorio preparado para perfiles y horarios.</small></span>
+                            <span><strong>Profesionales médicos</strong><small>Directorio preparado para perfiles y
+                                    horarios.</small></span>
                         </a>
                     </div>
                 </div>
 
                 <div class="hero-feature">
                     <div class="hero-feature-image">
-                        <img src="<?= e(base_url($assets['hero'])) ?>" alt="Fachada del Hospital General Las Colinas" class="h-full w-full object-cover">
+                        <img src="<?= e(base_url($assets['hero'])) ?>" alt="Fachada del Hospital General Las Colinas"
+                            class="h-full w-full object-cover">
                     </div>
                     <span class="hero-feature-badge" aria-label="Acreditación clínica">
                         <i data-lucide="shield-check" class="h-4 w-4"></i>
@@ -420,7 +441,9 @@ $leadershipGerencias = [
             <div class="hero-access-wrap">
                 <div class="task-grid" aria-label="Accesos rápidos para pacientes">
                     <?php foreach ($taskCards as $card): ?>
-                        <a href="<?= e($card['href']) ?>" class="<?= !empty($card['modal']) ? 'js-open-appointment ' : '' ?>task-card" <?= !empty($card['external']) ? 'target="_blank" rel="noopener"' : '' ?>>
+                        <a href="<?= e($card['href']) ?>"
+                            class="<?= !empty($card['modal']) ? 'js-open-appointment ' : '' ?>task-card"
+                            <?= !empty($card['external']) ? 'target="_blank" rel="noopener"' : '' ?>>
                             <span class="task-icon"><i data-lucide="<?= e($card['icon']) ?>" class="h-8 w-8"></i></span>
                             <span class="task-body">
                                 <strong><?= e($card['title']) ?></strong>
@@ -442,12 +465,14 @@ $leadershipGerencias = [
                             Centro de búsqueda clínica
                         </span>
                         <h2>Encuentra atención por especialidad, servicio o médico</h2>
-                        <p>Escribe el nombre del especialista, una especialidad o un servicio. Te llevamos directo al perfil o al equipo correcto.</p>
+                        <p>Escribe el nombre del especialista, una especialidad o un servicio. Te llevamos directo al
+                            perfil o al equipo correcto.</p>
                     </div>
 
                     <form id="careSearchForm" class="finder-search" role="search">
                         <i data-lucide="search" class="h-5 w-5"></i>
-                        <input id="careSearch" type="search" placeholder="Ej. Cardiología, García, Tomografía, Pediatría..." autocomplete="off">
+                        <input id="careSearch" type="search"
+                            placeholder="Ej. Cardiología, García, Tomografía, Pediatría..." autocomplete="off">
                         <button id="careClear" type="button" class="finder-clear hidden" aria-label="Limpiar búsqueda">
                             <i data-lucide="x" class="h-4 w-4"></i>
                         </button>
@@ -478,8 +503,10 @@ $leadershipGerencias = [
                                 <div class="care-group-list care-doctor-list">
                                     <?php foreach ($allDoctors as $doc): ?>
                                         <?php $searchKey = search_key($doc['name'] . ' ' . $doc['specialty'] . ' ' . $doc['office']); ?>
-                                        <a href="<?= e(base_url('medico/' . $doc['slug'])) ?>" class="care-result care-result--doctor" data-care-name="<?= e($searchKey) ?>">
-                                            <img src="<?= e(base_url($doc['photo'])) ?>" alt="<?= e($doc['name']) ?>" loading="lazy">
+                                        <a href="<?= e(base_url('medico/' . $doc['slug'])) ?>"
+                                            class="care-result care-result--doctor" data-care-name="<?= e($searchKey) ?>">
+                                            <img src="<?= e(base_url($doc['photo'])) ?>" alt="<?= e($doc['name']) ?>"
+                                                loading="lazy">
                                             <span>
                                                 <strong><?= e($doc['name']) ?></strong>
                                                 <small><?= e($doc['specialty']) ?></small>
@@ -500,7 +527,8 @@ $leadershipGerencias = [
                             <div class="care-group-list care-service-list">
                                 <?php foreach ($services as $group): ?>
                                     <?php foreach ($group['items'] as $item): ?>
-                                        <button type="button" class="care-result js-open-appointment" data-care-name="<?= e(search_key($item . ' ' . $group['label'])) ?>">
+                                        <button type="button" class="care-result js-open-appointment"
+                                            data-care-name="<?= e(search_key($item . ' ' . $group['label'])) ?>">
                                             <i data-lucide="<?= e($group['icon']) ?>" class="h-4 w-4"></i>
                                             <span><?= e($item) ?></span>
                                             <small><?= e($group['label']) ?></small>
@@ -539,7 +567,8 @@ $leadershipGerencias = [
                     <p class="section-label">¿Por qué elegir Las Colinas?</p>
                     <h2 class="section-title">Cuidado experto. Tecnología avanzada. Siempre a tu lado.</h2>
                     <p class="section-copy">
-                        El Hospital General Las Colinas integra atención médica especializada, infraestructura moderna y un enfoque humano centrado en pacientes y familias.
+                        El Hospital General Las Colinas integra atención médica especializada, infraestructura moderna y
+                        un enfoque humano centrado en pacientes y familias.
                     </p>
                     <ul class="premium-checks">
                         <li>55+ consultorios con especialistas altamente capacitados.</li>
@@ -555,15 +584,18 @@ $leadershipGerencias = [
                 </div>
                 <div class="clinical-mosaic" aria-label="Vistas del hospital">
                     <figure class="mosaic-main">
-                        <img src="<?= e(base_url($assets['doctors'])) ?>" alt="Equipo médico del Hospital General Las Colinas" loading="lazy">
+                        <img src="<?= e(base_url($assets['doctors'])) ?>"
+                            alt="Equipo médico del Hospital General Las Colinas" loading="lazy">
                         <figcaption>Equipo clínico<small>Especialistas con enfoque humano.</small></figcaption>
                     </figure>
                     <figure>
-                        <img src="<?= e(base_url($assets['ct'])) ?>" alt="Tomografía del Hospital General Las Colinas" loading="lazy">
+                        <img src="<?= e(base_url($assets['ct'])) ?>" alt="Tomografía del Hospital General Las Colinas"
+                            loading="lazy">
                         <figcaption>Tomografía<small>Imágenes diagnósticas avanzadas.</small></figcaption>
                     </figure>
                     <figure>
-                        <img src="<?= e(base_url($assets['corridor'])) ?>" alt="Áreas clínicas del Hospital General Las Colinas" loading="lazy">
+                        <img src="<?= e(base_url($assets['corridor'])) ?>"
+                            alt="Áreas clínicas del Hospital General Las Colinas" loading="lazy">
                         <figcaption>Áreas clínicas<small>Espacios amplios y funcionales.</small></figcaption>
                     </figure>
                 </div>
@@ -579,7 +611,8 @@ $leadershipGerencias = [
                         Liderazgo institucional
                     </span>
                     <h2>El equipo que respalda tu atención</h2>
-                    <p>Profesionales con trayectoria reconocida en el sector salud dominicano lideran cada área del Hospital General Las Colinas, garantizando calidad clínica, ética y servicio humano.</p>
+                    <p>Profesionales con trayectoria reconocida en el sector salud dominicano lideran cada área del
+                        Hospital General Las Colinas, garantizando calidad clínica, ética y servicio humano.</p>
                 </div>
 
                 <article class="leadership-feature">
@@ -588,7 +621,8 @@ $leadershipGerencias = [
                         <span class="leader-portrait-badge"><i data-lucide="badge-check" class="h-4 w-4"></i></span>
                     </div>
                     <div class="leader-meta">
-                        <span class="leader-role"><i data-lucide="crown" class="h-3.5 w-3.5"></i> <?= e($leadershipDirector['role']) ?></span>
+                        <span class="leader-role"><i data-lucide="crown" class="h-3.5 w-3.5"></i>
+                            <?= e($leadershipDirector['role']) ?></span>
                         <h3><?= e($leadershipDirector['name']) ?></h3>
                         <p class="leader-bio"><?= e($leadershipDirector['bio']) ?></p>
                     </div>
@@ -596,7 +630,8 @@ $leadershipGerencias = [
 
                 <div class="leadership-bridge" aria-hidden="true">
                     <span class="bridge-line"></span>
-                    <span class="bridge-label"><i data-lucide="users-round" class="h-3.5 w-3.5"></i> Equipo gerencial</span>
+                    <span class="bridge-label"><i data-lucide="users-round" class="h-3.5 w-3.5"></i> Equipo
+                        gerencial</span>
                     <span class="bridge-line"></span>
                 </div>
 
@@ -637,7 +672,8 @@ $leadershipGerencias = [
                     <div class="directory-intro">
                         <p class="section-label">Directorio clínico</p>
                         <h3>Servicios organizados para resolver más rápido</h3>
-                        <span>Una estructura pensada para pacientes, familiares, aseguradoras y médicos referidores.</span>
+                        <span>Una estructura pensada para pacientes, familiares, aseguradoras y médicos
+                            referidores.</span>
                         <a href="<?= e(base_url('servicios')) ?>" class="directory-intro-link">
                             Ver todos los servicios
                             <i data-lucide="arrow-right" class="h-4 w-4"></i>
@@ -676,7 +712,8 @@ $leadershipGerencias = [
                     <div>
                         <p class="section-label">Equipo clínico</p>
                         <h2 class="section-title">Especialistas que cuidan de tu salud</h2>
-                        <span>Profesionales con experiencia y enfoque humano, listos para acompañarte en cada paso de tu atención.</span>
+                        <span>Profesionales con experiencia y enfoque humano, listos para acompañarte en cada paso de tu
+                            atención.</span>
                     </div>
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="btn btn-outline">
                         Ver directorio completo
@@ -687,11 +724,13 @@ $leadershipGerencias = [
                     <?php foreach ($featuredDoctors as $doctor): ?>
                         <article class="featured-doctor">
                             <a href="<?= e(base_url('medico/' . $doctor['slug'])) ?>" class="featured-doctor-photo">
-                                <img src="<?= e(base_url($doctor['photo'])) ?>" alt="<?= e($doctor['name']) ?>" loading="lazy">
+                                <img src="<?= e(base_url($doctor['photo'])) ?>" alt="<?= e($doctor['name']) ?>"
+                                    loading="lazy">
                                 <span><?= e($doctor['specialty']) ?></span>
                             </a>
                             <div class="featured-doctor-body">
-                                <h3><a href="<?= e(base_url('medico/' . $doctor['slug'])) ?>"><?= e($doctor['name']) ?></a></h3>
+                                <h3><a href="<?= e(base_url('medico/' . $doctor['slug'])) ?>"><?= e($doctor['name']) ?></a>
+                                </h3>
                                 <p><i data-lucide="map-pin" class="h-3.5 w-3.5"></i><?= e($doctor['office']) ?></p>
                                 <a href="<?= e(base_url('medico/' . $doctor['slug'])) ?>" class="featured-doctor-link">
                                     Ver perfil
@@ -710,7 +749,8 @@ $leadershipGerencias = [
                     <p class="section-label">Infraestructura y tecnología</p>
                     <h2 class="section-title">Instalaciones diseñadas para tu seguridad y bienestar</h2>
                     <p class="section-copy">
-                        Contamos con equipos de última generación, áreas clínicas modernas y espacios pensados para una atención eficiente, segura y confortable.
+                        Contamos con equipos de última generación, áreas clínicas modernas y espacios pensados para una
+                        atención eficiente, segura y confortable.
                     </p>
                     <div class="capability-stats" aria-label="Capacidad de infraestructura">
                         <article><strong>6</strong><span>Niveles clínicos y operativos</span></article>
@@ -724,7 +764,8 @@ $leadershipGerencias = [
                 </div>
                 <div class="capability-showcase">
                     <figure class="capability-photo">
-                        <img src="<?= e(base_url($assets['corridor'])) ?>" alt="Áreas clínicas modernas del Hospital General Las Colinas" loading="eager">
+                        <img src="<?= e(base_url($assets['corridor'])) ?>"
+                            alt="Áreas clínicas modernas del Hospital General Las Colinas" loading="eager">
                         <figcaption>
                             <strong>Áreas clínicas conectadas</strong>
                             <span>Diagnóstico, cirugía, UCI, farmacia y hospitalización en una misma sede.</span>
@@ -789,7 +830,8 @@ $leadershipGerencias = [
                     <div class="patient-panel-intro">
                         <p class="section-label">Información para el paciente</p>
                         <h3>Tus derechos y deberes</h3>
-                        <p>Conoce tus derechos y cumple tus deberes para una atención segura, clara y digna durante todo el proceso.</p>
+                        <p>Conoce tus derechos y cumple tus deberes para una atención segura, clara y digna durante todo
+                            el proceso.</p>
                     </div>
                     <div class="patient-list compact">
                         <h4><i data-lucide="shield-check" class="h-5 w-5"></i> Derechos del paciente</h4>
@@ -817,7 +859,8 @@ $leadershipGerencias = [
                     <div class="tour-copy">
                         <p>Recorrido virtual</p>
                         <h2>Conoce nuestro hospital sin salir de casa</h2>
-                        <span>Explora nuestras instalaciones, áreas de atención y espacios diseñados para tu comodidad.</span>
+                        <span>Explora nuestras instalaciones, áreas de atención y espacios diseñados para tu
+                            comodidad.</span>
                         <button id="videoToggle" type="button" class="btn btn-outline-white mt-7">
                             <i data-lucide="play" class="play-icon h-4 w-4 fill-current"></i>
                             <i data-lucide="pause" class="pause-icon hidden h-4 w-4"></i>
@@ -825,7 +868,8 @@ $leadershipGerencias = [
                         </button>
                     </div>
                     <div class="tour-video">
-                        <video id="hospitalVideo" class="h-full w-full object-cover" preload="metadata" poster="<?= e(base_url($assets['reception'])) ?>" controls playsinline>
+                        <video id="hospitalVideo" class="h-full w-full object-cover" preload="metadata"
+                            poster="<?= e(base_url($assets['reception'])) ?>" controls playsinline>
                             <source src="<?= e(base_url($assets['video'])) ?>" type="video/mp4">
                             Tu navegador no soporta video HTML5.
                         </video>
@@ -838,13 +882,16 @@ $leadershipGerencias = [
                         <h2 class="gallery-title">Instalaciones reales de Las Colinas</h2>
                     </div>
                     <div class="hidden gap-2 sm:flex">
-                        <button type="button" class="gallery-nav" data-gallery-scroll="-1" aria-label="Anterior"><i data-lucide="chevron-left" class="h-5 w-5"></i></button>
-                        <button type="button" class="gallery-nav" data-gallery-scroll="1" aria-label="Siguiente"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>
+                        <button type="button" class="gallery-nav" data-gallery-scroll="-1" aria-label="Anterior"><i
+                                data-lucide="chevron-left" class="h-5 w-5"></i></button>
+                        <button type="button" class="gallery-nav" data-gallery-scroll="1" aria-label="Siguiente"><i
+                                data-lucide="chevron-right" class="h-5 w-5"></i></button>
                     </div>
                 </div>
                 <div id="galleryRail" class="gallery-rail">
                     <?php foreach ($gallery as $image): ?>
-                        <button type="button" class="gallery-card" data-gallery-src="<?= e(base_url($image['src'])) ?>" data-gallery-title="<?= e($image['title']) ?>" data-gallery-text="<?= e($image['text']) ?>">
+                        <button type="button" class="gallery-card" data-gallery-src="<?= e(base_url($image['src'])) ?>"
+                            data-gallery-title="<?= e($image['title']) ?>" data-gallery-text="<?= e($image['text']) ?>">
                             <img src="<?= e(base_url($image['src'])) ?>" alt="<?= e($image['title']) ?>" loading="lazy">
                             <span><strong><?= e($image['title']) ?></strong><small><?= e($image['text']) ?></small></span>
                         </button>
@@ -854,43 +901,44 @@ $leadershipGerencias = [
         </section>
 
         <?php if (!empty($latestNews)): ?>
-        <section id="noticias" class="home-news-band">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="home-news-head">
-                    <div>
-                        <p class="section-label">Sala de prensa</p>
-                        <h2 class="section-title">Últimas noticias del hospital</h2>
-                        <span>Información oficial, alianzas, servicios nuevos y eventos institucionales.</span>
+            <section id="noticias" class="home-news-band">
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="home-news-head">
+                        <div>
+                            <p class="section-label">Sala de prensa</p>
+                            <h2 class="section-title">Últimas noticias del hospital</h2>
+                            <span>Información oficial, alianzas, servicios nuevos y eventos institucionales.</span>
+                        </div>
+                        <a href="<?= e(base_url('noticias')) ?>" class="btn btn-outline">
+                            Ver todas las noticias
+                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                        </a>
                     </div>
-                    <a href="<?= e(base_url('noticias')) ?>" class="btn btn-outline">
-                        Ver todas las noticias
-                        <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                    </a>
-                </div>
-                <div class="news-grid">
-                    <?php foreach ($latestNews as $n): ?>
-                        <article class="news-card">
-                            <a href="<?= e(base_url('noticias/' . $n['slug'])) ?>" class="news-card-media">
-                                <?php if (!empty($n['cover_image'])): ?>
-                                    <img src="<?= e(base_url($n['cover_image'])) ?>" alt="<?= e($n['title']) ?>" loading="lazy">
-                                <?php else: ?>
-                                    <span class="news-card-fallback"><i data-lucide="<?= e(news_category_icon($n['category'])) ?>"></i></span>
-                                <?php endif; ?>
-                                <span class="news-card-cat"><?= e($n['category']) ?></span>
-                            </a>
-                            <div class="news-card-body">
-                                <time><?= e(news_format_date($n['published_at'])) ?></time>
-                                <h3><a href="<?= e(base_url('noticias/' . $n['slug'])) ?>"><?= e($n['title']) ?></a></h3>
-                                <p><?= e($n['excerpt']) ?></p>
-                                <a href="<?= e(base_url('noticias/' . $n['slug'])) ?>" class="news-card-link">
-                                    Leer más <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    <div class="news-grid">
+                        <?php foreach ($latestNews as $n): ?>
+                            <article class="news-card">
+                                <a href="<?= e(base_url('noticias/' . $n['slug'])) ?>" class="news-card-media">
+                                    <?php if (!empty($n['cover_image'])): ?>
+                                        <img src="<?= e(base_url($n['cover_image'])) ?>" alt="<?= e($n['title']) ?>" loading="lazy">
+                                    <?php else: ?>
+                                        <span class="news-card-fallback"><i
+                                                data-lucide="<?= e(news_category_icon($n['category'])) ?>"></i></span>
+                                    <?php endif; ?>
+                                    <span class="news-card-cat"><?= e($n['category']) ?></span>
                                 </a>
-                            </div>
-                        </article>
-                    <?php endforeach; ?>
+                                <div class="news-card-body">
+                                    <time><?= e(news_format_date($n['published_at'])) ?></time>
+                                    <h3><a href="<?= e(base_url('noticias/' . $n['slug'])) ?>"><?= e($n['title']) ?></a></h3>
+                                    <p><?= e($n['excerpt']) ?></p>
+                                    <a href="<?= e(base_url('noticias/' . $n['slug'])) ?>" class="news-card-link">
+                                        Leer más <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
         <?php endif; ?>
 
         <section id="contacto" class="cta-band">
@@ -903,7 +951,8 @@ $leadershipGerencias = [
                             Agenda en línea
                         </span>
                         <h2>Tu salud es lo más importante</h2>
-                        <p>Agenda tu consulta con un especialista del Hospital General Las Colinas. Nuestro equipo te confirma disponibilidad y te acompaña en cada paso.</p>
+                        <p>Agenda tu consulta con un especialista del Hospital General Las Colinas. Nuestro equipo te
+                            confirma disponibilidad y te acompaña en cada paso.</p>
                         <ul class="cta-panel-points">
                             <li><i data-lucide="check" class="h-4 w-4"></i> Respuesta del equipo de atención</li>
                             <li><i data-lucide="check" class="h-4 w-4"></i> Orientación de seguros y cobertura</li>
@@ -955,8 +1004,10 @@ $leadershipGerencias = [
         <div class="command-panel">
             <div class="command-search">
                 <i data-lucide="search" class="h-5 w-5"></i>
-                <input id="commandInput" type="search" placeholder="Buscar servicios, especialidades, contacto..." autocomplete="off">
-                <button type="button" id="commandClose" aria-label="Cerrar búsqueda"><i data-lucide="x" class="h-5 w-5"></i></button>
+                <input id="commandInput" type="search" placeholder="Buscar servicios, especialidades, contacto..."
+                    autocomplete="off">
+                <button type="button" id="commandClose" aria-label="Cerrar búsqueda"><i data-lucide="x"
+                        class="h-5 w-5"></i></button>
             </div>
             <div class="command-content">
                 <div>
@@ -966,29 +1017,39 @@ $leadershipGerencias = [
                 <div id="commandResults" class="command-results">
                     <a href="#buscar-atencion" data-command-name="buscar especialista especialidad servicio atención">
                         <i data-lucide="user-round-search" class="h-5 w-5"></i>
-                        <span><strong>Buscar especialista</strong><small>Encuentra atención por especialidad o servicio.</small></span>
+                        <span><strong>Buscar especialista</strong><small>Encuentra atención por especialidad o
+                                servicio.</small></span>
                     </a>
-                    <a href="<?= e(base_url('directorio-medico')) ?>" data-command-name="directorio medico médicos profesionales especialistas doctores">
+                    <a href="<?= e(base_url('directorio-medico')) ?>"
+                        data-command-name="directorio medico médicos profesionales especialistas doctores">
                         <i data-lucide="users-round" class="h-5 w-5"></i>
-                        <span><strong>Directorio médico</strong><small>Explora equipos clínicos, áreas y disponibilidad.</small></span>
+                        <span><strong>Directorio médico</strong><small>Explora equipos clínicos, áreas y
+                                disponibilidad.</small></span>
                     </a>
-                    <button type="button" class="js-open-appointment" data-command-name="agendar cita consulta appointment">
+                    <button type="button" class="js-open-appointment"
+                        data-command-name="agendar cita consulta appointment">
                         <i data-lucide="calendar-check" class="h-5 w-5"></i>
-                        <span><strong>Agendar cita</strong><small>Solicita contacto para consulta o procedimiento.</small></span>
+                        <span><strong>Agendar cita</strong><small>Solicita contacto para consulta o
+                                procedimiento.</small></span>
                     </button>
                     <a href="tel:18098060444" data-command-name="emergencia telefono llamar urgencia 24/7">
                         <i data-lucide="ambulance" class="h-5 w-5"></i>
                         <span><strong>Emergencias 24/7</strong><small>Llama directamente al hospital.</small></span>
                     </a>
-                    <a href="<?= e(base_url('instalaciones')) ?>" data-command-name="instalaciones tecnologia tomografia laboratorio quirurgico">
+                    <a href="<?= e(base_url('instalaciones')) ?>"
+                        data-command-name="instalaciones tecnologia tomografia laboratorio quirurgico">
                         <i data-lucide="building-2" class="h-5 w-5"></i>
-                        <span><strong>Instalaciones y tecnología</strong><small>Conoce la infraestructura clínica.</small></span>
+                        <span><strong>Instalaciones y tecnología</strong><small>Conoce la infraestructura
+                                clínica.</small></span>
                     </a>
-                    <a href="<?= e(base_url('pacientes')) ?>" data-command-name="pacientes visitantes derechos deberes guia seguros">
+                    <a href="<?= e(base_url('pacientes')) ?>"
+                        data-command-name="pacientes visitantes derechos deberes guia seguros">
                         <i data-lucide="shield-check" class="h-5 w-5"></i>
-                        <span><strong>Pacientes y visitantes</strong><small>Guía, derechos, deberes y preparación.</small></span>
+                        <span><strong>Pacientes y visitantes</strong><small>Guía, derechos, deberes y
+                                preparación.</small></span>
                     </a>
-                    <a href="<?= e($contact['maps']) ?>" target="_blank" rel="noopener" data-command-name="ubicacion mapa direccion colinas mall santiago">
+                    <a href="<?= e($contact['maps']) ?>" target="_blank" rel="noopener"
+                        data-command-name="ubicacion mapa direccion colinas mall santiago">
                         <i data-lucide="map-pin" class="h-5 w-5"></i>
                         <span><strong>Ubicación</strong><small><?= e($contact['address']) ?></small></span>
                     </a>
@@ -997,7 +1058,8 @@ $leadershipGerencias = [
         </div>
     </div>
 
-    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="appointmentTitle">
+    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true"
+        aria-labelledby="appointmentTitle">
         <div class="modal-panel">
             <div class="modal-header">
                 <div>
@@ -1008,7 +1070,8 @@ $leadershipGerencias = [
                     <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
             </div>
-            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>" method="post">
+            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>"
+                method="post">
                 <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                 <div>
                     <label for="name" class="form-label">Nombre completo</label>
@@ -1017,7 +1080,8 @@ $leadershipGerencias = [
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label for="phone" class="form-label">Teléfono</label>
-                        <input id="phone" name="phone" type="tel" required class="form-input" placeholder="(809) 000-0000">
+                        <input id="phone" name="phone" type="tel" required class="form-input"
+                            placeholder="(809) 000-0000">
                     </div>
                     <div>
                         <label for="date" class="form-label">Fecha preferida</label>
@@ -1036,14 +1100,16 @@ $leadershipGerencias = [
                 </div>
                 <div>
                     <label for="message" class="form-label">Mensaje opcional</label>
-                    <textarea id="message" name="message" rows="3" class="form-input" placeholder="Describe brevemente tu necesidad"></textarea>
+                    <textarea id="message" name="message" rows="3" class="form-input"
+                        placeholder="Describe brevemente tu necesidad"></textarea>
                 </div>
                 <button type="submit" class="btn btn-green w-full justify-center py-4">
                     Enviar solicitud
                     <i data-lucide="send" class="h-4 w-4"></i>
                 </button>
                 <p id="appointmentStatus" class="hidden rounded-md px-4 py-3 text-sm font-bold"></p>
-                <p class="text-center text-xs leading-6 text-slate-400">Al enviar, aceptas ser contactado por el equipo de atención del hospital.</p>
+                <p class="text-center text-xs leading-6 text-slate-400">Al enviar, aceptas ser contactado por el equipo
+                    de atención del hospital.</p>
             </form>
         </div>
     </div>
@@ -1064,4 +1130,5 @@ $leadershipGerencias = [
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 </body>
+
 </html>

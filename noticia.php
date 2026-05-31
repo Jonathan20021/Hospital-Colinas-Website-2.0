@@ -21,11 +21,12 @@ if ($item) {
     news_increment_views((int) $item['id']);
 }
 
-$related = $item ? array_filter(news_query_published(4, 0, $item['category']), fn ($r) => (int) $r['id'] !== (int) $item['id']) : [];
+$related = $item ? array_filter(news_query_published(4, 0, $item['category']), fn($r) => (int) $r['id'] !== (int) $item['id']) : [];
 $related = array_slice($related, 0, 3);
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -56,48 +57,52 @@ $related = array_slice($related, 0, 3);
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
 
     <?php if ($item): ?>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "NewsArticle",
-        "headline": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?>,
-        "description": <?= json_encode($item['excerpt'], JSON_UNESCAPED_UNICODE) ?>,
-        "image": "<?= e(absolute_url($item['cover_image'] ?: $assets['hero'])) ?>",
-        "datePublished": "<?= e(date('c', strtotime($item['published_at']))) ?>",
-        "dateModified": "<?= e(date('c', strtotime($item['updated_at'] ?? $item['published_at']))) ?>",
-        "articleSection": <?= json_encode($item['category'], JSON_UNESCAPED_UNICODE) ?>,
-        "author": {"@type": "Organization", "name": <?= json_encode($item['author'], JSON_UNESCAPED_UNICODE) ?>},
-        "publisher": {
-            "@type": "Organization",
-            "name": "Hospital General Las Colinas",
-            "logo": {"@type": "ImageObject", "url": "<?= e(absolute_url($assets['logo'])) ?>"}
-        },
-        "mainEntityOfPage": "<?= e(canonical_url()) ?>"
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "<?= e(absolute_url()) ?>"},
-            {"@type": "ListItem", "position": 2, "name": "Noticias", "item": "<?= e(absolute_url('noticias')) ?>"},
-            {"@type": "ListItem", "position": 3, "name": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?>, "item": "<?= e(canonical_url()) ?>"}
-        ]
-    }
-    </script>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            "headline": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?>,
+            "description": <?= json_encode($item['excerpt'], JSON_UNESCAPED_UNICODE) ?>,
+            "image": "<?= e(absolute_url($item['cover_image'] ?: $assets['hero'])) ?>",
+            "datePublished": "<?= e(date('c', strtotime($item['published_at']))) ?>",
+            "dateModified": "<?= e(date('c', strtotime($item['updated_at'] ?? $item['published_at']))) ?>",
+            "articleSection": <?= json_encode($item['category'], JSON_UNESCAPED_UNICODE) ?>,
+            "author": {"@type": "Organization", "name": <?= json_encode($item['author'], JSON_UNESCAPED_UNICODE) ?>},
+            "publisher": {
+                "@type": "Organization",
+                "name": "Hospital General Las Colinas",
+                "logo": {"@type": "ImageObject", "url": "<?= e(absolute_url($assets['logo'])) ?>"}
+            },
+            "mainEntityOfPage": "<?= e(canonical_url()) ?>"
+        }
+        </script>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "<?= e(absolute_url()) ?>"},
+                {"@type": "ListItem", "position": 2, "name": "Noticias", "item": "<?= e(absolute_url('noticias')) ?>"},
+                {"@type": "ListItem", "position": 3, "name": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?>, "item": "<?= e(canonical_url()) ?>"}
+            ]
+        }
+        </script>
     <?php endif; ?>
 </head>
+
 <body class="bg-white font-sans text-slate-950 antialiased">
     <header class="profile-topbar">
         <div class="profile-topbar-inner">
             <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="brand-logo h-14 w-auto max-w-[260px] object-contain">
+                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                    class="brand-logo h-14 w-auto max-w-[260px] object-contain">
             </a>
             <nav aria-label="Navegación">
                 <a href="<?= e(base_url('noticias')) ?>">
@@ -148,8 +153,10 @@ $related = array_slice($related, 0, 3);
                     <h1><?= e($item['title']) ?></h1>
                     <p class="news-article-lead"><?= e($item['excerpt']) ?></p>
                     <div class="news-article-meta">
-                        <span><i data-lucide="calendar" class="h-4 w-4"></i> <?= e(news_format_date($item['published_at'])) ?></span>
-                        <span><i data-lucide="clock" class="h-4 w-4"></i> <?= news_reading_time($item['content']) ?> min lectura</span>
+                        <span><i data-lucide="calendar" class="h-4 w-4"></i>
+                            <?= e(news_format_date($item['published_at'])) ?></span>
+                        <span><i data-lucide="clock" class="h-4 w-4"></i> <?= news_reading_time($item['content']) ?> min
+                            lectura</span>
                         <span><i data-lucide="user-round" class="h-4 w-4"></i> <?= e($item['author']) ?></span>
                     </div>
                 </header>
@@ -168,23 +175,28 @@ $related = array_slice($related, 0, 3);
                     <p class="news-article-source">
                         <i data-lucide="link" class="h-4 w-4"></i>
                         Fuente original:
-                        <a href="<?= e($item['source_url']) ?>" target="_blank" rel="noopener nofollow"><?= e(parse_url($item['source_url'], PHP_URL_HOST) ?: $item['source_url']) ?></a>
+                        <a href="<?= e($item['source_url']) ?>" target="_blank"
+                            rel="noopener nofollow"><?= e(parse_url($item['source_url'], PHP_URL_HOST) ?: $item['source_url']) ?></a>
                     </p>
                 <?php endif; ?>
 
                 <footer class="news-article-share">
                     <span>Comparte esta noticia</span>
                     <div>
-                        <a href="https://wa.me/?text=<?= e(rawurlencode($item['title'] . ' — ' . canonical_url())) ?>" target="_blank" rel="noopener" aria-label="WhatsApp">
+                        <a href="https://wa.me/?text=<?= e(rawurlencode($item['title'] . ' — ' . canonical_url())) ?>"
+                            target="_blank" rel="noopener" aria-label="WhatsApp">
                             <i data-lucide="message-circle"></i>
                         </a>
-                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= e(rawurlencode(canonical_url())) ?>" target="_blank" rel="noopener" aria-label="Facebook">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=<?= e(rawurlencode(canonical_url())) ?>"
+                            target="_blank" rel="noopener" aria-label="Facebook">
                             <i data-lucide="thumbs-up"></i>
                         </a>
-                        <a href="https://twitter.com/intent/tweet?url=<?= e(rawurlencode(canonical_url())) ?>&text=<?= e(rawurlencode($item['title'])) ?>" target="_blank" rel="noopener" aria-label="X / Twitter">
+                        <a href="https://twitter.com/intent/tweet?url=<?= e(rawurlencode(canonical_url())) ?>&text=<?= e(rawurlencode($item['title'])) ?>"
+                            target="_blank" rel="noopener" aria-label="X / Twitter">
                             <i data-lucide="send"></i>
                         </a>
-                        <a href="mailto:?subject=<?= e(rawurlencode($item['title'])) ?>&body=<?= e(rawurlencode(canonical_url())) ?>" aria-label="Email">
+                        <a href="mailto:?subject=<?= e(rawurlencode($item['title'])) ?>&body=<?= e(rawurlencode(canonical_url())) ?>"
+                            aria-label="Email">
                             <i data-lucide="mail"></i>
                         </a>
                     </div>
@@ -204,7 +216,8 @@ $related = array_slice($related, 0, 3);
                                     <?php if (!empty($r['cover_image'])): ?>
                                         <img src="<?= e(base_url($r['cover_image'])) ?>" alt="<?= e($r['title']) ?>" loading="lazy">
                                     <?php else: ?>
-                                        <span class="news-card-fallback"><i data-lucide="<?= e(news_category_icon($r['category'])) ?>"></i></span>
+                                        <span class="news-card-fallback"><i
+                                                data-lucide="<?= e(news_category_icon($r['category'])) ?>"></i></span>
                                     <?php endif; ?>
                                     <span class="news-card-cat"><?= e($r['category']) ?></span>
                                 </a>
@@ -240,7 +253,8 @@ $related = array_slice($related, 0, 3);
                     <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
             </div>
-            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>" method="post">
+            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>"
+                method="post">
                 <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                 <div>
                     <label for="name" class="form-label">Nombre completo</label>
@@ -268,4 +282,5 @@ $related = array_slice($related, 0, 3);
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 </body>
+
 </html>

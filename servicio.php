@@ -37,6 +37,7 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,7 +56,9 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
     <meta property="og:image" content="<?= e(absolute_url($service['image'])) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
     <script type="application/ld+json">
@@ -77,6 +80,7 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
     }
     </script>
 </head>
+
 <body class="bg-white font-sans text-slate-950 antialiased service-page">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <?php render_public_header($assets, $contact, 'servicios'); ?>
@@ -146,7 +150,8 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
                 <div class="service-contact-card">
                     <span><i data-lucide="calendar-check" class="h-4 w-4"></i> Solicita orientación</span>
                     <h2>¿Necesitas este servicio?</h2>
-                    <p>Déjanos tus datos y el equipo de atención te orientará con disponibilidad, preparación y documentos.</p>
+                    <p>Déjanos tus datos y el equipo de atención te orientará con disponibilidad, preparación y
+                        documentos.</p>
                     <button type="button" class="js-open-appointment btn btn-green">
                         Agendar ahora
                         <i data-lucide="arrow-right" class="h-4 w-4"></i>
@@ -185,4 +190,5 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 </body>
+
 </html>

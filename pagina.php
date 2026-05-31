@@ -39,6 +39,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,10 +58,13 @@ $serviceCatalog = service_pages_catalog($services, $assets);
     <meta property="og:image" content="<?= e(absolute_url($page['image'])) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
 </head>
+
 <body class="bg-white font-sans text-slate-950 antialiased content-page">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <?php render_public_header($assets, $contact, $page['active'] ?? ''); ?>
@@ -186,9 +190,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
                             Abrir mapa
                         </a>
                     </div>
-                    <iframe
-                        title="Ubicación del Hospital General Las Colinas"
-                        loading="lazy"
+                    <iframe title="Ubicación del Hospital General Las Colinas" loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
                         src="https://www.google.com/maps?q=Hospital%20General%20Las%20Colinas%20Santiago&output=embed"></iframe>
                 </div>
@@ -202,4 +204,5 @@ $serviceCatalog = service_pages_catalog($services, $assets);
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 </body>
+
 </html>

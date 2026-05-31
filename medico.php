@@ -20,11 +20,14 @@ $doctorEmail = $doctor['email'] ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $doctor ? e($doctor['name'] . ' — ' . $doctor['specialty']) : 'Médico no encontrado' ?> | Hospital General Las Colinas</title>
-    <meta name="description" content="<?= $doctor ? e($doctor['name'] . ', especialista en ' . $doctor['specialty'] . ' en el Hospital General Las Colinas, Santiago. ' . ($doctor['office'] ? 'Consultorio: ' . $doctor['office'] . '. ' : '') . 'Agenda tu cita.') : 'Perfil médico no encontrado.' ?>">
+    <title><?= $doctor ? e($doctor['name'] . ' — ' . $doctor['specialty']) : 'Médico no encontrado' ?> | Hospital
+        General Las Colinas</title>
+    <meta name="description"
+        content="<?= $doctor ? e($doctor['name'] . ', especialista en ' . $doctor['specialty'] . ' en el Hospital General Las Colinas, Santiago. ' . ($doctor['office'] ? 'Consultorio: ' . $doctor['office'] . '. ' : '') . 'Agenda tu cita.') : 'Perfil médico no encontrado.' ?>">
     <meta name="robots" content="<?= $doctor ? 'index, follow, max-image-preview:large' : 'noindex, follow' ?>">
     <meta name="theme-color" content="#262161">
     <link rel="canonical" href="<?= e(canonical_url()) ?>">
@@ -35,7 +38,8 @@ $doctorEmail = $doctor['email'] ?? '';
         <meta property="og:type" content="profile">
         <meta property="og:site_name" content="Hospital General Las Colinas">
         <meta property="og:title" content="<?= e($doctor['name'] . ' — ' . $doctor['specialty']) ?>">
-        <meta property="og:description" content="<?= e('Especialista en ' . $doctor['specialty'] . ' del Hospital General Las Colinas, Santiago, RD.') ?>">
+        <meta property="og:description"
+            content="<?= e('Especialista en ' . $doctor['specialty'] . ' del Hospital General Las Colinas, Santiago, RD.') ?>">
         <meta property="og:url" content="<?= e(canonical_url()) ?>">
         <meta property="og:locale" content="es_DO">
         <meta property="og:image" content="<?= e(absolute_url($doctor['photo'])) ?>">
@@ -43,63 +47,68 @@ $doctorEmail = $doctor['email'] ?? '';
 
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<?= e($doctor['name'] . ' — ' . $doctor['specialty']) ?>">
-        <meta name="twitter:description" content="<?= e('Especialista en ' . $doctor['specialty'] . ' del Hospital General Las Colinas.') ?>">
+        <meta name="twitter:description"
+            content="<?= e('Especialista en ' . $doctor['specialty'] . ' del Hospital General Las Colinas.') ?>">
         <meta name="twitter:image" content="<?= e(absolute_url($doctor['photo'])) ?>">
     <?php endif; ?>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
 
     <?php if ($doctor): ?>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "<?= e(absolute_url()) ?>"},
-            {"@type": "ListItem", "position": 2, "name": "Directorio médico", "item": "<?= e(absolute_url('directorio-medico')) ?>"},
-            {"@type": "ListItem", "position": 3, "name": <?= json_encode($doctor['name'], JSON_UNESCAPED_UNICODE) ?>, "item": "<?= e(canonical_url()) ?>"}
-        ]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Physician",
-        "name": <?= json_encode($doctor['name'], JSON_UNESCAPED_UNICODE) ?>,
-        "url": "<?= e(canonical_url()) ?>",
-        "image": "<?= e(absolute_url($doctor['photo'])) ?>",
-        "medicalSpecialty": <?= json_encode($doctor['specialty'], JSON_UNESCAPED_UNICODE) ?>,
-        "telephone": "<?= e($doctorPhone ?: $contact['phone']) ?>",
-        <?php if ($doctorEmail): ?>"email": <?= json_encode($doctorEmail, JSON_UNESCAPED_UNICODE) ?>,<?php endif; ?>
-        "hospitalAffiliation": {
-            "@type": "Hospital",
-            "name": "Hospital General Las Colinas",
-            "url": "<?= e(absolute_url()) ?>",
-            "address": {
-                "@type": "PostalAddress",
-                "streetAddress": "Av. 27 de Febrero, Plaza Colinas Mall",
-                "addressLocality": "Santiago",
-                "addressCountry": "DO"
-            }
-        },
-        "worksFor": {
-            "@type": "Hospital",
-            "name": "Hospital General Las Colinas",
-            "url": "<?= e(absolute_url()) ?>"
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "<?= e(absolute_url()) ?>"},
+                {"@type": "ListItem", "position": 2, "name": "Directorio médico", "item": "<?= e(absolute_url('directorio-medico')) ?>"},
+                {"@type": "ListItem", "position": 3, "name": <?= json_encode($doctor['name'], JSON_UNESCAPED_UNICODE) ?>, "item": "<?= e(canonical_url()) ?>"}
+            ]
         }
-    }
-    </script>
+        </script>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Physician",
+            "name": <?= json_encode($doctor['name'], JSON_UNESCAPED_UNICODE) ?>,
+            "url": "<?= e(canonical_url()) ?>",
+            "image": "<?= e(absolute_url($doctor['photo'])) ?>",
+            "medicalSpecialty": <?= json_encode($doctor['specialty'], JSON_UNESCAPED_UNICODE) ?>,
+            "telephone": "<?= e($doctorPhone ?: $contact['phone']) ?>",
+            <?php if ($doctorEmail): ?>"email": <?= json_encode($doctorEmail, JSON_UNESCAPED_UNICODE) ?>,<?php endif; ?>
+            "hospitalAffiliation": {
+                "@type": "Hospital",
+                "name": "Hospital General Las Colinas",
+                "url": "<?= e(absolute_url()) ?>",
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Av. 27 de Febrero, Plaza Colinas Mall",
+                    "addressLocality": "Santiago",
+                    "addressCountry": "DO"
+                }
+            },
+            "worksFor": {
+                "@type": "Hospital",
+                "name": "Hospital General Las Colinas",
+                "url": "<?= e(absolute_url()) ?>"
+            }
+        }
+        </script>
     <?php endif; ?>
 </head>
+
 <body class="bg-white font-sans text-slate-950 antialiased profile-shell">
     <header class="profile-topbar">
         <div class="profile-topbar-inner">
             <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="brand-logo h-14 w-auto max-w-[260px] object-contain">
+                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                    class="brand-logo h-14 w-auto max-w-[260px] object-contain">
             </a>
             <nav aria-label="Navegación del perfil">
                 <a href="<?= e(base_url('directorio-medico')) ?>">
@@ -156,7 +165,8 @@ $doctorEmail = $doctor['email'] ?? '';
                             <?= e($doctor['specialty']) ?>
                         </span>
                         <h1><?= e($doctor['name']) ?></h1>
-                        <p><?= e($doctor['biography'] ?: 'Atención especializada en ' . $doctor['specialty'] . ' del Hospital General Las Colinas.') ?></p>
+                        <p><?= e($doctor['biography'] ?: 'Atención especializada en ' . $doctor['specialty'] . ' del Hospital General Las Colinas.') ?>
+                        </p>
 
                         <div class="profile-quick-actions">
                             <button type="button" class="btn btn-green js-open-appointment">
@@ -196,7 +206,8 @@ $doctorEmail = $doctor['email'] ?? '';
                         <span><i data-lucide="phone" class="h-4 w-4"></i></span>
                         <div>
                             <small>Teléfono</small>
-                            <strong><a href="tel:<?= e($doctorPhone ?: '18098060444') ?>"><?= e($doctorPhone ?: $contact['phone']) ?></a></strong>
+                            <strong><a
+                                    href="tel:<?= e($doctorPhone ?: '18098060444') ?>"><?= e($doctorPhone ?: $contact['phone']) ?></a></strong>
                         </div>
                     </div>
                     <div>
@@ -213,8 +224,16 @@ $doctorEmail = $doctor['email'] ?? '';
                 <div>
                     <article class="profile-card">
                         <h2><i data-lucide="briefcase-medical" class="h-5 w-5"></i> Trayectoria profesional</h2>
-                        <span class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
-                        <p><?= nl2br(e($doctor['education'] ?: $doctor['biography'])) ?></p>
+                        <span
+                            class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
+                        <?php $profileNarrative = trim((string) ($doctor['education'] ?: $doctor['biography'])); ?>
+                        <?php if ($profileNarrative !== ''): ?>
+                            <p><?= nl2br(e($profileNarrative)) ?></p>
+                        <?php elseif (empty($doctor['services'])): ?>
+                            <p>Este especialista forma parte del equipo de <?= e($doctor['specialty']) ?> del Hospital
+                                General Las Colinas. Para conocer disponibilidad, seguros aceptados y agendar una consulta,
+                                utiliza el botón de cita o comunícate con nuestro equipo de atención.</p>
+                        <?php endif; ?>
                         <?php if ($doctor['services']): ?>
                             <p><?= nl2br(e($doctor['services'])) ?></p>
                         <?php endif; ?>
@@ -246,7 +265,9 @@ $doctorEmail = $doctor['email'] ?? '';
                             </div>
                             <div>
                                 <dt><i data-lucide="phone" class="h-4 w-4"></i> Teléfono</dt>
-                                <dd><a href="tel:<?= e($doctorPhone ?: '18098060444') ?>"><?= e($doctorPhone ?: $contact['phone']) ?></a></dd>
+                                <dd><a
+                                        href="tel:<?= e($doctorPhone ?: '18098060444') ?>"><?= e($doctorPhone ?: $contact['phone']) ?></a>
+                                </dd>
                             </div>
                             <?php if ($doctorEmail): ?>
                                 <div>
@@ -264,7 +285,8 @@ $doctorEmail = $doctor['email'] ?? '';
                     <div class="profile-cta-card">
                         <span><i data-lucide="calendar-check" class="h-4 w-4"></i> Solicita cita</span>
                         <h3>¿Necesitas atención con este especialista?</h3>
-                        <p>Coordina tu consulta con el equipo del hospital. Te confirmaremos disponibilidad y orientaremos sobre seguros.</p>
+                        <p>Coordina tu consulta con el equipo del hospital. Te confirmaremos disponibilidad y orientaremos
+                            sobre seguros.</p>
                         <button type="button" class="btn btn-green js-open-appointment">
                             <i data-lucide="calendar-days" class="h-4 w-4"></i>
                             Agendar ahora
@@ -280,7 +302,8 @@ $doctorEmail = $doctor['email'] ?? '';
         </main>
     <?php endif; ?>
 
-    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true" aria-labelledby="appointmentTitle">
+    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true"
+        aria-labelledby="appointmentTitle">
         <div class="modal-panel">
             <div class="modal-header">
                 <div>
@@ -291,7 +314,8 @@ $doctorEmail = $doctor['email'] ?? '';
                     <i data-lucide="x" class="h-5 w-5"></i>
                 </button>
             </div>
-            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>" method="post">
+            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>"
+                method="post">
                 <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
                 <div>
                     <label for="name" class="form-label">Nombre completo</label>
@@ -319,4 +343,5 @@ $doctorEmail = $doctor['email'] ?? '';
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 </body>
+
 </html>

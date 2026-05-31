@@ -17,25 +17,28 @@ $assetVersion = (string) max(
 );
 
 // Paso actual
-$specId = (int)($_GET['specialty_id'] ?? 0);
-$docId  = (int)($_GET['doctor_id'] ?? 0);
+$specId = (int) ($_GET['specialty_id'] ?? 0);
+$docId = (int) ($_GET['doctor_id'] ?? 0);
 
 // Cargar catálogos via API (con cache 1h)
 $specsRes = portal_directory_specialties();
-$specs    = $specsRes['ok'] ? $specsRes['data'] : [];
+$specs = $specsRes['ok'] ? $specsRes['data'] : [];
 
-$docsRes  = portal_directory_doctors();
-$allDocs  = $docsRes['ok'] ? $docsRes['data'] : [];
+$docsRes = portal_directory_doctors();
+$allDocs = $docsRes['ok'] ? $docsRes['data'] : [];
 
 // Si vienen specialty/doctor, filtrar
 $doctors = [];
 $selectedDoctor = null;
 if ($specId) {
-    $doctors = array_values(array_filter($allDocs, fn($d) => (int)($d['specialty_id'] ?? 0) === $specId));
+    $doctors = array_values(array_filter($allDocs, fn($d) => (int) ($d['specialty_id'] ?? 0) === $specId));
 }
 if ($docId) {
     foreach ($allDocs as $d) {
-        if ((int)$d['id'] === $docId) { $selectedDoctor = $d; break; }
+        if ((int) $d['id'] === $docId) {
+            $selectedDoctor = $d;
+            break;
+        }
     }
 }
 
@@ -46,18 +49,22 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar cita en línea | Hospital General Las Colinas</title>
-    <meta name="description" content="Agenda tu cita en línea con cualquiera de nuestros especialistas. Sin necesidad de crear cuenta. Hospital General Las Colinas, Santiago, RD.">
+    <meta name="description"
+        content="Agenda tu cita en línea con cualquiera de nuestros especialistas. Sin necesidad de crear cuenta. Hospital General Las Colinas, Santiago, RD.">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#262161">
     <link rel="canonical" href="<?= e(canonical_url()) ?>">
     <link rel="icon" type="image/png" href="<?= e(base_url($assets['favicon'])) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
@@ -65,6 +72,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
         <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <?php endif; ?>
 </head>
+
 <body class="bg-slate-50 font-sans text-slate-950 antialiased portal-page">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <?php render_public_header($assets, $contact, ''); ?>
@@ -76,7 +84,8 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                 <div>
                     <p class="section-label">Agendamiento en línea</p>
                     <h1>Agenda tu consulta médica</h1>
-                    <p class="portal-subtitle">Reserva tu cita con cualquiera de nuestros especialistas. Sin necesidad de crear cuenta &mdash; te tomará menos de dos minutos.</p>
+                    <p class="portal-subtitle">Reserva tu cita con cualquiera de nuestros especialistas. Sin necesidad
+                        de crear cuenta &mdash; te tomará menos de dos minutos.</p>
                 </div>
                 <a href="<?= e(base_url('portal/login.php')) ?>" class="btn btn-outline">
                     <i data-lucide="user-round" class="h-4 w-4"></i> Ya tengo cuenta
@@ -92,20 +101,17 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
             <?php if ($step === 1): ?>
                 <!-- Paso 1: Especialidad -->
                 <form method="GET" class="portal-card" id="step1">
-                    <h2 class="portal-section-title"><i data-lucide="stethoscope" class="h-5 w-5" style="display:inline-block;vertical-align:-4px;color:#047857;margin-right:.35rem"></i>¿Qué tipo de atención necesitas?</h2>
+                    <h2 class="portal-section-title"><i data-lucide="stethoscope" class="h-5 w-5"
+                            style="display:inline-block;vertical-align:-4px;color:#047857;margin-right:.35rem"></i>¿Qué tipo
+                        de atención necesitas?</h2>
 
                     <div class="agendar-search">
                         <i data-lucide="search" class="h-4 w-4 agendar-search-icon"></i>
-                        <input
-                            type="search"
-                            id="specialty-search"
-                            class="form-input agendar-search-input"
-                            placeholder="Busca una especialidad (ej. cardiología, pediatría…)"
-                            autocomplete="off"
-                            aria-controls="specialty-list"
-                            aria-label="Buscar especialidad"
-                        >
-                        <button type="button" class="agendar-search-clear" id="specialty-search-clear" aria-label="Limpiar búsqueda" hidden>
+                        <input type="search" id="specialty-search" class="form-input agendar-search-input"
+                            placeholder="Busca una especialidad (ej. cardiología, pediatría…)" autocomplete="off"
+                            aria-controls="specialty-list" aria-label="Buscar especialidad">
+                        <button type="button" class="agendar-search-clear" id="specialty-search-clear"
+                            aria-label="Limpiar búsqueda" hidden>
                             <i data-lucide="x" class="h-4 w-4"></i>
                         </button>
                     </div>
@@ -113,9 +119,8 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                     <ul class="specialty-grid" id="specialty-list" role="list">
                         <?php foreach ($specs as $s): ?>
                             <li>
-                                <button type="submit" name="specialty_id" value="<?= (int)$s['id'] ?>"
-                                        class="specialty-card"
-                                        data-search="<?= e(mb_strtolower($s['name'], 'UTF-8')) ?>">
+                                <button type="submit" name="specialty_id" value="<?= (int) $s['id'] ?>" class="specialty-card"
+                                    data-search="<?= e(mb_strtolower($s['name'], 'UTF-8')) ?>">
                                     <span class="specialty-card-icon"><i data-lucide="stethoscope" class="h-5 w-5"></i></span>
                                     <span class="specialty-card-name"><?= e($s['name']) ?></span>
                                     <i data-lucide="arrow-right" class="h-4 w-4 specialty-card-arrow"></i>
@@ -126,7 +131,8 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
 
                     <p class="specialty-empty" id="specialty-empty" hidden>
                         <i data-lucide="search-x" class="h-5 w-5"></i>
-                        No encontramos especialidades con ese término. Llámanos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a> y te orientamos.
+                        No encontramos especialidades con ese término. Llámanos al <a href="tel:18098060444"
+                            class="portal-text-link">(809) 806-0444</a> y te orientamos.
                     </p>
 
                     <noscript>
@@ -135,7 +141,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                             <select name="specialty_id" id="specialty_id" class="form-input" required>
                                 <option value="">— Elige una especialidad —</option>
                                 <?php foreach ($specs as $s): ?>
-                                    <option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option>
+                                    <option value="<?= (int) $s['id'] ?>"><?= e($s['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                             <button type="submit" class="btn btn-green mt-3">Continuar</button>
@@ -144,55 +150,56 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
 
                     <p class="agendar-hint" style="margin-top:1rem">
                         <i data-lucide="info" class="h-4 w-4"></i>
-                        <?= count($specs) ?> especialidades disponibles. Si no sabes cuál elegir, llámanos al <a href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.
+                        <?= count($specs) ?> especialidades disponibles. Si no sabes cuál elegir, llámanos al <a
+                            href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.
                     </p>
                 </form>
 
                 <script>
-                (function () {
-                    var input = document.getElementById('specialty-search');
-                    var list  = document.getElementById('specialty-list');
-                    var empty = document.getElementById('specialty-empty');
-                    var clear = document.getElementById('specialty-search-clear');
-                    if (!input || !list) return;
+                    (function () {
+                        var input = document.getElementById('specialty-search');
+                        var list = document.getElementById('specialty-list');
+                        var empty = document.getElementById('specialty-empty');
+                        var clear = document.getElementById('specialty-search-clear');
+                        if (!input || !list) return;
 
-                    var items = Array.prototype.slice.call(list.querySelectorAll('.specialty-card'));
+                        var items = Array.prototype.slice.call(list.querySelectorAll('.specialty-card'));
 
-                    function normalize(str) {
-                        return (str || '')
-                            .toLowerCase()
-                            .normalize('NFD')
-                            .replace(/[̀-ͯ]/g, '');
-                    }
-
-                    function filter() {
-                        var q = normalize(input.value.trim());
-                        var visible = 0;
-                        items.forEach(function (btn) {
-                            var hay = normalize(btn.getAttribute('data-search') || '');
-                            var match = !q || hay.indexOf(q) !== -1;
-                            btn.parentElement.style.display = match ? '' : 'none';
-                            if (match) visible++;
-                        });
-                        empty.hidden = visible !== 0;
-                        clear.hidden = q.length === 0;
-                    }
-
-                    input.addEventListener('input', filter);
-                    clear.addEventListener('click', function () {
-                        input.value = '';
-                        filter();
-                        input.focus();
-                    });
-                    input.addEventListener('keydown', function (e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            var firstVisible = items.find(function (b) { return b.parentElement.style.display !== 'none'; });
-                            if (firstVisible) firstVisible.click();
+                        function normalize(str) {
+                            return (str || '')
+                                .toLowerCase()
+                                .normalize('NFD')
+                                .replace(/[̀-ͯ]/g, '');
                         }
-                    });
-                    input.focus();
-                })();
+
+                        function filter() {
+                            var q = normalize(input.value.trim());
+                            var visible = 0;
+                            items.forEach(function (btn) {
+                                var hay = normalize(btn.getAttribute('data-search') || '');
+                                var match = !q || hay.indexOf(q) !== -1;
+                                btn.parentElement.style.display = match ? '' : 'none';
+                                if (match) visible++;
+                            });
+                            empty.hidden = visible !== 0;
+                            clear.hidden = q.length === 0;
+                        }
+
+                        input.addEventListener('input', filter);
+                        clear.addEventListener('click', function () {
+                            input.value = '';
+                            filter();
+                            input.focus();
+                        });
+                        input.addEventListener('keydown', function (e) {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                var firstVisible = items.find(function (b) { return b.parentElement.style.display !== 'none'; });
+                                if (firstVisible) firstVisible.click();
+                            }
+                        });
+                        input.focus();
+                    })();
                 </script>
 
             <?php elseif ($step === 2): ?>
@@ -211,18 +218,22 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                                 $photo = !empty($d['photo_url'])
                                     ? portal_directory_photo_url($d['photo_url'])
                                     : doctor_avatar_svg($d['name'] ?? 'Médico');
-                            ?>
+                                ?>
                                 <article class="portal-doctor">
-                                    <img src="<?= e($photo) ?>" alt="<?= e($d['name']) ?>" style="width:56px;height:56px;border-radius:50%;object-fit:cover">
+                                    <img src="<?= e($photo) ?>" alt="<?= e($d['name']) ?>"
+                                        style="width:56px;height:56px;border-radius:50%;object-fit:cover">
                                     <div>
                                         <h3><?= e($d['name']) ?></h3>
                                         <p><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($d['specialty']) ?></p>
                                         <?php if (!empty($d['office_name'])): ?>
                                             <p><i data-lucide="map-pin" class="h-3.5 w-3.5"></i> <?= e($d['office_name']) ?></p>
                                         <?php endif; ?>
-                                        <p class="portal-hint">Horario: <?= e(substr($d['schedule']['start'] ?? '09:00', 0, 5)) ?>–<?= e(substr($d['schedule']['end'] ?? '17:00', 0, 5)) ?></p>
+                                        <p class="portal-hint">Horario:
+                                            <?= e(substr($d['schedule']['start'] ?? '09:00', 0, 5)) ?>–<?= e(substr($d['schedule']['end'] ?? '17:00', 0, 5)) ?>
+                                        </p>
                                     </div>
-                                    <a href="?specialty_id=<?= $specId ?>&doctor_id=<?= (int)$d['id'] ?>" class="btn btn-green">Ver fechas →</a>
+                                    <a href="?specialty_id=<?= $specId ?>&doctor_id=<?= (int) $d['id'] ?>" class="btn btn-green">Ver
+                                        fechas →</a>
                                 </article>
                             <?php endforeach; ?>
                         </div>
@@ -239,7 +250,8 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                         <div>
                             <p class="section-label">Agendando con</p>
                             <h2><?= e($selectedDoctor['name']) ?></h2>
-                            <p class="portal-hint"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($selectedDoctor['specialty']) ?></p>
+                            <p class="portal-hint"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>
+                                <?= e($selectedDoctor['specialty']) ?></p>
                         </div>
                         <a href="?specialty_id=<?= $specId ?>" class="portal-text-link portal-change-link">Cambiar médico</a>
                     </div>
@@ -266,7 +278,8 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                         </div>
                         <div>
                             <label class="form-label" for="g-cedula">Cédula</label>
-                            <input type="text" name="cedula" id="g-cedula" class="form-input" required placeholder="000-0000000-0">
+                            <input type="text" name="cedula" id="g-cedula" class="form-input" required
+                                placeholder="000-0000000-0">
                         </div>
                     </div>
                     <div class="portal-grid-2">
@@ -276,12 +289,14 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                         </div>
                         <div>
                             <label class="form-label" for="g-phone">Teléfono</label>
-                            <input type="tel" name="phone" id="g-phone" class="form-input" required placeholder="(809) 000-0000">
+                            <input type="tel" name="phone" id="g-phone" class="form-input" required
+                                placeholder="(809) 000-0000">
                         </div>
                     </div>
 
                     <label class="form-label mt-3" for="g-notes">Motivo de la consulta (opcional)</label>
-                    <textarea name="notes" id="g-notes" rows="2" class="form-input" placeholder="Síntomas, consulta general, control, etc."></textarea>
+                    <textarea name="notes" id="g-notes" rows="2" class="form-input"
+                        placeholder="Síntomas, consulta general, control, etc."></textarea>
 
                     <div class="portal-confirm-box mt-4">
                         <p>Cita seleccionada:</p>
@@ -292,7 +307,9 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                         <div class="h-captcha mt-4" data-sitekey="<?= e($hcaptchaSiteKey) ?>"></div>
                     <?php endif; ?>
 
-                    <p class="portal-hint mt-3">Al confirmar aceptas la <a href="<?= e(base_url('politica-de-privacidad')) ?>" class="portal-text-link">política de privacidad</a> del hospital.</p>
+                    <p class="portal-hint mt-3">Al confirmar aceptas la <a
+                            href="<?= e(base_url('politica-de-privacidad')) ?>" class="portal-text-link">política de
+                            privacidad</a> del hospital.</p>
 
                     <div id="guest-result"></div>
 
@@ -302,10 +319,10 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                 </form>
 
                 <script>
-                    window.PORTAL_DOCTOR_ID    = <?= $docId ?>;
-                    window.AGENDAR_HCAPTCHA    = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
-                    window.AGENDAR_SLOTS_URL   = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
-                    window.AGENDAR_SUBMIT_URL  = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
+                    window.PORTAL_DOCTOR_ID = <?= $docId ?>;
+                    window.AGENDAR_HCAPTCHA = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
+                    window.AGENDAR_SLOTS_URL = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
+                    window.AGENDAR_SUBMIT_URL = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
                 </script>
             <?php endif; ?>
 
@@ -319,4 +336,5 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
         <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <?php endif; ?>
 </body>
+
 </html>
