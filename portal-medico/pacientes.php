@@ -81,7 +81,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                             <td><?= e($p['insurance_provider'] ?? '—') ?></td>
                             <td>
                                 <?php if (!empty($p['last_visit_at'])): ?>
-                                    <?= e(date('d M Y', strtotime($p['last_visit_at']))) ?>
+                                    <?= e(doctor_fecha_corta(strtotime($p['last_visit_at']))) ?>
                                 <?php else: ?>—<?php endif; ?>
                             </td>
                             <td class="text-right"><span class="doctor-visit-chip"><?= (int)$p['visits_total'] ?></span></td>

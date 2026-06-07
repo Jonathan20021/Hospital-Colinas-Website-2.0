@@ -124,7 +124,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
                                 <i data-lucide="map-pin" class="h-3 w-3 inline-block align-text-bottom"></i> <?= e($a['ip_address'] ?: '—') ?>
                             </p>
                         </div>
-                        <span class="doctor-activity-when"><?= e(date('d M · H:i', $ts)) ?></span>
+                        <span class="doctor-activity-when"><?= e(doctor_fecha_corta($ts, true)) ?></span>
                     </li>
                 <?php endforeach; ?>
             </ul>
@@ -153,8 +153,8 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
                             <p class="doctor-device-label"><?= e($d['device_label'] ?: 'Dispositivo') ?></p>
                             <p class="doctor-device-meta">
                                 <?= e($d['ip_address'] ?? '—') ?>
-                                · Agregado <?= e(date('d M Y', $ts)) ?>
-                                · Vence <?= e(date('d M Y', $expTs)) ?>
+                                · Agregado <?= e(doctor_fecha_corta($ts)) ?>
+                                · Vence <?= e(doctor_fecha_corta($expTs)) ?>
                             </p>
                         </div>
                         <button type="button" class="doctor-device-revoke" data-revoke-id="<?= (int)$d['id'] ?>">

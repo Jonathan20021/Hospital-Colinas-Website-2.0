@@ -38,7 +38,7 @@ doctor_layout_begin('Consulta médica', 'consulta');
 
     <header class="doctor-consult-header">
         <div>
-            <p class="doctor-eyebrow">Consulta · <?= e(date('d M Y · H:i', $ts)) ?></p>
+            <p class="doctor-eyebrow">Consulta · <?= e(doctor_fecha_corta($ts, true)) ?></p>
             <h1><?= e($appt['patient_name']) ?></h1>
             <div class="doctor-patient-meta">
                 <?php if (!empty($appt['patient_cedula'])): ?><span><i data-lucide="id-card" class="h-3.5 w-3.5"></i> <?= e($appt['patient_cedula']) ?></span><?php endif; ?>

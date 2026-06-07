@@ -211,3 +211,19 @@ function doctor_estado_es(string $status): string
 {
     return ['scheduled'=>'Agendada','completed'=>'Completada','cancelled'=>'Cancelada','pending'=>'Pendiente','no_show'=>'No asistió'][$status] ?? ucfirst($status);
 }
+
+/** Fecha corta en español: "15 jun 2026" (o con hora: "15 jun 2026 · 14:30"). */
+function doctor_fecha_corta(int $ts, bool $conHora = false): string
+{
+    $m = [1=>'ene',2=>'feb',3=>'mar',4=>'abr',5=>'may',6=>'jun',7=>'jul',8=>'ago',9=>'sep',10=>'oct',11=>'nov',12=>'dic'];
+    $s = (int)date('j', $ts) . ' ' . ($m[(int)date('n', $ts)] ?? '') . ' ' . date('Y', $ts);
+    if ($conHora) $s .= ' · ' . date('H:i', $ts);
+    return $s;
+}
+
+/** Mes abreviado en mayúsculas (para badges de fecha): "JUN". */
+function doctor_mes_corto_es(int $ts): string
+{
+    $m = [1=>'ENE',2=>'FEB',3=>'MAR',4=>'ABR',5=>'MAY',6=>'JUN',7=>'JUL',8=>'AGO',9=>'SEP',10=>'OCT',11=>'NOV',12=>'DIC'];
+    return $m[(int)date('n', $ts)] ?? '';
+}

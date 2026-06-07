@@ -51,7 +51,7 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
                     <li class="doctor-appt-row" data-id="<?= (int)$a['id'] ?>">
                         <div class="doctor-appt-date">
                             <strong><?= e(date('d', $ts)) ?></strong>
-                            <span><?= e(strtoupper(date('M', $ts))) ?></span>
+                            <span><?= e(doctor_mes_corto_es($ts)) ?></span>
                         </div>
                         <div class="doctor-appt-info">
                             <p class="doctor-appt-name"><?= e(doctor_fecha_es($ts)) ?></p>

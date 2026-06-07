@@ -111,7 +111,7 @@ doctor_layout_begin('Inicio', 'dashboard');
                     </div>
                 <?php else: foreach ($nextOnes as $a): $ts = strtotime($a['appointment_time']); ?>
                     <a class="dm-row" href="<?= e(base_url('portal-medico/consulta.php?appt=' . (int)$a['id'])) ?>">
-                        <div class="dm-rdate"><strong><?= e(date('d', $ts)) ?></strong><span><?= e(strtoupper(strtr(date('M', $ts), ['Apr'=>'ABR','Aug'=>'AGO','Dec'=>'DIC','Jan'=>'ENE']))) ?></span></div>
+                        <div class="dm-rdate"><strong><?= e(date('d', $ts)) ?></strong><span><?= e(doctor_mes_corto_es($ts)) ?></span></div>
                         <div class="dm-rinfo">
                             <div class="n"><?= e($a['patient_name']) ?></div>
                             <div class="m"><i data-lucide="clock"></i> <?= e(date('H:i', $ts)) ?><?php if (!empty($a['patient_phone'])): ?> · <i data-lucide="phone"></i> <?= e($a['patient_phone']) ?><?php endif; ?></div>
