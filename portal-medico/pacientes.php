@@ -20,11 +20,11 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
     <div>
         <p class="doctor-eyebrow">Mis pacientes</p>
         <h1>Pacientes atendidos</h1>
-        <p class="doctor-subtitle">Tu lista completa, con la fecha de su ultima consulta.</p>
+        <p class="doctor-subtitle">Tu lista completa, con la fecha de su última consulta.</p>
     </div>
     <form method="GET" class="doctor-search-form">
         <i data-lucide="search" class="h-4 w-4"></i>
-        <input type="search" name="q" value="<?= e($q) ?>" placeholder="Buscar por nombre, cedula, telefono..." class="doctor-input doctor-input-search">
+        <input type="search" name="q" value="<?= e($q) ?>" placeholder="Buscar por nombre, cédula, teléfono..." class="doctor-input doctor-input-search">
         <?php if ($q !== ''): ?>
             <a href="<?= e(base_url('portal-medico/pacientes.php')) ?>" class="doctor-search-clear" aria-label="Limpiar"><i data-lucide="x" class="h-4 w-4"></i></a>
         <?php endif; ?>
@@ -43,8 +43,8 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
             <div class="doctor-empty-illustration">
                 <i data-lucide="<?= $q ? 'search-x' : 'users' ?>" class="h-7 w-7"></i>
             </div>
-            <p class="doctor-empty-title"><?= $q ? 'Sin resultados' : 'Aun no tienes pacientes' ?></p>
-            <p><?= $q ? 'Prueba con otro nombre, cedula o telefono.' : 'Tus pacientes apareceran aqui cuando agendes tu primera cita.' ?></p>
+            <p class="doctor-empty-title"><?= $q ? 'Sin resultados' : 'Aún no tienes pacientes' ?></p>
+            <p><?= $q ? 'Prueba con otro nombre, cédula o teléfono.' : 'Tus pacientes aparecerán aquí cuando agendes tu primera cita.' ?></p>
         </div>
     <?php else: ?>
         <div class="doctor-table-wrap">
@@ -52,10 +52,10 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                 <thead>
                     <tr>
                         <th>Paciente</th>
-                        <th>Cedula</th>
-                        <th>Telefono</th>
+                        <th>Cédula</th>
+                        <th>Teléfono</th>
                         <th>Seguro</th>
-                        <th>Ultima visita</th>
+                        <th>Última visita</th>
                         <th class="text-right">Visitas</th>
                         <th></th>
                     </tr>
@@ -97,13 +97,13 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
         </div>
 
         <?php if (($pag['pages'] ?? 1) > 1): ?>
-            <nav class="doctor-pagination" aria-label="Paginacion">
+            <nav class="doctor-pagination" aria-label="Paginación">
                 <?php
                     $prev = max(1, $page - 1); $next = min($pag['pages'], $page + 1);
                     $qbase = http_build_query(['q' => $q]);
                 ?>
                 <a href="?<?= e($qbase) ?>&page=<?= $prev ?>" class="doctor-page-btn <?= $page<=1?'is-disabled':'' ?>" aria-disabled="<?= $page<=1?'true':'false' ?>"><i data-lucide="chevron-left" class="h-4 w-4"></i> Anterior</a>
-                <span>Pagina <?= $page ?> de <?= (int)$pag['pages'] ?></span>
+                <span>Página <?= $page ?> de <?= (int)$pag['pages'] ?></span>
                 <a href="?<?= e($qbase) ?>&page=<?= $next ?>" class="doctor-page-btn <?= $page>=$pag['pages']?'is-disabled':'' ?>" aria-disabled="<?= $page>=$pag['pages']?'true':'false' ?>">Siguiente <i data-lucide="chevron-right" class="h-4 w-4"></i></a>
             </nav>
         <?php endif; ?>

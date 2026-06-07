@@ -3,13 +3,104 @@
     background: #fbfaf7;
 }
 
+/* El atributo [hidden] SIEMPRE debe ocultar, aunque una clase defina su
+   propio display (.doctor-btn-loading, .doctor-capslock-hint, paneles toggle,
+   etc.). Sin esto, `display:inline-flex/flex` de la clase gana sobre la regla
+   del navegador `[hidden]{display:none}` y el elemento se ve cuando no debe. */
+[hidden] {
+    display: none !important;
+}
+
+/* ── Topbar aislado del portal ───────────────────────────────────
+   Reemplaza al header del sitio público. Compartido por el portal de
+   pacientes y el del médico (ambos cargan portal.css). Sin navegación
+   ni enlaces hacia fuera: solo identidad + indicador de conexión segura. */
+.portal-topbar {
+    background: #fff;
+    border-bottom: 1px solid #e8e2d8;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+.portal-topbar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: .85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.portal-topbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .85rem;
+    text-decoration: none;
+    min-width: 0;
+}
+
+.portal-topbar-logo {
+    height: 38px;
+    width: auto;
+    display: block;
+}
+
+.portal-topbar-sep {
+    width: 1px;
+    height: 26px;
+    background: #e2e8f0;
+    flex: none;
+}
+
+.portal-topbar-title {
+    font-weight: 700;
+    font-size: .98rem;
+    color: #1e293b;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.portal-topbar-secure {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+    flex: none;
+}
+
+.portal-topbar-secure i {
+    color: #059669;
+}
+
+@media (max-width: 640px) {
+    .portal-topbar-inner {
+        padding: .7rem 1rem;
+    }
+
+    .portal-topbar-logo {
+        height: 32px;
+    }
+
+    /* En móvil dejamos solo el logo y el icono de candado para ahorrar ancho. */
+    .portal-topbar-title,
+    .portal-topbar-sep,
+    .portal-topbar-secure span {
+        display: none;
+    }
+}
+
 .portal-shell {
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem 1rem;
     display: grid;
     gap: 1.5rem;
-    min-height: calc(100vh - 220px);
+    min-height: calc(100vh - 90px);
 }
 
 .portal-shell-app {

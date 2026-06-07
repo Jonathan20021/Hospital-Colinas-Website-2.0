@@ -44,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $message = $res['message'] ?? 'No se pudo iniciar sesion.';
+    $message = $res['message'] ?? 'No se pudo iniciar sesión.';
     $errors  = $res['errors'];
 }
 
-doctor_layout_begin('Iniciar sesion', 'login');
+doctor_layout_begin('Iniciar sesión', 'login');
 ?>
 <div class="doctor-auth-wrap">
     <div class="doctor-auth-card">
@@ -56,7 +56,7 @@ doctor_layout_begin('Iniciar sesion', 'login');
             <i data-lucide="stethoscope" class="h-7 w-7"></i>
             <div>
                 <p class="doctor-auth-eyebrow">Hospital Las Colinas</p>
-                <h1>Portal del Medico</h1>
+                <h1>Portal del Médico</h1>
             </div>
         </div>
         <p class="doctor-auth-subtitle">Accede para gestionar tu agenda, consultas y pacientes.</p>
@@ -77,29 +77,29 @@ doctor_layout_begin('Iniciar sesion', 'login');
                 <input type="email" name="email" id="email" class="doctor-input" required autofocus value="<?= e($emailInput) ?>" placeholder="usted@hospital.com">
             </div>
 
-            <label class="doctor-label mt-4" for="password">Contrasena</label>
+            <label class="doctor-label mt-4" for="password">Contraseña</label>
             <div class="doctor-input-icon">
                 <i data-lucide="lock" class="h-4 w-4"></i>
                 <input type="password" name="password" id="password" class="doctor-input" required autocomplete="current-password" placeholder="********">
-                <button type="button" class="doctor-input-toggle" data-toggle="#password" aria-label="Mostrar/ocultar contrasena">
+                <button type="button" class="doctor-input-toggle" data-toggle="#password" aria-label="Mostrar u ocultar contraseña">
                     <i data-lucide="eye" class="h-4 w-4"></i>
                 </button>
             </div>
             <p id="capslock-hint" class="doctor-capslock-hint" hidden>
-                <i data-lucide="alert-triangle" class="h-3.5 w-3.5"></i> Bloq Mayus esta activado
+                <i data-lucide="alert-triangle" class="h-3.5 w-3.5"></i> Bloq Mayús está activado
             </p>
 
             <div class="doctor-auth-row">
-                <a href="<?= e(base_url('portal-medico/recuperar.php')) ?>" class="doctor-text-link">¿Olvidaste tu contrasena?</a>
+                <a href="<?= e(base_url('portal-medico/recuperar.php')) ?>" class="doctor-text-link">¿Olvidaste tu contraseña?</a>
             </div>
 
             <button type="submit" class="doctor-btn doctor-btn-primary mt-6" id="login-submit">
-                <span class="doctor-btn-content"><i data-lucide="log-in" class="h-4 w-4"></i> Iniciar sesion</span>
+                <span class="doctor-btn-content"><i data-lucide="log-in" class="h-4 w-4"></i> Iniciar sesión</span>
                 <span class="doctor-btn-loading" hidden><i data-lucide="loader-2" class="h-4 w-4 doctor-spin"></i> Verificando...</span>
             </button>
 
             <div class="doctor-security-badges">
-                <span class="doctor-security-badge"><i data-lucide="shield-check" class="h-3.5 w-3.5"></i> Conexion TLS 1.3</span>
+                <span class="doctor-security-badge"><i data-lucide="shield-check" class="h-3.5 w-3.5"></i> Conexión TLS 1.3</span>
                 <span class="doctor-security-badge"><i data-lucide="key-round" class="h-3.5 w-3.5"></i> 2FA por email</span>
                 <span class="doctor-security-badge"><i data-lucide="lock" class="h-3.5 w-3.5"></i> Solo personal autorizado</span>
             </div>
@@ -109,14 +109,14 @@ doctor_layout_begin('Iniciar sesion', 'login');
     <aside class="doctor-auth-aside">
         <div class="doctor-auth-aside-inner">
             <i data-lucide="shield-check" class="h-10 w-10"></i>
-            <h2>Tu trabajo, mas simple.</h2>
+            <h2>Tu trabajo, más simple.</h2>
             <ul class="doctor-auth-points">
-                <li><i data-lucide="calendar-check" class="h-4 w-4"></i> Tu agenda del dia y la semana.</li>
-                <li><i data-lucide="file-text" class="h-4 w-4"></i> Notas medicas, recetas y constancias.</li>
-                <li><i data-lucide="users" class="h-4 w-4"></i> Historial clinico de tus pacientes.</li>
+                <li><i data-lucide="calendar-check" class="h-4 w-4"></i> Tu agenda del día y la semana.</li>
+                <li><i data-lucide="file-text" class="h-4 w-4"></i> Notas médicas, recetas y constancias.</li>
+                <li><i data-lucide="users" class="h-4 w-4"></i> Historial clínico de tus pacientes.</li>
                 <li><i data-lucide="bar-chart-3" class="h-4 w-4"></i> Indicadores de tu consulta.</li>
             </ul>
-            <p class="doctor-auth-aside-foot">Protegido con verificacion en dos pasos y conexion cifrada.</p>
+            <p class="doctor-auth-aside-foot">Protegido con verificación en dos pasos y conexión cifrada.</p>
         </div>
     </aside>
 </div>

@@ -10,6 +10,27 @@
 (function () {
     'use strict';
 
+    // ── Sidebar colapsable (escritorio) / drawer (móvil) ─────────────
+    (function initSidebar() {
+        const app = document.getElementById('dmApp');
+        if (!app) return;
+        const mq = window.matchMedia('(max-width: 1020px)');
+        try { if (localStorage.getItem('dmSidebar') === 'collapsed' && !mq.matches) app.classList.add('collapsed'); } catch (e) {}
+        function toggle() {
+            if (mq.matches) {
+                app.classList.toggle('drawer-open');
+            } else {
+                app.classList.toggle('collapsed');
+                try { localStorage.setItem('dmSidebar', app.classList.contains('collapsed') ? 'collapsed' : 'open'); } catch (e) {}
+            }
+        }
+        document.querySelectorAll('[data-dm-toggle]').forEach((b) => b.addEventListener('click', toggle));
+        document.querySelectorAll('[data-dm-close]').forEach((b) => b.addEventListener('click', () => app.classList.remove('drawer-open')));
+        app.querySelectorAll('.dm-sb .dm-link').forEach((l) => l.addEventListener('click', () => { if (mq.matches) app.classList.remove('drawer-open'); }));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') app.classList.remove('drawer-open'); });
+        mq.addEventListener('change', () => app.classList.remove('drawer-open'));
+    })();
+
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const CSRF = csrfMeta ? csrfMeta.content : '';
 

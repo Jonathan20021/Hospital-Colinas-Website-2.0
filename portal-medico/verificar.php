@@ -12,7 +12,7 @@ $pending = $_SESSION['doctor_pending_login'] ?? null;
 // Si no hay sesion pendiente o expiro, volver al login
 if (!$pending || ($pending['expires_at'] ?? 0) < time()) {
     unset($_SESSION['doctor_pending_login']);
-    doctor_flash_set('error', 'La sesion de verificacion expiro. Inicia sesion de nuevo.');
+    doctor_flash_set('error', 'La sesión de verificación expiró. Inicia sesión de nuevo.');
     header('Location: ' . base_url('portal-medico/login.php'));
     exit;
 }
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
         $pending['expires_at'] = time() + 600;
         $_SESSION['doctor_pending_login'] = $pending;
-        doctor_flash_set('info', 'Te enviamos un nuevo codigo a tu correo.');
+        doctor_flash_set('info', 'Te enviamos un nuevo código a tu correo.');
         header('Location: ' . base_url('portal-medico/verificar.php'));
         exit;
     }
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remember = !empty($_POST['remember_device']);
 
     if (strlen($code) !== 6) {
-        $message = 'Ingresa los 6 digitos del codigo.';
+        $message = 'Ingresa los 6 dígitos del código.';
     } else {
         $res = portal_api_call('POST', '/portal-doctor/auth/verify', [
             'email'           => $pending['email'],
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: ' . $next);
             exit;
         }
-        $message = $res['message'] ?? 'No se pudo verificar el codigo.';
+        $message = $res['message'] ?? 'No se pudo verificar el código.';
         $errors  = $res['errors'];
     }
 }
@@ -75,12 +75,12 @@ doctor_layout_begin('Verificar acceso', 'login');
         <div class="doctor-auth-brand">
             <i data-lucide="shield-check" class="h-7 w-7"></i>
             <div>
-                <p class="doctor-auth-eyebrow">Verificacion en dos pasos</p>
-                <h1>Codigo de acceso</h1>
+                <p class="doctor-auth-eyebrow">Verificación en dos pasos</p>
+                <h1>Código de acceso</h1>
             </div>
         </div>
         <p class="doctor-auth-subtitle">
-            Te enviamos un codigo de 6 digitos a <strong><?= e($pending['email_masked'] ?? $pending['email']) ?></strong>.
+            Te enviamos un código de 6 dígitos a <strong><?= e($pending['email_masked'] ?? $pending['email']) ?></strong>.
             Revisa tu correo (puede tardar 1-2 minutos).
         </p>
 
@@ -94,7 +94,7 @@ doctor_layout_begin('Verificar acceso', 'login');
         <form method="POST" class="doctor-form" id="verify-form" autocomplete="off">
             <input type="hidden" name="_csrf" value="<?= e(doctor_csrf_token()) ?>">
 
-            <label class="doctor-label" for="code">Codigo</label>
+            <label class="doctor-label" for="code">Código</label>
             <div class="doctor-otp" data-target="code">
                 <input class="doctor-otp-slot" maxlength="1" inputmode="numeric" pattern="[0-9]*" autofocus autocomplete="one-time-code">
                 <input class="doctor-otp-slot" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
@@ -107,7 +107,7 @@ doctor_layout_begin('Verificar acceso', 'login');
 
             <label class="doctor-check mt-4">
                 <input type="checkbox" name="remember_device" value="1" checked>
-                <span>Confiar en este dispositivo por 30 dias (omitir verificacion en futuros accesos desde este navegador).</span>
+                <span>Confiar en este dispositivo por 30 días (omitir verificación en futuros accesos desde este navegador).</span>
             </label>
 
             <button type="submit" class="doctor-btn doctor-btn-primary mt-6" id="verify-submit">
@@ -117,7 +117,7 @@ doctor_layout_begin('Verificar acceso', 'login');
 
             <p class="doctor-auth-help">
                 ¿No recibiste el correo? Revisa tu carpeta de spam o
-                <button type="submit" name="action" value="resend" form="verify-form" class="doctor-text-link doctor-btn-inline">solicita un nuevo codigo</button>.
+                <button type="submit" name="action" value="resend" form="verify-form" class="doctor-text-link doctor-btn-inline">solicita un nuevo código</button>.
                 <br>
                 <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="doctor-text-link">Cancelar y volver al inicio</a>
             </p>
@@ -127,14 +127,14 @@ doctor_layout_begin('Verificar acceso', 'login');
     <aside class="doctor-auth-aside">
         <div class="doctor-auth-aside-inner">
             <i data-lucide="mail-check" class="h-10 w-10"></i>
-            <h2>¿Por que este paso?</h2>
+            <h2>¿Por qué este paso?</h2>
             <ul class="doctor-auth-points">
-                <li><i data-lucide="user-check" class="h-4 w-4"></i> Confirma que eres tu en este dispositivo nuevo.</li>
-                <li><i data-lucide="shield" class="h-4 w-4"></i> Protege la informacion clinica de tus pacientes.</li>
-                <li><i data-lucide="clock" class="h-4 w-4"></i> El codigo vence en 10 minutos.</li>
-                <li><i data-lucide="bookmark" class="h-4 w-4"></i> Una vez confiado, este navegador no pedira codigo por 30 dias.</li>
+                <li><i data-lucide="user-check" class="h-4 w-4"></i> Confirma que eres tú en este dispositivo nuevo.</li>
+                <li><i data-lucide="shield" class="h-4 w-4"></i> Protege la información clínica de tus pacientes.</li>
+                <li><i data-lucide="clock" class="h-4 w-4"></i> El código vence en 10 minutos.</li>
+                <li><i data-lucide="bookmark" class="h-4 w-4"></i> Una vez confiado, este navegador no pedirá código por 30 días.</li>
             </ul>
-            <p class="doctor-auth-aside-foot">Nunca compartas tu codigo con nadie, ni siquiera con el personal del hospital.</p>
+            <p class="doctor-auth-aside-foot">Nunca compartas tu código con nadie, ni siquiera con el personal del hospital.</p>
         </div>
     </aside>
 </div>

@@ -20,6 +20,17 @@ function doctor_portal_session_start(): void {
         ]);
         session_name('HGLC_DOCTOR_PORTAL');
         session_start();
+
+        // Aislamiento/seguridad del portal del medico: ninguna pagina debe
+        // poder embeberse en un iframe (anti-clickjacking) ni ser indexada.
+        // (Referrer-Policy y X-Content-Type-Options ya los fija el .htaccess
+        // global del sitio.) Se emiten una sola vez por request, antes de la
+        // salida.
+        if (!headers_sent()) {
+            header('X-Frame-Options: DENY');
+            header("Content-Security-Policy: frame-ancestors 'none'");
+            header('X-Robots-Tag: noindex, nofollow');
+        }
     }
 }
 

@@ -94,10 +94,10 @@ document.addEventListener('DOMContentLoaded', () => {
         body.innerHTML = `
             <dl class="doctor-dl">
                 <dt>Paciente</dt><dd><strong>${esc(a.patient_name)}</strong> ${a.patient_cedula ? '· ' + esc(a.patient_cedula) : ''}</dd>
-                <dt>Telefono</dt><dd>${esc(a.patient_phone || '—')}</dd>
+                <dt>Teléfono</dt><dd>${esc(a.patient_phone || '—')}</dd>
                 <dt>Fecha</dt><dd>${dt.toLocaleString('es-DO', {dateStyle:'full', timeStyle:'short'})}</dd>
                 <dt>Estado</dt><dd><span class="doctor-pill doctor-pill-${esc(a.status)}">${esc(a.status)}</span></dd>
-                ${a.diagnosis ? `<dt>Diagnostico</dt><dd>${esc(a.diagnosis)}</dd>` : ''}
+                ${a.diagnosis ? `<dt>Diagnóstico</dt><dd>${esc(a.diagnosis)}</dd>` : ''}
                 ${a.prescription ? `<dt>Receta</dt><dd style="white-space:pre-wrap">${esc(a.prescription)}</dd>` : ''}
             </dl>`;
 
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         foot.querySelectorAll('[data-action="cancel"]').forEach(btn => {
             btn.addEventListener('click', async () => {
-                const reason = prompt('Motivo de cancelacion (opcional):') || '';
+                const reason = prompt('Motivo de cancelación (opcional):') || '';
                 const c = await window.doctorApi('POST', '/portal-doctor/me/appointments/' + btn.dataset.id + '/cancel', { reason });
                 if (c.ok) location.reload();
                 else alert(c.message || 'Error al cancelar.');

@@ -60,7 +60,23 @@ function portal_layout_begin(string $title, string $active = ''): void
 
     <body class="bg-slate-50 font-sans text-slate-950 antialiased portal-page">
         <a class="skip-link" href="#contenido">Saltar al contenido</a>
-        <?php render_public_header($assets, $contact, ''); ?>
+
+        <?php // Topbar propio del portal: aislado del sitio público (sin menú,
+              // buscador ni enlaces externos). El logo solo navega dentro del portal. ?>
+        <header class="portal-topbar">
+            <div class="portal-topbar-inner">
+                <a href="<?= e(base_url(portal_is_logged_in() ? 'portal/dashboard.php' : 'portal/login.php')) ?>"
+                    class="portal-topbar-brand" aria-label="Portal de Pacientes - Hospital Las Colinas">
+                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital Las Colinas" class="portal-topbar-logo">
+                    <span class="portal-topbar-sep" aria-hidden="true"></span>
+                    <span class="portal-topbar-title">Portal de Pacientes</span>
+                </a>
+                <span class="portal-topbar-secure">
+                    <i data-lucide="shield-check" class="h-4 w-4"></i>
+                    <span>Conexión segura</span>
+                </span>
+            </div>
+        </header>
 
         <div class="portal-shell <?= portal_is_logged_in() ? 'portal-shell-app' : 'portal-shell-auth' ?>">
             <?php if (portal_is_logged_in()):
@@ -127,7 +143,7 @@ function portal_layout_end(): void
             </main>
         </div>
 
-        <?php render_public_footer($assets, $contact, date('Y')); ?>
+        <?php // Portal aislado: sin footer del sitio público. ?>
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal.js')) ?>?v=<?= e($assetVersion) ?>"></script>

@@ -7,7 +7,7 @@ $dName  = (string)($doctor['name'] ?? '');
 [$avc1, $avc2] = doctor_avatar_palette($dName);
 $avInitials = doctor_initials($dName);
 
-// Cargar actividad de inicio de sesion
+// Cargar actividad de inicio de sesión
 $actRes = portal_api_call('GET', '/portal-doctor/me/login-activity', [], doctor_token());
 $recentLogins   = $actRes['data']['recent'] ?? [];
 $trustedDevices = $actRes['data']['trusted_devices'] ?? [];
@@ -15,18 +15,18 @@ $trustedDevices = $actRes['data']['trusted_devices'] ?? [];
 function activity_label(string $reason, bool $success): string {
     if ($success) {
         return match ($reason) {
-            'trusted_device' => 'Inicio de sesion (dispositivo confiable)',
-            '2fa_ok'         => 'Inicio de sesion con 2FA',
-            default          => 'Inicio de sesion',
+            'trusted_device' => 'Inicio de sesión (dispositivo confiable)',
+            '2fa_ok'         => 'Inicio de sesión con 2FA',
+            default          => 'Inicio de sesión',
         };
     }
     return match ($reason) {
         'rate_limited'    => 'Bloqueado por demasiados intentos',
         'bad_credentials' => 'Credenciales incorrectas',
         'locked'          => 'Cuenta bloqueada temporalmente',
-        '2fa_bad_code'    => 'Codigo 2FA incorrecto',
-        '2fa_bad_creds'   => 'Credenciales invalidas en 2FA',
-        'awaiting_2fa'    => 'Pendiente de codigo 2FA',
+        '2fa_bad_code'    => 'Código 2FA incorrecto',
+        '2fa_bad_creds'   => 'Credenciales inválidas en 2FA',
+        'awaiting_2fa'    => 'Pendiente de código 2FA',
         'inactive'        => 'Cuenta inactiva',
         default           => 'Intento fallido',
     };
@@ -38,7 +38,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
     <div>
         <p class="doctor-eyebrow">Mi cuenta</p>
         <h1>Seguridad de tu cuenta</h1>
-        <p class="doctor-subtitle">Tu informacion profesional es administrada por el hospital. Aqui solo puedes gestionar tu contrasena de acceso.</p>
+        <p class="doctor-subtitle">Tu información profesional es administrada por el hospital. Aquí solo puedes gestionar tu contraseña de acceso.</p>
     </div>
 </header>
 
@@ -65,33 +65,33 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
 
     <div class="doctor-card">
         <header class="doctor-card-header">
-            <h2><i data-lucide="key-round" class="h-4 w-4"></i> Cambiar contrasena</h2>
+            <h2><i data-lucide="key-round" class="h-4 w-4"></i> Cambiar contraseña</h2>
         </header>
         <form id="pwd-form" class="doctor-form-pad">
-            <label class="doctor-label" for="current_password">Contrasena actual</label>
+            <label class="doctor-label" for="current_password">Contraseña actual</label>
             <div class="doctor-input-icon">
                 <i data-lucide="lock" class="h-4 w-4"></i>
                 <input type="password" name="current_password" id="current_password" class="doctor-input" required autocomplete="current-password" placeholder="********">
                 <button type="button" class="doctor-input-toggle" data-toggle="#current_password" aria-label="Mostrar/ocultar"><i data-lucide="eye" class="h-4 w-4"></i></button>
             </div>
 
-            <label class="doctor-label mt-4" for="new_password">Nueva contrasena</label>
+            <label class="doctor-label mt-4" for="new_password">Nueva contraseña</label>
             <div class="doctor-input-icon">
                 <i data-lucide="lock-keyhole" class="h-4 w-4"></i>
-                <input type="password" name="new_password" id="new_password" class="doctor-input" required minlength="8" autocomplete="new-password" placeholder="minimo 8 caracteres">
+                <input type="password" name="new_password" id="new_password" class="doctor-input" required minlength="8" autocomplete="new-password" placeholder="mínimo 8 caracteres">
                 <button type="button" class="doctor-input-toggle" data-toggle="#new_password" aria-label="Mostrar/ocultar"><i data-lucide="eye" class="h-4 w-4"></i></button>
             </div>
 
-            <label class="doctor-label mt-4" for="new_password_confirm">Confirmar nueva contrasena</label>
+            <label class="doctor-label mt-4" for="new_password_confirm">Confirmar nueva contraseña</label>
             <div class="doctor-input-icon">
                 <i data-lucide="lock-keyhole" class="h-4 w-4"></i>
-                <input type="password" name="new_password_confirm" id="new_password_confirm" class="doctor-input" required minlength="8" autocomplete="new-password" placeholder="repite tu nueva contrasena">
+                <input type="password" name="new_password_confirm" id="new_password_confirm" class="doctor-input" required minlength="8" autocomplete="new-password" placeholder="repite tu nueva contraseña">
             </div>
 
             <p id="pwd-status" class="doctor-save-status mt-4"></p>
 
             <button type="submit" class="doctor-btn doctor-btn-primary mt-4">
-                <i data-lucide="save" class="h-4 w-4"></i> Actualizar contrasena
+                <i data-lucide="save" class="h-4 w-4"></i> Actualizar contraseña
             </button>
         </form>
     </div>
@@ -106,7 +106,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
             <div class="doctor-empty">
                 <div class="doctor-empty-illustration"><i data-lucide="clock" class="h-7 w-7"></i></div>
                 <p class="doctor-empty-title">Sin actividad registrada</p>
-                <p>Cuando inicies sesion, los accesos apareceran aqui.</p>
+                <p>Cuando inicies sesión, los accesos aparecerán aquí.</p>
             </div>
         <?php else: ?>
             <ul class="doctor-activity-list">
@@ -138,8 +138,8 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
         <?php if (!$trustedDevices): ?>
             <div class="doctor-empty">
                 <div class="doctor-empty-illustration"><i data-lucide="smartphone" class="h-7 w-7"></i></div>
-                <p class="doctor-empty-title">Ningun dispositivo confiable</p>
-                <p>Cuando inicies sesion y marques "confiar en este dispositivo", apareceran aqui.</p>
+                <p class="doctor-empty-title">Ningún dispositivo confiable</p>
+                <p>Cuando inicies sesión y marques "confiar en este dispositivo", aparecerán aquí.</p>
             </div>
         <?php else: ?>
             <ul class="doctor-activity-list">
@@ -172,18 +172,18 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
         <h2><i data-lucide="shield-alert" class="h-4 w-4"></i> Consejos de seguridad</h2>
     </header>
     <ul class="doctor-tips">
-        <li><i data-lucide="check" class="h-4 w-4"></i> Usa al menos 8 caracteres combinando letras, numeros y simbolos.</li>
-        <li><i data-lucide="check" class="h-4 w-4"></i> No reutilices la contrasena que usas en otros sitios.</li>
+        <li><i data-lucide="check" class="h-4 w-4"></i> Usa al menos 8 caracteres combinando letras, números y símbolos.</li>
+        <li><i data-lucide="check" class="h-4 w-4"></i> No reutilices la contraseña que usas en otros sitios.</li>
         <li><i data-lucide="check" class="h-4 w-4"></i> No la compartas por correo, WhatsApp ni la pongas en notas visibles.</li>
-        <li><i data-lucide="check" class="h-4 w-4"></i> Cierra sesion al terminar, sobre todo en computadoras compartidas.</li>
-        <li><i data-lucide="check" class="h-4 w-4"></i> Si ves una sesion sospechosa en la lista de arriba, cambia tu contrasena de inmediato.</li>
+        <li><i data-lucide="check" class="h-4 w-4"></i> Cierra sesión al terminar, sobre todo en computadoras compartidas.</li>
+        <li><i data-lucide="check" class="h-4 w-4"></i> Si ves una sesión sospechosa en la lista de arriba, cambia tu contraseña de inmediato.</li>
     </ul>
 </div>
 
 <script>
 document.querySelectorAll('[data-revoke-id]').forEach(btn => {
     btn.addEventListener('click', async () => {
-        if (!confirm('¿Revocar este dispositivo? La proxima vez tendra que verificar con codigo.')) return;
+        if (!confirm('¿Revocar este dispositivo? La próxima vez tendrá que verificar con código.')) return;
         const r = await window.doctorApi('DELETE', '/portal-doctor/me/trusted-devices/' + btn.dataset.revokeId);
         if (r.ok) btn.closest('li').remove();
         else alert(r.message || 'Error al revocar.');
@@ -202,17 +202,17 @@ document.getElementById('pwd-form').addEventListener('submit', async (e) => {
 
     if (next !== conf) {
         window.doctorAutoSaveHint(status, 'error');
-        status.textContent = '⚠ Las contrasenas nuevas no coinciden.';
+        status.textContent = '⚠ Las contraseñas nuevas no coinciden.';
         return;
     }
     if (next.length < 8) {
         window.doctorAutoSaveHint(status, 'error');
-        status.textContent = '⚠ Minimo 8 caracteres.';
+        status.textContent = '⚠ Mínimo 8 caracteres.';
         return;
     }
     if (current === next) {
         window.doctorAutoSaveHint(status, 'error');
-        status.textContent = '⚠ La nueva contrasena debe ser distinta.';
+        status.textContent = '⚠ La nueva contraseña debe ser distinta.';
         return;
     }
 
@@ -223,11 +223,11 @@ document.getElementById('pwd-form').addEventListener('submit', async (e) => {
     });
     if (r.ok) {
         window.doctorAutoSaveHint(status, 'saved');
-        status.textContent = '✓ Contrasena actualizada correctamente.';
+        status.textContent = '✓ Contraseña actualizada correctamente.';
         e.target.reset();
     } else {
         window.doctorAutoSaveHint(status, 'error');
-        status.textContent = '⚠ ' + (r.message || 'Error al cambiar la contrasena.');
+        status.textContent = '⚠ ' + (r.message || 'Error al cambiar la contraseña.');
     }
 });
 </script>

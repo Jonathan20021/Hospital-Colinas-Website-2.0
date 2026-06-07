@@ -11,21 +11,21 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
     <div>
         <p class="doctor-eyebrow">Disponibilidad</p>
         <h1>Mis ausencias</h1>
-        <p class="doctor-subtitle">Marca los dias en los que no estaras disponible para consulta.</p>
+        <p class="doctor-subtitle">Marca los días en los que no estarás disponible para consulta.</p>
     </div>
 </header>
 
 <section class="doctor-grid-2">
     <div class="doctor-card">
         <header class="doctor-card-header">
-            <h2><i data-lucide="calendar-plus" class="h-5 w-5"></i> Anadir ausencia</h2>
+            <h2><i data-lucide="calendar-plus" class="h-5 w-5"></i> Añadir ausencia</h2>
         </header>
         <form id="avail-form" class="doctor-form-pad doctor-form-grid">
             <label>Fecha
                 <input type="date" name="date" class="doctor-input" min="<?= date('Y-m-d') ?>" required>
             </label>
             <label class="doctor-form-full">Motivo (opcional)
-                <input type="text" name="reason" class="doctor-input" placeholder="Congreso, vacaciones, capacitacion...">
+                <input type="text" name="reason" class="doctor-input" placeholder="Congreso, vacaciones, capacitación...">
             </label>
             <button type="submit" class="doctor-btn doctor-btn-primary doctor-form-full"><i data-lucide="plus" class="h-4 w-4"></i> Registrar ausencia</button>
         </form>
@@ -33,7 +33,7 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
 
     <div class="doctor-card">
         <header class="doctor-card-header">
-            <h2><i data-lucide="calendar-x" class="h-5 w-5"></i> Proximas ausencias (<?= count($absences) ?>)</h2>
+            <h2><i data-lucide="calendar-x" class="h-5 w-5"></i> Próximas ausencias (<?= count($absences) ?>)</h2>
         </header>
         <?php if (!$absences): ?>
             <div class="doctor-empty">
@@ -41,7 +41,7 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
                     <i data-lucide="calendar-check" class="h-7 w-7"></i>
                 </div>
                 <p class="doctor-empty-title">Sin ausencias programadas</p>
-                <p>Cuando bloquees fechas no disponibles, apareceran aqui.</p>
+                <p>Cuando bloquees fechas no disponibles, aparecerán aquí.</p>
             </div>
         <?php else: ?>
             <ul class="doctor-appt-list" id="avail-list">

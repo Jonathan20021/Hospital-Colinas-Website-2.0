@@ -79,6 +79,19 @@
     z-index: 1;
 }
 
+/* El skip-link de accesibilidad debe permanecer fixed y fuera de pantalla
+   hasta recibir foco. La regla `.doctor-portal-page > *` de arriba le imponía
+   position:relative, dejándolo visible y cortado en la esquina superior. */
+.doctor-portal-page>.skip-link {
+    position: fixed;
+    z-index: 100;
+}
+
+/* Topbar aislado: alinear su contenido con el ancho del shell del médico. */
+.doctor-portal-page .portal-topbar-inner {
+    max-width: 1380px;
+}
+
 /* ── SHELL ─────────────────────────────────────────────────── */
 .doctor-shell {
     max-width: 1380px;
@@ -1041,11 +1054,22 @@
 
 @media (max-width: 880px) {
     .doctor-auth-wrap {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        min-width: 0;
     }
 
+    /* Permite que la tarjeta y el panel encojan por debajo de su contenido
+       intrínseco (inputs, botones); sin esto el grid/flex no baja de su
+       min-content y aparece scroll horizontal en móvil. */
+    .doctor-auth-card,
     .doctor-auth-aside {
-        order: -1;
+        min-width: 0;
+    }
+
+    /* En móvil el formulario va primero (acción principal); el panel de
+       marca queda debajo para no empujar el login fuera de la vista. */
+    .doctor-auth-aside {
+        order: 2;
     }
 }
 

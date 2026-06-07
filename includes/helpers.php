@@ -21,9 +21,10 @@ function base_url(string $path = ''): string
     if ($base === null) {
         $script = $_SERVER['SCRIPT_NAME'] ?? '';
         $dir = str_replace('\\', '/', dirname($script));
-        // Si el script vive en /admin/* o /portal/*, la base "lógica"
-        // del sitio público sigue siendo la raíz (un nivel arriba).
-        if (preg_match('#^(.*?)/(admin|portal)$#', $dir, $m)) {
+        // Si el script vive en /admin/*, /portal/* o /portal-medico/*, la base
+        // "lógica" del sitio público sigue siendo la raíz (un nivel arriba).
+        // (portal-medico antes que portal para que el ancla case el segmento completo.)
+        if (preg_match('#^(.*?)/(admin|portal-medico|portal)$#', $dir, $m)) {
             $dir = $m[1] === '' ? '/' : $m[1];
         }
         $base = ($dir === '/' || $dir === '\\' || $dir === '.' || $dir === '') ? '/' : $dir . '/';

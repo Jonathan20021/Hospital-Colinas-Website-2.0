@@ -20,8 +20,8 @@ doctor_layout_begin('Analytics', 'analytics');
 <header class="doctor-header">
     <div>
         <p class="doctor-eyebrow">Indicadores</p>
-        <h1>Mi desempeno clinico</h1>
-        <p class="doctor-subtitle">Resumen de tu actividad en los ultimos <?= $months ?> meses.</p>
+        <h1>Mi desempeño clínico</h1>
+        <p class="doctor-subtitle">Resumen de tu actividad en los últimos <?= $months ?> meses.</p>
     </div>
     <form method="GET" class="doctor-header-actions">
         <label class="doctor-cell-muted">Rango
@@ -53,7 +53,7 @@ doctor_layout_begin('Analytics', 'analytics');
     <article class="doctor-kpi doctor-kpi-amber">
         <span class="doctor-kpi-icon"><i data-lucide="x-circle" class="h-5 w-5"></i></span>
         <div>
-            <p class="doctor-kpi-label">Tasa de cancelacion</p>
+            <p class="doctor-kpi-label">Tasa de cancelación</p>
             <p class="doctor-kpi-value"><?= $cancelRate ?>%</p>
         </div>
     </article>
@@ -68,13 +68,13 @@ doctor_layout_begin('Analytics', 'analytics');
 
 <section class="doctor-grid-2 mt-4">
     <div class="doctor-card">
-        <header class="doctor-card-header"><h2><i data-lucide="line-chart" class="h-5 w-5"></i> Evolucion mensual</h2></header>
+        <header class="doctor-card-header"><h2><i data-lucide="line-chart" class="h-5 w-5"></i> Evolución mensual</h2></header>
         <div class="doctor-form-pad">
             <canvas id="chart-monthly" height="220"></canvas>
         </div>
     </div>
     <div class="doctor-card">
-        <header class="doctor-card-header"><h2><i data-lucide="pie-chart" class="h-5 w-5"></i> Distribucion por estado</h2></header>
+        <header class="doctor-card-header"><h2><i data-lucide="pie-chart" class="h-5 w-5"></i> Distribución por estado</h2></header>
         <div class="doctor-form-pad" style="display:flex; justify-content:center;">
             <canvas id="chart-status" width="280" height="220"></canvas>
         </div>
@@ -89,7 +89,7 @@ doctor_layout_begin('Analytics', 'analytics');
                 <i data-lucide="bar-chart-3" class="h-7 w-7"></i>
             </div>
             <p class="doctor-empty-title">Sin datos en este rango</p>
-            <p>Cuando completes mas citas, aqui veras tus pacientes mas frecuentes.</p>
+            <p>Cuando completes más citas, aquí verás tus pacientes más frecuentes.</p>
         </div>
     <?php else: ?>
         <div class="doctor-table-wrap">

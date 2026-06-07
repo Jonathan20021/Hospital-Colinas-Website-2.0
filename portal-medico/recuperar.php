@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message = $res['message'] ?: 'Si la cuenta existe, te enviamos instrucciones.';
 }
 
-doctor_layout_begin('Recuperar contrasena', 'recuperar');
+doctor_layout_begin('Recuperar contraseña', 'recuperar');
 ?>
 <div class="doctor-auth-wrap">
     <div class="doctor-auth-card">
@@ -27,7 +27,7 @@ doctor_layout_begin('Recuperar contrasena', 'recuperar');
                 <h1>Recuperar acceso</h1>
             </div>
         </div>
-        <p class="doctor-auth-subtitle">Indicanos tu correo institucional y te enviaremos un enlace para crear una nueva contrasena.</p>
+        <p class="doctor-auth-subtitle">Indícanos tu correo institucional y te enviaremos un enlace para crear una nueva contraseña.</p>
 
         <?php if ($sent): ?>
             <div class="doctor-flash doctor-flash-success">
@@ -36,7 +36,7 @@ doctor_layout_begin('Recuperar contrasena', 'recuperar');
             </div>
             <p class="doctor-auth-help mt-4">
                 Si no recibes el correo en unos minutos, revisa tu carpeta de spam o contacta al administrador del hospital.<br>
-                <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="doctor-text-link">Volver al inicio de sesion</a>
+                <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="doctor-text-link">Volver al inicio de sesión</a>
             </p>
         <?php else: ?>
             <form method="POST" class="doctor-form">
@@ -50,7 +50,7 @@ doctor_layout_begin('Recuperar contrasena', 'recuperar');
                     <i data-lucide="send" class="h-4 w-4"></i> Enviar enlace
                 </button>
                 <p class="doctor-auth-help">
-                    <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="doctor-text-link">Volver al inicio de sesion</a>
+                    <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="doctor-text-link">Volver al inicio de sesión</a>
                 </p>
             </form>
         <?php endif; ?>
@@ -61,9 +61,9 @@ doctor_layout_begin('Recuperar contrasena', 'recuperar');
             <i data-lucide="lock-keyhole" class="h-10 w-10"></i>
             <h2>Acceso seguro</h2>
             <ul class="doctor-auth-points">
-                <li><i data-lucide="clock" class="h-4 w-4"></i> El enlace es valido por 1 hora.</li>
-                <li><i data-lucide="shield-check" class="h-4 w-4"></i> Solo tu puedes usarlo, desde el correo que recibes.</li>
-                <li><i data-lucide="key-round" class="h-4 w-4"></i> Crearas una nueva contrasena al hacer clic.</li>
+                <li><i data-lucide="clock" class="h-4 w-4"></i> El enlace es válido por 1 hora.</li>
+                <li><i data-lucide="shield-check" class="h-4 w-4"></i> Solo tú puedes usarlo, desde el correo que recibes.</li>
+                <li><i data-lucide="key-round" class="h-4 w-4"></i> Crearás una nueva contraseña al hacer clic.</li>
             </ul>
             <p class="doctor-auth-aside-foot">¿Problemas? Contacta al administrador del hospital.</p>
         </div>

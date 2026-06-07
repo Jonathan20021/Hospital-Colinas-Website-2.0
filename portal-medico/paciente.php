@@ -45,7 +45,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
                 <span><i data-lucide="user" class="h-3.5 w-3.5"></i> <?= e($patient['gender']) ?></span>
             <?php endif; ?>
             <?php if ($age !== ''): ?>
-                <span><i data-lucide="cake" class="h-3.5 w-3.5"></i> <?= e($age) ?> anios</span>
+                <span><i data-lucide="cake" class="h-3.5 w-3.5"></i> <?= e($age) ?> años</span>
             <?php endif; ?>
             <?php if (!empty($patient['phone'])): ?>
                 <span><i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($patient['phone']) ?></span>
@@ -56,6 +56,9 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
         </div>
     </div>
     <div class="doctor-patient-actions">
+        <a href="<?= e(base_url('portal-medico/historial.php?id=' . (int)$id . '&download=1')) ?>" class="doctor-btn doctor-btn-outline" target="_blank" rel="noopener">
+            <i data-lucide="file-down" class="h-4 w-4"></i> Descargar historial
+        </a>
         <button type="button" class="doctor-btn doctor-btn-outline" id="btn-edit-patient">
             <i data-lucide="user-cog" class="h-4 w-4"></i> Editar datos
         </button>
@@ -65,21 +68,21 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
 <section class="doctor-grid-2 mt-4">
     <div class="doctor-card">
         <header class="doctor-card-header">
-            <h2><i data-lucide="contact" class="h-5 w-5"></i> Datos demograficos</h2>
+            <h2><i data-lucide="contact" class="h-5 w-5"></i> Datos demográficos</h2>
         </header>
         <dl class="doctor-dl-grid">
             <div><dt>Email</dt><dd><?= e($patient['email'] ?? '—') ?></dd></div>
             <div><dt>Fecha de nacimiento</dt><dd><?= e($patient['dob'] ?? '—') ?></dd></div>
-            <div><dt>Direccion</dt><dd><?= e($patient['address'] ?? '—') ?></dd></div>
+            <div><dt>Dirección</dt><dd><?= e($patient['address'] ?? '—') ?></dd></div>
             <div><dt>Provincia</dt><dd><?= e($patient['province'] ?? '—') ?></dd></div>
             <div><dt>Barrio</dt><dd><?= e($patient['neighborhood'] ?? '—') ?></dd></div>
-            <div><dt>Poliza</dt><dd><?= e($patient['insurance_policy'] ?? '—') ?></dd></div>
+            <div><dt>Póliza</dt><dd><?= e($patient['insurance_policy'] ?? '—') ?></dd></div>
         </dl>
     </div>
 
     <div class="doctor-card">
         <header class="doctor-card-header">
-            <h2><i data-lucide="activity" class="h-5 w-5"></i> Resumen clinico</h2>
+            <h2><i data-lucide="activity" class="h-5 w-5"></i> Resumen clínico</h2>
         </header>
         <div class="doctor-summary">
             <div class="doctor-summary-stat">
@@ -103,7 +106,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
 
 <section class="doctor-card mt-4">
     <header class="doctor-card-header">
-        <h2><i data-lucide="history" class="h-5 w-5"></i> Historial clinico</h2>
+        <h2><i data-lucide="history" class="h-5 w-5"></i> Historial clínico</h2>
         <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-text-link">Ver agenda completa →</a>
     </header>
 
@@ -113,7 +116,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
                 <i data-lucide="file-text" class="h-7 w-7"></i>
             </div>
             <p class="doctor-empty-title">Sin consultas registradas</p>
-            <p>Las consultas y notas medicas apareceran aqui cuando inicies la primera.</p>
+            <p>Las consultas y notas médicas aparecerán aquí cuando inicies la primera.</p>
         </div>
     <?php else: ?>
         <ol class="doctor-timeline">
@@ -142,7 +145,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
                                 <?php endif; ?>
                                 <?php if ($h['diagnosis']): ?>
                                     <div class="doctor-timeline-row">
-                                        <strong>Diagnostico:</strong>
+                                        <strong>Diagnóstico:</strong>
                                         <p><?= nl2br(e($h['diagnosis'])) ?></p>
                                     </div>
                                 <?php endif; ?>
@@ -160,7 +163,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
                                 <?php endif; ?>
                                 <?php if ($h['imaging_orders']): ?>
                                     <div class="doctor-timeline-row">
-                                        <strong>Imagenes:</strong>
+                                        <strong>Imágenes:</strong>
                                         <p style="white-space:pre-wrap"><?= e($h['imaging_orders']) ?></p>
                                     </div>
                                 <?php endif; ?>
@@ -209,11 +212,11 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
         </header>
         <form id="edit-form" class="doctor-modal-body doctor-form-grid">
             <label>Nombre <input name="name" value="<?= e($patient['name']) ?>" class="doctor-input"></label>
-            <label>Cedula <input name="cedula" value="<?= e($patient['cedula'] ?? '') ?>" class="doctor-input"></label>
-            <label>Telefono <input name="phone" value="<?= e($patient['phone'] ?? '') ?>" class="doctor-input"></label>
+            <label>Cédula <input name="cedula" value="<?= e($patient['cedula'] ?? '') ?>" class="doctor-input"></label>
+            <label>Teléfono <input name="phone" value="<?= e($patient['phone'] ?? '') ?>" class="doctor-input"></label>
             <label>Email <input name="email" value="<?= e($patient['email'] ?? '') ?>" class="doctor-input"></label>
             <label>Fecha de nacimiento <input name="dob" type="date" value="<?= e($patient['dob'] ?? '') ?>" class="doctor-input"></label>
-            <label>Genero
+            <label>Género
                 <select name="gender" class="doctor-input">
                     <option value="">—</option>
                     <option value="Male" <?= ($patient['gender'] ?? '')==='Male'?'selected':'' ?>>Masculino</option>
@@ -221,9 +224,9 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
                     <option value="Other" <?= ($patient['gender'] ?? '')==='Other'?'selected':'' ?>>Otro</option>
                 </select>
             </label>
-            <label class="doctor-form-full">Direccion <textarea name="address" rows="2" class="doctor-input"><?= e($patient['address'] ?? '') ?></textarea></label>
+            <label class="doctor-form-full">Dirección <textarea name="address" rows="2" class="doctor-input"><?= e($patient['address'] ?? '') ?></textarea></label>
             <label>Seguro <input name="insurance_provider" value="<?= e($patient['insurance_provider'] ?? '') ?>" class="doctor-input"></label>
-            <label>Poliza <input name="insurance_policy" value="<?= e($patient['insurance_policy'] ?? '') ?>" class="doctor-input"></label>
+            <label>Póliza <input name="insurance_policy" value="<?= e($patient['insurance_policy'] ?? '') ?>" class="doctor-input"></label>
         </form>
         <footer class="doctor-modal-footer">
             <button type="button" class="doctor-btn doctor-btn-outline" data-close>Cancelar</button>

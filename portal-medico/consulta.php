@@ -14,7 +14,7 @@ if ($apptId) {
     }
 }
 
-doctor_layout_begin('Consulta medica', 'consulta');
+doctor_layout_begin('Consulta médica', 'consulta');
 ?>
 
 <?php if (!$appt): ?>
@@ -42,7 +42,7 @@ doctor_layout_begin('Consulta medica', 'consulta');
             <div class="doctor-patient-meta">
                 <?php if (!empty($appt['patient_cedula'])): ?><span><i data-lucide="id-card" class="h-3.5 w-3.5"></i> <?= e($appt['patient_cedula']) ?></span><?php endif; ?>
                 <?php if (!empty($appt['patient_gender'])): ?><span><i data-lucide="user" class="h-3.5 w-3.5"></i> <?= e($appt['patient_gender']) ?></span><?php endif; ?>
-                <?php if ($age !== ''): ?><span><i data-lucide="cake" class="h-3.5 w-3.5"></i> <?= e($age) ?> anios</span><?php endif; ?>
+                <?php if ($age !== ''): ?><span><i data-lucide="cake" class="h-3.5 w-3.5"></i> <?= e($age) ?> años</span><?php endif; ?>
                 <?php if (!empty($appt['patient_phone'])): ?><span><i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($appt['patient_phone']) ?></span><?php endif; ?>
                 <span class="doctor-pill doctor-pill-<?= e($appt['status']) ?>"><?= e($appt['status']) ?></span>
             </div>
@@ -65,22 +65,22 @@ doctor_layout_begin('Consulta medica', 'consulta');
         <section class="doctor-card">
             <header class="doctor-card-header"><h2><i data-lucide="message-square" class="h-5 w-5"></i> Motivo de consulta</h2></header>
             <div class="doctor-form-pad">
-                <textarea name="chief_complaint" class="doctor-input" rows="2" placeholder="Sintoma principal o razon de la visita"><?= e($appt['chief_complaint'] ?? '') ?></textarea>
+                <textarea name="chief_complaint" class="doctor-input" rows="2" placeholder="Síntoma principal o razón de la visita"><?= e($appt['chief_complaint'] ?? '') ?></textarea>
             </div>
         </section>
 
         <section class="doctor-card mt-4">
-            <header class="doctor-card-header"><h2><i data-lucide="clipboard-list" class="h-5 w-5"></i> Diagnostico</h2></header>
+            <header class="doctor-card-header"><h2><i data-lucide="clipboard-list" class="h-5 w-5"></i> Diagnóstico</h2></header>
             <div class="doctor-form-pad">
-                <textarea name="diagnosis" class="doctor-input" rows="3" placeholder="Diagnostico clinico, codigos CIE, etc."><?= e($appt['diagnosis'] ?? '') ?></textarea>
+                <textarea name="diagnosis" class="doctor-input" rows="3" placeholder="Diagnóstico clínico, códigos CIE, etc."><?= e($appt['diagnosis'] ?? '') ?></textarea>
             </div>
         </section>
 
         <section class="doctor-grid-2 mt-4">
             <div class="doctor-card">
-                <header class="doctor-card-header"><h2><i data-lucide="pill" class="h-5 w-5"></i> Receta medica</h2></header>
+                <header class="doctor-card-header"><h2><i data-lucide="pill" class="h-5 w-5"></i> Receta médica</h2></header>
                 <div class="doctor-form-pad">
-                    <textarea name="prescription" class="doctor-input" rows="6" placeholder="Medicamento - dosis - via - frecuencia - duracion"><?= e($appt['prescription'] ?? '') ?></textarea>
+                    <textarea name="prescription" class="doctor-input" rows="6" placeholder="Medicamento - dosis - vía - frecuencia - duración"><?= e($appt['prescription'] ?? '') ?></textarea>
                 </div>
             </div>
             <div class="doctor-card">
@@ -93,9 +93,9 @@ doctor_layout_begin('Consulta medica', 'consulta');
 
         <section class="doctor-grid-2 mt-4">
             <div class="doctor-card">
-                <header class="doctor-card-header"><h2><i data-lucide="scan" class="h-5 w-5"></i> Imagenes</h2></header>
+                <header class="doctor-card-header"><h2><i data-lucide="scan" class="h-5 w-5"></i> Imágenes</h2></header>
                 <div class="doctor-form-pad">
-                    <textarea name="imaging_orders" class="doctor-input" rows="4" placeholder="Radiografias, ecografias, RM, TAC..."><?= e($appt['imaging_orders'] ?? '') ?></textarea>
+                    <textarea name="imaging_orders" class="doctor-input" rows="4" placeholder="Radiografías, ecografías, RM, TAC..."><?= e($appt['imaging_orders'] ?? '') ?></textarea>
                 </div>
             </div>
             <div class="doctor-card">
@@ -109,7 +109,7 @@ doctor_layout_begin('Consulta medica', 'consulta');
         <section class="doctor-card mt-4">
             <header class="doctor-card-header"><h2><i data-lucide="file-text" class="h-5 w-5"></i> Notas adicionales</h2></header>
             <div class="doctor-form-pad">
-                <textarea name="notes" class="doctor-input" rows="3" placeholder="Observaciones, plan, evolucion..."><?= e($appt['note_notes'] ?? '') ?></textarea>
+                <textarea name="notes" class="doctor-input" rows="3" placeholder="Observaciones, plan, evolución..."><?= e($appt['note_notes'] ?? '') ?></textarea>
             </div>
         </section>
 
@@ -141,15 +141,15 @@ doctor_layout_begin('Consulta medica', 'consulta');
             <div class="doctor-form-pad doctor-pdf-grid">
                 <a class="doctor-pdf-card js-pdf-link" data-type="rx" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=rx')) ?>">
                     <i data-lucide="pill" class="h-6 w-6"></i>
-                    <div><strong>Receta medica</strong><span>Prescripcion del medicamento</span></div>
+                    <div><strong>Receta médica</strong><span>Prescripción del medicamento</span></div>
                 </a>
                 <a class="doctor-pdf-card js-pdf-link" data-type="diagnosis_lab" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=diagnosis_lab')) ?>">
                     <i data-lucide="clipboard-list" class="h-6 w-6"></i>
-                    <div><strong>Diagnostico + Laboratorios</strong><span>Orden de pruebas</span></div>
+                    <div><strong>Diagnóstico + Laboratorios</strong><span>Orden de pruebas</span></div>
                 </a>
                 <a class="doctor-pdf-card js-pdf-link" data-type="lab" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=lab')) ?>">
                     <i data-lucide="scan" class="h-6 w-6"></i>
-                    <div><strong>Imagenes</strong><span>Rx, eco, RM, TAC</span></div>
+                    <div><strong>Imágenes</strong><span>Rx, eco, RM, TAC</span></div>
                 </a>
                 <a class="doctor-pdf-card js-pdf-link" data-type="procedures" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=procedures')) ?>">
                     <i data-lucide="syringe" class="h-6 w-6"></i>
@@ -157,7 +157,7 @@ doctor_layout_begin('Consulta medica', 'consulta');
                 </a>
                 <a class="doctor-pdf-card" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=constancia')) ?>">
                     <i data-lucide="file-check-2" class="h-6 w-6"></i>
-                    <div><strong>Constancia medica</strong><span>Comprobante completo de consulta</span></div>
+                    <div><strong>Constancia médica</strong><span>Comprobante completo de consulta</span></div>
                 </a>
             </div>
         </section>

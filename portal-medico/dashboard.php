@@ -10,252 +10,203 @@ $events   = $dashRes['data']['events']   ?? [];
 
 $doctor = doctor_current() ?? [];
 
-// Greeting basado en hora
+// Saludo según la hora
 $h = (int)date('H');
-$greeting = $h < 12 ? 'Buenos dias' : ($h < 19 ? 'Buenas tardes' : 'Buenas noches');
+$greeting = $h < 12 ? 'Buenos días' : ($h < 19 ? 'Buenas tardes' : 'Buenas noches');
 
-// Citas de hoy (filtrar del upcoming)
+// Fecha larga en español
+$diasES  = ['Monday'=>'lunes','Tuesday'=>'martes','Wednesday'=>'miércoles','Thursday'=>'jueves','Friday'=>'viernes','Saturday'=>'sábado','Sunday'=>'domingo'];
+$mesesES = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
+$fechaLarga = $diasES[date('l')] . ' ' . (int)date('j') . ' de ' . $mesesES[(int)date('n')];
+
+// Citas de hoy / próximas
 $today = date('Y-m-d');
-$todays = array_values(array_filter($upcoming, fn($a) => substr($a['appointment_time'], 0, 10) === $today));
-$nextOnes = array_slice(array_filter($upcoming, fn($a) => substr($a['appointment_time'], 0, 10) !== $today), 0, 4);
+$todays   = array_values(array_filter($upcoming, fn($a) => substr($a['appointment_time'], 0, 10) === $today));
+$nextOnes = array_slice(array_filter($upcoming, fn($a) => substr($a['appointment_time'], 0, 10) !== $today), 0, 5);
+
+// Días del mes con citas (para el mini-calendario)
+$eventDays = [];
+foreach ($events as $ev) {
+    $d = substr((string)($ev['start'] ?? $ev['date'] ?? ''), 0, 10);
+    if ($d !== '') $eventDays[$d] = true;
+}
+
+// Sparkline determinista (textura visual en los KPIs)
+$sparkPath = function (int $seed, int $points = 12): array {
+    $vals = []; srand($seed * 7919);
+    for ($i = 0; $i < $points; $i++) $vals[] = rand(20, 90);
+    srand();
+    $W = 100; $H = 24; $step = $W / max(1, ($points - 1)); $d = '';
+    foreach ($vals as $i => $v) {
+        $x = $i * $step; $y = $H - (($v / 100) * $H);
+        $d .= ($i === 0 ? 'M' : 'L') . round($x, 1) . ',' . round($y, 1) . ' ';
+    }
+    return ['line' => trim($d), 'fill' => trim($d) . 'L' . $W . ',' . $H . ' L0,' . $H . ' Z'];
+};
+$sp = [
+    $sparkPath((int)$stats['today_count'] + 3),
+    $sparkPath((int)$stats['pending_count'] + 5),
+    $sparkPath((int)$stats['completed_count'] + 11),
+    $sparkPath((int)$stats['week_count'] + 7),
+];
+$kpis = [
+    ['Citas de hoy','calendar-clock','indigo','#4f46e5','Hoy',         (int)$stats['today_count'],     $sp[0]],
+    ['Pendientes','clock','amber','#b45309','Por atender',             (int)$stats['pending_count'],   $sp[1]],
+    ['Completadas','check-circle-2','green','#059669','Acumulado',     (int)$stats['completed_count'], $sp[2]],
+    ['Esta semana','calendar-range','violet','#7c3aed','7 días',       (int)$stats['week_count'],      $sp[3]],
+];
 
 doctor_layout_begin('Inicio', 'dashboard');
 ?>
+<div class="dm-dash">
+    <div class="dm-dash-main">
 
-<section class="doctor-hero">
-    <div class="doctor-hero-text">
-        <p class="doctor-hero-eyebrow"><?= e($greeting) ?> · <?= e(date('l j \d\e F', time())) ?></p>
-        <h1>Dr/a. <?= e($doctor['name'] ?? '') ?></h1>
-        <p class="doctor-hero-subtitle">
-            <?php if (count($todays) > 0): ?>
-                Tienes <strong><?= count($todays) ?></strong> cita<?= count($todays) === 1 ? '' : 's' ?> programada<?= count($todays) === 1 ? '' : 's' ?> hoy.
-            <?php else: ?>
-                No tienes citas para hoy. Es un buen momento para revisar pacientes o actualizar tu disponibilidad.
-            <?php endif; ?>
-        </p>
-    </div>
-    <div class="doctor-hero-actions">
-        <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-btn doctor-btn-outline">
-            <i data-lucide="calendar-days" class="h-4 w-4"></i> Ver agenda
-        </a>
-        <a href="<?= e(base_url('portal-medico/pacientes.php')) ?>" class="doctor-btn doctor-btn-primary">
-            <i data-lucide="user-search" class="h-4 w-4"></i> Buscar paciente
-        </a>
-    </div>
-</section>
-
-<?php
-// Generar sparkline determinista a partir de un seed (no es real-time, pero da textura visual)
-$sparkPath = function(int $seed, int $points = 12): array {
-    $vals = [];
-    srand($seed * 7919);
-    for ($i = 0; $i < $points; $i++) {
-        $vals[] = rand(20, 90);
-    }
-    srand();
-    $W = 100; $H = 26;
-    $step = $W / max(1, ($points - 1));
-    $d = '';
-    foreach ($vals as $i => $v) {
-        $x = $i * $step;
-        $y = $H - (($v / 100) * $H);
-        $d .= ($i === 0 ? 'M' : 'L') . round($x, 1) . ',' . round($y, 1) . ' ';
-    }
-    $fill = $d . 'L' . $W . ',' . $H . ' L0,' . $H . ' Z';
-    return ['line' => trim($d), 'fill' => trim($fill)];
-};
-$sp1 = $sparkPath((int)$stats['today_count'] + 3);
-$sp2 = $sparkPath((int)$stats['pending_count'] + 5);
-$sp3 = $sparkPath((int)$stats['completed_count'] + 11);
-$sp4 = $sparkPath((int)$stats['week_count'] + 7);
-?>
-<section class="doctor-kpis">
-    <article class="doctor-kpi doctor-kpi-blue">
-        <div class="doctor-kpi-top">
-            <span class="doctor-kpi-icon"><i data-lucide="calendar-clock" class="h-5 w-5"></i></span>
-            <span class="doctor-kpi-trend doctor-kpi-trend-flat"><i data-lucide="minus" class="h-3 w-3"></i> Hoy</span>
-        </div>
-        <p class="doctor-kpi-label">Citas de hoy</p>
-        <p class="doctor-kpi-value"><?= (int)$stats['today_count'] ?></p>
-        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #1d4ed8">
-            <path class="spark-fill" d="<?= e($sp1['fill']) ?>"/>
-            <path stroke="currentColor" d="<?= e($sp1['line']) ?>"/>
-        </svg>
-    </article>
-    <article class="doctor-kpi doctor-kpi-amber">
-        <div class="doctor-kpi-top">
-            <span class="doctor-kpi-icon"><i data-lucide="clock" class="h-5 w-5"></i></span>
-            <?php if ((int)$stats['pending_count'] > 0): ?>
-                <span class="doctor-kpi-trend doctor-kpi-trend-up"><i data-lucide="arrow-up" class="h-3 w-3"></i> Activo</span>
-            <?php else: ?>
-                <span class="doctor-kpi-trend doctor-kpi-trend-flat">—</span>
-            <?php endif; ?>
-        </div>
-        <p class="doctor-kpi-label">Pendientes</p>
-        <p class="doctor-kpi-value"><?= (int)$stats['pending_count'] ?></p>
-        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #b45309">
-            <path class="spark-fill" d="<?= e($sp2['fill']) ?>"/>
-            <path stroke="currentColor" d="<?= e($sp2['line']) ?>"/>
-        </svg>
-    </article>
-    <article class="doctor-kpi doctor-kpi-green">
-        <div class="doctor-kpi-top">
-            <span class="doctor-kpi-icon"><i data-lucide="check-circle-2" class="h-5 w-5"></i></span>
-            <span class="doctor-kpi-trend doctor-kpi-trend-up"><i data-lucide="trending-up" class="h-3 w-3"></i> Acumulado</span>
-        </div>
-        <p class="doctor-kpi-label">Completadas</p>
-        <p class="doctor-kpi-value"><?= number_format((int)$stats['completed_count']) ?></p>
-        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #059669">
-            <path class="spark-fill" d="<?= e($sp3['fill']) ?>"/>
-            <path stroke="currentColor" d="<?= e($sp3['line']) ?>"/>
-        </svg>
-    </article>
-    <article class="doctor-kpi doctor-kpi-violet">
-        <div class="doctor-kpi-top">
-            <span class="doctor-kpi-icon"><i data-lucide="calendar-range" class="h-5 w-5"></i></span>
-            <span class="doctor-kpi-trend doctor-kpi-trend-flat">7 dias</span>
-        </div>
-        <p class="doctor-kpi-label">Esta semana</p>
-        <p class="doctor-kpi-value"><?= (int)$stats['week_count'] ?></p>
-        <svg class="doctor-kpi-spark" viewBox="0 0 100 26" preserveAspectRatio="none" style="color: #6d28d9">
-            <path class="spark-fill" d="<?= e($sp4['fill']) ?>"/>
-            <path stroke="currentColor" d="<?= e($sp4['line']) ?>"/>
-        </svg>
-    </article>
-</section>
-
-<section class="doctor-grid-2 mt-6">
-    <div class="doctor-card">
-        <header class="doctor-card-header">
-            <h2><i data-lucide="sun" class="h-4 w-4"></i> Hoy · <?= e(date('d \d\e F', time())) ?></h2>
-            <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-text-link">Ver agenda <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
-        </header>
-
-        <?php if (!$todays): ?>
-            <div class="doctor-empty">
-                <div class="doctor-empty-illustration">
-                    <i data-lucide="coffee" class="h-7 w-7"></i>
-                </div>
-                <p class="doctor-empty-title">Dia tranquilo</p>
-                <p>No tienes citas hoy. Tomate un cafe o adelanta papeleria.</p>
+        <!-- HERO -->
+        <section class="dm-hero">
+            <span class="dm-hero-ey"><i data-lucide="activity"></i> <?= e($greeting) ?> · <?= e($fechaLarga) ?></span>
+            <h1>Dr/a. <?= e($doctor['name'] ?? '') ?></h1>
+            <p>
+                <?php if (count($todays) > 0): ?>
+                    Tienes <strong><?= count($todays) ?></strong> cita<?= count($todays) === 1 ? '' : 's' ?> programada<?= count($todays) === 1 ? '' : 's' ?> para hoy. Revisa tu agenda y prepara tus consultas.
+                <?php else: ?>
+                    No tienes citas para hoy. Es un buen momento para revisar pacientes o actualizar tu disponibilidad.
+                <?php endif; ?>
+            </p>
+            <div class="dm-hero-actions">
+                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-hero-btn primary"><i data-lucide="calendar-days"></i> Ver agenda</a>
+                <a href="<?= e(base_url('portal-medico/pacientes.php')) ?>" class="dm-hero-btn ghost"><i data-lucide="user-search"></i> Buscar paciente</a>
             </div>
-        <?php else: ?>
-            <ul class="doctor-timeline-today">
-                <?php
-                $now = time();
-                foreach ($todays as $a):
-                    $ts = strtotime($a['appointment_time']);
-                    $isPast = $ts < $now;
-                ?>
-                    <li class="doctor-timeline-today-item <?= $isPast ? 'is-past' : '' ?>">
-                        <div class="doctor-timeline-time">
-                            <strong><?= e(date('H:i', $ts)) ?></strong>
-                            <span><?= $isPast ? 'completada' : 'proxima' ?></span>
-                        </div>
-                        <div class="doctor-timeline-marker"></div>
-                        <a class="doctor-timeline-card" href="<?= e(base_url('portal-medico/consulta.php?appt=' . (int)$a['id'])) ?>">
-                            <div class="doctor-timeline-card-inner">
-                                <?= doctor_avatar_html($a['patient_name'], 'sm') ?>
-                                <div>
-                                    <p class="doctor-timeline-patient"><?= e($a['patient_name']) ?></p>
-                                    <p class="doctor-timeline-meta">
-                                        <?php if (!empty($a['patient_cedula'])): ?>
-                                            <i data-lucide="id-card" class="h-3.5 w-3.5"></i> <?= e($a['patient_cedula']) ?>
-                                        <?php endif; ?>
-                                        <?php if (!empty($a['patient_phone'])): ?>
-                                            <?= !empty($a['patient_cedula']) ? '·' : '' ?>
-                                            <i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($a['patient_phone']) ?>
-                                        <?php endif; ?>
-                                    </p>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
-    </div>
+        </section>
 
-    <div class="doctor-card">
-        <header class="doctor-card-header">
-            <h2><i data-lucide="list-checks" class="h-4 w-4"></i> Proximas citas</h2>
-            <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-text-link">Ver todas <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
-        </header>
-
-        <?php if (!$nextOnes): ?>
-            <div class="doctor-empty">
-                <div class="doctor-empty-illustration">
-                    <i data-lucide="calendar-check" class="h-7 w-7"></i>
+        <!-- KPIs -->
+        <div class="dm-kpis">
+            <?php foreach ($kpis as [$lbl,$ic,$tone,$col,$tag,$val,$spk]): ?>
+            <article class="dm-kpi <?= $tone ?>">
+                <div class="dm-kpi-top">
+                    <span class="dm-kpi-ic"><i data-lucide="<?= $ic ?>"></i></span>
+                    <span class="dm-kpi-tag"><?= e($tag) ?></span>
                 </div>
-                <p class="doctor-empty-title">Sin citas proximas</p>
-                <p>Cuando agendes nuevas citas apareceran aqui.</p>
+                <div class="v"><?= number_format($val) ?></div>
+                <div class="l"><?= e($lbl) ?></div>
+                <svg class="dm-kpi-spark" viewBox="0 0 100 24" preserveAspectRatio="none" style="color:<?= $col ?>">
+                    <path class="fill" fill="currentColor" d="<?= e($spk['fill']) ?>"/>
+                    <path fill="none" stroke="currentColor" stroke-width="2" d="<?= e($spk['line']) ?>"/>
+                </svg>
+            </article>
+            <?php endforeach; ?>
+        </div>
+
+        <!-- PRÓXIMAS CITAS -->
+        <section class="dm-card">
+            <header class="dm-card-h">
+                <h2><i data-lucide="list-checks"></i> Próximas citas</h2>
+                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Ver agenda <i data-lucide="arrow-right"></i></a>
+            </header>
+            <div class="dm-list">
+                <?php if (!$nextOnes): ?>
+                    <div class="dm-empty">
+                        <div class="dm-empty-ic"><i data-lucide="calendar-check"></i></div>
+                        <p class="t">Sin citas próximas</p>
+                        <p>Cuando agendes nuevas citas aparecerán aquí.</p>
+                    </div>
+                <?php else: foreach ($nextOnes as $a): $ts = strtotime($a['appointment_time']); ?>
+                    <a class="dm-row" href="<?= e(base_url('portal-medico/consulta.php?appt=' . (int)$a['id'])) ?>">
+                        <div class="dm-rdate"><strong><?= e(date('d', $ts)) ?></strong><span><?= e(strtoupper(strtr(date('M', $ts), ['Apr'=>'ABR','Aug'=>'AGO','Dec'=>'DIC','Jan'=>'ENE']))) ?></span></div>
+                        <div class="dm-rinfo">
+                            <div class="n"><?= e($a['patient_name']) ?></div>
+                            <div class="m"><i data-lucide="clock"></i> <?= e(date('H:i', $ts)) ?><?php if (!empty($a['patient_phone'])): ?> · <i data-lucide="phone"></i> <?= e($a['patient_phone']) ?><?php endif; ?></div>
+                        </div>
+                        <span class="dm-rgo"><i data-lucide="chevron-right"></i></span>
+                    </a>
+                <?php endforeach; endif; ?>
             </div>
-        <?php else: ?>
-            <ul class="doctor-appt-list">
-                <?php foreach ($nextOnes as $a):
-                    $ts = strtotime($a['appointment_time']);
-                ?>
-                    <li class="doctor-appt-row">
-                        <div class="doctor-appt-date">
-                            <strong><?= e(date('d', $ts)) ?></strong>
-                            <span><?= e(strtoupper(date('M', $ts))) ?></span>
-                        </div>
-                        <div class="doctor-appt-info">
-                            <p class="doctor-appt-name"><?= e($a['patient_name']) ?></p>
-                            <p class="doctor-appt-meta">
-                                <i data-lucide="clock" class="h-3.5 w-3.5"></i> <?= e(date('H:i', $ts)) ?>
-                                <?php if (!empty($a['patient_phone'])): ?>
-                                    · <i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($a['patient_phone']) ?>
-                                <?php endif; ?>
-                            </p>
-                        </div>
-                        <a href="<?= e(base_url('portal-medico/consulta.php?appt=' . (int)$a['id'])) ?>" class="doctor-appt-action" title="Abrir consulta">
-                            <i data-lucide="chevron-right" class="h-5 w-5"></i>
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        <?php endif; ?>
+        </section>
+
+        <!-- ACCESOS RÁPIDOS -->
+        <div class="dm-quick">
+            <a href="<?= e(base_url('portal-medico/consulta.php')) ?>">
+                <span class="qic"><i data-lucide="file-edit"></i></span>
+                <div><h3>Nueva consulta</h3><p>Registrar nota médica y receta</p></div>
+            </a>
+            <a href="<?= e(base_url('portal-medico/disponibilidad.php')) ?>">
+                <span class="qic"><i data-lucide="calendar-off"></i></span>
+                <div><h3>Marcar ausencia</h3><p>Bloquear fechas no disponibles</p></div>
+            </a>
+            <a href="<?= e(base_url('portal-medico/analytics.php')) ?>">
+                <span class="qic"><i data-lucide="trending-up"></i></span>
+                <div><h3>Mis indicadores</h3><p>KPIs y desempeño</p></div>
+            </a>
+        </div>
     </div>
-</section>
 
-<section class="doctor-card mt-6">
-    <header class="doctor-card-header">
-        <h2><i data-lucide="calendar" class="h-4 w-4"></i> Vista mensual</h2>
-        <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-text-link">Vista completa <i data-lucide="arrow-right" class="h-3 w-3"></i></a>
-    </header>
-    <div id="doctor-calendar" data-events='<?= e(json_encode($events, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>'></div>
-    <div class="doctor-calendar-legend">
-        <span><i class="doctor-dot" style="background:#2563eb"></i> Agendada</span>
-        <span><i class="doctor-dot" style="background:#16a34a"></i> Completada</span>
-        <span><i class="doctor-dot" style="background:#dc2626"></i> Cancelada</span>
-    </div>
-</section>
+    <!-- ASIDE -->
+    <aside class="dm-dash-aside">
+        <!-- mini-calendario -->
+        <section class="dm-card">
+            <header class="dm-cal-h">
+                <span class="mo"><?= e($mesesES[(int)date('n')] . ' de ' . date('Y')) ?></span>
+                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Agenda</a>
+            </header>
+            <div class="dm-cal">
+                <table>
+                    <thead><tr><th>L</th><th>M</th><th>X</th><th>J</th><th>V</th><th>S</th><th>D</th></tr></thead>
+                    <tbody>
+                    <?php
+                        $cy = (int)date('Y'); $cm = (int)date('n'); $todayDay = (int)date('j');
+                        $firstDow = (int)date('N', mktime(0,0,0,$cm,1,$cy)); // 1=lun..7=dom
+                        $dim = (int)date('t', mktime(0,0,0,$cm,1,$cy));
+                        $cell = 1 - ($firstDow - 1);
+                        for ($w = 0; $w < 6; $w++):
+                            if ($cell > $dim) break; ?>
+                            <tr>
+                            <?php for ($d = 0; $d < 7; $d++):
+                                if ($cell >= 1 && $cell <= $dim):
+                                    $iso = sprintf('%04d-%02d-%02d', $cy, $cm, $cell);
+                                    $cls = ($cell === $todayDay ? 'today ' : '') . (isset($eventDays[$iso]) ? 'has' : ''); ?>
+                                    <td class="<?= trim($cls) ?>"><span><?= $cell ?></span></td>
+                                <?php else: ?>
+                                    <td class="mut"><span><?= $cell < 1 ? ($cell + (int)date('t', mktime(0,0,0,$cm-1,1,$cy))) : ($cell - $dim) ?></span></td>
+                                <?php endif; $cell++; endfor; ?>
+                            </tr>
+                        <?php endfor; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-<section class="doctor-grid-3 mt-6">
-    <a class="doctor-quick" href="<?= e(base_url('portal-medico/consulta.php')) ?>">
-        <i data-lucide="file-edit" class="h-6 w-6"></i>
-        <div>
-            <h3>Nueva consulta</h3>
-            <p>Registrar nota medica y receta</p>
-        </div>
-    </a>
-    <a class="doctor-quick" href="<?= e(base_url('portal-medico/disponibilidad.php')) ?>">
-        <i data-lucide="calendar-off" class="h-6 w-6"></i>
-        <div>
-            <h3>Marcar ausencia</h3>
-            <p>Bloquear fechas no disponibles</p>
-        </div>
-    </a>
-    <a class="doctor-quick" href="<?= e(base_url('portal-medico/analytics.php')) ?>">
-        <i data-lucide="trending-up" class="h-6 w-6"></i>
-        <div>
-            <h3>Mis indicadores</h3>
-            <p>KPIs y desempeno</p>
-        </div>
-    </a>
-</section>
+        <!-- pacientes de hoy -->
+        <section class="dm-card">
+            <header class="dm-card-h">
+                <h2><i data-lucide="users"></i> Pacientes de hoy</h2>
+                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Ver</a>
+            </header>
+            <div style="padding:8px 0 10px">
+                <?php if (!$todays): ?>
+                    <div class="dm-empty">
+                        <div class="dm-empty-ic"><i data-lucide="coffee"></i></div>
+                        <p class="t">Día tranquilo</p>
+                        <p>No tienes citas hoy. Tómate un café o adelanta papeleo.</p>
+                    </div>
+                <?php else: foreach ($todays as $a): $ts = strtotime($a['appointment_time']); ?>
+                    <a class="dm-visit" href="<?= e(base_url('portal-medico/consulta.php?appt=' . (int)$a['id'])) ?>">
+                        <?= doctor_avatar_html($a['patient_name'], 'sm') ?>
+                        <div style="min-width:0;flex:1">
+                            <div class="n"><?= e($a['patient_name']) ?></div>
+                            <div class="m"><?= e(date('H:i', $ts)) ?> · <?= e($ts < time() ? 'completada' : 'próxima') ?></div>
+                        </div>
+                        <span class="dm-rgo"><i data-lucide="chevron-right"></i></span>
+                    </a>
+                <?php endforeach; endif; ?>
+            </div>
+        </section>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/es.global.min.js"></script>
+        <!-- acción -->
+        <section class="dm-promo">
+            <div class="ic"><i data-lucide="calendar-clock"></i></div>
+            <h3>Actualiza tu disponibilidad</h3>
+            <p>Define tus horarios y bloqueos de la semana para que tu agenda quede al día.</p>
+            <a href="<?= e(base_url('portal-medico/disponibilidad.php')) ?>"><i data-lucide="arrow-right"></i> Configurar horarios</a>
+        </section>
+    </aside>
+</div>
 <?php doctor_layout_end();
