@@ -124,6 +124,8 @@ doctor_layout_begin('Consulta médica', 'consulta');
             </div>
         </section>
 
+        <div id="rx-allergy-alert" class="doctor-rx-alert mt-4" hidden></div>
+
         <section class="doctor-grid-2 mt-4">
             <div class="doctor-card">
                 <header class="doctor-card-header"><h2><i data-lucide="pill" class="h-5 w-5"></i> Receta médica</h2></header>
@@ -253,7 +255,57 @@ document.addEventListener('DOMContentLoaded', () => {
     vW?.addEventListener('input', calcBmi);
     vH?.addEventListener('input', calcBmi);
 
+    // ── Alerta de interacción: alergia del paciente ↔ receta ──
+    const rxField = form.querySelector('textarea[name="prescription"]');
+    const rxAlert = document.getElementById('rx-allergy-alert');
+    const allergies = <?= json_encode(array_values(array_map(fn($a) => ['allergen' => $a['allergen'], 'severity' => $a['severity']], $appt['allergies'] ?? [])), JSON_UNESCAPED_UNICODE) ?>;
+    const FAM = {
+        penicilina: ['penicilina','amoxicilina','ampicilina','dicloxacilina','cloxacilina','oxacilina','piperacilina','clavulanico','augmentin'],
+        cefalosporina: ['cefalexina','cefadroxilo','cefuroxima','ceftriaxona','cefotaxima','cefixima','cefepime','cefaclor'],
+        sulfa: ['sulfa','sulfas','sulfametoxazol','trimetoprim','cotrimoxazol','bactrim','sulfadiazina'],
+        aine: ['aine','aines','ibuprofeno','naproxeno','diclofenaco','ketorolaco','aspirina','acido acetilsalicilico','meloxicam','piroxicam','indometacina','celecoxib','ketoprofeno'],
+        dipirona: ['dipirona','metamizol','novalgina'],
+        macrolido: ['azitromicina','claritromicina','eritromicina'],
+        quinolona: ['ciprofloxacino','levofloxacino','moxifloxacino','norfloxacino','ofloxacino'],
+        opioide: ['morfina','tramadol','codeina','fentanilo','meperidina']
+    };
+    const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+    const watch = allergies.map(a => {
+        const an = norm(a.allergen);
+        const terms = new Set([an]);
+        if (an.length >= 4) {
+            for (const fam in FAM) {
+                const members = FAM[fam].map(norm);
+                if (an === norm(fam) || members.some(m => an.includes(m) || m.includes(an))) {
+                    members.forEach(m => terms.add(m));
+                    terms.add(norm(fam));
+                }
+            }
+        }
+        return { allergen: a.allergen, severity: a.severity, terms: [...terms].filter(t => t && t.length >= 4) };
+    });
+    function checkRx() {
+        if (!rxAlert) return;
+        const txt = norm(rxField && rxField.value);
+        const hits = [];
+        if (txt) watch.forEach(w => {
+            const m = w.terms.find(t => txt.includes(t));
+            if (m) hits.push({ allergen: w.allergen, severity: w.severity, match: m });
+        });
+        if (!hits.length) { rxAlert.hidden = true; rxAlert.dataset.hit = ''; rxAlert.innerHTML = ''; return; }
+        rxAlert.dataset.hit = '1';
+        rxAlert.hidden = false;
+        rxAlert.innerHTML = '<i data-lucide="alert-octagon"></i><div><strong>Posible conflicto con una alergia del paciente</strong>'
+            + hits.map(h => '<span>La receta menciona <b>' + h.match + '</b> y el paciente es alérgico a <b>' + h.allergen + '</b> (' + h.severity + '). Verifica antes de prescribir.</span>').join('')
+            + '</div>';
+        if (window.lucide) window.lucide.createIcons();
+    }
+    rxField?.addEventListener('input', checkRx);
+    checkRx();
+
     async function save(andComplete) {
+        if (rxAlert && rxAlert.dataset.hit === '1' &&
+            !confirm('⚠ La receta contiene un posible alérgeno del paciente. ¿Deseas guardar de todos modos?')) return;
         const fd = new FormData(form);
         const data = {};
         fd.forEach((v, k) => { data[k] = v; });

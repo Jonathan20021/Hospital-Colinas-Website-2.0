@@ -292,3 +292,10 @@
 .is-app .doctor-vital-v i{font-size:.7rem;font-weight:600;color:var(--pro-muted);font-style:normal}
 .is-app .doctor-vitals-trend{margin-top:6px;font-variant-numeric:tabular-nums;width:100%}
 .is-app .doctor-text-soft{font-size:.8rem;color:var(--pro-muted)}
+/* Alerta de interacción alergia ↔ receta (consulta) */
+.is-app .doctor-rx-alert{display:flex;gap:11px;align-items:flex-start;background:#fff5f6;border:1px solid #f7cdd5;border-left:4px solid #e11d48;border-radius:13px;padding:12px 15px;color:#9f1239}
+.is-app .doctor-rx-alert[hidden]{display:none}
+.is-app .doctor-rx-alert svg{flex:none;width:20px;height:20px;color:#e11d48;margin-top:1px}
+.is-app .doctor-rx-alert strong{display:block;font-size:.9rem;color:#be123c;margin-bottom:3px}
+.is-app .doctor-rx-alert span{display:block;font-size:.83rem;line-height:1.45}
+.is-app .doctor-rx-alert b{font-weight:800}
