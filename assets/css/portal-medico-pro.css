@@ -293,12 +293,21 @@
 .is-app .doctor-vitals-trend{margin-top:6px;font-variant-numeric:tabular-nums;width:100%}
 .is-app .doctor-text-soft{font-size:.8rem;color:var(--pro-muted)}
 /* Alerta de interacción alergia ↔ receta (consulta) */
-.is-app .doctor-rx-alert{display:flex;gap:11px;align-items:flex-start;background:#fff5f6;border:1px solid #f7cdd5;border-left:4px solid #e11d48;border-radius:13px;padding:12px 15px;color:#9f1239}
+.is-app .doctor-rx-alert{display:flex;flex-direction:column;gap:8px}
 .is-app .doctor-rx-alert[hidden]{display:none}
-.is-app .doctor-rx-alert svg{flex:none;width:20px;height:20px;color:#e11d48;margin-top:1px}
-.is-app .doctor-rx-alert strong{display:block;font-size:.9rem;color:#be123c;margin-bottom:3px}
-.is-app .doctor-rx-alert span{display:block;font-size:.83rem;line-height:1.45}
-.is-app .doctor-rx-alert b{font-weight:800}
+.is-app .doctor-rx-row{display:flex;gap:11px;align-items:flex-start;border-radius:13px;padding:12px 15px;border:1px solid;border-left-width:4px}
+.is-app .doctor-rx-row svg{flex:none;width:20px;height:20px;margin-top:1px}
+.is-app .doctor-rx-row strong{display:block;font-size:.9rem;margin-bottom:3px}
+.is-app .doctor-rx-row span{display:block;font-size:.83rem;line-height:1.45}
+.is-app .doctor-rx-row b{font-weight:800}
+.is-app .doctor-rx-row.alert{background:#fff5f6;border-color:#f7cdd5;border-left-color:#e11d48;color:#9f1239}
+.is-app .doctor-rx-row.alert svg,.is-app .doctor-rx-row.alert strong{color:#be123c}
+.is-app .doctor-rx-row.warn{background:#fffbeb;border-color:#fde68a;border-left-color:#d97706;color:#92400e}
+.is-app .doctor-rx-row.warn svg,.is-app .doctor-rx-row.warn strong{color:#b45309}
+/* Barra de plantillas de receta */
+.is-app .doctor-rx-tools{display:flex;gap:8px;align-items:center;margin:10px 0 0;flex-wrap:wrap}
+.is-app .doctor-rx-tools select.doctor-input{flex:1;min-width:160px}
+.is-app .doctor-rx-tools .doctor-btn{flex:none}
 /* Autocompletado (CIE-10 / vademécum) */
 .is-app .doctor-ac{position:relative;margin-bottom:10px}
 .is-app .doctor-ac-ic{position:absolute;left:14px;top:1.05rem;transform:translateY(-50%);color:var(--pro-muted);pointer-events:none;z-index:1}

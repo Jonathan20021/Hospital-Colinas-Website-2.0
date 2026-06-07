@@ -140,6 +140,11 @@ doctor_layout_begin('Consulta médica', 'consulta');
                         <input type="text" class="doctor-input" placeholder="Buscar medicamento del vademécum…" data-ac-input autocomplete="off">
                         <div class="doctor-ac-list" data-ac-list hidden></div>
                     </div>
+                    <div class="doctor-rx-tools">
+                        <select class="doctor-input" id="rx-tpl-sel" aria-label="Aplicar plantilla"><option value="">▾ Aplicar plantilla…</option></select>
+                        <button type="button" class="doctor-btn doctor-btn-outline" id="rx-tpl-save"><i data-lucide="bookmark-plus" class="h-4 w-4"></i> Guardar plantilla</button>
+                        <button type="button" class="doctor-btn doctor-btn-ghost" id="rx-tpl-del" hidden title="Eliminar plantilla seleccionada"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                    </div>
                     <textarea name="prescription" class="doctor-input" rows="6" placeholder="Medicamento - dosis - vía - frecuencia - duración"><?= e($appt['prescription'] ?? '') ?></textarea>
                 </div>
             </div>
@@ -279,7 +284,32 @@ document.addEventListener('DOMContentLoaded', () => {
         quinolona: ['ciprofloxacino','levofloxacino','moxifloxacino','norfloxacino','ofloxacino'],
         opioide: ['morfina','tramadol','codeina','fentanilo','meperidina']
     };
+    // Familias/principios para detectar interacciones en el texto de la receta
+    const IKEYS = {
+        aine: FAM.aine, macrolido: FAM.macrolido, quinolona: FAM.quinolona, sulfa: FAM.sulfa, opioide: FAM.opioide,
+        isrs: ['fluoxetina','sertralina','paroxetina','escitalopram','citalopram','fluvoxamina'],
+        estatina: ['atorvastatina','simvastatina','rosuvastatina','lovastatina','pravastatina'],
+        ieca: ['enalapril','lisinopril','captopril','ramipril','perindopril','losartan','valsartan','irbesartan','telmisartan'],
+        nitrato: ['nitroglicerina','isosorbide','dinitrato','mononitrato'],
+        benzodiacepina: ['diazepam','alprazolam','clonazepam','lorazepam','midazolam','bromazepam'],
+        warfarina: ['warfarina'], digoxina: ['digoxina'], amiodarona: ['amiodarona'], clopidogrel: ['clopidogrel'],
+        omeprazol: ['omeprazol'], metotrexato: ['metotrexato','methotrexate'], litio: ['litio'],
+        espironolactona: ['espironolactona'], potasio: ['cloruro de potasio','gluconato de potasio'],
+        sildenafil: ['sildenafil','tadalafil','vardenafil'], tramadol: ['tramadol']
+    };
+    const INTERACTIONS = [
+        ['warfarina','aine','mayor riesgo de sangrado'], ['warfarina','macrolido','aumenta el INR (sangrado)'],
+        ['warfarina','quinolona','aumenta el INR (sangrado)'], ['warfarina','sulfa','aumenta el INR (sangrado)'],
+        ['ieca','espironolactona','hiperpotasemia'], ['ieca','aine','daño renal / menor efecto'],
+        ['tramadol','isrs','síndrome serotoninérgico'], ['isrs','aine','mayor riesgo de sangrado'],
+        ['nitrato','sildenafil','hipotensión grave'], ['digoxina','macrolido','toxicidad por digoxina'],
+        ['digoxina','amiodarona','toxicidad por digoxina'], ['estatina','macrolido','riesgo de rabdomiólisis'],
+        ['clopidogrel','omeprazol','reduce el efecto de clopidogrel'], ['metotrexato','aine','toxicidad por metotrexato'],
+        ['litio','aine','toxicidad por litio'], ['litio','ieca','toxicidad por litio'],
+        ['espironolactona','potasio','hiperpotasemia'], ['benzodiacepina','opioide','depresión respiratoria']
+    ];
     const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+    const present = (txt, key) => (IKEYS[key] || []).some(m => { const mn = norm(m); return mn.length >= 4 && txt.includes(mn); });
     const watch = allergies.map(a => {
         const an = norm(a.allergen);
         const terms = new Set([an]);
@@ -297,18 +327,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkRx() {
         if (!rxAlert) return;
         const txt = norm(rxField && rxField.value);
-        const hits = [];
-        if (txt) watch.forEach(w => {
-            const m = w.terms.find(t => txt.includes(t));
-            if (m) hits.push({ allergen: w.allergen, severity: w.severity, match: m });
-        });
-        if (!hits.length) { rxAlert.hidden = true; rxAlert.dataset.hit = ''; rxAlert.innerHTML = ''; return; }
-        rxAlert.dataset.hit = '1';
-        rxAlert.hidden = false;
-        rxAlert.innerHTML = '<i data-lucide="alert-octagon"></i><div><strong>Posible conflicto con una alergia del paciente</strong>'
-            + hits.map(h => '<span>La receta menciona <b>' + h.match + '</b> y el paciente es alérgico a <b>' + h.allergen + '</b> (' + h.severity + '). Verifica antes de prescribir.</span>').join('')
-            + '</div>';
-        if (window.lucide) window.lucide.createIcons();
+        let html = '';
+        if (txt) {
+            const aHits = [];
+            watch.forEach(w => { const m = w.terms.find(t => txt.includes(t)); if (m) aHits.push({ allergen: w.allergen, severity: w.severity, match: m }); });
+            const iHits = [];
+            INTERACTIONS.forEach(([a, b, note]) => { if (present(txt, a) && present(txt, b)) iHits.push({ a, b, note }); });
+            if (aHits.length) {
+                html += '<div class="doctor-rx-row alert"><i data-lucide="alert-octagon"></i><div><strong>Posible conflicto con una alergia</strong>'
+                    + aHits.map(h => '<span>La receta menciona <b>' + h.match + '</b>; el paciente es alérgico a <b>' + h.allergen + '</b> (' + h.severity + ').</span>').join('') + '</div></div>';
+            }
+            if (iHits.length) {
+                html += '<div class="doctor-rx-row warn"><i data-lucide="git-merge"></i><div><strong>Posible interacción entre medicamentos</strong>'
+                    + iHits.map(h => '<span><b>' + h.a + '</b> + <b>' + h.b + '</b>: ' + h.note + '.</span>').join('') + '</div></div>';
+            }
+        }
+        rxAlert.dataset.hit = html ? '1' : '';
+        rxAlert.hidden = !html;
+        rxAlert.innerHTML = html;
+        if (html && window.lucide) window.lucide.createIcons();
     }
     rxField?.addEventListener('input', checkRx);
     checkRx();
@@ -356,9 +393,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     document.querySelectorAll('[data-ac-target]').forEach(attachAC);
 
+    // ── Plantillas de receta (propias del médico) ──
+    const tplSel = document.getElementById('rx-tpl-sel');
+    const tplSave = document.getElementById('rx-tpl-save');
+    const tplDel = document.getElementById('rx-tpl-del');
+    let rxTpls = [];
+    const escT = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function renderTpls() {
+        if (!tplSel) return;
+        tplSel.innerHTML = '<option value="">▾ Aplicar plantilla…</option>' + rxTpls.map(t => '<option value="' + t.id + '">' + escT(t.name) + '</option>').join('');
+        if (tplDel) tplDel.hidden = true;
+    }
+    async function loadTpls() {
+        const r = await window.doctorApi('GET', '/portal-doctor/me/rx-templates');
+        rxTpls = (r.ok && Array.isArray(r.data)) ? r.data : [];
+        renderTpls();
+    }
+    tplSel?.addEventListener('change', () => {
+        const t = rxTpls.find(x => String(x.id) === tplSel.value);
+        if (tplDel) tplDel.hidden = !tplSel.value;
+        if (!t || !rxField) return;
+        const cur = rxField.value.trim();
+        rxField.value = (cur ? cur + '\n' : '') + t.body;
+        checkRx();
+    });
+    tplSave?.addEventListener('click', async () => {
+        const body = (rxField && rxField.value.trim()) || '';
+        if (!body) { alert('La receta está vacía.'); return; }
+        const name = prompt('Nombre de la plantilla (p.ej. "Faringitis adulto"):');
+        if (!name || !name.trim()) return;
+        const r = await window.doctorApi('POST', '/portal-doctor/me/rx-templates', { name: name.trim(), body });
+        if (r.ok && Array.isArray(r.data)) { rxTpls = r.data; renderTpls(); }
+        else alert(r.message || 'No se pudo guardar la plantilla.');
+    });
+    tplDel?.addEventListener('click', async () => {
+        if (!tplSel.value) return;
+        if (!confirm('¿Eliminar esta plantilla?')) return;
+        const r = await window.doctorApi('DELETE', '/portal-doctor/me/rx-templates/' + tplSel.value);
+        if (r.ok && Array.isArray(r.data)) { rxTpls = r.data; renderTpls(); }
+    });
+    loadTpls();
+
     async function save(andComplete) {
         if (rxAlert && rxAlert.dataset.hit === '1' &&
-            !confirm('⚠ La receta contiene un posible alérgeno del paciente. ¿Deseas guardar de todos modos?')) return;
+            !confirm('⚠ La receta tiene una alerta de seguridad (alergia o interacción). ¿Deseas guardar de todos modos?')) return;
         const fd = new FormData(form);
         const data = {};
         fd.forEach((v, k) => { data[k] = v; });
