@@ -16,7 +16,7 @@
  */
 'use strict';
 
-const VERSION  = 'hglc-medico-v1';
+const VERSION  = 'hglc-medico-v2';
 const PRECACHE = VERSION + '-precache';
 const RUNTIME  = VERSION + '-runtime';
 
@@ -103,4 +103,40 @@ self.addEventListener('fetch', (event) => {
 
   // 3) Cualquier otra petición in-scope: red directa (sin caché). El navegador
   //    aplica su propio HTTP cache; nada clínico se persiste en CacheStorage.
+});
+
+// ── Notificaciones push ────────────────────────────────────────────────
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; }
+  catch (e) { data = { body: event.data ? event.data.text() : '' }; }
+
+  const title = data.title || 'Portal del Médico';
+  const options = {
+    body:     data.body || '',
+    icon:     new URL('icons/icon-192.png', self.location).toString(),
+    badge:    new URL('icons/favicon-32.png', self.location).toString(),
+    tag:      data.tag || 'hglc-medico',
+    renotify: true,
+    data:     { url: data.url || './' },
+    vibrate:  [80, 40, 80],
+    lang:     'es',
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || './';
+  const url = new URL(target, self.location).toString();
+  event.waitUntil((async () => {
+    const wins = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const c of wins) {
+      if (c.url.indexOf('/portal-medico/') !== -1 && 'focus' in c) {
+        try { await c.navigate(url); } catch (e) {}
+        return c.focus();
+      }
+    }
+    if (clients.openWindow) return clients.openWindow(url);
+  })());
 });

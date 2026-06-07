@@ -202,6 +202,70 @@
   window.addEventListener('online', onNet);
   window.addEventListener('offline', onNet);
 
+  // ── Suscripción a notificaciones push ────────────────────────────
+  function urlB64ToU8(base64String) {
+    var padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = atob(base64);
+    var arr = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+  function pushSupported() {
+    return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+  }
+  async function getVapidKey() {
+    if (!window.doctorApi) return null;
+    var r = await window.doctorApi('GET', '/portal-doctor/me/push/key');
+    return (r && r.ok && r.data) ? r.data.publicKey : null;
+  }
+  async function enablePush() {
+    if (!pushSupported()) throw new Error('unsupported');
+    var perm = await Notification.requestPermission();
+    if (perm !== 'granted') throw new Error('denied');
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      var key = await getVapidKey();
+      if (!key) throw new Error('no_key');
+      sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToU8(key) });
+    }
+    var j = sub.toJSON();
+    var r = await window.doctorApi('POST', '/portal-doctor/me/push/subscribe', {
+      endpoint: sub.endpoint,
+      p256dh: j.keys && j.keys.p256dh,
+      auth: j.keys && j.keys.auth,
+      ua: navigator.userAgent,
+    });
+    if (!r || !r.ok) throw new Error('save_failed');
+    return true;
+  }
+  async function disablePush() {
+    if (!pushSupported()) return false;
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      try { await window.doctorApi('POST', '/portal-doctor/me/push/unsubscribe', { endpoint: sub.endpoint }); } catch (e) {}
+      try { await sub.unsubscribe(); } catch (e) {}
+    }
+    return true;
+  }
+  async function pushStatus() {
+    if (!pushSupported()) return { supported: false };
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    return { supported: true, permission: Notification.permission, subscribed: !!sub };
+  }
+  function pushTest() { return window.doctorApi('POST', '/portal-doctor/me/push/test'); }
+
+  window.DMPush = {
+    supported: pushSupported(),
+    enable: enablePush,
+    disable: disablePush,
+    status: pushStatus,
+    test: pushTest,
+  };
+
   // ── Arranque ─────────────────────────────────────────────────────
   function boot() {
     registerSW();

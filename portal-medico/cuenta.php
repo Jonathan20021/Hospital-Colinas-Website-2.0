@@ -167,6 +167,27 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
     </div>
 </div>
 
+<div class="doctor-card mt-6" data-push-card hidden>
+    <header class="doctor-card-header">
+        <h2><i data-lucide="bell" class="h-4 w-4"></i> Notificaciones push</h2>
+    </header>
+    <div class="doctor-form-pad">
+        <p class="doctor-subtitle" style="margin-top:0;margin-bottom:16px">Recibe avisos de nuevas citas, cancelaciones y un resumen diario de tu agenda, aun con el portal cerrado. La activación aplica a este dispositivo.</p>
+        <div class="doctor-push-row">
+            <div class="doctor-push-state">
+                <span class="doctor-push-dot" data-push-dot></span>
+                <span data-push-status>Comprobando…</span>
+            </div>
+            <div class="doctor-push-actions">
+                <button type="button" class="doctor-btn doctor-btn-primary" data-push-enable hidden><i data-lucide="bell" class="h-4 w-4"></i> Activar</button>
+                <button type="button" class="doctor-btn doctor-btn-outline" data-push-disable hidden><i data-lucide="bell-off" class="h-4 w-4"></i> Desactivar</button>
+                <button type="button" class="doctor-btn doctor-btn-ghost" data-push-test hidden><i data-lucide="send" class="h-4 w-4"></i> Probar</button>
+            </div>
+        </div>
+        <p class="doctor-push-hint" data-push-hint hidden></p>
+    </div>
+</div>
+
 <div class="doctor-card mt-6 doctor-card-warning">
     <header class="doctor-card-header">
         <h2><i data-lucide="shield-alert" class="h-4 w-4"></i> Consejos de seguridad</h2>
@@ -229,6 +250,53 @@ document.getElementById('pwd-form').addEventListener('submit', async (e) => {
         window.doctorAutoSaveHint(status, 'error');
         status.textContent = '⚠ ' + (r.message || 'Error al cambiar la contraseña.');
     }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const card = document.querySelector('[data-push-card]');
+    if (!card || !window.DMPush || !window.DMPush.supported) return; // navegador sin soporte: tarjeta oculta
+    card.hidden = false;
+    const q = (s) => card.querySelector(s);
+    const statusEl = q('[data-push-status]'), dot = q('[data-push-dot]');
+    const enableBtn = q('[data-push-enable]'), disableBtn = q('[data-push-disable]');
+    const testBtn = q('[data-push-test]'), hint = q('[data-push-hint]');
+
+    function refresh(st) {
+        const denied = st.permission === 'denied';
+        enableBtn.hidden  = st.subscribed || denied;
+        disableBtn.hidden = !st.subscribed;
+        testBtn.hidden    = !st.subscribed;
+        dot.className = 'doctor-push-dot' + (st.subscribed ? ' on' : '');
+        statusEl.textContent = st.subscribed
+            ? 'Activadas en este dispositivo'
+            : (denied ? 'Bloqueadas en el navegador' : 'Desactivadas en este dispositivo');
+        if (denied) { hint.hidden = false; hint.textContent = 'Las notificaciones están bloqueadas para este sitio en los ajustes del navegador. Habilítalas ahí para poder activarlas.'; }
+        if (window.lucide) lucide.createIcons();
+    }
+
+    try { refresh(await window.DMPush.status()); } catch (e) {}
+
+    enableBtn.addEventListener('click', async () => {
+        enableBtn.disabled = true; hint.hidden = true;
+        try { await window.DMPush.enable(); }
+        catch (e) { hint.hidden = false; hint.textContent = e && e.message === 'denied' ? 'Permiso denegado en el navegador.' : 'No se pudieron activar. Intenta de nuevo.'; }
+        enableBtn.disabled = false; refresh(await window.DMPush.status());
+    });
+    disableBtn.addEventListener('click', async () => {
+        disableBtn.disabled = true; hint.hidden = true;
+        try { await window.DMPush.disable(); } catch (e) {}
+        disableBtn.disabled = false; refresh(await window.DMPush.status());
+    });
+    testBtn.addEventListener('click', async () => {
+        testBtn.disabled = true; hint.hidden = true;
+        let r = null; try { r = await window.DMPush.test(); } catch (e) {}
+        testBtn.disabled = false; hint.hidden = false;
+        hint.textContent = (r && r.ok)
+            ? ('Notificación de prueba enviada (' + ((r.data && r.data.sent) || 0) + ' dispositivo[s]).')
+            : 'No se pudo enviar la prueba.';
+    });
 });
 </script>
 <?php doctor_layout_end();
