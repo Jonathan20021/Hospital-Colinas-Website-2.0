@@ -120,7 +120,12 @@ doctor_layout_begin('Consulta médica', 'consulta');
         <section class="doctor-card mt-4">
             <header class="doctor-card-header"><h2><i data-lucide="clipboard-list" class="h-5 w-5"></i> Diagnóstico</h2></header>
             <div class="doctor-form-pad">
-                <textarea name="diagnosis" class="doctor-input" rows="3" placeholder="Diagnóstico clínico, códigos CIE, etc."><?= e($appt['diagnosis'] ?? '') ?></textarea>
+                <div class="doctor-ac" data-ac-target="diagnosis" data-ac-ep="/portal-doctor/me/cie10">
+                    <span class="doctor-ac-ic"><i data-lucide="search" class="h-4 w-4"></i></span>
+                    <input type="text" class="doctor-input" placeholder="Buscar diagnóstico CIE-10 (código o nombre)…" data-ac-input autocomplete="off">
+                    <div class="doctor-ac-list" data-ac-list hidden></div>
+                </div>
+                <textarea name="diagnosis" id="dx-field" class="doctor-input" rows="3" placeholder="Diagnóstico clínico, códigos CIE, etc."><?= e($appt['diagnosis'] ?? '') ?></textarea>
             </div>
         </section>
 
@@ -130,6 +135,11 @@ doctor_layout_begin('Consulta médica', 'consulta');
             <div class="doctor-card">
                 <header class="doctor-card-header"><h2><i data-lucide="pill" class="h-5 w-5"></i> Receta médica</h2></header>
                 <div class="doctor-form-pad">
+                    <div class="doctor-ac" data-ac-target="prescription" data-ac-ep="/portal-doctor/me/medications">
+                        <span class="doctor-ac-ic"><i data-lucide="search" class="h-4 w-4"></i></span>
+                        <input type="text" class="doctor-input" placeholder="Buscar medicamento del vademécum…" data-ac-input autocomplete="off">
+                        <div class="doctor-ac-list" data-ac-list hidden></div>
+                    </div>
                     <textarea name="prescription" class="doctor-input" rows="6" placeholder="Medicamento - dosis - vía - frecuencia - duración"><?= e($appt['prescription'] ?? '') ?></textarea>
                 </div>
             </div>
@@ -302,6 +312,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     rxField?.addEventListener('input', checkRx);
     checkRx();
+
+    // ── Autocompletado (CIE-10 en diagnóstico, medicamentos en receta) ──
+    function attachAC(wrap) {
+        const input = wrap.querySelector('[data-ac-input]');
+        const list = wrap.querySelector('[data-ac-list]');
+        const ep = wrap.dataset.acEp;
+        const target = form.querySelector('[name="' + wrap.dataset.acTarget + '"]');
+        const isCie = ep.indexOf('cie10') !== -1;
+        const escA = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        let t, items = [];
+        const close = () => { list.hidden = true; list.innerHTML = ''; };
+        const render = it => isCie
+            ? '<b>' + escA(it.code) + '</b> ' + escA(it.name)
+            : '<b>' + escA(it.name) + '</b>' + (it.presentacion ? ' · ' + escA(it.presentacion) : '') + (it.principio ? ' <span class="doctor-ac-sub">(' + escA(it.principio) + ')</span>' : '');
+        const lineFor = it => isCie
+            ? it.code + ' - ' + it.name
+            : it.name + (it.presentacion ? ' (' + it.presentacion + ')' : '') + ' - ';
+        input.addEventListener('input', () => {
+            clearTimeout(t);
+            const q = input.value.trim();
+            if (q.length < 2) { close(); return; }
+            t = setTimeout(async () => {
+                const r = await window.doctorApi('GET', ep, { q });
+                items = (r.ok && Array.isArray(r.data)) ? r.data : [];
+                list.innerHTML = items.length
+                    ? items.map((it, i) => '<button type="button" class="doctor-ac-item" data-i="' + i + '">' + render(it) + '</button>').join('')
+                    : '<div class="doctor-ac-empty">Sin resultados</div>';
+                list.hidden = false;
+            }, 250);
+        });
+        list.addEventListener('click', e => {
+            const b = e.target.closest('[data-i]');
+            if (!b || !target) return;
+            const it = items[+b.dataset.i];
+            const cur = target.value.trim();
+            target.value = (cur ? cur + '\n' : '') + lineFor(it);
+            input.value = ''; close(); target.focus();
+            if (typeof checkRx === 'function') checkRx();
+        });
+        input.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+        document.addEventListener('click', e => { if (!wrap.contains(e.target)) close(); });
+    }
+    document.querySelectorAll('[data-ac-target]').forEach(attachAC);
 
     async function save(andComplete) {
         if (rxAlert && rxAlert.dataset.hit === '1' &&
