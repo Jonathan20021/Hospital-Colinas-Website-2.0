@@ -65,6 +65,152 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
     </div>
 </header>
 
+<?php
+$pAllergies  = $patient['allergies'] ?? [];
+$pConditions = $patient['conditions'] ?? [];
+$pBlood      = $patient['blood_type'] ?? '';
+$pVitals     = $patient['vitals'] ?? [];
+$bloodTypes  = ['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+$sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-low'];
+?>
+<section class="doctor-card mt-4 doctor-safety-card<?= $pAllergies ? ' has-allergy' : '' ?>" id="safety-card">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="shield-alert" class="h-5 w-5"></i> Seguridad clínica</h2>
+        <span class="doctor-blood-field">
+            <label for="blood-type">Tipo de sangre</label>
+            <select id="blood-type" class="doctor-input">
+                <option value="">—</option>
+                <?php foreach ($bloodTypes as $bt): ?><option value="<?= $bt ?>" <?= $pBlood === $bt ? 'selected' : '' ?>><?= $bt ?></option><?php endforeach; ?>
+            </select>
+        </span>
+    </header>
+    <div class="doctor-form-pad doctor-safety-grid">
+        <div class="doctor-safety-col">
+            <h3 class="doctor-safety-h"><i data-lucide="alert-triangle" class="h-4 w-4"></i> Alergias</h3>
+            <div class="doctor-chip-list" id="allergy-list">
+                <?php if (!$pAllergies): ?><span class="doctor-chip-empty">Sin alergias registradas</span><?php endif; ?>
+                <?php foreach ($pAllergies as $a): ?>
+                    <span class="doctor-chip <?= $sevCls[$a['severity']] ?? 'sev-mid' ?>" title="<?= e(ucfirst($a['severity']) . ($a['reaction'] ? ' · ' . $a['reaction'] : '')) ?>"><?= e($a['allergen']) ?><button type="button" class="doctor-chip-x" data-del-allergy="<?= (int)$a['id'] ?>" aria-label="Eliminar">&times;</button></span>
+                <?php endforeach; ?>
+            </div>
+            <form class="doctor-chip-add" id="allergy-form">
+                <input type="text" class="doctor-input" id="al-name" placeholder="Alérgeno (p.ej. Penicilina)" maxlength="160" required>
+                <select class="doctor-input" id="al-sev"><option value="leve">Leve</option><option value="moderada" selected>Moderada</option><option value="severa">Severa</option></select>
+                <input type="text" class="doctor-input" id="al-reaction" placeholder="Reacción (opcional)" maxlength="255">
+                <button type="submit" class="doctor-btn doctor-btn-primary" aria-label="Añadir alergia"><i data-lucide="plus" class="h-4 w-4"></i></button>
+            </form>
+        </div>
+        <div class="doctor-safety-col">
+            <h3 class="doctor-safety-h"><i data-lucide="clipboard-list" class="h-4 w-4"></i> Antecedentes</h3>
+            <div class="doctor-chip-list" id="cond-list">
+                <?php if (!$pConditions): ?><span class="doctor-chip-empty">Sin antecedentes registrados</span><?php endif; ?>
+                <?php foreach ($pConditions as $c): ?>
+                    <span class="doctor-chip sev-cond" title="<?= e($c['note'] ?? '') ?>"><?= e($c['name']) ?><button type="button" class="doctor-chip-x" data-del-cond="<?= (int)$c['id'] ?>" aria-label="Eliminar">&times;</button></span>
+                <?php endforeach; ?>
+            </div>
+            <form class="doctor-chip-add" id="cond-form">
+                <input type="text" class="doctor-input" id="co-name" placeholder="Antecedente (p.ej. Hipertensión)" maxlength="160" required>
+                <input type="text" class="doctor-input" id="co-note" placeholder="Nota (opcional)" maxlength="255">
+                <button type="submit" class="doctor-btn doctor-btn-primary" aria-label="Añadir antecedente"><i data-lucide="plus" class="h-4 w-4"></i></button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="doctor-card mt-4">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="activity" class="h-5 w-5"></i> Signos vitales</h2>
+        <?php if ($pVitals): ?><span class="doctor-text-soft"><?= count($pVitals) ?> registro<?= count($pVitals) === 1 ? '' : 's' ?></span><?php endif; ?>
+    </header>
+    <?php if (!$pVitals): ?>
+        <div class="doctor-empty">
+            <div class="doctor-empty-illustration"><i data-lucide="activity" class="h-7 w-7"></i></div>
+            <p class="doctor-empty-title">Sin signos vitales</p>
+            <p>Se registran automáticamente al guardar la consulta.</p>
+        </div>
+    <?php else: $last = $pVitals[0]; ?>
+        <div class="doctor-form-pad">
+            <div class="doctor-vitals-latest">
+                <?php
+                $vCards = [
+                    ['T/A', ($last['systolic'] ?? '—') . '/' . ($last['diastolic'] ?? '—'), 'mmHg', 'heart-pulse'],
+                    ['FC', $last['heart_rate'] ?? '—', 'lpm', 'activity'],
+                    ['FR', $last['resp_rate'] ?? '—', 'rpm', 'wind'],
+                    ['Temp', $last['temperature'] ?? '—', '°C', 'thermometer'],
+                    ['SatO₂', $last['spo2'] ?? '—', '%', 'droplets'],
+                    ['Peso', $last['weight_kg'] ?? '—', 'kg', 'scale'],
+                    ['IMC', $last['bmi'] ?? '—', '', 'gauge'],
+                ];
+                foreach ($vCards as [$k, $val, $u, $ic]): ?>
+                    <div class="doctor-vital"><span class="doctor-vital-k"><i data-lucide="<?= $ic ?>"></i> <?= $k ?></span><span class="doctor-vital-v"><?= e($val) ?><?php if ($u): ?> <i><?= $u ?></i><?php endif; ?></span></div>
+                <?php endforeach; ?>
+            </div>
+            <p class="doctor-text-soft" style="margin:12px 2px 0">Última toma: <?= e(doctor_fecha_corta(strtotime($last['recorded_at']), true)) ?></p>
+            <?php if (count($pVitals) > 1): ?>
+                <div style="overflow-x:auto">
+                    <table class="doctor-table doctor-vitals-trend">
+                        <thead><tr><th>Fecha</th><th>T/A</th><th>FC</th><th>FR</th><th>Temp</th><th>SatO₂</th><th>Peso</th><th>IMC</th></tr></thead>
+                        <tbody>
+                            <?php foreach ($pVitals as $vv): ?>
+                                <tr><td><?= e(doctor_fecha_corta(strtotime($vv['recorded_at']))) ?></td><td><?= e(($vv['systolic'] ?? '—') . '/' . ($vv['diastolic'] ?? '—')) ?></td><td><?= e($vv['heart_rate'] ?? '—') ?></td><td><?= e($vv['resp_rate'] ?? '—') ?></td><td><?= e($vv['temperature'] ?? '—') ?></td><td><?= e($vv['spo2'] ?? '—') ?></td><td><?= e($vv['weight_kg'] ?? '—') ?></td><td><?= e($vv['bmi'] ?? '—') ?></td></tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+</section>
+
+<script>
+(function () {
+    const pid = <?= (int)$id ?>;
+    const sevCls = { severa: 'sev-high', moderada: 'sev-mid', leve: 'sev-low' };
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function renderAllergies(list) {
+        const el = document.getElementById('allergy-list');
+        const card = document.getElementById('safety-card');
+        if (!list || !list.length) { el.innerHTML = '<span class="doctor-chip-empty">Sin alergias registradas</span>'; card.classList.remove('has-allergy'); return; }
+        el.innerHTML = list.map(a => `<span class="doctor-chip ${sevCls[a.severity] || 'sev-mid'}" title="${esc((a.severity || '') + (a.reaction ? ' · ' + a.reaction : ''))}">${esc(a.allergen)}<button type="button" class="doctor-chip-x" data-del-allergy="${a.id}" aria-label="Eliminar">&times;</button></span>`).join('');
+        card.classList.add('has-allergy');
+    }
+    function renderConds(list) {
+        const el = document.getElementById('cond-list');
+        if (!list || !list.length) { el.innerHTML = '<span class="doctor-chip-empty">Sin antecedentes registrados</span>'; return; }
+        el.innerHTML = list.map(c => `<span class="doctor-chip sev-cond" title="${esc(c.note || '')}">${esc(c.name)}<button type="button" class="doctor-chip-x" data-del-cond="${c.id}" aria-label="Eliminar">&times;</button></span>`).join('');
+    }
+
+    document.getElementById('allergy-form')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const allergen = document.getElementById('al-name').value.trim(); if (!allergen) return;
+        const severity = document.getElementById('al-sev').value;
+        const reaction = document.getElementById('al-reaction').value.trim();
+        const r = await window.doctorApi('POST', '/portal-doctor/me/patients/' + pid + '/allergies', { allergen, severity, reaction });
+        if (r.ok && r.data) { renderAllergies(r.data.allergies || []); e.target.reset(); document.getElementById('al-sev').value = 'moderada'; }
+        else alert(r.message || 'No se pudo registrar la alergia.');
+    });
+    document.getElementById('cond-form')?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const name = document.getElementById('co-name').value.trim(); if (!name) return;
+        const note = document.getElementById('co-note').value.trim();
+        const r = await window.doctorApi('POST', '/portal-doctor/me/patients/' + pid + '/conditions', { name, note });
+        if (r.ok && r.data) { renderConds(r.data.conditions || []); e.target.reset(); }
+        else alert(r.message || 'No se pudo registrar el antecedente.');
+    });
+    document.addEventListener('click', async e => {
+        const da = e.target.closest('[data-del-allergy]');
+        if (da) { if (!confirm('¿Eliminar esta alergia?')) return; const r = await window.doctorApi('DELETE', '/portal-doctor/me/patients/' + pid + '/allergies/' + da.dataset.delAllergy); if (r.ok && r.data) renderAllergies(r.data.allergies || []); return; }
+        const dc = e.target.closest('[data-del-cond]');
+        if (dc) { if (!confirm('¿Eliminar este antecedente?')) return; const r = await window.doctorApi('DELETE', '/portal-doctor/me/patients/' + pid + '/conditions/' + dc.dataset.delCond); if (r.ok && r.data) renderConds(r.data.conditions || []); return; }
+    });
+    document.getElementById('blood-type')?.addEventListener('change', async e => {
+        const r = await window.doctorApi('PUT', '/portal-doctor/me/patients/' + pid, { blood_type: e.target.value });
+        if (!r.ok) alert(r.message || 'No se pudo guardar el tipo de sangre.');
+    });
+})();
+</script>
+
 <section class="doctor-grid-2 mt-4">
     <div class="doctor-card">
         <header class="doctor-card-header">

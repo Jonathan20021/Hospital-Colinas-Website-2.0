@@ -238,3 +238,57 @@
 
 /* ── ACCESIBILIDAD: focus visible global del portal ──────── */
 .is-app a:focus-visible,.is-app button:focus-visible,.is-app input:focus-visible,.is-app select:focus-visible,.is-app textarea:focus-visible{outline:2px solid var(--pro-brand-2);outline-offset:2px}
+
+/* ── SEGURIDAD CLÍNICA: banner, chips, vitales ───────────── */
+/* Banner read-only (consulta) */
+.is-app .doctor-safety-banner{display:flex;align-items:flex-start;gap:12px;background:#f6f7fb;border:1px solid var(--pro-line);border-left:4px solid var(--pro-muted-2);border-radius:14px;padding:12px 14px;margin:0 0 14px}
+.is-app .doctor-safety-banner.is-alert{background:#fff5f6;border-color:#f7cdd5;border-left-color:#e11d48}
+.is-app .doctor-safety-ic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fff;color:var(--pro-muted);box-shadow:var(--pro-sh-sm)}
+.is-app .doctor-safety-banner.is-alert .doctor-safety-ic{color:#e11d48}
+.is-app .doctor-safety-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.is-app .doctor-safety-line{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.is-app .doctor-safety-tag{font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pro-muted)}
+.is-app .doctor-safety-blood{flex:none;display:inline-flex;align-items:center;gap:4px;font-weight:800;color:#be123c;background:#fdeaee;border:1px solid #f7c8d2;border-radius:10px;padding:4px 10px;font-size:.85rem}
+.is-app .doctor-safety-edit{flex:none;color:var(--pro-muted);width:30px;height:30px;border-radius:8px;display:grid;place-items:center;transition:background .15s,color .15s}
+.is-app .doctor-safety-edit:hover{background:#fff;color:var(--pro-brand-2)}
+/* Chips de severidad / antecedente */
+.is-app .doctor-chip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 11px;border-radius:999px;font-size:.8rem;font-weight:700;border:1px solid transparent;line-height:1.2}
+.is-app .doctor-chip.sev-high{background:#fdeaee;color:#be123c;border-color:#f7c8d2}
+.is-app .doctor-chip.sev-mid{background:#fef3c7;color:#92400e;border-color:#fde68a}
+.is-app .doctor-chip.sev-low{background:#f1f5f9;color:#475569;border-color:#e2e8f0}
+.is-app .doctor-chip.sev-cond{background:#eef0ff;color:#4338ca;border-color:#e0e3fb}
+.is-app .doctor-chip-x{border:0;background:rgba(0,0,0,.07);color:inherit;cursor:pointer;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font-size:14px;line-height:1;padding:0;transition:background .15s}
+.is-app .doctor-chip-x:hover{background:rgba(0,0,0,.18)}
+.is-app .doctor-chip-empty{font-size:.84rem;color:var(--pro-muted)}
+/* Tarjeta de seguridad (paciente, CRUD) */
+.is-app .doctor-safety-card.has-allergy{border-color:#f7cdd5;box-shadow:0 0 0 1px #f7cdd5,var(--pro-sh-sm)}
+.is-app .doctor-safety-card.has-allergy .doctor-card-header h2 svg{color:#e11d48}
+.is-app .doctor-blood-field{display:inline-flex;align-items:center;gap:8px;font-size:.76rem;font-weight:700;color:var(--pro-muted)}
+.is-app .doctor-blood-field select.doctor-input{width:auto;padding-top:.4rem;padding-bottom:.4rem}
+.is-app .doctor-safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+@media(max-width:760px){.is-app .doctor-safety-grid{grid-template-columns:1fr;gap:18px}}
+.is-app .doctor-safety-col{display:flex;flex-direction:column;gap:11px}
+.is-app .doctor-safety-h{display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:800;color:var(--pro-ink-2);margin:0}
+.is-app .doctor-safety-h svg{width:16px;height:16px;color:var(--pro-muted)}
+.is-app .doctor-chip-list{display:flex;flex-wrap:wrap;gap:7px;min-height:28px;align-items:flex-start}
+.is-app .doctor-chip-add{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.is-app .doctor-chip-add .doctor-input{flex:1;min-width:130px}
+.is-app .doctor-chip-add select.doctor-input{flex:none;width:auto}
+.is-app .doctor-chip-add .doctor-btn{flex:none;padding:.55rem .7rem}
+/* Signos vitales — captura (consulta) */
+.is-app .doctor-vitals-form{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:760px){.is-app .doctor-vitals-form{grid-template-columns:repeat(2,1fr)}}
+.is-app .doctor-vitals-form label{display:flex;flex-direction:column;gap:6px;font-size:.76rem;font-weight:700;color:var(--pro-ink-2)}
+.is-app .doctor-vital-ta{display:flex;align-items:center;gap:6px}
+.is-app .doctor-vital-ta .doctor-input{text-align:center;padding-left:.4rem;padding-right:.4rem}
+.is-app .doctor-vital-ta b{color:var(--pro-muted-2);font-weight:700}
+.is-app #v-bmi{background:var(--pro-surface-2);font-weight:800;color:var(--pro-brand)}
+/* Signos vitales — visualización (paciente) */
+.is-app .doctor-vitals-latest{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:12px}
+.is-app .doctor-vital{background:var(--pro-surface-2);border:1px solid var(--pro-line-2);border-radius:13px;padding:11px 13px;display:flex;flex-direction:column;gap:5px}
+.is-app .doctor-vital-k{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:700;color:var(--pro-muted);text-transform:uppercase;letter-spacing:.04em}
+.is-app .doctor-vital-k svg{width:14px;height:14px;color:var(--pro-brand-2)}
+.is-app .doctor-vital-v{font-size:1.22rem;font-weight:800;color:var(--pro-ink);font-variant-numeric:tabular-nums}
+.is-app .doctor-vital-v i{font-size:.7rem;font-weight:600;color:var(--pro-muted);font-style:normal}
+.is-app .doctor-vitals-trend{margin-top:6px;font-variant-numeric:tabular-nums;width:100%}
+.is-app .doctor-text-soft{font-size:.8rem;color:var(--pro-muted)}

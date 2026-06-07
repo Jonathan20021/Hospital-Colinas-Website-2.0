@@ -60,10 +60,57 @@ doctor_layout_begin('Consulta médica', 'consulta');
         </div>
     </header>
 
+    <?php
+        $cAllergies  = $appt['allergies'] ?? [];
+        $cConditions = $appt['conditions'] ?? [];
+        $cBlood      = $appt['patient_blood_type'] ?? '';
+        $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-low'];
+    ?>
+    <?php if ($cAllergies || $cConditions || $cBlood): ?>
+    <div class="doctor-safety-banner <?= $cAllergies ? 'is-alert' : '' ?>">
+        <span class="doctor-safety-ic"><i data-lucide="<?= $cAllergies ? 'alert-triangle' : 'shield-check' ?>"></i></span>
+        <div class="doctor-safety-content">
+            <?php if ($cAllergies): ?>
+                <div class="doctor-safety-line">
+                    <span class="doctor-safety-tag">Alergias</span>
+                    <?php foreach ($cAllergies as $a): ?>
+                        <span class="doctor-chip <?= $sevCls[$a['severity']] ?? 'sev-mid' ?>" title="<?= e(ucfirst($a['severity']) . ($a['reaction'] ? ' · ' . $a['reaction'] : '')) ?>"><?= e($a['allergen']) ?></span>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($cConditions): ?>
+                <div class="doctor-safety-line">
+                    <span class="doctor-safety-tag">Antecedentes</span>
+                    <?php foreach ($cConditions as $c): ?>
+                        <span class="doctor-chip sev-cond" title="<?= e($c['note'] ?? '') ?>"><?= e($c['name']) ?></span>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+        <?php if ($cBlood): ?><span class="doctor-safety-blood" title="Tipo de sangre"><i data-lucide="droplet" class="h-3.5 w-3.5"></i> <?= e($cBlood) ?></span><?php endif; ?>
+        <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$appt['patient_id'])) ?>" class="doctor-safety-edit" title="Gestionar en la ficha del paciente"><i data-lucide="pencil" class="h-3.5 w-3.5"></i></a>
+    </div>
+    <?php endif; ?>
+
     <form id="consult-form" class="doctor-consult-form">
         <input type="hidden" name="appointment_id" value="<?= (int)$appt['id'] ?>">
 
+        <?php $v = $appt['vitals'] ?? []; ?>
         <section class="doctor-card">
+            <header class="doctor-card-header"><h2><i data-lucide="activity" class="h-5 w-5"></i> Signos vitales</h2></header>
+            <div class="doctor-form-pad doctor-vitals-form">
+                <label>T/A (mmHg)<span class="doctor-vital-ta"><input type="number" class="doctor-input" name="systolic" min="40" max="300" placeholder="Sis" value="<?= e($v['systolic'] ?? '') ?>"><b>/</b><input type="number" class="doctor-input" name="diastolic" min="20" max="200" placeholder="Dia" value="<?= e($v['diastolic'] ?? '') ?>"></span></label>
+                <label>FC (lpm)<input type="number" class="doctor-input" name="heart_rate" min="20" max="300" value="<?= e($v['heart_rate'] ?? '') ?>"></label>
+                <label>FR (rpm)<input type="number" class="doctor-input" name="resp_rate" min="5" max="80" value="<?= e($v['resp_rate'] ?? '') ?>"></label>
+                <label>Temp (°C)<input type="number" step="0.1" class="doctor-input" name="temperature" min="30" max="45" value="<?= e($v['temperature'] ?? '') ?>"></label>
+                <label>SatO₂ (%)<input type="number" class="doctor-input" name="spo2" min="50" max="100" value="<?= e($v['spo2'] ?? '') ?>"></label>
+                <label>Peso (kg)<input type="number" step="0.1" class="doctor-input" name="weight_kg" id="v-weight" min="0" max="400" value="<?= e($v['weight_kg'] ?? '') ?>"></label>
+                <label>Talla (cm)<input type="number" step="0.1" class="doctor-input" name="height_cm" id="v-height" min="0" max="260" value="<?= e($v['height_cm'] ?? '') ?>"></label>
+                <label>IMC<input type="text" class="doctor-input" id="v-bmi" readonly placeholder="—" value="<?= e($v['bmi'] ?? '') ?>"></label>
+            </div>
+        </section>
+
+        <section class="doctor-card mt-4">
             <header class="doctor-card-header"><h2><i data-lucide="message-square" class="h-5 w-5"></i> Motivo de consulta</h2></header>
             <div class="doctor-form-pad">
                 <textarea name="chief_complaint" class="doctor-input" rows="2" placeholder="Síntoma principal o razón de la visita"><?= e($appt['chief_complaint'] ?? '') ?></textarea>
@@ -194,6 +241,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('consult-form');
     if (!form) return;
     const status = document.getElementById('save-status');
+
+    // IMC en vivo a partir de peso/talla
+    const vW = document.getElementById('v-weight');
+    const vH = document.getElementById('v-height');
+    const vB = document.getElementById('v-bmi');
+    function calcBmi() {
+        const w = parseFloat(vW?.value), h = parseFloat(vH?.value);
+        if (vB) vB.value = (w > 0 && h > 0) ? (w / Math.pow(h / 100, 2)).toFixed(1) : '';
+    }
+    vW?.addEventListener('input', calcBmi);
+    vH?.addEventListener('input', calcBmi);
 
     async function save(andComplete) {
         const fd = new FormData(form);
