@@ -36,7 +36,8 @@ function doctor_layout_begin(string $title, string $active = ''): void
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
-        @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0
+        @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal-medico-pwa.js') ?: 0
     );
     ?>
     <!DOCTYPE html>
@@ -44,11 +45,12 @@ function doctor_layout_begin(string $title, string $active = ''): void
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <title><?= e($title) ?> | Portal Medico - Hospital Las Colinas</title>
         <meta name="robots" content="noindex, nofollow">
-        <meta name="theme-color" content="#0f766e">
+        <meta name="theme-color" content="#2a2566">
         <link rel="icon" type="image/png" href="<?= e(base_url($assets['favicon'])) ?>">
+        <?php doctor_pwa_head(); ?>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
@@ -162,7 +164,8 @@ function doctor_layout_end(): void
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
-        @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0
+        @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal-medico-pwa.js') ?: 0
     );
     ?>
                 </main>
@@ -177,6 +180,14 @@ function doctor_layout_end(): void
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+        <script>
+            window.DM_PWA = {
+                sw: <?= json_encode(base_url('portal-medico/sw.js'), JSON_UNESCAPED_SLASHES) ?>,
+                scope: <?= json_encode(base_url('portal-medico/'), JSON_UNESCAPED_SLASHES) ?>,
+                icon: <?= json_encode(base_url('portal-medico/icons/icon-192.png'), JSON_UNESCAPED_SLASHES) ?>
+            };
+        </script>
+        <script src="<?= e(base_url('assets/js/portal-medico-pwa.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     </body>
 
     </html>
@@ -226,4 +237,36 @@ function doctor_mes_corto_es(int $ts): string
 {
     $m = [1=>'ENE',2=>'FEB',3=>'MAR',4=>'ABR',5=>'MAY',6=>'JUN',7=>'JUL',8=>'AGO',9=>'SEP',10=>'OCT',11=>'NOV',12=>'DIC'];
     return $m[(int)date('n', $ts)] ?? '';
+}
+
+/**
+ * Etiquetas <head> del PWA: manifest, íconos, metadatos de app instalable y
+ * pantallas de carga (splash) de iOS. Las rutas usan base_url() para funcionar
+ * igual en localhost (subcarpeta) y en producción (raíz).
+ */
+function doctor_pwa_head(): void
+{
+    $icons = base_url('portal-medico/icons/');
+    ?>
+        <link rel="manifest" href="<?= e(base_url('portal-medico/manifest.webmanifest')) ?>">
+        <meta name="application-name" content="Portal Médico">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Portal Médico">
+        <link rel="apple-touch-icon" href="<?= e($icons . 'apple-touch-icon.png') ?>">
+        <link rel="icon" type="image/png" sizes="32x32" href="<?= e($icons . 'favicon-32.png') ?>">
+        <link rel="icon" type="image/png" sizes="16x16" href="<?= e($icons . 'favicon-16.png') ?>">
+    <?php
+    // Splash de iOS: [archivo, ancho CSS, alto CSS, DPR] (portrait).
+    $splashes = [
+        ['1290x2796', 430, 932, 3], ['1179x2556', 393, 852, 3], ['1170x2532', 390, 844, 3],
+        ['1125x2436', 375, 812, 3], ['1242x2688', 414, 896, 3], ['828x1792', 414, 896, 2],
+        ['750x1334', 375, 667, 2], ['1536x2048', 768, 1024, 2], ['1668x2388', 834, 1194, 2],
+        ['2048x2732', 1024, 1366, 2],
+    ];
+    foreach ($splashes as [$file, $w, $h, $dpr]) {
+        $media = "(device-width: {$w}px) and (device-height: {$h}px) and (-webkit-device-pixel-ratio: {$dpr}) and (orientation: portrait)";
+        echo '        <link rel="apple-touch-startup-image" media="' . e($media) . '" href="' . e($icons . 'splash-' . $file . '.png') . "\">\n";
+    }
 }

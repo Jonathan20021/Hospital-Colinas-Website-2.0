@@ -63,8 +63,22 @@ DirectoryIndex index.php
 </IfModule>
 
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json image/svg+xml
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json image/svg+xml application/manifest+json
 </IfModule>
+
+# PWA — Portal del Médico
+<IfModule mod_mime.c>
+    AddType application/manifest+json .webmanifest
+</IfModule>
+# El Service Worker no debe cachearse: así las nuevas versiones se detectan al instante.
+<Files "sw.js">
+    <IfModule mod_expires.c>
+        ExpiresActive Off
+    </IfModule>
+    <IfModule mod_headers.c>
+        Header set Cache-Control "no-cache, max-age=0, must-revalidate"
+    </IfModule>
+</Files>
 
 # Block direct access to PHP includes
 <FilesMatch "^(helpers|data|doctors|db|auth|content|public-layout)\.php$">

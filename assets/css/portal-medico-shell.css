@@ -281,3 +281,69 @@
 .doctor-empty-state h1{font-family:'Outfit','Inter',sans-serif;font-size:1.55rem;font-weight:800;letter-spacing:-.02em;color:var(--dm-ink);margin:0}
 .doctor-empty-state p{color:var(--dm-muted);font-size:.95rem;line-height:1.6;margin:9px 0 22px}
 .doctor-empty-state-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ============================================================
+   PWA — instalación, actualización y estado de conexión
+   Clases .pwa-* (no namespaced .is-app: aplican también al login).
+   ============================================================ */
+.pwa-dock{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:max(16px, env(safe-area-inset-bottom));
+  width:min(440px, calc(100vw - 28px));
+  display:flex;flex-direction:column;gap:10px;z-index:55;pointer-events:none;
+}
+.pwa-toast,.pwa-install{
+  pointer-events:auto;display:flex;align-items:center;gap:13px;
+  background:#fff;border:1px solid #e9edf4;border-radius:18px;padding:13px 14px;
+  box-shadow:0 20px 44px -22px rgba(42,37,102,.42),0 6px 18px -12px rgba(16,23,40,.18);
+  opacity:0;transform:translateY(14px) scale(.98);
+  transition:opacity .26s ease,transform .26s cubic-bezier(.2,.9,.3,1);
+}
+.pwa-toast.in,.pwa-install.in{opacity:1;transform:translateY(0) scale(1)}
+.pwa-toast-ic{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+  background:linear-gradient(135deg,#eef0ff,#f3e9fb);color:#4f46e5}
+.pwa-toast-ic svg{width:21px;height:21px}
+.pwa-install-ic{flex:none;width:46px;height:46px;border-radius:13px;display:block;
+  box-shadow:0 8px 18px -10px rgba(42,37,102,.45)}
+.pwa-toast-tx,.pwa-install-tx{display:flex;flex-direction:column;line-height:1.3;min-width:0;flex:1}
+.pwa-toast-tx strong,.pwa-install-tx strong{font-size:.92rem;font-weight:800;color:#101728;letter-spacing:-.01em}
+.pwa-toast-tx span,.pwa-install-tx span{font-size:.8rem;color:#7a8699;margin-top:2px;
+  display:inline-flex;align-items:center;gap:4px;flex-wrap:wrap}
+.pwa-install-tx span svg{width:15px;height:15px;vertical-align:-3px;color:#4f46e5}
+.pwa-btn{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:.86rem;
+  display:inline-flex;align-items:center;gap:7px;padding:.6rem .95rem;border-radius:12px;white-space:nowrap;
+  transition:transform .14s,box-shadow .16s,filter .16s}
+.pwa-btn svg{width:17px;height:17px}
+.pwa-btn:active{transform:translateY(1px)}
+.pwa-btn-primary{background:linear-gradient(120deg,#4f46e5,#6d4bd8);color:#fff;
+  box-shadow:0 12px 24px -13px rgba(79,70,229,.7)}
+.pwa-btn-primary:hover{filter:brightness(1.05)}
+.pwa-btn-primary:disabled{opacity:.7;cursor:default}
+.pwa-btn-icon{appearance:none;border:0;background:#f1f5f9;color:#64748b;cursor:pointer;flex:none;
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;transition:background .15s,color .15s}
+.pwa-btn-icon svg{width:17px;height:17px}
+.pwa-btn-icon:hover{background:#e6ebf2;color:#334155}
+
+/* Barra de estado de conexión (parte superior) */
+.pwa-net{
+  position:fixed;left:50%;top:0;transform:translate(-50%,-120%);
+  margin-top:env(safe-area-inset-top);
+  display:inline-flex;align-items:center;gap:9px;z-index:60;
+  padding:9px 16px;border-radius:0 0 14px 14px;font-size:.84rem;font-weight:700;
+  box-shadow:0 12px 26px -16px rgba(16,23,40,.4);transition:transform .3s cubic-bezier(.2,.9,.3,1)}
+.pwa-net.show{transform:translate(-50%,0)}
+.pwa-net svg{width:17px;height:17px}
+.pwa-net.offline{background:#fef3c7;color:#92400e;border:1px solid #fde68a;border-top:0}
+.pwa-net.online{background:#dcfce7;color:#166534;border:1px solid #bbf7d0;border-top:0}
+
+/* Ajustes en modo instalado (standalone): respeta el notch/status bar */
+.pwa-standalone .dm-top{padding-top:calc(15px + env(safe-area-inset-top))}
+.pwa-standalone .portal-topbar{padding-top:calc(env(safe-area-inset-top))}
+
+@media (max-width:520px){
+  .pwa-toast,.pwa-install{border-radius:16px}
+  .pwa-toast-tx span,.pwa-install-tx span{font-size:.78rem}
+}
+@media (prefers-reduced-motion: reduce){
+  .pwa-toast,.pwa-install,.pwa-net{transition:none}
+}
