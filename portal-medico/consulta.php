@@ -45,7 +45,7 @@ doctor_layout_begin('Consulta médica', 'consulta');
                 <?php if (!empty($appt['patient_gender'])): ?><span><i data-lucide="user" class="h-3.5 w-3.5"></i> <?= e($appt['patient_gender']) ?></span><?php endif; ?>
                 <?php if ($age !== ''): ?><span><i data-lucide="cake" class="h-3.5 w-3.5"></i> <?= e($age) ?> años</span><?php endif; ?>
                 <?php if (!empty($appt['patient_phone'])): ?><span><i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($appt['patient_phone']) ?></span><?php endif; ?>
-                <span class="doctor-pill doctor-pill-<?= e($appt['status']) ?>"><?= e($appt['status']) ?></span>
+                <span class="doctor-pill doctor-pill-<?= e($appt['status']) ?>"><?= e(doctor_estado_es($appt['status'])) ?></span>
             </div>
         </div>
         <div class="doctor-consult-actions">

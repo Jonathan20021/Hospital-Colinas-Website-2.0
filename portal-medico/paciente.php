@@ -129,10 +129,10 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
                     <article class="doctor-timeline-card">
                         <header>
                             <div>
-                                <p class="doctor-timeline-date"><?= e(date('l j \d\e F, Y · H:i', $ts)) ?></p>
+                                <p class="doctor-timeline-date"><?= e(doctor_fecha_es($ts, true)) ?></p>
                                 <p class="doctor-timeline-doc"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($h['doctor_name']) ?> · <?= e($h['specialty']) ?></p>
                             </div>
-                            <span class="doctor-pill <?= e($statusClass) ?>"><?= e($h['status']) ?></span>
+                            <span class="doctor-pill <?= e($statusClass) ?>"><?= e(doctor_estado_es($h['status'])) ?></span>
                         </header>
 
                         <?php if ($h['chief_complaint'] || $h['diagnosis'] || $h['prescription'] || $h['lab_orders'] || $h['imaging_orders'] || $h['procedures'] || $h['note_notes']): ?>

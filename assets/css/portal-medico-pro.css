@@ -186,5 +186,45 @@
 .is-app #chart-monthly{height:300px !important;width:100% !important}
 .is-app #chart-status{height:240px !important;max-width:300px;width:100% !important;margin:0 auto}
 
+/* ── CALENDARIO (FullCalendar en agenda.php) ─────────────── */
+.is-app .fc{
+  --fc-border-color:#eef2f8;
+  --fc-page-bg-color:#ffffff;
+  --fc-neutral-bg-color:#f7f8fc;
+  --fc-today-bg-color:rgba(79,70,229,.06);
+  --fc-button-bg-color:#ffffff;
+  --fc-button-border-color:#e8ecf4;
+  --fc-button-text-color:#37425a;
+  --fc-button-hover-bg-color:#f4f5fb;
+  --fc-button-hover-border-color:#c8cdf6;
+  --fc-button-active-bg-color:#4f46e5;
+  --fc-button-active-border-color:#4f46e5;
+  --fc-event-bg-color:#4f46e5;
+  --fc-event-border-color:#4f46e5;
+  --fc-event-text-color:#ffffff;
+  font-family:'Inter',system-ui,sans-serif;
+}
+.is-app .fc .fc-toolbar.fc-header-toolbar{margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.is-app .fc .fc-toolbar-title{font-family:'Outfit','Inter',sans-serif;font-weight:800;letter-spacing:-.02em;font-size:1.25rem;color:var(--pro-ink);text-transform:lowercase}
+.is-app .fc .fc-toolbar-title::first-letter{text-transform:uppercase}
+.is-app .fc .fc-button{font-weight:600;font-size:.82rem;border-radius:10px;padding:.5rem .9rem;box-shadow:none !important;text-transform:capitalize;transition:background .15s,border-color .15s,color .15s}
+.is-app .fc .fc-button:focus{box-shadow:var(--pro-ring) !important}
+.is-app .fc .fc-button-primary:not(:disabled).fc-button-active,.is-app .fc .fc-button-primary:not(:disabled):active{color:#fff}
+.is-app .fc .fc-button .fc-icon{font-size:1.1em}
+.is-app .fc .fc-scrollgrid{border-radius:14px;overflow:hidden}
+.is-app .fc-theme-standard td,.is-app .fc-theme-standard th{border-color:#eef2f8}
+.is-app .fc .fc-col-header-cell-cushion{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--pro-muted-2);font-weight:700;padding:9px 6px}
+.is-app .fc .fc-daygrid-day-number{font-size:.82rem;color:var(--pro-ink-2);font-weight:600;padding:7px 9px}
+.is-app .fc .fc-day-other .fc-daygrid-day-number{color:var(--pro-muted-2);font-weight:500}
+.is-app .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number{color:var(--pro-brand-2);font-weight:800}
+.is-app .fc .fc-daygrid-day-frame{transition:background .12s}
+.is-app .fc .fc-daygrid-day:hover .fc-daygrid-day-frame{background:#fafbff}
+.is-app .fc-event{border-radius:7px;font-size:.74rem;font-weight:600;padding:2px 6px;border:0;box-shadow:0 1px 2px rgba(33,28,80,.12)}
+.is-app .fc-event:hover{filter:brightness(.96)}
+.is-app .fc-daygrid-event-dot{border-color:currentColor}
+.is-app .fc .fc-list{border-radius:14px;overflow:hidden;border-color:#eef2f8}
+.is-app .fc .fc-list-event:hover td{background:var(--pro-surface-2)}
+.is-app .fc .fc-list-day-cushion{background:var(--pro-surface-2)}
+
 /* ── ACCESIBILIDAD: focus visible global del portal ──────── */
 .is-app a:focus-visible,.is-app button:focus-visible,.is-app input:focus-visible,.is-app select:focus-visible,.is-app textarea:focus-visible{outline:2px solid var(--pro-brand-2);outline-offset:2px}

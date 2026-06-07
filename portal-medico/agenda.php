@@ -91,12 +91,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const a = r.data;
         const dt = new Date(a.appointment_time);
+        const estadoEs = { scheduled: 'Agendada', completed: 'Completada', cancelled: 'Cancelada', pending: 'Pendiente' };
         body.innerHTML = `
             <dl class="doctor-dl">
                 <dt>Paciente</dt><dd><strong>${esc(a.patient_name)}</strong> ${a.patient_cedula ? '· ' + esc(a.patient_cedula) : ''}</dd>
                 <dt>Teléfono</dt><dd>${esc(a.patient_phone || '—')}</dd>
                 <dt>Fecha</dt><dd>${dt.toLocaleString('es-DO', {dateStyle:'full', timeStyle:'short'})}</dd>
-                <dt>Estado</dt><dd><span class="doctor-pill doctor-pill-${esc(a.status)}">${esc(a.status)}</span></dd>
+                <dt>Estado</dt><dd><span class="doctor-pill doctor-pill-${esc(a.status)}">${esc(estadoEs[a.status] || a.status)}</span></dd>
                 ${a.diagnosis ? `<dt>Diagnóstico</dt><dd>${esc(a.diagnosis)}</dd>` : ''}
                 ${a.prescription ? `<dt>Receta</dt><dd style="white-space:pre-wrap">${esc(a.prescription)}</dd>` : ''}
             </dl>`;

@@ -54,7 +54,7 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
                             <span><?= e(strtoupper(date('M', $ts))) ?></span>
                         </div>
                         <div class="doctor-appt-info">
-                            <p class="doctor-appt-name"><?= e(date('l j \d\e F, Y', $ts)) ?></p>
+                            <p class="doctor-appt-name"><?= e(doctor_fecha_es($ts)) ?></p>
                             <p class="doctor-appt-meta"><?= e($a['reason'] ?: 'Sin motivo registrado') ?></p>
                         </div>
                         <button type="button" class="doctor-appt-action js-del-avail" data-id="<?= (int)$a['id'] ?>" title="Eliminar">

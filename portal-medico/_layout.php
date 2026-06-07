@@ -195,3 +195,19 @@ function doctor_render_errors(?array $errors): string
     }
     return $out . '</ul>';
 }
+
+/** Fecha legible en español a partir de un timestamp. */
+function doctor_fecha_es(int $ts, bool $conHora = false): string
+{
+    $dias  = ['Monday'=>'lunes','Tuesday'=>'martes','Wednesday'=>'miércoles','Thursday'=>'jueves','Friday'=>'viernes','Saturday'=>'sábado','Sunday'=>'domingo'];
+    $meses = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
+    $s = ucfirst($dias[date('l', $ts)] ?? '') . ' ' . (int)date('j', $ts) . ' de ' . ($meses[(int)date('n', $ts)] ?? '') . ' de ' . date('Y', $ts);
+    if ($conHora) $s .= ' · ' . date('H:i', $ts);
+    return trim($s);
+}
+
+/** Traduce el estado de una cita al español. */
+function doctor_estado_es(string $status): string
+{
+    return ['scheduled'=>'Agendada','completed'=>'Completada','cancelled'=>'Cancelada','pending'=>'Pendiente','no_show'=>'No asistió'][$status] ?? ucfirst($status);
+}

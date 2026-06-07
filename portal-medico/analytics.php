@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const legend = { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, boxHeight: 8, padding: 16, font: { size: 12, weight: '600' } } };
     const softGrid = { color: 'rgba(15,23,41,.06)' };
     const area = (ctx, hex) => { const g = ctx.createLinearGradient(0, 0, 0, 240); g.addColorStop(0, hex + '33'); g.addColorStop(1, hex + '00'); return g; };
-    const ds = (label, data, hex, cx) => ({ label, data, borderColor: hex, backgroundColor: area(cx, hex), fill: true, tension: .4, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: hex, pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 });
+    const ds = (label, data, hex, cx) => ({ label, data, borderColor: hex, backgroundColor: area(cx, hex), fill: true, tension: .4, borderWidth: 2.5, pointRadius: 2.5, pointBackgroundColor: hex, pointBorderColor: '#fff', pointBorderWidth: 1.5, pointHoverRadius: 5, pointHoverBackgroundColor: hex, pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2, spanGaps: true });
 
     const m = document.getElementById('chart-monthly');
     if (m && monthlyData.length) {
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
         new Chart(s, {
             type: 'doughnut',
             data: { labels: ['Agendadas', 'Completadas', 'Canceladas'], datasets: [{ data: [statusData.scheduled, statusData.completed, statusData.cancelled], backgroundColor: [C.indigo, C.green, C.red], borderWidth: 0, hoverOffset: 6, spacing: 2 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend, tooltip: tip } }
+            options: { responsive: true, maintainAspectRatio: false, cutout: '64%', radius: '92%', animation: { duration: 500 }, plugins: { legend, tooltip: tip } }
         });
     }
 });
