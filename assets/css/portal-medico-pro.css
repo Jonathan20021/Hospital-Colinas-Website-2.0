@@ -84,10 +84,20 @@
 .is-app .doctor-input:focus,.is-app .doctor-form-grid input:focus,.is-app .doctor-form-grid textarea:focus,.is-app .doctor-form-grid select:focus{
   outline:none;border-color:var(--pro-brand-2);box-shadow:var(--pro-ring)}
 .is-app .doctor-input::placeholder{color:var(--pro-muted-2)}
+/* Inputs con icono delantero (p.ej. contraseñas en «Mi cuenta») */
+.is-app .doctor-input-icon .doctor-input{padding-left:2.6rem}
+.is-app .doctor-input-icon>svg:first-child,.is-app .doctor-input-icon>i:first-child{color:var(--pro-muted);width:18px;height:18px}
+.is-app .doctor-input-icon:focus-within>svg:first-child,.is-app .doctor-input-icon:focus-within>i:first-child{color:var(--pro-brand-2)}
 .is-app .doctor-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.is-app .doctor-form-grid label{display:block;font-size:.8rem;font-weight:600;color:var(--pro-ink-2)}
+.is-app .doctor-form-grid label{display:flex;flex-direction:column;gap:6px;font-size:.8rem;font-weight:600;color:var(--pro-ink-2)}
 .is-app .doctor-form-full{grid-column:1/-1}
 @media(max-width:680px){.is-app .doctor-form-grid{grid-template-columns:1fr}}
+/* Selects con flecha propia (consistente con el tema) */
+.is-app select.doctor-input,.is-app .doctor-form-grid select{
+  -webkit-appearance:none;-moz-appearance:none;appearance:none;cursor:pointer;padding-right:2.4rem;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a8699' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .85rem center;background-size:16px}
+.is-app .doctor-input-inline{width:auto}
 
 /* ── BOTONES ─────────────────────────────────────────────── */
 .is-app .doctor-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:'Inter',sans-serif;font-weight:700;font-size:.88rem;

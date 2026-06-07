@@ -221,7 +221,15 @@
     radial-gradient(900px 600px at 112% 4%, rgba(20,184,166,.10), transparent 55%),
     #eceff7;
 }
-.doctor-shell-auth{padding:2.5rem 1.25rem 3.5rem}
+/* La vista de login ocupa exactamente el alto de la pantalla y centra la
+   tarjeta vertical y horizontalmente — sin barra de desplazamiento. */
+body.doctor-portal-page:not(.is-app){min-height:100dvh;display:flex;flex-direction:column}
+.doctor-portal-page:not(.is-app) .doctor-shell-auth{
+  flex:1 1 auto;display:flex;align-items:center;justify-content:center;
+  max-width:none;width:100%;margin:0;padding:1.5rem 1.25rem;
+}
+.doctor-portal-page:not(.is-app) .doctor-main{width:100%;display:flex;justify-content:center}
+.doctor-portal-page:not(.is-app) .doctor-auth-wrap{margin:0}
 .doctor-auth-wrap{
   gap:0;
   max-width:1040px;
@@ -249,8 +257,13 @@
 }
 .doctor-auth-aside h2{font-family:'Outfit','Inter',sans-serif}
 /* input premium: foco con anillo indigo */
-.doctor-portal-page:not(.is-app) .doctor-input{border-radius:13px;padding-top:.95rem;padding-bottom:.95rem}
+.doctor-portal-page:not(.is-app) .doctor-input{border-radius:13px;padding-top:.95rem;padding-bottom:.95rem;padding-left:2.85rem;border-color:#e3e6f1}
+.doctor-portal-page:not(.is-app) .doctor-input::placeholder{color:#aab1c6}
+.doctor-portal-page:not(.is-app) .doctor-input:hover{border-color:#ccd2e6}
 .doctor-portal-page:not(.is-app) .doctor-input:focus{border-color:#4f46e5;box-shadow:0 0 0 4px rgba(79,70,229,.16)}
+.doctor-portal-page:not(.is-app) .doctor-input-icon>svg:first-child,
+.doctor-portal-page:not(.is-app) .doctor-input-icon>i:first-child{left:16px;width:18px;height:18px;color:#9aa1b9}
+.doctor-portal-page:not(.is-app) .doctor-input-toggle{right:8px}
 .doctor-portal-page:not(.is-app) .doctor-btn-primary{
   background:linear-gradient(120deg,#4f46e5,#6d4bd8);
   box-shadow:0 12px 26px -12px rgba(79,70,229,.6);

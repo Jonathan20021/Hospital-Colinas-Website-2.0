@@ -1154,9 +1154,12 @@
     align-items: center;
 }
 
-.doctor-input-icon>i:first-child {
+.doctor-input-icon>i:first-child,
+.doctor-input-icon>svg:first-child {
     position: absolute;
     left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--doc-muted-2);
     pointer-events: none;
     transition: color .15s;
@@ -1181,7 +1184,8 @@
 }
 
 .doctor-input:focus+.doctor-input-toggle,
-.doctor-input-icon:focus-within>i:first-child {
+.doctor-input-icon:focus-within>i:first-child,
+.doctor-input-icon:focus-within>svg:first-child {
     color: var(--doc-brand-1);
 }
 
@@ -1397,9 +1401,12 @@
     gap: .5rem;
 }
 
-.doctor-search-form>i:first-child {
+.doctor-search-form>i:first-child,
+.doctor-search-form>svg:first-child {
     position: absolute;
     left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--doc-muted-2);
     pointer-events: none;
 }
@@ -1413,6 +1420,8 @@
 .doctor-search-clear {
     position: absolute;
     right: 102px;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--doc-muted-2);
     background: transparent;
     border: none;
