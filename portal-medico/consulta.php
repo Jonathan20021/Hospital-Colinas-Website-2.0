@@ -18,14 +18,15 @@ doctor_layout_begin('Consulta médica', 'consulta');
 ?>
 
 <?php if (!$appt): ?>
-    <header class="doctor-header">
-        <div>
-            <p class="doctor-eyebrow">Consulta</p>
-            <h1>Selecciona una cita</h1>
-            <p class="doctor-subtitle">Abre una cita desde tu agenda o el listado de pacientes para iniciar la consulta.</p>
+    <div class="doctor-empty-state">
+        <div class="doctor-empty-state-ic"><i data-lucide="stethoscope"></i></div>
+        <h1>Selecciona una cita para iniciar</h1>
+        <p>Abre una cita desde tu agenda o desde el listado de pacientes para registrar la consulta, la receta y las indicaciones.</p>
+        <div class="doctor-empty-state-actions">
+            <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-btn doctor-btn-primary"><i data-lucide="calendar-days" class="h-4 w-4"></i> Ir a la agenda</a>
+            <a href="<?= e(base_url('portal-medico/pacientes.php')) ?>" class="doctor-btn doctor-btn-outline"><i data-lucide="users" class="h-4 w-4"></i> Ver pacientes</a>
         </div>
-        <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-btn doctor-btn-primary"><i data-lucide="calendar-days" class="h-4 w-4"></i> Ir a la agenda</a>
-    </header>
+    </div>
 <?php else:
     $ts = strtotime($appt['appointment_time']);
     $age = '';
@@ -129,51 +130,63 @@ doctor_layout_begin('Consulta médica', 'consulta');
         </div>
     </div>
 
-    <?php if (!empty($appt['note_id'])): ?>
-        <section class="doctor-card mt-4">
-            <header class="doctor-card-header">
-                <h2><i data-lucide="file-output" class="h-5 w-5"></i> Imprimir documentos</h2>
-                <span class="doctor-text-link" title="Color del PDF">
-                    <label><input type="radio" name="pdf-theme" value="bw" checked> Blanco y negro</label>
-                    <label class="ml-3"><input type="radio" name="pdf-theme" value="color"> Color</label>
-                </span>
-            </header>
-            <div class="doctor-form-pad doctor-pdf-grid">
-                <a class="doctor-pdf-card js-pdf-link" data-type="rx" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=rx')) ?>">
-                    <i data-lucide="pill" class="h-6 w-6"></i>
-                    <div><strong>Receta médica</strong><span>Prescripción del medicamento</span></div>
-                </a>
-                <a class="doctor-pdf-card js-pdf-link" data-type="diagnosis_lab" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=diagnosis_lab')) ?>">
-                    <i data-lucide="clipboard-list" class="h-6 w-6"></i>
-                    <div><strong>Diagnóstico + Laboratorios</strong><span>Orden de pruebas</span></div>
-                </a>
-                <a class="doctor-pdf-card js-pdf-link" data-type="lab" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=lab')) ?>">
-                    <i data-lucide="scan" class="h-6 w-6"></i>
-                    <div><strong>Imágenes</strong><span>Rx, eco, RM, TAC</span></div>
-                </a>
-                <a class="doctor-pdf-card js-pdf-link" data-type="procedures" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=procedures')) ?>">
-                    <i data-lucide="syringe" class="h-6 w-6"></i>
-                    <div><strong>Procedimientos</strong><span>Interconsultas / referimientos</span></div>
-                </a>
-                <a class="doctor-pdf-card" target="_blank" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=constancia')) ?>">
-                    <i data-lucide="file-check-2" class="h-6 w-6"></i>
-                    <div><strong>Constancia médica</strong><span>Comprobante completo de consulta</span></div>
-                </a>
+    <?php $hasNote = !empty($appt['note_id']); ?>
+    <section class="doctor-card mt-4" id="docs-section">
+        <header class="doctor-card-header">
+            <h2><i data-lucide="file-output" class="h-5 w-5"></i> Generar documentos</h2>
+            <span class="doctor-pdf-theme" title="Color del documento">
+                <label><input type="radio" name="pdf-theme" value="bw" checked> B/N</label>
+                <label><input type="radio" name="pdf-theme" value="color"> Color</label>
+            </span>
+        </header>
+        <?php if (!$hasNote): ?>
+            <div class="doctor-pdf-hint">
+                <i data-lucide="info" class="h-4 w-4"></i>
+                <span>La receta y las indicaciones se habilitan al <strong>guardar la nota</strong>. La <strong>constancia</strong> está disponible en cualquier momento.</span>
             </div>
-        </section>
-        <script>
-        document.querySelectorAll('input[name="pdf-theme"]').forEach(r => {
-            r.addEventListener('change', () => {
-                const theme = document.querySelector('input[name="pdf-theme"]:checked').value;
-                document.querySelectorAll('.js-pdf-link').forEach(a => {
-                    const url = new URL(a.href, location.origin);
-                    url.searchParams.set('theme', theme);
-                    a.href = url.toString();
-                });
+        <?php endif; ?>
+        <div class="doctor-form-pad doctor-pdf-grid">
+            <?php
+            $docTypes = [
+                ['rx', 'pill', 'Receta médica', 'Prescripción de medicamentos'],
+                ['diagnosis_lab', 'clipboard-list', 'Diagnóstico + Laboratorios', 'Orden de pruebas de laboratorio'],
+                ['lab', 'scan', 'Imágenes', 'Rx, ecografía, RM, TAC'],
+                ['procedures', 'syringe', 'Procedimientos', 'Interconsultas y referimientos'],
+            ];
+            foreach ($docTypes as [$t, $ic, $title, $sub]):
+                $href = e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=' . $t));
+            ?>
+                <?php if ($hasNote): ?>
+                    <a class="doctor-pdf-card js-pdf-link" data-type="<?= $t ?>" target="_blank" rel="noopener" href="<?= $href ?>">
+                        <i data-lucide="<?= $ic ?>" class="h-6 w-6"></i>
+                        <div><strong><?= $title ?></strong><span><?= $sub ?></span></div>
+                    </a>
+                <?php else: ?>
+                    <span class="doctor-pdf-card is-disabled" aria-disabled="true" title="Guarda la nota para habilitar este documento">
+                        <i data-lucide="<?= $ic ?>" class="h-6 w-6"></i>
+                        <div><strong><?= $title ?></strong><span>Disponible al guardar la nota</span></div>
+                        <i data-lucide="lock" class="h-4 w-4 doctor-pdf-lock"></i>
+                    </span>
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <a class="doctor-pdf-card doctor-pdf-card-accent js-pdf-link" data-type="constancia" target="_blank" rel="noopener" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=constancia')) ?>">
+                <i data-lucide="file-check-2" class="h-6 w-6"></i>
+                <div><strong>Constancia médica</strong><span>Comprobante de asistencia</span></div>
+            </a>
+        </div>
+    </section>
+    <script>
+    document.querySelectorAll('input[name="pdf-theme"]').forEach(r => {
+        r.addEventListener('change', () => {
+            const theme = document.querySelector('input[name="pdf-theme"]:checked').value;
+            document.querySelectorAll('.js-pdf-link').forEach(a => {
+                const url = new URL(a.href, location.origin);
+                url.searchParams.set('theme', theme);
+                a.href = url.toString();
             });
         });
-        </script>
-    <?php endif; ?>
+    });
+    </script>
 <?php endif; ?>
 
 <script>

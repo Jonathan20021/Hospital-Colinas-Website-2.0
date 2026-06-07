@@ -121,20 +121,31 @@ const statusData = {
 
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof Chart === 'undefined') return;
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#6b7691';
+
+    const C = { indigo: '#4f46e5', green: '#0a7a52', red: '#be123c' };
+    const tip = { backgroundColor: '#0f1729', titleColor: '#fff', bodyColor: '#cbd2e0', padding: 12, cornerRadius: 10, boxPadding: 5, usePointStyle: true, titleFont: { weight: '700' } };
+    const legend = { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, boxHeight: 8, padding: 16, font: { size: 12, weight: '600' } } };
+    const softGrid = { color: 'rgba(15,23,41,.06)' };
+    const area = (ctx, hex) => { const g = ctx.createLinearGradient(0, 0, 0, 240); g.addColorStop(0, hex + '33'); g.addColorStop(1, hex + '00'); return g; };
+    const ds = (label, data, hex, cx) => ({ label, data, borderColor: hex, backgroundColor: area(cx, hex), fill: true, tension: .4, borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: hex, pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 });
 
     const m = document.getElementById('chart-monthly');
     if (m && monthlyData.length) {
+        const cx = m.getContext('2d');
         new Chart(m, {
             type: 'line',
-            data: {
-                labels: monthlyData.map(r => r.ym),
-                datasets: [
-                    { label: 'Completadas', data: monthlyData.map(r => +r.completed), borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,.12)', fill: true, tension: .3 },
-                    { label: 'Agendadas', data: monthlyData.map(r => +r.scheduled), borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,.12)', fill: true, tension: .3 },
-                    { label: 'Canceladas', data: monthlyData.map(r => +r.cancelled), borderColor: '#dc2626', backgroundColor: 'rgba(220,38,38,.12)', fill: true, tension: .3 },
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            data: { labels: monthlyData.map(r => r.ym), datasets: [
+                ds('Completadas', monthlyData.map(r => +r.completed), C.green, cx),
+                ds('Agendadas', monthlyData.map(r => +r.scheduled), C.indigo, cx),
+                ds('Canceladas', monthlyData.map(r => +r.cancelled), C.red, cx),
+            ] },
+            options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+                plugins: { legend, tooltip: tip },
+                scales: { x: { grid: { display: false }, border: { display: false }, ticks: { font: { size: 11 } } },
+                          y: { beginAtZero: true, grid: softGrid, border: { display: false }, ticks: { precision: 0, font: { size: 11 } } } } }
         });
     }
 
@@ -142,15 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (s) {
         new Chart(s, {
             type: 'doughnut',
-            data: {
-                labels: ['Agendadas', 'Completadas', 'Canceladas'],
-                datasets: [{
-                    data: [statusData.scheduled, statusData.completed, statusData.cancelled],
-                    backgroundColor: ['#2563eb', '#16a34a', '#dc2626'],
-                    borderWidth: 0,
-                }]
-            },
-            options: { responsive: true, plugins: { legend: { position: 'bottom' } }, cutout: '60%' }
+            data: { labels: ['Agendadas', 'Completadas', 'Canceladas'], datasets: [{ data: [statusData.scheduled, statusData.completed, statusData.cancelled], backgroundColor: [C.indigo, C.green, C.red], borderWidth: 0, hoverOffset: 6, spacing: 2 }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend, tooltip: tip } }
         });
     }
 });

@@ -262,3 +262,22 @@
   .doctor-auth-wrap{border-radius:22px;max-width:480px}
   .doctor-auth-card{padding:2rem 1.6rem}
 }
+
+/* ── Documentos / generación de PDF (consulta) ── */
+.doctor-pdf-theme{display:inline-flex;align-items:center;gap:14px;font-size:.8rem;font-weight:600;color:var(--dm-muted)}
+.doctor-pdf-theme label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.doctor-pdf-hint{display:flex;align-items:center;gap:9px;margin:14px 20px 0;padding:11px 14px;background:#eef0ff;border:1px solid #e0e3fb;border-radius:12px;color:#4338ca;font-size:.84rem;line-height:1.45}
+.doctor-pdf-hint svg{width:18px;height:18px;flex:none;color:#4f46e5}
+.doctor-pdf-card.is-disabled{position:relative;opacity:.7;cursor:not-allowed;background:var(--dm-bg);border-style:dashed;color:var(--dm-muted)}
+.doctor-pdf-card.is-disabled > i:first-child{color:var(--dm-muted2);background:#eef1f6}
+.doctor-pdf-card .doctor-pdf-lock{position:absolute;top:10px;right:10px;width:15px;height:15px;color:var(--dm-muted2);background:transparent;padding:0;border-radius:0}
+.doctor-pdf-card-accent{border-color:#c7f0e4;background:linear-gradient(180deg,#f0fbf7,#ffffff)}
+.doctor-pdf-card-accent > i:first-child{color:#0f766e;background:#d6f3ea}
+
+/* ── Estado vacío centrado (consulta sin cita, etc.) ── */
+.doctor-empty-state{max-width:480px;margin:7vh auto 4vh;text-align:center;padding:0 20px}
+.doctor-empty-state-ic{width:88px;height:88px;border-radius:26px;margin:0 auto 20px;display:grid;place-items:center;background:linear-gradient(135deg,#eef0ff,#f3e8ff);color:#4f46e5;box-shadow:0 16px 36px -18px rgba(79,70,229,.5)}
+.doctor-empty-state-ic svg{width:42px;height:42px;stroke-width:1.8}
+.doctor-empty-state h1{font-family:'Outfit','Inter',sans-serif;font-size:1.55rem;font-weight:800;letter-spacing:-.02em;color:var(--dm-ink);margin:0}
+.doctor-empty-state p{color:var(--dm-muted);font-size:.95rem;line-height:1.6;margin:9px 0 22px}
+.doctor-empty-state-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}

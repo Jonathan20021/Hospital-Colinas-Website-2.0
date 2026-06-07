@@ -35,6 +35,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0
     );
     ?>
@@ -58,6 +59,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-shell.css')) ?>?v=<?= e($assetVersion) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-pro.css')) ?>?v=<?= e($assetVersion) ?>">
         <meta name="csrf-token" content="<?= e(doctor_csrf_token()) ?>">
     </head>
 
@@ -159,6 +161,7 @@ function doctor_layout_end(): void
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0
     );
     ?>
