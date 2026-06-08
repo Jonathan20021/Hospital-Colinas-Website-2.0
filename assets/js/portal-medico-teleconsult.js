@@ -50,20 +50,30 @@ window.HGLCTele = (function () {
     }
   }
 
+  function attachTrackEl(track) {
+    const stage = $('tele-stage'); if (!stage || !track) return;
+    const el = track.attach();
+    el.classList.add('tele-remote-media');
+    if (track.kind === 'video') el.setAttribute('playsinline', '');
+    stage.appendChild(el);
+  }
+  function updateWaiting() {
+    const w = $('tele-waiting'); if (!w) return;
+    w.hidden = !!(room && room.remoteParticipants && room.remoteParticipants.size > 0);
+  }
+  function attachExisting() {
+    if (!room || !room.remoteParticipants) return;
+    room.remoteParticipants.forEach((p) => {
+      const pubs = p.trackPublications || p.tracks;
+      if (pubs && pubs.forEach) pubs.forEach((pub) => { if (pub.track) attachTrackEl(pub.track); });
+    });
+  }
+
   function bind() {
-    room.on(LK.RoomEvent.TrackSubscribed, (track) => {
-      const stage = $('tele-stage'); if (!stage) return;
-      const el = track.attach();
-      el.classList.add('tele-remote-media');
-      if (track.kind === 'video') el.setAttribute('playsinline', '');
-      stage.appendChild(el);
-      const w = $('tele-waiting'); if (w) w.hidden = true;
-    });
+    room.on(LK.RoomEvent.TrackSubscribed, (track) => { attachTrackEl(track); updateWaiting(); });
     room.on(LK.RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach(e => e.remove()));
-    room.on(LK.RoomEvent.ParticipantConnected, () => { const w = $('tele-waiting'); if (w) w.hidden = true; });
-    room.on(LK.RoomEvent.ParticipantDisconnected, () => {
-      if (!room.remoteParticipants || room.remoteParticipants.size === 0) { const w = $('tele-waiting'); if (w) w.hidden = false; }
-    });
+    room.on(LK.RoomEvent.ParticipantConnected, () => updateWaiting());
+    room.on(LK.RoomEvent.ParticipantDisconnected, () => updateWaiting());
     room.on(LK.RoomEvent.Reconnecting, () => status('Reconectando…', 'warn'));
     room.on(LK.RoomEvent.Reconnected, () => status('Conexión restablecida', 'ok'));
     room.on(LK.RoomEvent.Disconnected, () => { status('Llamada finalizada', 'warn'); closed(); });
@@ -90,6 +100,8 @@ window.HGLCTele = (function () {
       return;
     }
     status('', '');
+    attachExisting();
+    updateWaiting();
     for (const t of localTracks) { try { await room.localParticipant.publishTrack(t); } catch (e) {} }
     const pip = $('tele-localpip');
     if (videoTrack && pip) { try { videoTrack.attach(pip); pip.style.display = ''; } catch (e) {} }
