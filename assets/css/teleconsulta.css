@@ -1,0 +1,68 @@
+/* Teleconsulta — UI de video (médico y paciente). Autocontenido. */
+.tele-wrap{max-width:1000px;margin:0 auto}
+.tele-link-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tele-link-row .doctor-input{flex:1;min-width:200px;font-size:.85rem}
+.tele-link-row .doctor-btn{flex:none}
+
+/* Prueba previa */
+.tele-precall{max-width:520px;margin:0 auto;text-align:center}
+.tele-precall h2{font-size:1.3rem;font-weight:800;color:#1e2540;margin:0 0 16px;letter-spacing:-.01em}
+.tele-preview-box{position:relative;aspect-ratio:16/9;background:#0b1020;border-radius:18px;overflow:hidden;box-shadow:0 20px 50px -24px rgba(20,18,60,.5)}
+.tele-preview{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.tele-precall-msg{font-size:.9rem;color:#64748b;margin:14px 0 18px;min-height:1.2em}
+.tele-precall-msg.ok{color:#0a7a52}
+.tele-precall-msg.err{color:#be123c}
+.tele-btn-primary{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:1rem;color:#fff;
+  background:linear-gradient(120deg,#4f46e5,#6d4bd8);padding:.85rem 1.6rem;border-radius:13px;display:inline-flex;align-items:center;gap:9px;
+  box-shadow:0 14px 28px -14px rgba(79,70,229,.7);transition:transform .14s,filter .16s}
+.tele-btn-primary:hover:not(:disabled){filter:brightness(1.06)}
+.tele-btn-primary:active{transform:translateY(1px)}
+.tele-btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.tele-btn-primary svg{width:20px;height:20px}
+
+/* Sala */
+.tele-room{position:relative}
+.tele-stage{position:relative;background:#0b1020;border-radius:18px;overflow:hidden;min-height:62vh;display:grid;place-items:center}
+.tele-remote-media{width:100%;height:100%;max-height:78vh;object-fit:cover;background:#0b1020}
+video.tele-remote-media{grid-area:1/1}
+.tele-localpip{position:absolute;right:14px;bottom:84px;width:172px;max-width:34vw;aspect-ratio:16/9;object-fit:cover;
+  border-radius:12px;border:2px solid rgba(255,255,255,.5);box-shadow:0 10px 24px -10px rgba(0,0,0,.6);background:#0b1020;transform:scaleX(-1);z-index:3}
+.tele-waiting{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#c7cbe6;z-index:2}
+.tele-waiting p{font-size:.95rem}
+.tele-spin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#8b8ff5;animation:teleSpin 1s linear infinite}
+@keyframes teleSpin{to{transform:rotate(360deg)}}
+
+/* Controles */
+.tele-controls{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:12px;
+  background:rgba(15,18,40,.62);backdrop-filter:blur(10px);padding:9px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}
+.tele-ctl{appearance:none;border:0;cursor:pointer;width:50px;height:50px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(255,255,255,.16);color:#fff;transition:background .15s,transform .12s}
+.tele-ctl:hover{background:rgba(255,255,255,.26)}
+.tele-ctl:active{transform:scale(.94)}
+.tele-ctl svg{width:22px;height:22px}
+.tele-ctl.off{background:#dc2626;color:#fff}
+.tele-ctl.danger{background:#dc2626;color:#fff}
+.tele-ctl.danger:hover{background:#b91c1c}
+.tele-quality{color:#c7cbe6;font-size:.78rem;font-weight:600;padding-left:6px}
+.tele-quality.good{color:#86efac}
+.tele-quality.poor{color:#fcd34d}
+
+/* Banner de estado */
+.tele-banner{position:absolute;top:14px;left:50%;transform:translate(-50%,-160%);z-index:5;
+  padding:8px 16px;border-radius:999px;font-size:.85rem;font-weight:700;transition:transform .3s;white-space:nowrap}
+.tele-banner.show{transform:translate(-50%,0)}
+.tele-banner.warn{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+.tele-banner.ok{background:#dcfce7;color:#166534;border:1px solid #bbf7d0}
+
+/* Finalizada */
+.tele-closed{max-width:440px;margin:6vh auto;text-align:center}
+.tele-closed-ic{width:72px;height:72px;border-radius:50%;margin:0 auto 18px;display:grid;place-items:center;background:#e7f7ee;color:#0a7a52}
+.tele-closed-ic svg{width:38px;height:38px}
+.tele-closed h2{font-size:1.4rem;font-weight:800;color:#1e2540;margin:0 0 6px}
+.tele-closed p{color:#64748b}
+
+@media(max-width:560px){
+  .tele-stage{min-height:70vh}
+  .tele-localpip{width:120px;bottom:78px;right:10px}
+  .tele-ctl{width:46px;height:46px}
+}

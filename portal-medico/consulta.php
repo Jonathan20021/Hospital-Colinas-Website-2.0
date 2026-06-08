@@ -49,6 +49,9 @@ doctor_layout_begin('Consulta médica', 'consulta');
             </div>
         </div>
         <div class="doctor-consult-actions">
+            <a href="<?= e(base_url('portal-medico/teleconsulta.php?appt=' . (int)$appt['id'])) ?>" class="doctor-btn doctor-btn-outline" target="_blank" rel="noopener">
+                <i data-lucide="video" class="h-4 w-4"></i> Teleconsulta
+            </a>
             <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$appt['patient_id'])) ?>" class="doctor-btn doctor-btn-outline">
                 <i data-lucide="user" class="h-4 w-4"></i> Ver historial
             </a>
