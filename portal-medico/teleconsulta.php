@@ -15,7 +15,7 @@ $waMsg = $tele ? rawurlencode('Hola ' . ($tele['patient_name'] ?? '') . ', te co
 
 doctor_layout_begin('Teleconsulta', 'agenda');
 ?>
-<link rel="stylesheet" href="<?= e(base_url('assets/css/teleconsulta.css')) ?>">
+<link rel="stylesheet" href="<?= e(base_url('assets/css/teleconsulta.css')) ?>?v=<?= @filemtime(__DIR__ . '/../assets/css/teleconsulta.css') ?>">
 
 <?php if ($err): ?>
     <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-back-link"><i data-lucide="arrow-left" class="h-4 w-4"></i> Volver a la agenda</a>
@@ -56,7 +56,7 @@ doctor_layout_begin('Teleconsulta', 'agenda');
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
-<script src="<?= e(base_url('assets/js/portal-medico-teleconsult.js')) ?>"></script>
+<script src="<?= e(base_url('assets/js/portal-medico-teleconsult.js')) ?>?v=<?= @filemtime(__DIR__ . '/../assets/js/portal-medico-teleconsult.js') ?>"></script>
 <script>
     (function () {
         const ib = document.getElementById('tele-invite-btn'), inv = document.getElementById('tele-invite');

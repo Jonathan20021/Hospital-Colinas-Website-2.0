@@ -34,7 +34,7 @@ if (strlen($t) < 16) {
     <meta name="theme-color" content="#2a2566">
     <link rel="icon" type="image/png" href="<?= e(base_url('assets/site/favicon.png')) ?>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/teleconsulta.css')) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/teleconsulta.css')) ?>?v=<?= @filemtime(__DIR__ . '/assets/css/teleconsulta.css') ?>">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Inter',system-ui,sans-serif;background:#eef1f7;color:#101728;min-height:100dvh}
@@ -91,7 +91,7 @@ if (strlen($t) < 16) {
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
-        <script src="<?= e(base_url('assets/js/portal-medico-teleconsult.js')) ?>"></script>
+        <script src="<?= e(base_url('assets/js/portal-medico-teleconsult.js')) ?>?v=<?= @filemtime(__DIR__ . '/assets/js/portal-medico-teleconsult.js') ?>"></script>
         <script>
             document.getElementById('patient-accept').addEventListener('click', () => {
                 document.getElementById('patient-consent').hidden = true;
