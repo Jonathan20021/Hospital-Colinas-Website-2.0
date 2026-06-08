@@ -59,7 +59,11 @@ window.HGLCTele = (function () {
   }
   function updateWaiting() {
     const w = $('tele-waiting'); if (!w) return;
-    w.hidden = !!(room && room.remoteParticipants && room.remoteParticipants.size > 0);
+    const stage = $('tele-stage');
+    const hasMedia = stage && stage.querySelector('.tele-remote-media');           // ya hay video/audio remoto en pantalla
+    const peers = room ? ((room.remoteParticipants && room.remoteParticipants.size) // v2
+                        || (room.participants && room.participants.size) || 0) : 0; // fallback v1
+    w.hidden = !!(hasMedia || peers > 0);
   }
   function attachExisting() {
     if (!room || !room.remoteParticipants) return;

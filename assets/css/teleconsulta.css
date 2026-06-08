@@ -1,4 +1,7 @@
 /* Teleconsulta — UI de video (médico y paciente). Autocontenido. */
+/* El atributo [hidden] debe ocultar SIEMPRE (vence a display:flex de .tele-waiting,
+   .tele-invite, etc.). La página del paciente no carga shell.css, que ya lo fija. */
+[hidden]{display:none!important}
 .tele-wrap{max-width:1000px;margin:0 auto}
 .tele-link-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .tele-link-row .doctor-input{flex:1;min-width:200px;font-size:.85rem}
