@@ -61,8 +61,29 @@ video.tele-remote-media{grid-area:1/1}
 .tele-closed h2{font-size:1.4rem;font-weight:800;color:#1e2540;margin:0 0 6px}
 .tele-closed p{color:#64748b}
 
+.tele-timer{color:#c7cbe6;font-size:.82rem;font-weight:700;font-variant-numeric:tabular-nums;padding-left:4px}
+
 @media(max-width:560px){
   .tele-stage{min-height:70vh}
   .tele-localpip{width:120px;bottom:78px;right:10px}
   .tele-ctl{width:46px;height:46px}
 }
+
+/* ── Layout dos paneles del médico (video + nota clínica) ── */
+.tele-shell{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start;max-width:1380px;margin:0 auto}
+@media(max-width:1024px){.tele-shell{grid-template-columns:1fr}}
+.tele-vpane{min-width:0}
+.tele-vhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.tele-vhead-info{display:flex;align-items:center;gap:10px;min-width:0}
+.tele-vhead-info strong{font-size:1.05rem;color:#1e2540;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tele-live{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#be123c;background:#fdeaee;border:1px solid #f7c8d2;border-radius:999px;padding:3px 9px;flex:none}
+.tele-live-dot{width:7px;height:7px;border-radius:50%;background:#e11d48;animation:teleBlink 1.4s infinite}
+@keyframes teleBlink{0%,100%{opacity:1}50%{opacity:.25}}
+.tele-vhead-actions{display:flex;gap:8px;align-items:center}
+.tele-invite{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f6f7fb;border:1px solid #e9edf4;border-radius:13px;padding:10px 12px;margin-bottom:12px}
+.tele-invite .doctor-input{flex:1;min-width:180px;font-size:.82rem}
+.tele-npane{min-width:0;display:flex;flex-direction:column;background:#fff;border:1px solid #e6e8f0;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px -26px rgba(20,18,60,.3)}
+.tele-npane-head{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid #eef1f6;font-weight:800;color:#2a2566;font-size:.9rem}
+.tele-npane-head span{display:inline-flex;align-items:center;gap:7px}
+.tele-noteframe{width:100%;height:74vh;border:0;background:#fff;display:block}
+@media(max-width:1024px){.tele-noteframe{height:82vh}}

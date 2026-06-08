@@ -14,7 +14,8 @@ if ($apptId) {
     }
 }
 
-doctor_layout_begin('Consulta médica', 'consulta');
+$bare = isset($_GET['bare']);
+$bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta médica', 'consulta');
 ?>
 
 <?php if (!$appt): ?>
@@ -34,7 +35,7 @@ doctor_layout_begin('Consulta médica', 'consulta');
         $age = (int)((new DateTime())->diff(new DateTime($appt['patient_dob']))->y);
     }
 ?>
-    <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-back-link"><i data-lucide="arrow-left" class="h-4 w-4"></i> Volver a la agenda</a>
+    <?php if (!$bare): ?><a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-back-link"><i data-lucide="arrow-left" class="h-4 w-4"></i> Volver a la agenda</a><?php endif; ?>
 
     <header class="doctor-consult-header">
         <div>
@@ -48,6 +49,7 @@ doctor_layout_begin('Consulta médica', 'consulta');
                 <span class="doctor-pill doctor-pill-<?= e($appt['status']) ?>"><?= e(doctor_estado_es($appt['status'])) ?></span>
             </div>
         </div>
+        <?php if (!$bare): ?>
         <div class="doctor-consult-actions">
             <a href="<?= e(base_url('portal-medico/teleconsulta.php?appt=' . (int)$appt['id'])) ?>" class="doctor-btn doctor-btn-outline" target="_blank" rel="noopener">
                 <i data-lucide="video" class="h-4 w-4"></i> Teleconsulta
@@ -61,6 +63,7 @@ doctor_layout_begin('Consulta médica', 'consulta');
                 </button>
             <?php endif; ?>
         </div>
+        <?php endif; ?>
     </header>
 
     <?php
@@ -468,4 +471,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-save-complete-bottom')?.addEventListener('click', () => save(true));
 });
 </script>
-<?php doctor_layout_end();
+<?php $bare ? doctor_layout_end_bare() : doctor_layout_end();

@@ -270,3 +270,60 @@ function doctor_pwa_head(): void
         echo '        <link rel="apple-touch-startup-image" media="' . e($media) . '" href="' . e($icons . 'splash-' . $file . '.png') . "\">\n";
     }
 }
+
+/**
+ * Layout MÍNIMO (sin sidebar/topbar) para incrustar contenido del portal en un
+ * iframe — p. ej. la nota clínica dentro de la teleconsulta. Mismas hojas de
+ * estilo y JS (doctorApi, autocompletado, alertas) bajo el scope .is-app.
+ */
+function doctor_layout_begin_bare(string $title): void
+{
+    doctor_portal_session_start();
+    // Modo incrustable: permitir SOLO que nuestras propias páginas (mismo origen)
+    // lo enmarquen (p. ej. la teleconsulta). Sigue bloqueado para sitios externos.
+    if (!headers_sent()) {
+        header('X-Frame-Options: SAMEORIGIN');
+        header("Content-Security-Policy: frame-ancestors 'self'");
+    }
+    $v = (string) max(
+        @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0
+    );
+    ?>
+    <!DOCTYPE html>
+    <html lang="es-DO">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title><?= e($title) ?> | HGLC</title>
+        <meta name="robots" content="noindex, nofollow">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($v) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($v) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($v) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico.css')) ?>?v=<?= e($v) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-shell.css')) ?>?v=<?= e($v) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-pro.css')) ?>?v=<?= e($v) ?>">
+        <meta name="csrf-token" content="<?= e(doctor_csrf_token()) ?>">
+        <style>html,body{background:#fff}.doctor-portal-page.is-app .doctor-main{max-width:none;margin:0;padding:14px 16px}</style>
+    </head>
+    <body class="bg-white font-sans text-slate-950 antialiased portal-page doctor-portal-page is-app">
+        <main id="contenido" class="doctor-main">
+    <?php
+}
+
+function doctor_layout_end_bare(): void
+{
+    $v = (string) (@filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0);
+    ?>
+        </main>
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script>if (window.lucide) lucide.createIcons();</script>
+        <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($v) ?>"></script>
+    </body>
+    </html>
+    <?php
+}
