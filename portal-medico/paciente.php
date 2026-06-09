@@ -206,6 +206,8 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
     function openViewer(uid, scope) { window.open(viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope), '_blank', 'noopener'); }
 
     (async function () {
+        // portal-medico.js (que define doctorApi) puede cargar DESPUÉS de este script en línea.
+        for (var _i = 0; _i < 100 && !window.doctorApi; _i++) await new Promise(function (res) { setTimeout(res, 50); });
         let r;
         try { r = await window.doctorApi('GET', '/portal-doctor/me/patients/' + pid + '/imaging'); }
         catch (e) { r = { ok: false }; }

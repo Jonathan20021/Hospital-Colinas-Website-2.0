@@ -125,26 +125,34 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
 <script>
 (function () {
     var cells = Array.prototype.slice.call(document.querySelectorAll('[data-img-cell]'));
-    if (!cells.length || !window.doctorApi) return;
+    if (!cells.length) return;
     var ids = cells.map(function (c) { return parseInt(c.getAttribute('data-img-cell'), 10); });
     var ptBase = <?= json_encode(base_url('portal-medico/paciente.php'), JSON_UNESCAPED_SLASHES) ?>;
     function clearAll() { cells.forEach(function (c) { c.innerHTML = '<span class="doctor-img-none">—</span>'; }); }
-    window.doctorApi('POST', '/portal-doctor/me/patients/imaging-flags', { ids: ids }).then(function (r) {
-        var flags = (r && r.ok && r.data && r.data.flags) || null;
-        if (!flags) { clearAll(); return; }
-        cells.forEach(function (c) {
-            var id = c.getAttribute('data-img-cell');
-            var f = flags[id] || {};
-            if (f.c) {
-                c.innerHTML = '<a class="doctor-img-badge" title="Tiene estudios de imagen — ver" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan"></i></a>';
-            } else if (f.n) {
-                c.innerHTML = '<a class="doctor-img-badge is-posible" title="Posibles estudios por nombre — verifica identidad" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan-search"></i></a>';
-            } else {
-                c.innerHTML = '<span class="doctor-img-none">—</span>';
-            }
-        });
-        if (window.lucide) lucide.createIcons();
-    }).catch(clearAll);
+    function run() {
+        window.doctorApi('POST', '/portal-doctor/me/patients/imaging-flags', { ids: ids }).then(function (r) {
+            var flags = (r && r.ok && r.data && r.data.flags) || null;
+            if (!flags) { clearAll(); return; }
+            cells.forEach(function (c) {
+                var id = c.getAttribute('data-img-cell');
+                var f = flags[id] || {};
+                if (f.c) {
+                    c.innerHTML = '<a class="doctor-img-badge" title="Tiene estudios de imagen — ver" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan"></i></a>';
+                } else if (f.n) {
+                    c.innerHTML = '<a class="doctor-img-badge is-posible" title="Posibles estudios por nombre — verifica identidad" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan-search"></i></a>';
+                } else {
+                    c.innerHTML = '<span class="doctor-img-none">—</span>';
+                }
+            });
+            if (window.lucide) lucide.createIcons();
+        }).catch(clearAll);
+    }
+    // Esperar a que portal-medico.js defina doctorApi (puede cargar DESPUÉS de este script en línea).
+    var tries = 0;
+    (function ready() {
+        if (window.doctorApi) return run();
+        if (tries++ < 100) setTimeout(ready, 50);
+    })();
 })();
 </script>
 <?php doctor_layout_end();
