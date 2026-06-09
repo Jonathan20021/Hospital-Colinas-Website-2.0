@@ -56,6 +56,11 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-pdf:hover{background:#1d4ed8}
     .v-overlay{position:absolute;left:12px;top:10px;font-size:.74rem;color:#cfd6ea;text-shadow:0 1px 2px #000,0 0 4px #000;pointer-events:none;line-height:1.55;max-width:62%}
     .v-overlay b{color:#fff;font-weight:700}
+    .v-nav{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(17,23,38,.78);backdrop-filter:blur(6px);border:1px solid #2b3550;border-radius:999px;padding:5px 8px;z-index:6}
+    .v-nav button{appearance:none;border:0;background:#1a2236;color:#cdd4e6;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.3rem;line-height:1;display:grid;place-items:center}
+    .v-nav button:hover{background:#28324e}
+    .v-nav button:disabled{opacity:.3;cursor:default}
+    .v-nav .cnt{font-size:.8rem;color:#e6e9f2;min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
     @media(max-width:640px){ .v-series{width:92px} .v-top .meta{display:none} .v-overlay{font-size:.68rem} }
 </style>
 </head>
@@ -81,6 +86,11 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         <div class="v-overlay" id="v-overlay"></div>
         <div class="v-hud" id="v-hud"></div>
         <div class="v-hud2" id="v-hud2"></div>
+        <div class="v-nav" id="v-nav">
+            <button id="v-prev" title="Imagen anterior (←)" aria-label="Anterior">‹</button>
+            <span class="cnt" id="v-nav-cnt">1 / 1</span>
+            <button id="v-next" title="Imagen siguiente (→)" aria-label="Siguiente">›</button>
+        </div>
         <div class="v-msg" id="v-msg"><div class="v-spin"></div><div id="v-msg-txt">Cargando estudio…</div></div>
     </div>
 </div>
@@ -138,25 +148,38 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         if (btnId) document.getElementById(btnId).classList.add('active');
     }
 
+    function renderNav() {
+        var n = stack.imageIds.length, i = stack.currentImageIdIndex;
+        var nav = document.getElementById('v-nav'); if (!nav) return;
+        nav.style.display = n > 1 ? 'flex' : 'none';
+        var c = document.getElementById('v-nav-cnt'); if (c) { c.textContent = (i + 1) + ' / ' + n; c.style.color = ''; }
+        var pv = document.getElementById('v-prev'), nx = document.getElementById('v-next');
+        if (pv) pv.disabled = i <= 0;
+        if (nx) nx.disabled = i >= n - 1;
+        var hud = document.getElementById('v-hud'); if (hud) hud.textContent = '';
+    }
+
     function updateHud() {
         try {
             var vp = cornerstone.getViewport(el);
             document.getElementById('v-hud2').textContent =
                 'WW/WC: ' + Math.round(vp.voi.windowWidth) + ' / ' + Math.round(vp.voi.windowCenter) +
                 '\nZoom: ' + (vp.scale).toFixed(2) + 'x';
-            document.getElementById('v-hud').textContent =
-                'Imagen ' + (stack.currentImageIdIndex + 1) + ' / ' + stack.imageIds.length;
         } catch (e) {}
+        renderNav();
     }
 
     function showIndex(i) {
         if (i < 0 || i >= stack.imageIds.length) return;
         stack.currentImageIdIndex = i;
         try { var st = cstools.getToolState(el, 'stack'); if (st && st.data && st.data[0]) st.data[0].currentImageIdIndex = i; } catch (e) {}
+        renderNav();
         cornerstone.loadAndCacheImage(stack.imageIds[i]).then(function (image) {
             cornerstone.displayImage(el, image);
             updateHud();
-        }).catch(function (e) { fail('No se pudo cargar la imagen. ' + (e && e.message ? e.message : '')); });
+        }).catch(function (e) {
+            var c = document.getElementById('v-nav-cnt'); if (c) { c.textContent = '⚠ img ' + (i + 1); c.style.color = '#fca5a5'; }
+        });
     }
 
     function updateOverlay() {
@@ -273,6 +296,8 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         try { cornerstone.reset(el); updateHud(); } catch (e) {}
     });
     document.getElementById('t-pdf').addEventListener('click', generatePdf);
+    document.getElementById('v-prev').addEventListener('click', function () { showIndex(stack.currentImageIdIndex - 1); });
+    document.getElementById('v-next').addEventListener('click', function () { showIndex(stack.currentImageIdIndex + 1); });
 
     // Atajos de teclado: ←→ cortes · +/- zoom · I invertir · R reset
     window.addEventListener('keydown', function (e) {
