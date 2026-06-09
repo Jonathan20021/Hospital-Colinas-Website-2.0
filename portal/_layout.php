@@ -110,6 +110,9 @@ function portal_layout_begin(string $title, string $active = ''): void
                         <a href="<?= e(base_url('portal/mis-citas.php')) ?>"
                             class="portal-nav-link <?= $active === 'mis-citas' ? 'is-active' : '' ?>"><i
                                 data-lucide="calendar-check" class="h-4 w-4"></i>Mis citas</a>
+                        <a href="<?= e(base_url('portal/estudios.php')) ?>"
+                            class="portal-nav-link <?= $active === 'estudios' ? 'is-active' : '' ?>"><i
+                                data-lucide="scan" class="h-4 w-4"></i>Mis imágenes</a>
                         <a href="<?= e(base_url('portal/perfil.php')) ?>"
                             class="portal-nav-link <?= $active === 'perfil' ? 'is-active' : '' ?>"><i data-lucide="user-cog"
                                 class="h-4 w-4"></i>Mi perfil</a>
