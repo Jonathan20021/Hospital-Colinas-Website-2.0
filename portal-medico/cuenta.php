@@ -97,6 +97,101 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
     </div>
 </div>
 
+<div class="doctor-card mt-6">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="pen-tool" class="h-4 w-4"></i> Mi firma</h2>
+    </header>
+    <div class="doctor-form-pad">
+        <p class="doctor-subtitle" style="margin-top:0">Tu firma aparece en las recetas y documentos clínicos que emites, junto a tu exequátur y colegiatura CMD. Dibújala con el mouse o el dedo, o sube una imagen (PNG/JPEG).</p>
+        <p id="sig-current" class="doctor-save-status" style="margin:0 0 10px">Comprobando…</p>
+        <canvas id="sig-pad" width="600" height="180" style="display:block;width:100%;max-width:600px;height:180px;border:1px dashed #cbd5e1;border-radius:12px;background:#fff;touch-action:none;cursor:crosshair"></canvas>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
+            <button type="button" class="doctor-btn doctor-btn-ghost" id="sig-clear"><i data-lucide="eraser" class="h-4 w-4"></i> Limpiar</button>
+            <label class="doctor-btn doctor-btn-outline" style="cursor:pointer;margin:0"><i data-lucide="upload" class="h-4 w-4"></i> Subir imagen
+                <input type="file" id="sig-upload" accept="image/png,image/jpeg" hidden>
+            </label>
+            <button type="button" class="doctor-btn doctor-btn-primary" id="sig-save"><i data-lucide="save" class="h-4 w-4"></i> Guardar firma</button>
+            <button type="button" class="doctor-btn doctor-btn-ghost" id="sig-delete" hidden><i data-lucide="trash-2" class="h-4 w-4"></i> Eliminar firma</button>
+        </div>
+        <p id="sig-status" class="doctor-save-status" style="margin-top:8px"></p>
+    </div>
+</div>
+
+<script>
+(function () {
+    const canvas = document.getElementById('sig-pad');
+    if (!canvas || !window.doctorApi) return;
+    const ctx = canvas.getContext('2d');
+    ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111827';
+    let drawing = false, dirty = false, last = null, uploaded = null;
+
+    function pos(e) {
+        const r = canvas.getBoundingClientRect();
+        const t = e.touches ? e.touches[0] : e;
+        return { x: (t.clientX - r.left) * (canvas.width / r.width), y: (t.clientY - r.top) * (canvas.height / r.height) };
+    }
+    function start(e) { drawing = true; uploaded = null; last = pos(e); e.preventDefault(); }
+    function move(e) { if (!drawing) return; const p = pos(e); ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(p.x, p.y); ctx.stroke(); last = p; dirty = true; e.preventDefault(); }
+    function end() { drawing = false; }
+    canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+    canvas.addEventListener('touchstart', start, { passive: false }); canvas.addEventListener('touchmove', move, { passive: false }); canvas.addEventListener('touchend', end);
+
+    const statusEl = document.getElementById('sig-status');
+    const curEl = document.getElementById('sig-current');
+    const delBtn = document.getElementById('sig-delete');
+
+    function clearPad() { ctx.clearRect(0, 0, canvas.width, canvas.height); dirty = false; uploaded = null; }
+    document.getElementById('sig-clear').addEventListener('click', clearPad);
+
+    document.getElementById('sig-upload').addEventListener('change', (ev) => {
+        const f = ev.target.files[0]; if (!f) return;
+        if (!/^image\/(png|jpeg)$/.test(f.type)) { statusEl.textContent = '⚠ Solo PNG o JPEG.'; return; }
+        const rd = new FileReader();
+        rd.onload = () => {
+            uploaded = rd.result;
+            const img = new Image();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const r = Math.min(canvas.width / img.width, canvas.height / img.height);
+                const w = img.width * r, h = img.height * r;
+                ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+                dirty = true;
+            };
+            img.src = rd.result;
+        };
+        rd.readAsDataURL(f);
+    });
+
+    async function refresh() {
+        try {
+            const r = await window.doctorApi('GET', '/portal-doctor/me');
+            const has = !!(r.ok && r.data && r.data.has_signature);
+            curEl.textContent = has ? '✓ Tienes una firma registrada.' : 'Aún no has registrado tu firma (las recetas saldrán con una línea para firmar a mano).';
+            delBtn.hidden = !has;
+        } catch (e) {}
+    }
+    refresh();
+
+    document.getElementById('sig-save').addEventListener('click', async () => {
+        if (!dirty) { statusEl.textContent = 'Dibuja o sube tu firma primero.'; return; }
+        const dataUri = uploaded || canvas.toDataURL('image/png');
+        statusEl.textContent = 'Guardando…';
+        const r = await window.doctorApi('POST', '/portal-doctor/me/signature', { image: dataUri });
+        statusEl.textContent = r.ok ? '✓ Firma guardada.' : ('⚠ ' + (r.message || 'No se pudo guardar.'));
+        if (r.ok) { uploaded = null; refresh(); }
+    });
+
+    delBtn.addEventListener('click', async () => {
+        if (!confirm('¿Eliminar tu firma registrada?')) return;
+        const r = await window.doctorApi('DELETE', '/portal-doctor/me/signature');
+        statusEl.textContent = r.ok ? '✓ Firma eliminada.' : '⚠ Error al eliminar.';
+        if (r.ok) { clearPad(); refresh(); }
+    });
+
+    if (window.lucide) lucide.createIcons();
+})();
+</script>
+
 <div class="doctor-grid-2 mt-6">
     <div class="doctor-card">
         <header class="doctor-card-header">
