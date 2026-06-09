@@ -302,7 +302,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         if (btnId) document.getElementById(btnId).classList.add('active');
         if (cineOn) { var cb = document.getElementById('t-cine'); if (cb) cb.classList.add('active'); }
     }
-    var cineOn = false;
+    var cineOn = false, cineTimer = null;
 
     function renderNav() {
         var n = stack.imageIds.length, i = stack.currentImageIdIndex;
@@ -397,9 +397,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     function loadSeries(seriesUID, mod, desc) {
         if (!seriesUID) return;
         currentSeriesDesc = desc || '';
-        try { cstools.stopClip(el); } catch (e) {}
-        cineOn = false;
-        var cineBtn = document.getElementById('t-cine'); if (cineBtn) { cineBtn.textContent = '▶ Cine'; cineBtn.classList.remove('active'); }
+        stopCine();
         msg.style.display = 'flex'; msgTxt.textContent = 'Cargando imágenes…';
         document.getElementById('v-title').textContent = (desc || 'Estudio') + (mod ? ' · ' + mod : '');
         dj(ROOT + '/studies/' + STUDY + '/series/' + seriesUID + '/metadata').then(function (insts) {
@@ -589,15 +587,24 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         } catch (e) {}
     }
 
+    // Cine controlado por nosotros (timer propio) → la pausa es 100% fiable, sin
+    // depender de cstools.stopClip (que en este build no cancela el bucle).
+    function stopCine() {
+        if (cineTimer) { clearInterval(cineTimer); cineTimer = null; }
+        cineOn = false;
+        var b = document.getElementById('t-cine');
+        if (b) { b.textContent = '▶ Cine'; b.classList.remove('active'); }
+    }
     function toggleCine() {
+        if (cineOn) { stopCine(); return; }
         if (stack.imageIds.length < 2) return;
-        try {
-            if (cineOn) { cstools.stopClip(el); } else { cstools.playClip(el, 12); }
-            cineOn = !cineOn;
-            var b = document.getElementById('t-cine');
-            b.textContent = cineOn ? '⏸ Pausa' : '▶ Cine';
-            b.classList.toggle('active', cineOn);
-        } catch (e) {}
+        cineOn = true;
+        var b = document.getElementById('t-cine');
+        if (b) { b.textContent = '⏸ Pausa'; b.classList.add('active'); }
+        cineTimer = setInterval(function () {
+            if (!cineOn || !stack.imageIds.length) return;
+            showIndex((stack.currentImageIdIndex + 1) % stack.imageIds.length);
+        }, 90);   // ~11 fps
     }
 
     function toggleFs() {
