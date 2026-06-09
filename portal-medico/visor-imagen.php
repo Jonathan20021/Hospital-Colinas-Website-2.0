@@ -62,6 +62,48 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-nav button:disabled{opacity:.3;cursor:default}
     .v-nav .cnt{font-size:.8rem;color:#e6e9f2;min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
     @media(max-width:640px){ .v-series{width:92px} .v-top .meta{display:none} .v-overlay{font-size:.68rem} }
+
+    /* ── Asistente de IA (drawer lateral) ───────────────────────────────── */
+    .v-ai{background:#3b2f6b;border-color:#5a4aa0;color:#e9e3ff}
+    .v-ai:hover{background:#473a82}
+    .v-ai.active{background:#5a4aa0;border-color:#7a68c8;color:#fff}
+    .ai-drawer{flex:none;width:0;overflow:hidden;background:#0e1320;border-left:0 solid #232c42;transition:width .28s ease;display:flex}
+    .ai-drawer.open{width:400px;border-left-width:1px}
+    .ai-inner{width:400px;display:flex;flex-direction:column;height:100%;flex:none}
+    .ai-head{display:flex;align-items:center;gap:8px;padding:11px 12px;border-bottom:1px solid #232c42;flex:none}
+    .ai-head .t{font-weight:700;font-size:.9rem;color:#fff;flex:1;display:flex;align-items:center;gap:7px}
+    .ai-beta{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;background:#2f3e66;color:#bcd0ff;padding:2px 6px;border-radius:5px}
+    .ai-x{appearance:none;border:0;background:#1a2236;color:#cdd4e6;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:.85rem}
+    .ai-x:hover{background:#28324e}
+    .ai-disc{font-size:.72rem;color:#f5c884;background:rgba(180,120,30,.12);border-bottom:1px solid #232c42;padding:8px 12px;line-height:1.45;flex:none}
+    .ai-disc b{color:#ffd9a0}
+    .ai-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:9px;min-height:0}
+    .ai-empty{margin:auto;text-align:center;color:#8b93a9;padding:14px;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .ai-empty-ic{font-size:2.1rem}
+    .ai-empty p{font-size:.85rem;line-height:1.5;max-width:240px}
+    .ai-empty b{color:#cdd4e6}
+    .ai-go{appearance:none;border:0;background:#5a4aa0;color:#fff;font:inherit;font-size:.85rem;font-weight:600;border-radius:10px;padding:10px 16px;cursor:pointer;transition:background .12s}
+    .ai-go:hover{background:#6a59b8}
+    .ai-msg{max-width:93%;padding:9px 12px;border-radius:12px;font-size:.84rem;line-height:1.55;word-wrap:break-word;overflow-wrap:anywhere}
+    .ai-msg.user{align-self:flex-end;background:#2f3e66;color:#fff;border-bottom-right-radius:4px}
+    .ai-msg.ai{align-self:flex-start;background:#161d2e;color:#dfe4f1;border:1px solid #232c42;border-bottom-left-radius:4px}
+    .ai-msg.ai strong{color:#fff}
+    .ai-msg.ai em{color:#9aa3bb;font-style:italic}
+    .ai-msg.err{align-self:stretch;background:#3a1d22;border:1px solid #6b2b34;color:#fecaca;font-size:.8rem}
+    .ai-dots{display:inline-flex;gap:4px;padding:2px 0}
+    .ai-dots i{width:7px;height:7px;border-radius:50%;background:#6d8bff;animation:aidot 1s infinite ease-in-out}
+    .ai-dots i:nth-child(2){animation-delay:.15s}.ai-dots i:nth-child(3){animation-delay:.3s}
+    @keyframes aidot{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+    .ai-suggest{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px;flex:none}
+    .ai-chip{appearance:none;border:1px solid #2b3550;background:#141b2c;color:#aeb6cc;font:inherit;font-size:.74rem;border-radius:999px;padding:5px 10px;cursor:pointer;transition:background .12s,color .12s}
+    .ai-chip:hover{background:#1d2740;color:#fff}
+    .ai-input{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #232c42;align-items:flex-end;flex:none}
+    .ai-input textarea{flex:1;resize:none;background:#0b0e16;border:1px solid #2b3550;border-radius:10px;color:#e6e9f2;font:inherit;font-size:.84rem;padding:8px 10px;max-height:110px;min-height:38px;line-height:1.4}
+    .ai-input textarea:focus{outline:none;border-color:#4a5fa0}
+    .ai-send{appearance:none;border:0;background:#2563eb;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1rem;flex:none;transition:background .12s}
+    .ai-send:hover{background:#1d4ed8}.ai-send:disabled{opacity:.45;cursor:default}
+    .ai-foot{font-size:.66rem;color:#5e6a85;padding:7px 12px 9px;border-top:1px solid #1a2030;text-align:center;flex:none;line-height:1.4}
+    @media(max-width:760px){ .ai-drawer.open{width:88vw} .ai-inner{width:88vw} }
 </style>
 </head>
 <body>
@@ -77,6 +119,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     <button class="v-tool" id="t-length" title="Medir distancia">📏 Medir</button>
     <button class="v-tool" id="t-invert" title="Invertir">◑ Invertir</button>
     <button class="v-tool" id="t-reset" title="Restablecer">⟲ Reset</button>
+    <button class="v-tool v-ai" id="t-ai" title="Asistente de IA — apoyo a la lectura (no es diagnóstico)">✨ IA</button>
     <button class="v-tool v-pdf" id="t-pdf" title="Exportar a PDF (con logo y datos del paciente)">⤓ PDF</button>
 </header>
 <div class="v-main">
@@ -93,6 +136,33 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         </div>
         <div class="v-msg" id="v-msg"><div class="v-spin"></div><div id="v-msg-txt">Cargando estudio…</div></div>
     </div>
+    <aside class="ai-drawer" id="ai-drawer">
+        <div class="ai-inner">
+            <header class="ai-head">
+                <span class="t">✨ Asistente de IA <span class="ai-beta">beta</span></span>
+                <button class="ai-x" id="ai-close" title="Cerrar">✕</button>
+            </header>
+            <div class="ai-disc">Apoyo a la lectura sobre la imagen que estás viendo. <b>No es un diagnóstico</b>: la decisión clínica es tuya.</div>
+            <div class="ai-body" id="ai-body">
+                <div class="ai-empty" id="ai-empty">
+                    <div class="ai-empty-ic">✨</div>
+                    <p>Pide a la IA un <b>borrador de lectura</b> de la imagen actual. No se envían datos del paciente.</p>
+                    <button class="ai-go" id="ai-analyze">Analizar imagen actual</button>
+                </div>
+            </div>
+            <div class="ai-suggest" id="ai-suggest">
+                <button class="ai-chip" data-q="__analyze__">↻ Analizar imagen actual</button>
+                <button class="ai-chip" data-q="Describe los hallazgos principales.">Describir hallazgos</button>
+                <button class="ai-chip" data-q="¿Se observa alguna fractura o lesión ósea?">¿Hay fractura?</button>
+                <button class="ai-chip" data-q="¿Qué recomiendas como siguiente paso?">¿Qué recomiendas?</button>
+            </div>
+            <form class="ai-input" id="ai-form">
+                <textarea id="ai-q" rows="1" placeholder="Pregunta sobre esta imagen…"></textarea>
+                <button type="submit" class="ai-send" id="ai-send" title="Enviar">➤</button>
+            </form>
+            <div class="ai-foot" id="ai-foot">Asistente de apoyo · no sustituye el informe radiológico</div>
+        </div>
+    </aside>
 </div>
 
 <?php $csv = (string)(@filemtime(__DIR__ . '/../assets/vendor/cornerstone/cornerstone.min.js') ?: 1); ?>
@@ -108,6 +178,8 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     'use strict';
     var STUDY = <?= json_encode($study) ?>;
     var ROOT  = <?= json_encode($dwrBase, JSON_UNESCAPED_SLASHES) ?>;
+    var AI_ENDPOINT = <?= json_encode(base_url('api/ai-imaging.php'), JSON_UNESCAPED_SLASHES) ?>;
+    var CSRF = <?= json_encode(doctor_csrf_token()) ?>;
     var msg = document.getElementById('v-msg'), msgTxt = document.getElementById('v-msg-txt');
     var el = document.getElementById('dicom');
 
@@ -131,6 +203,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
 
     var imageIds = [], stack = { currentImageIdIndex: 0, imageIds: [] };
     var studyMeta = {};
+    var currentSeriesDesc = '';
     var CLINIC = 'Hospital General Las Colinas';
     var logoImg = new Image(); logoImg.src = <?= json_encode(base_url('assets/site/logo.png'), JSON_UNESCAPED_SLASHES) ?>;
     function escH(s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
@@ -221,6 +294,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
 
     function loadSeries(seriesUID, mod, desc) {
         if (!seriesUID) return;
+        currentSeriesDesc = desc || '';
         msg.style.display = 'flex'; msgTxt.textContent = 'Cargando imágenes…';
         document.getElementById('v-title').textContent = (desc || 'Estudio') + (mod ? ' · ' + mod : '');
         dj(ROOT + '/studies/' + STUDY + '/series/' + seriesUID + '/metadata').then(function (insts) {
@@ -385,6 +459,145 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     }
 
     window.addEventListener('resize', function () { try { cornerstone.resize(el, true); } catch (e) {} });
+
+    /* ── Asistente de IA ─────────────────────────────────────────────────── */
+    (function aiModule() {
+        var drawer = document.getElementById('ai-drawer');
+        var body   = document.getElementById('ai-body');
+        var empty  = document.getElementById('ai-empty');
+        var ta     = document.getElementById('ai-q');
+        var sendBtn= document.getElementById('ai-send');
+        if (!drawer || !body) return;
+        var history = [];   // { role:'user'|'assistant', text }
+        var busy = false;
+
+        function toggle(force) {
+            var open = (force === undefined) ? !drawer.classList.contains('open') : force;
+            drawer.classList.toggle('open', open);
+            document.getElementById('t-ai').classList.toggle('active', open);
+            setTimeout(function () { try { cornerstone.resize(el, true); } catch (e) {} }, 40);
+            if (open) setTimeout(function () { try { ta.focus(); } catch (e) {} }, 300);
+        }
+        drawer.addEventListener('transitionend', function (e) {
+            if (e.propertyName === 'width') { try { cornerstone.resize(el, true); } catch (x) {} }
+        });
+        document.getElementById('t-ai').addEventListener('click', function () { toggle(); });
+        document.getElementById('ai-close').addEventListener('click', function () { toggle(false); });
+
+        function mdLite(s) {
+            s = escH(s);
+            s = s.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+            s = s.replace(/(^|[\s(>])_([^_\n]+)_/g, '$1<em>$2</em>');
+            s = s.replace(/^[\-\*•]\s+/gm, '• ');
+            return s.replace(/\n/g, '<br>');
+        }
+        function addMsg(cls, html) {
+            if (empty) { empty.style.display = 'none'; }
+            var d = document.createElement('div');
+            d.className = 'ai-msg ' + cls;
+            d.innerHTML = html;
+            body.appendChild(d);
+            body.scrollTop = body.scrollHeight;
+            return d;
+        }
+        function loadingMsg() {
+            return addMsg('ai', '<span class="ai-dots"><i></i><i></i><i></i></span>');
+        }
+
+        function ageAtStudy() {
+            var d = studyMeta.dob || '', s = studyMeta.studyDate || '';
+            if (d.length < 8) return 0;
+            var by = +d.slice(0, 4), bm = +d.slice(4, 6), bd = +d.slice(6, 8), ry, rm, rd;
+            if (s.length >= 8) { ry = +s.slice(0, 4); rm = +s.slice(4, 6); rd = +s.slice(6, 8); }
+            else { var n = new Date(); ry = n.getFullYear(); rm = n.getMonth() + 1; rd = n.getDate(); }
+            var a = ry - by; if (rm < bm || (rm === bm && rd < bd)) a--;
+            return (a >= 0 && a <= 120) ? a : 0;
+        }
+        // SOLO contexto NO identificante. Jamás nombre / cédula / fecha de nacimiento.
+        function aiContext() {
+            return {
+                modality:  studyMeta.modality || '',
+                studyDesc: studyMeta.studyDesc || '',
+                bodyPart:  currentSeriesDesc || '',
+                sex:       studyMeta.sex || '',
+                age:       ageAtStudy()
+            };
+        }
+        // Captura el lienzo visible, reescalado para controlar costo (solo píxeles).
+        function captureImage() {
+            var ee; try { ee = cornerstone.getEnabledElement(el); } catch (e) {}
+            if (!ee || !ee.canvas) return null;
+            var src = ee.canvas, max = 1280;
+            var sc = Math.min(1, max / Math.max(src.width, src.height));
+            var cw = Math.max(1, Math.round(src.width * sc)), chh = Math.max(1, Math.round(src.height * sc));
+            var c = document.createElement('canvas'); c.width = cw; c.height = chh;
+            var cx = c.getContext('2d'); cx.fillStyle = '#000'; cx.fillRect(0, 0, cw, chh);
+            try { cx.drawImage(src, 0, 0, cw, chh); } catch (e) { return null; }
+            try { return c.toDataURL('image/jpeg', 0.9); } catch (e) { return null; }
+        }
+
+        function setBusy(b) {
+            busy = b; sendBtn.disabled = b; ta.disabled = b;
+            document.querySelectorAll('.ai-chip').forEach(function (x) { x.disabled = b; });
+        }
+        function aiFetch(payload) {
+            return fetch(AI_ENDPOINT, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+                body: JSON.stringify(payload)
+            }).then(function (r) {
+                return r.json().catch(function () { return { success: false, message: 'Respuesta inválida del servidor.' }; })
+                    .then(function (j) { j.__status = r.status; return j; });
+            });
+        }
+
+        function run(question) {
+            if (busy) return;
+            var img = captureImage();
+            if (!img) { addMsg('err', 'No hay una imagen cargada para analizar.'); return; }
+            var isAnalyze = (question === '__analyze__' || !question);
+            if (!isAnalyze) addMsg('user', escH(question));
+            var prior = history.slice();
+            var load = loadingMsg();
+            setBusy(true);
+            aiFetch({ image: img, context: aiContext(), question: isAnalyze ? '' : question, history: prior })
+                .then(function (j) {
+                    load.remove();
+                    if (j && j.success && j.text) {
+                        addMsg('ai', mdLite(j.text));
+                        history.push({ role: 'user', text: isAnalyze ? 'Análisis de la imagen actual.' : question });
+                        history.push({ role: 'assistant', text: j.text });
+                        if (history.length > 16) history = history.slice(-16);
+                    } else {
+                        addMsg('err', (j && j.message) ? j.message : 'No se pudo obtener respuesta de la IA.');
+                    }
+                })
+                .catch(function () { load.remove(); addMsg('err', 'Error de red al contactar el asistente.'); })
+                .then(function () { setBusy(false); });
+        }
+
+        // Disparadores
+        document.getElementById('ai-analyze').addEventListener('click', function () { run('__analyze__'); });
+        document.getElementById('ai-suggest').addEventListener('click', function (e) {
+            var b = e.target.closest('.ai-chip'); if (!b) return;
+            run(b.getAttribute('data-q'));
+        });
+        document.getElementById('ai-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var q = ta.value.trim(); if (!q) return;
+            ta.value = ''; ta.style.height = 'auto';
+            run(q);
+        });
+        ta.addEventListener('input', function () { ta.style.height = 'auto'; ta.style.height = Math.min(110, ta.scrollHeight) + 'px'; });
+        ta.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                var q = ta.value.trim(); if (!q) return;
+                ta.value = ''; ta.style.height = 'auto';
+                run(q);
+            }
+        });
+    })();
 })();
 </script>
 </body>

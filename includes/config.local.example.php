@@ -36,3 +36,17 @@ define('PORTAL_API_VERIFY_TLS', false);
 // el chat IA NO podrá completar agendamientos — el resto del bot sigue
 // funcionando (info, recomendar médicos, etc.).
 // define('PORTAL_AI_CHAT_SECRET', 'paste-the-64-hex-secret-from-the-hospital-settings-table-here');
+
+// ── Asistente de IA del visor de imágenes ───────────────────────────────────
+// API key de OpenAI para el asistente que apoya al médico leyendo estudios
+// (radiografías, TC, etc.) en /portal-medico/visor-imagen. La key vive SOLO en
+// el servidor: el navegador nunca la ve; el llamado a OpenAI lo hace
+// api/ai-imaging.php server-side. Si está vacía o no definida, el botón "IA"
+// del visor responde "aún no está configurado" y nada más cambia.
+// Privacidad: solo se envían los píxeles de la imagen + contexto NO identificante
+// (modalidad, región, sexo, edad). NUNCA nombre, cédula ni fecha de nacimiento.
+// define('OPENAI_API_KEY', 'sk-...');
+//
+// Modelo de visión (opcional). Por defecto 'gpt-4.1-mini' (preciso y económico).
+// Para más precisión analítica: 'o4-mini' (razona; cuesta algo más).
+// define('OPENAI_IMAGING_MODEL', 'gpt-4.1-mini');
