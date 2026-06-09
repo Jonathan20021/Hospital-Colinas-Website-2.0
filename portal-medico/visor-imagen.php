@@ -50,12 +50,15 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-spin{width:38px;height:38px;border:3px solid #2b3550;border-top-color:#6d8bff;border-radius:50%;animation:vspin 1s linear infinite}
     @keyframes vspin{to{transform:rotate(360deg)}}
     .v-back{color:#cdd4e6;text-decoration:none;font-size:.85rem;display:inline-flex;align-items:center;gap:6px}
+    .v-brand{display:inline-flex;align-items:center;background:#fff;border-radius:7px;padding:4px 9px;height:34px;flex:none}
+    .v-brand img{height:24px;width:auto;display:block}
     @media(max-width:640px){ .v-series{width:92px} .v-top .meta{display:none} }
 </style>
 </head>
 <body>
 <header class="v-top">
     <a href="javascript:window.close()" class="v-back" title="Cerrar">✕</a>
+    <span class="v-brand"><img src="<?= e(base_url('assets/site/logo.png')) ?>" alt="Hospital General Las Colinas"></span>
     <span class="ttl" id="v-title">Visor de imágenes</span>
     <span class="meta" id="v-meta"></span>
     <span class="sp"></span>
