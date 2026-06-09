@@ -186,7 +186,7 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
 <script>
 (function () {
     const pid = <?= (int)$id ?>;
-    const viewerBase = <?= json_encode(base_url('portal-medico/visor-imagen.php'), JSON_UNESCAPED_SLASHES) ?>;
+    const viewerBase = <?= json_encode(base_url('portal-medico/visor-imagen'), JSON_UNESCAPED_SLASHES) ?>;
     const listEl = document.getElementById('imaging-list');
     const loadEl = document.getElementById('imaging-loading');
     const cntEl  = document.getElementById('imaging-count');
