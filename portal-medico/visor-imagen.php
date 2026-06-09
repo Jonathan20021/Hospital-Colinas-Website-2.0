@@ -28,20 +28,28 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%}
     body{background:#0b0e16;color:#e6e9f2;font-family:Inter,system-ui,Arial,sans-serif;overflow:hidden;display:flex;flex-direction:column}
-    .v-top{display:flex;align-items:center;gap:14px;padding:9px 16px;background:#111726;border-bottom:1px solid #232c42}
-    .v-top .ttl{font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .v-top{display:flex;align-items:center;gap:8px 12px;padding:9px 14px;background:#111726;border-bottom:1px solid #232c42;flex-wrap:wrap}
+    .v-top .ttl{font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
     .v-top .meta{font-size:.78rem;color:#8b93a9;white-space:nowrap}
-    .v-top .sp{flex:1}
-    .v-tool{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.8rem;border-radius:9px;padding:7px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .12s,border-color .12s}
+    .v-tool{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.8rem;border-radius:9px;padding:7px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:background .12s,border-color .12s;white-space:nowrap}
     .v-tool:hover{background:#222c45}
     .v-tool.active{background:#2f3e66;border-color:#4a5fa0;color:#fff}
     .v-tool svg{width:16px;height:16px}
+    .v-toolbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:auto}
+    .v-sep{width:1px;align-self:stretch;min-height:22px;background:#2b3550;margin:0 1px}
+    .v-dd{position:relative}
+    .v-dd-menu{position:absolute;top:calc(100% + 6px);right:0;background:#161d2e;border:1px solid #2b3550;border-radius:10px;padding:6px;display:none;flex-direction:column;gap:2px;z-index:30;min-width:200px;box-shadow:0 12px 34px rgba(0,0,0,.55)}
+    .v-dd.open .v-dd-menu{display:flex}
+    .v-dd-menu button{appearance:none;border:0;background:transparent;color:#cdd4e6;font:inherit;font-size:.82rem;text-align:left;padding:7px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
+    .v-dd-menu button:hover{background:#222c45}
+    .v-dd-menu .lbl{font-size:.64rem;text-transform:uppercase;letter-spacing:.5px;color:#5e6a85;padding:7px 10px 2px}
     .v-main{flex:1;display:flex;min-height:0}
     .v-series{width:128px;background:#0e1320;border-right:1px solid #232c42;overflow-y:auto;flex:none}
     .v-series-item{padding:8px;cursor:pointer;border-bottom:1px solid #1a2030;text-align:center;font-size:.72rem;color:#9aa3bb}
     .v-series-item:hover{background:#161d2e}
     .v-series-item.active{background:#1d2a4a;color:#fff}
     .v-series-item .th{width:100%;height:84px;background:#000;border-radius:6px;object-fit:contain;display:block;margin-bottom:5px}
+    .v-series-item .th.ph{display:grid;place-items:center;color:#8b93a9;font-weight:700;font-size:.95rem}
     .v-stage{flex:1;position:relative;min-width:0;background:#000}
     #dicom{width:100%;height:100%}
     .v-hud{position:absolute;left:12px;bottom:10px;font-size:.72rem;color:#aeb6cc;text-shadow:0 1px 2px #000;pointer-events:none;line-height:1.5}
@@ -112,15 +120,43 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     <span class="v-brand"><img src="<?= e(base_url('assets/site/logo.png')) ?>" alt="Hospital General Las Colinas"></span>
     <span class="ttl" id="v-title">Visor de imágenes</span>
     <span class="meta" id="v-meta"></span>
-    <span class="sp"></span>
-    <button class="v-tool active" id="t-wwwc" title="Brillo/Contraste (arrastrar)">◐ Ventana</button>
-    <button class="v-tool" id="t-zoom" title="Zoom (arrastrar)">⤢ Zoom</button>
-    <button class="v-tool" id="t-pan" title="Mover (arrastrar)">✋ Mover</button>
-    <button class="v-tool" id="t-length" title="Medir distancia">📏 Medir</button>
-    <button class="v-tool" id="t-invert" title="Invertir">◑ Invertir</button>
-    <button class="v-tool" id="t-reset" title="Restablecer">⟲ Reset</button>
-    <button class="v-tool v-ai" id="t-ai" title="Asistente de IA — apoyo a la lectura (no es diagnóstico)">✨ IA</button>
-    <button class="v-tool v-pdf" id="t-pdf" title="Exportar a PDF (con logo y datos del paciente)">⤓ PDF</button>
+    <div class="v-toolbar">
+        <button class="v-tool active" id="t-wwwc" title="Brillo/Contraste (arrastrar)">◐ Ventana</button>
+        <button class="v-tool" id="t-zoom" title="Zoom (arrastrar)">⤢ Zoom</button>
+        <button class="v-tool" id="t-pan" title="Mover (arrastrar)">✋ Mover</button>
+        <button class="v-tool" id="t-magnify" title="Lupa (arrastrar para magnificar)">🔎 Lupa</button>
+        <span class="v-sep"></span>
+        <button class="v-tool" id="t-length" title="Medir distancia">📏 Medir</button>
+        <button class="v-tool" id="t-angle" title="Medir ángulo">📐 Ángulo</button>
+        <button class="v-tool" id="t-roi" title="Área / densidad (ROI elíptico: área, media, HU en TC)">⬭ Área</button>
+        <button class="v-tool" id="t-arrow" title="Flecha con etiqueta">➳ Flecha</button>
+        <button class="v-tool" id="t-probe" title="Punto: valor del píxel / HU">🎯 Punto</button>
+        <span class="v-sep"></span>
+        <div class="v-dd" id="dd-preset">
+            <button class="v-tool" id="t-preset" title="Preajustes de ventana (W/L)">🎚 Preajustes ▾</button>
+            <div class="v-dd-menu" id="preset-menu">
+                <button data-ww="" data-wc="">Auto (de la imagen)</button>
+                <div class="lbl">Tomografía (TC)</div>
+                <button data-ww="1500" data-wc="-600">Pulmón</button>
+                <button data-ww="350" data-wc="40">Mediastino / tejidos blandos</button>
+                <button data-ww="2000" data-wc="400">Hueso</button>
+                <button data-ww="80" data-wc="40">Cerebro</button>
+                <button data-ww="400" data-wc="40">Abdomen</button>
+                <button data-ww="150" data-wc="60">Hígado</button>
+                <button data-ww="600" data-wc="150">Angio / contraste</button>
+            </div>
+        </div>
+        <span class="v-sep"></span>
+        <button class="v-tool" id="t-rotate" title="Rotar 90°">⟳ Rotar</button>
+        <button class="v-tool" id="t-flip" title="Voltear horizontal">⇄ Voltear</button>
+        <button class="v-tool" id="t-invert" title="Invertir (I)">◑ Invertir</button>
+        <button class="v-tool" id="t-cine" title="Reproducir cine (multi-imagen)" style="display:none">▶ Cine</button>
+        <button class="v-tool" id="t-reset" title="Restablecer (R)">⟲ Reset</button>
+        <span class="v-sep"></span>
+        <button class="v-tool" id="t-fs" title="Pantalla completa (F)">⛶</button>
+        <button class="v-tool v-ai" id="t-ai" title="Asistente de IA — apoyo a la lectura (no es diagnóstico)">✨ IA</button>
+        <button class="v-tool v-pdf" id="t-pdf" title="Exportar a PDF (con logo y datos del paciente)">⤓ PDF</button>
+    </div>
 </header>
 <div class="v-main">
     <aside class="v-series" id="v-series"></aside>
@@ -214,12 +250,15 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     function tag(md, t) { try { return md[t].Value; } catch (e) { return undefined; } }
     function tag1(md, t) { var v = tag(md, t); return v && v.length ? v[0] : undefined; }
 
+    var EXCLUSIVE = ['Wwwc', 'Zoom', 'Pan', 'Length', 'Angle', 'EllipticalRoi', 'ArrowAnnotate', 'Probe', 'Magnify'];
     function setActiveTool(name, btnId) {
-        ['Wwwc', 'Zoom', 'Pan', 'Length'].forEach(function (n) { try { cstools.setToolPassive(n); } catch (e) {} });
+        EXCLUSIVE.forEach(function (n) { try { cstools.setToolPassive(n); } catch (e) {} });
         try { cstools.setToolActive(name, { mouseButtonMask: 1 }); } catch (e) {}
         document.querySelectorAll('.v-tool').forEach(function (b) { b.classList.remove('active'); });
         if (btnId) document.getElementById(btnId).classList.add('active');
+        if (cineOn) { var cb = document.getElementById('t-cine'); if (cb) cb.classList.add('active'); }
     }
+    var cineOn = false;
 
     function renderNav() {
         var n = stack.imageIds.length, i = stack.currentImageIdIndex;
@@ -229,6 +268,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         var pv = document.getElementById('v-prev'), nx = document.getElementById('v-next');
         if (pv) pv.disabled = i <= 0;
         if (nx) nx.disabled = i >= n - 1;
+        var cine = document.getElementById('t-cine'); if (cine) cine.style.display = n > 1 ? '' : 'none';
         var hud = document.getElementById('v-hud'); if (hud) hud.textContent = '';
     }
 
@@ -265,6 +305,21 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
             + (l2 ? '<br>' + escH(l2) : '') + (l3 ? '<br>' + escH(l3) : '');
     }
 
+    // Miniatura real de cada serie: 1ª instancia vía endpoint WADO-RS "rendered".
+    // Si el PACS/proxy no lo permite, se queda el placeholder con la modalidad.
+    function loadThumb(su, ph) {
+        if (!ph) return;
+        dj(ROOT + '/studies/' + STUDY + '/series/' + su + '/instances?includefield=00080018').then(function (insts) {
+            if (!insts || !insts.length) return;
+            var sop = tag1(insts[0], '00080018'); if (!sop) return;
+            var im = new Image();
+            im.className = 'th';
+            im.alt = '';
+            im.onload = function () { try { ph.replaceWith(im); } catch (e) {} };
+            im.src = ROOT + '/studies/' + STUDY + '/series/' + su + '/instances/' + sop + '/rendered?viewport=160,160&quality=80';
+        }).catch(function () {});
+    }
+
     // 1) Listar series del estudio
     msgTxt.textContent = 'Buscando series…';
     dj(ROOT + '/studies/' + STUDY + '/series').then(function (series) {
@@ -279,13 +334,14 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
             var n = tag1(s, '00201209') || '';
             var item = document.createElement('div');
             item.className = 'v-series-item' + (idx === 0 ? ' active' : '');
-            item.innerHTML = '<div class="th" style="display:grid;place-items:center;color:#8b93a9;font-weight:700">' + mod + '</div><div>' + desc + '</div><div style="color:#5e6a85">' + n + ' img</div>';
+            item.innerHTML = '<div class="th ph">' + escH(mod || '—') + '</div><div>' + escH(desc) + '</div><div style="color:#5e6a85">' + escH(String(n)) + ' img</div>';
             item.addEventListener('click', function () {
                 document.querySelectorAll('.v-series-item').forEach(function (x) { x.classList.remove('active'); });
                 item.classList.add('active');
                 loadSeries(su, mod, desc);
             });
             box.appendChild(item);
+            loadThumb(su, item.querySelector('.th.ph'));
         });
         var first = series[0];
         loadSeries(tag1(first, '0020000E'), tag1(first, '00080060') || '', tag1(first, '0008103E') || 'Serie 1');
@@ -295,6 +351,9 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     function loadSeries(seriesUID, mod, desc) {
         if (!seriesUID) return;
         currentSeriesDesc = desc || '';
+        try { cstools.stopClip(el); } catch (e) {}
+        cineOn = false;
+        var cineBtn = document.getElementById('t-cine'); if (cineBtn) { cineBtn.textContent = '▶ Cine'; cineBtn.classList.remove('active'); }
         msg.style.display = 'flex'; msgTxt.textContent = 'Cargando imágenes…';
         document.getElementById('v-title').textContent = (desc || 'Estudio') + (mod ? ' · ' + mod : '');
         dj(ROOT + '/studies/' + STUDY + '/series/' + seriesUID + '/metadata').then(function (insts) {
@@ -339,18 +398,37 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     }
 
     var toolsReady = false;
+    function addT(tool, cfg) { try { if (tool) cstools.addTool(tool, cfg); } catch (e) {} }
+    function actT(name, opt) { try { cstools.setToolActive(name, opt || {}); } catch (e) {} }
     function ensureTools() {
         if (toolsReady) return; toolsReady = true;
-        cstools.addTool(cstools.WwwcTool);
-        cstools.addTool(cstools.ZoomTool);
-        cstools.addTool(cstools.PanTool);
-        cstools.addTool(cstools.LengthTool);
-        cstools.addTool(cstools.StackScrollMouseWheelTool);
-        cstools.addTool(cstools.ZoomMouseWheelTool);
-        cstools.setToolActive('StackScrollMouseWheel', {});
-        cstools.setToolActive('Wwwc', { mouseButtonMask: 1 });
-        cstools.setToolActive('Pan', { mouseButtonMask: 4 });
-        cstools.setToolActive('Zoom', { mouseButtonMask: 2 });
+        addT(cstools.WwwcTool);
+        addT(cstools.ZoomTool);
+        addT(cstools.PanTool);
+        addT(cstools.LengthTool);
+        addT(cstools.AngleTool);
+        addT(cstools.EllipticalRoiTool);
+        addT(cstools.ProbeTool);
+        addT(cstools.MagnifyTool);
+        addT(cstools.ArrowAnnotateTool, {
+            configuration: {
+                getTextCallback: function (cb) { cb(window.prompt('Etiqueta (opcional):', '') || ''); },
+                changeTextCallback: function (data, evt, cb) { cb(window.prompt('Editar etiqueta:', (data && data.text) || '') || ''); }
+            }
+        });
+        addT(cstools.StackScrollMouseWheelTool);
+        addT(cstools.ZoomMouseWheelTool);
+        // Soporte táctil (tablet): pellizco=zoom, 2 dedos=mover, 3 dedos=cortes.
+        addT(cstools.PanMultiTouchTool);
+        addT(cstools.ZoomTouchPinchTool);
+        addT(cstools.StackScrollMultiTouchTool);
+        actT('StackScrollMouseWheel');
+        actT('Wwwc', { mouseButtonMask: 1 });
+        actT('Pan', { mouseButtonMask: 4 });
+        actT('Zoom', { mouseButtonMask: 2 });
+        actT('PanMultiTouch');
+        actT('ZoomTouchPinch');
+        actT('StackScrollMultiTouch');
         el.addEventListener('cornerstoneimagerendered', updateHud);
         el.addEventListener('cornerstonenewimage', function (e) {
             try { stack.currentImageIdIndex = stack.imageIds.indexOf(e.detail.image.imageId); } catch (x) {}
@@ -373,6 +451,69 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     document.getElementById('v-prev').addEventListener('click', function () { showIndex(stack.currentImageIdIndex - 1); });
     document.getElementById('v-next').addEventListener('click', function () { showIndex(stack.currentImageIdIndex + 1); });
 
+    // Herramientas de medición / anotación añadidas
+    document.getElementById('t-magnify').addEventListener('click', function () { setActiveTool('Magnify', 't-magnify'); });
+    document.getElementById('t-angle').addEventListener('click', function () { setActiveTool('Angle', 't-angle'); });
+    document.getElementById('t-roi').addEventListener('click', function () { setActiveTool('EllipticalRoi', 't-roi'); });
+    document.getElementById('t-arrow').addEventListener('click', function () { setActiveTool('ArrowAnnotate', 't-arrow'); });
+    document.getElementById('t-probe').addEventListener('click', function () { setActiveTool('Probe', 't-probe'); });
+    // Transformaciones instantáneas
+    document.getElementById('t-rotate').addEventListener('click', function () {
+        try { var vp = cornerstone.getViewport(el); vp.rotation = ((vp.rotation || 0) + 90) % 360; cornerstone.setViewport(el, vp); } catch (e) {}
+    });
+    document.getElementById('t-flip').addEventListener('click', function () {
+        try { var vp = cornerstone.getViewport(el); vp.hflip = !vp.hflip; cornerstone.setViewport(el, vp); } catch (e) {}
+    });
+    document.getElementById('t-cine').addEventListener('click', toggleCine);
+    document.getElementById('t-fs').addEventListener('click', toggleFs);
+
+    // Preajustes de ventana (W/L)
+    var ddPreset = document.getElementById('dd-preset');
+    document.getElementById('t-preset').addEventListener('click', function (e) { e.stopPropagation(); ddPreset.classList.toggle('open'); });
+    document.getElementById('preset-menu').addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-ww]'); if (!b) return;
+        applyPreset(b.getAttribute('data-ww'), b.getAttribute('data-wc'));
+        ddPreset.classList.remove('open');
+    });
+    document.addEventListener('click', function (e) { if (ddPreset && !ddPreset.contains(e.target)) ddPreset.classList.remove('open'); });
+
+    function applyPreset(ww, wc) {
+        try {
+            var vp = cornerstone.getViewport(el);
+            if (ww === '' || ww == null) {
+                var img = cornerstone.getImage(el);
+                if (img) { vp.voi.windowWidth = img.windowWidth; vp.voi.windowCenter = img.windowCenter; }
+            } else {
+                vp.voi.windowWidth = parseFloat(ww); vp.voi.windowCenter = parseFloat(wc);
+            }
+            cornerstone.setViewport(el, vp); updateHud();
+        } catch (e) {}
+    }
+
+    function toggleCine() {
+        if (stack.imageIds.length < 2) return;
+        try {
+            if (cineOn) { cstools.stopClip(el); } else { cstools.playClip(el, 12); }
+            cineOn = !cineOn;
+            var b = document.getElementById('t-cine');
+            b.textContent = cineOn ? '⏸ Pausa' : '▶ Cine';
+            b.classList.toggle('active', cineOn);
+        } catch (e) {}
+    }
+
+    function toggleFs() {
+        try {
+            if (!document.fullscreenElement) {
+                var r = document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen;
+                if (r) r.call(document.documentElement);
+            } else {
+                var x = document.exitFullscreen || document.webkitExitFullscreen;
+                if (x) x.call(document);
+            }
+        } catch (e) {}
+        setTimeout(function () { try { cornerstone.resize(el, true); } catch (e) {} }, 150);
+    }
+
     // Atajos de teclado: ←→ cortes · +/- zoom · I invertir · R reset
     window.addEventListener('keydown', function (e) {
         if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
@@ -384,6 +525,8 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
             case '-': case '_': try { vp = cornerstone.getViewport(el); vp.scale /= 1.2; cornerstone.setViewport(el, vp); } catch (x) {} e.preventDefault(); break;
             case 'i': case 'I': try { vp = cornerstone.getViewport(el); vp.invert = !vp.invert; cornerstone.setViewport(el, vp); } catch (x) {} break;
             case 'r': case 'R': try { cornerstone.reset(el); updateHud(); } catch (x) {} break;
+            case 'c': case 'C': toggleCine(); break;
+            case 'f': case 'F': toggleFs(); break;
         }
     });
 
