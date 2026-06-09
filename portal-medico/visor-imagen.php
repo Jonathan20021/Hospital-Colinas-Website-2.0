@@ -52,7 +52,11 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-back{color:#cdd4e6;text-decoration:none;font-size:.85rem;display:inline-flex;align-items:center;gap:6px}
     .v-brand{display:inline-flex;align-items:center;background:#fff;border-radius:7px;padding:4px 9px;height:34px;flex:none}
     .v-brand img{height:24px;width:auto;display:block}
-    @media(max-width:640px){ .v-series{width:92px} .v-top .meta{display:none} }
+    .v-pdf{background:#2563eb;border-color:#3b82f6;color:#fff}
+    .v-pdf:hover{background:#1d4ed8}
+    .v-overlay{position:absolute;left:12px;top:10px;font-size:.74rem;color:#cfd6ea;text-shadow:0 1px 2px #000,0 0 4px #000;pointer-events:none;line-height:1.55;max-width:62%}
+    .v-overlay b{color:#fff;font-weight:700}
+    @media(max-width:640px){ .v-series{width:92px} .v-top .meta{display:none} .v-overlay{font-size:.68rem} }
 </style>
 </head>
 <body>
@@ -68,11 +72,13 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     <button class="v-tool" id="t-length" title="Medir distancia">📏 Medir</button>
     <button class="v-tool" id="t-invert" title="Invertir">◑ Invertir</button>
     <button class="v-tool" id="t-reset" title="Restablecer">⟲ Reset</button>
+    <button class="v-tool v-pdf" id="t-pdf" title="Exportar a PDF (con logo y datos del paciente)">⤓ PDF</button>
 </header>
 <div class="v-main">
     <aside class="v-series" id="v-series"></aside>
     <div class="v-stage">
         <div id="dicom"></div>
+        <div class="v-overlay" id="v-overlay"></div>
         <div class="v-hud" id="v-hud"></div>
         <div class="v-hud2" id="v-hud2"></div>
         <div class="v-msg" id="v-msg"><div class="v-spin"></div><div id="v-msg-txt">Cargando estudio…</div></div>
@@ -86,6 +92,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
 <script src="<?= e(base_url('assets/vendor/cornerstone/hammer.min.js')) ?>?v=<?= $csv ?>"></script>
 <script src="<?= e(base_url('assets/vendor/cornerstone/cornerstoneTools.min.js')) ?>?v=<?= $csv ?>"></script>
 <script src="<?= e(base_url('assets/vendor/cornerstone/cornerstoneWADOImageLoader.bundle.min.js')) ?>?v=<?= $csv ?>"></script>
+<script src="<?= e(base_url('assets/vendor/jspdf/jspdf.umd.min.js')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/vendor/jspdf/jspdf.umd.min.js') ?: 1) ?>"></script>
 <script>
 (function () {
     'use strict';
@@ -113,6 +120,12 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     cornerstone.enable(el);
 
     var imageIds = [], stack = { currentImageIdIndex: 0, imageIds: [] };
+    var studyMeta = {};
+    var CLINIC = 'Hospital General Las Colinas';
+    var logoImg = new Image(); logoImg.src = <?= json_encode(base_url('assets/site/logo.png'), JSON_UNESCAPED_SLASHES) ?>;
+    function escH(s) { return String(s == null ? '' : s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+    function fdate(d) { return (d && d.length >= 8) ? (d.slice(6, 8) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4)) : ''; }
+    function pn(md, t) { try { var v = md[t].Value[0]; return v && v.Alphabetic ? v.Alphabetic : (typeof v === 'string' ? v : ''); } catch (e) { return ''; } }
 
     function dj(url) { return fetch(url, { headers: { Accept: 'application/dicom+json' }, credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
     function tag(md, t) { try { return md[t].Value; } catch (e) { return undefined; } }
@@ -139,10 +152,21 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     function showIndex(i) {
         if (i < 0 || i >= stack.imageIds.length) return;
         stack.currentImageIdIndex = i;
+        try { var st = cstools.getToolState(el, 'stack'); if (st && st.data && st.data[0]) st.data[0].currentImageIdIndex = i; } catch (e) {}
         cornerstone.loadAndCacheImage(stack.imageIds[i]).then(function (image) {
             cornerstone.displayImage(el, image);
             updateHud();
         }).catch(function (e) { fail('No se pudo cargar la imagen. ' + (e && e.message ? e.message : '')); });
+    }
+
+    function updateOverlay() {
+        var o = document.getElementById('v-overlay');
+        if (!o) return;
+        if (!studyMeta.pname) { o.innerHTML = ''; return; }
+        var l2 = [studyMeta.dob ? 'F. nac.: ' + fdate(studyMeta.dob) : '', studyMeta.sex || ''].filter(Boolean).join('  ·  ');
+        var l3 = [studyMeta.studyDate ? fdate(studyMeta.studyDate) : '', studyMeta.modality || ''].filter(Boolean).join('  ·  ');
+        o.innerHTML = '<b>' + escH(studyMeta.pname) + '</b>' + (studyMeta.pid ? '  ·  ' + escH(studyMeta.pid) : '')
+            + (l2 ? '<br>' + escH(l2) : '') + (l3 ? '<br>' + escH(l3) : '');
     }
 
     // 1) Listar series del estudio
@@ -178,6 +202,21 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         document.getElementById('v-title').textContent = (desc || 'Estudio') + (mod ? ' · ' + mod : '');
         dj(ROOT + '/studies/' + STUDY + '/series/' + seriesUID + '/metadata').then(function (insts) {
             insts.sort(function (a, b) { return (tag1(a, '00200013') || 0) - (tag1(b, '00200013') || 0); });
+            if (!studyMeta.captured && insts.length) {
+                var m0 = insts[0];
+                studyMeta = {
+                    captured: true,
+                    pname: (pn(m0, '00100010') || '').replace(/\^/g, ' ').replace(/\s+/g, ' ').trim(),
+                    pid: tag1(m0, '00100020') || '',
+                    dob: tag1(m0, '00100030') || '',
+                    sex: tag1(m0, '00100040') || '',
+                    studyDate: tag1(m0, '00080020') || '',
+                    studyDesc: tag1(m0, '00081030') || '',
+                    accession: tag1(m0, '00080050') || '',
+                    modality: tag1(m0, '00080060') || mod || ''
+                };
+                updateOverlay();
+            }
             var ids = [];
             insts.forEach(function (md) {
                 var sop = tag1(md, '00080018'); if (!sop) return;
@@ -233,6 +272,93 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     document.getElementById('t-reset').addEventListener('click', function () {
         try { cornerstone.reset(el); updateHud(); } catch (e) {}
     });
+    document.getElementById('t-pdf').addEventListener('click', generatePdf);
+
+    // Atajos de teclado: ←→ cortes · +/- zoom · I invertir · R reset
+    window.addEventListener('keydown', function (e) {
+        if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+        var vp;
+        switch (e.key) {
+            case 'ArrowRight': case 'ArrowDown': showIndex(stack.currentImageIdIndex + 1); e.preventDefault(); break;
+            case 'ArrowLeft':  case 'ArrowUp':   showIndex(stack.currentImageIdIndex - 1); e.preventDefault(); break;
+            case '+': case '=': try { vp = cornerstone.getViewport(el); vp.scale *= 1.2; cornerstone.setViewport(el, vp); } catch (x) {} e.preventDefault(); break;
+            case '-': case '_': try { vp = cornerstone.getViewport(el); vp.scale /= 1.2; cornerstone.setViewport(el, vp); } catch (x) {} e.preventDefault(); break;
+            case 'i': case 'I': try { vp = cornerstone.getViewport(el); vp.invert = !vp.invert; cornerstone.setViewport(el, vp); } catch (x) {} break;
+            case 'r': case 'R': try { cornerstone.reset(el); updateHud(); } catch (x) {} break;
+        }
+    });
+
+    function tr(s, n) { s = String(s == null || s === '' ? '—' : s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+
+    function generatePdf() {
+        if (!window.jspdf || !window.jspdf.jsPDF) { alert('No se pudo cargar el generador de PDF.'); return; }
+        var ee; try { ee = cornerstone.getEnabledElement(el); } catch (e) {}
+        if (!ee || !ee.canvas) { alert('No hay imagen para exportar.'); return; }
+        var imgData = ee.canvas.toDataURL('image/jpeg', 0.92);
+        var iw = ee.canvas.width, ih = ee.canvas.height;
+
+        var jsPDF = window.jspdf.jsPDF;
+        var doc = new jsPDF({ unit: 'pt', format: 'letter' });
+        var W = 612, H = 792, M = 40;
+        var navy = [42, 37, 102], gray = [100, 116, 139], line = [214, 218, 228];
+
+        // Encabezado: logo + título
+        doc.setFillColor(244, 245, 250); doc.rect(0, 0, W, 84, 'F');
+        doc.setDrawColor(line[0], line[1], line[2]); doc.setLineWidth(1); doc.line(0, 84, W, 84);
+        if (logoImg.complete && logoImg.naturalWidth) {
+            var lh = 44, lw = lh * (logoImg.naturalWidth / logoImg.naturalHeight);
+            if (lw > 230) { lw = 230; lh = lw * (logoImg.naturalHeight / logoImg.naturalWidth); }
+            try { doc.addImage(logoImg, 'PNG', M, (84 - lh) / 2, lw, lh); } catch (e) {}
+        }
+        doc.setTextColor(navy[0], navy[1], navy[2]); doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
+        doc.text('Estudio de Imagen', W - M, 40, { align: 'right' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(gray[0], gray[1], gray[2]);
+        doc.text(CLINIC + ' · Radiología', W - M, 56, { align: 'right' });
+
+        // Datos paciente / estudio (dos columnas)
+        var y = 112;
+        function block(x, title, rows) {
+            doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(navy[0], navy[1], navy[2]);
+            doc.text(title.toUpperCase(), x, y);
+            doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+            var yy = y + 16;
+            rows.forEach(function (r) {
+                doc.setTextColor(gray[0], gray[1], gray[2]); doc.text(r[0], x, yy);
+                doc.setTextColor(30, 37, 64); doc.text(tr(r[1], 30), x + 82, yy);
+                yy += 15;
+            });
+            return yy;
+        }
+        var le = block(M, 'Paciente', [
+            ['Nombre:', studyMeta.pname], ['Identificación:', studyMeta.pid],
+            ['F. nacimiento:', fdate(studyMeta.dob) || '—'], ['Sexo:', studyMeta.sex]
+        ]);
+        var re = block(W / 2 + 12, 'Estudio', [
+            ['Modalidad:', studyMeta.modality], ['Fecha:', fdate(studyMeta.studyDate) || '—'],
+            ['Descripción:', studyMeta.studyDesc], ['Accession:', studyMeta.accession]
+        ]);
+        var ib = Math.max(le, re) + 6;
+        doc.setDrawColor(line[0], line[1], line[2]); doc.line(M, ib, W - M, ib);
+
+        // Imagen sobre fondo negro, encuadrada
+        var bx = M, by = ib + 14, bw = W - 2 * M, bh = H - by - 54;
+        doc.setFillColor(0, 0, 0); doc.rect(bx, by, bw, bh, 'F');
+        var sc = Math.min(bw / iw, bh / ih), dw = iw * sc, dh = ih * sc;
+        try { doc.addImage(imgData, 'JPEG', bx + (bw - dw) / 2, by + (bh - dh) / 2, dw, dh); } catch (e) {}
+
+        // Pie
+        var n = new Date(), p2 = function (x) { return ('0' + x).slice(-2); };
+        var stamp = p2(n.getDate()) + '/' + p2(n.getMonth() + 1) + '/' + n.getFullYear() + ' ' + p2(n.getHours()) + ':' + p2(n.getMinutes());
+        doc.setDrawColor(line[0], line[1], line[2]); doc.line(M, H - 42, W - M, H - 42);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(gray[0], gray[1], gray[2]);
+        doc.text(CLINIC + ' · Generado electrónicamente el ' + stamp, M, H - 28);
+        doc.text('Imagen de referencia clínica — no sustituye el informe radiológico oficial.', M, H - 18);
+        doc.text((document.getElementById('v-title').textContent || '').slice(0, 40), W - M, H - 28, { align: 'right' });
+
+        var fn = ('Estudio_' + (studyMeta.accession || studyMeta.modality || 'imagen') + '_' + (studyMeta.studyDate || '')).replace(/[^A-Za-z0-9._-]/g, '_') + '.pdf';
+        doc.save(fn);
+    }
+
     window.addEventListener('resize', function () { try { cornerstone.resize(el, true); } catch (e) {} });
 })();
 </script>
