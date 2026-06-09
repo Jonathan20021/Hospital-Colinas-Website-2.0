@@ -76,12 +76,13 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     </div>
 </div>
 
-<script src="https://unpkg.com/dicom-parser@1.8.21/dist/dicomParser.min.js"></script>
-<script src="https://unpkg.com/cornerstone-core@2.6.1/dist/cornerstone.min.js"></script>
-<script src="https://unpkg.com/cornerstone-math@0.1.10/dist/cornerstoneMath.min.js"></script>
-<script src="https://unpkg.com/hammerjs@2.0.8/hammer.min.js"></script>
-<script src="https://unpkg.com/cornerstone-tools@6.0.10/dist/cornerstoneTools.min.js"></script>
-<script src="https://unpkg.com/cornerstone-wado-image-loader@4.13.2/dist/cornerstoneWADOImageLoaderBundle.min.js"></script>
+<?php $csv = (string)(@filemtime(__DIR__ . '/../assets/vendor/cornerstone/cornerstone.min.js') ?: 1); ?>
+<script src="<?= e(base_url('assets/vendor/cornerstone/dicomParser.min.js')) ?>?v=<?= $csv ?>"></script>
+<script src="<?= e(base_url('assets/vendor/cornerstone/cornerstone.min.js')) ?>?v=<?= $csv ?>"></script>
+<script src="<?= e(base_url('assets/vendor/cornerstone/cornerstoneMath.min.js')) ?>?v=<?= $csv ?>"></script>
+<script src="<?= e(base_url('assets/vendor/cornerstone/hammer.min.js')) ?>?v=<?= $csv ?>"></script>
+<script src="<?= e(base_url('assets/vendor/cornerstone/cornerstoneTools.min.js')) ?>?v=<?= $csv ?>"></script>
+<script src="<?= e(base_url('assets/vendor/cornerstone/cornerstoneWADOImageLoader.bundle.min.js')) ?>?v=<?= $csv ?>"></script>
 <script>
 (function () {
     'use strict';
