@@ -256,7 +256,7 @@
             });
             const j = await r.json();
             if (j.success) {
-                renderConfirmation(j.data);
+                renderConfirmation(j.data, payload.email);
             } else {
                 const errs = j.errors ? Object.values(j.errors).flat().join(' · ') : '';
                 result.innerHTML = `<div class="portal-flash portal-flash-error" style="margin-top:1rem">${j.message || 'Error.'} ${errs}</div>`;
@@ -271,12 +271,39 @@
         }
     });
 
-    function renderConfirmation(data) {
+    function renderConfirmation(data, email) {
         const when = new Date(data.appointment_time.replace(' ', 'T'));
         const whenLabel = when.toLocaleDateString('es-DO', {
             weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
             hour: '2-digit', minute: '2-digit', hour12: true,
         });
+
+        let accountBlock;
+        if (data.account_created) {
+            accountBlock = `
+                <div style="background:linear-gradient(135deg,#ecfdf5,#fff);padding:1.5rem;border:1px solid #a7f3d0;border-radius:12px;margin-top:1.5rem;text-align:left">
+                    <h3 style="margin:0 0 .75rem;color:#047857">🩺 Tu cuenta del portal está casi lista</h3>
+                    <p style="margin:0 0 .35rem;color:#374151;font-size:.95rem">Usuario: <strong>${email || ''}</strong></p>
+                    <p style="margin:0 0 1rem;color:#374151;font-size:.95rem">Contraseña: <strong>tu cédula</strong> (solo los números, sin guiones).</p>
+                    <p style="margin:0 0 1rem;color:#475569;font-size:.9rem">📧 Te enviamos un correo para <strong>verificar tu cuenta</strong>. Ábrelo y, una vez verificada, inicia sesión.</p>
+                    <a href="/portal/login.php" class="btn btn-green">Ir a iniciar sesión →</a>
+                </div>`;
+        } else if (data.has_account) {
+            accountBlock = `
+                <div style="background:#eff6ff;padding:1.5rem;border:1px solid #bfdbfe;border-radius:12px;margin-top:1.5rem;text-align:left">
+                    <h3 style="margin:0 0 .5rem;color:#1e40af">🔑 Ya tienes cuenta en el portal</h3>
+                    <p style="margin:0 0 1rem;color:#475569;font-size:.95rem">Inicia sesión con tu correo para ver o cancelar tus citas.</p>
+                    <a href="/portal/login.php" class="btn btn-green">Iniciar sesión →</a>
+                </div>`;
+        } else {
+            accountBlock = `
+                <div style="background:linear-gradient(135deg,#ecfdf5,#fff);padding:1.5rem;border:1px solid #a7f3d0;border-radius:12px;margin-top:1.5rem">
+                    <h3 style="margin:0 0 .5rem;color:#047857">🩺 Crea tu cuenta del portal</h3>
+                    <p style="margin:0 0 1rem;color:#475569;font-size:.95rem">Para gestionar, ver y cancelar tus citas en línea.</p>
+                    <a href="${data.register_url}" class="btn btn-green">Crear mi cuenta →</a>
+                </div>`;
+        }
+
         document.querySelector('.portal-main').innerHTML = `
             <div class="portal-card" style="text-align:center;padding:3rem 2rem">
                 <div style="width:80px;height:80px;margin:0 auto 1.5rem;background:#dcfce7;color:#047857;border-radius:50%;display:grid;place-items:center;font-size:2.5rem">✓</div>
@@ -294,11 +321,7 @@
                     : '<p style="color:#b45309;margin:1.5rem 0">⚠ No pudimos enviar el correo de confirmación. Guarda esta página o anota el número de cita.</p>'
                 }
 
-                <div style="background:linear-gradient(135deg,#ecfdf5,#fff);padding:1.5rem;border:1px solid #a7f3d0;border-radius:12px;margin-top:1.5rem">
-                    <h3 style="margin:0 0 .5rem;color:#047857">🩺 Crea tu cuenta del portal</h3>
-                    <p style="margin:0 0 1rem;color:#475569;font-size:.95rem">Para gestionar, ver y cancelar tus citas en línea.</p>
-                    <a href="${data.register_url}" class="btn btn-green">Crear mi cuenta →</a>
-                </div>
+                ${accountBlock}
 
                 <a href="/" style="display:block;margin-top:2rem;color:#6b7280;text-decoration:none">← Volver al inicio</a>
             </div>
