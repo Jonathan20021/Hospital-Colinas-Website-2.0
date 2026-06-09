@@ -30,8 +30,8 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
 <link rel="icon" type="image/png" href="<?= e(base_url('assets/site/favicon.png')) ?>">
 <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{background:#0b0e16;color:#e6e9f2;font-family:Inter,system-ui,Arial,sans-serif;overflow:hidden;display:flex;flex-direction:column}
+    html,body{height:100%;overscroll-behavior:none}
+    body{background:#0b0e16;color:#e6e9f2;font-family:Inter,system-ui,Arial,sans-serif;overflow:hidden;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
     .v-top{display:flex;align-items:center;gap:8px 12px;padding:calc(9px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left));background:#111726;border-bottom:1px solid #232c42;flex-wrap:wrap}
     .v-top .ttl{font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
     .v-top .meta{font-size:.78rem;color:#8b93a9;white-space:nowrap}
@@ -54,8 +54,8 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-series-item.active{background:#1d2a4a;color:#fff}
     .v-series-item .th{width:100%;height:84px;background:#000;border-radius:6px;object-fit:contain;display:block;margin-bottom:5px}
     .v-series-item .th.ph{display:grid;place-items:center;color:#8b93a9;font-weight:700;font-size:.95rem}
-    .v-stage{flex:1;position:relative;min-width:0;background:#000}
-    #dicom{width:100%;height:100%}
+    .v-stage{flex:1;position:relative;min-width:0;background:#000;touch-action:none}
+    #dicom{width:100%;height:100%;touch-action:none}
     .v-hud{position:absolute;left:12px;bottom:10px;font-size:.72rem;color:#aeb6cc;text-shadow:0 1px 2px #000;pointer-events:none;line-height:1.5}
     .v-hud2{position:absolute;right:12px;bottom:10px;font-size:.72rem;color:#aeb6cc;text-shadow:0 1px 2px #000;pointer-events:none;text-align:right;line-height:1.5}
     .v-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#8b93a9;font-size:.9rem;text-align:center;padding:24px}
@@ -73,7 +73,40 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-nav button:hover{background:#28324e}
     .v-nav button:disabled{opacity:.3;cursor:default}
     .v-nav .cnt{font-size:.8rem;color:#e6e9f2;min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
-    @media(max-width:640px){ .v-series{width:92px} .v-top .meta{display:none} .v-overlay{font-size:.68rem} }
+    .v-tool{-webkit-tap-highlight-color:transparent}
+    /* Sidebar de series oculto cuando solo hay una serie (gana espacio en todos lados) */
+    body.single-series .v-series{display:none}
+    body.single-series .v-series-toggle{display:none!important}
+    .v-series-toggle{display:none}
+
+    /* Targets táctiles más grandes en dispositivos de dedo (tablet/móvil) */
+    @media (pointer:coarse){
+        .v-tool{padding:9px 12px;font-size:.82rem}
+        .v-nav button{width:46px;height:46px;font-size:1.5rem}
+        .v-series-item{padding:11px 8px}
+        .ai-chip{padding:7px 12px}
+        .ai-send{width:42px;height:42px}
+    }
+
+    /* Teléfono / tablet en vertical */
+    @media (max-width:760px){
+        .v-top{gap:7px 8px}
+        .v-top .ttl{max-width:42vw}
+        .v-top .meta{display:none}
+        .v-series-toggle{display:inline-flex}
+        /* Barra de herramientas: una sola fila desplazable (no envuelve) */
+        .v-toolbar{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;width:100%;margin-left:0;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+        .v-toolbar::-webkit-scrollbar{display:none}
+        .v-tool{flex:none}
+        .v-sep{display:none}
+        /* Series como panel deslizable desde la izquierda */
+        .v-series{position:absolute;left:0;top:0;bottom:0;width:160px;z-index:8;transform:translateX(-100%);transition:transform .25s ease;box-shadow:6px 0 26px rgba(0,0,0,.55)}
+        .v-series.open{transform:translateX(0)}
+        .v-overlay{font-size:.66rem;max-width:80%}
+    }
+    @media (max-width:480px){
+        .ai-drawer.open,.ai-inner{width:100vw}
+    }
 
     /* ── Asistente de IA (drawer lateral) ───────────────────────────────── */
     .v-ai{background:#3b2f6b;border-color:#5a4aa0;color:#e9e3ff}
@@ -125,6 +158,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     <span class="ttl" id="v-title">Visor de imágenes</span>
     <span class="meta" id="v-meta"></span>
     <div class="v-toolbar">
+        <button class="v-tool v-series-toggle" id="t-series" title="Series del estudio">🗂 Series</button>
         <button class="v-tool active" id="t-wwwc" title="Brillo/Contraste (arrastrar)">◐ Ventana</button>
         <button class="v-tool" id="t-zoom" title="Zoom (arrastrar)">⤢ Zoom</button>
         <button class="v-tool" id="t-pan" title="Mover (arrastrar)">✋ Mover</button>
@@ -256,7 +290,9 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     function tag1(md, t) { var v = tag(md, t); return v && v.length ? v[0] : undefined; }
 
     var EXCLUSIVE = ['Wwwc', 'Zoom', 'Pan', 'Length', 'Angle', 'EllipticalRoi', 'ArrowAnnotate', 'Probe', 'Magnify'];
+    var currentTool = 'Wwwc';
     function setActiveTool(name, btnId) {
+        currentTool = name;
         EXCLUSIVE.forEach(function (n) { try { cstools.setToolPassive(n); } catch (e) {} });
         try { cstools.setToolActive(name, { mouseButtonMask: 1 }); } catch (e) {}
         document.querySelectorAll('.v-tool').forEach(function (b) { b.classList.remove('active'); });
@@ -330,6 +366,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     dj(ROOT + '/studies/' + STUDY + '/series').then(function (series) {
         if (!series.length) return fail('El estudio no tiene series.');
         series.sort(function (a, b) { return (tag1(a, '00200011') || 0) - (tag1(b, '00200011') || 0); });
+        document.body.classList.toggle('single-series', series.length <= 1);
         var box = document.getElementById('v-series');
         box.innerHTML = '';
         series.forEach(function (s, idx) {
@@ -344,6 +381,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
                 document.querySelectorAll('.v-series-item').forEach(function (x) { x.classList.remove('active'); });
                 item.classList.add('active');
                 loadSeries(su, mod, desc);
+                box.classList.remove('open');   // cerrar el panel en móvil al elegir
             });
             box.appendChild(item);
             loadThumb(su, item.querySelector('.th.ph'));
@@ -482,9 +520,52 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     }
     document.getElementById('v-close').addEventListener('click', function (e) { e.preventDefault(); closeViewer(); });
 
+    // Panel de series deslizable (móvil)
+    document.getElementById('t-series').addEventListener('click', function () {
+        document.getElementById('v-series').classList.toggle('open');
+    });
+
+    // Touch: doble-tap = alternar zoom (solo con herramientas que NO dibujan, para
+    // no crear mediciones por accidente).
+    var SAFE_DT = { Wwwc: 1, Zoom: 1, Pan: 1, Magnify: 1 };
+    var _lastTap = 0, _dtZoom = false;
+    el.addEventListener('touchend', function (e) {
+        if (e.touches.length > 0) return;            // aún hay dedos sobre la pantalla
+        var now = Date.now();
+        if (now - _lastTap < 300 && SAFE_DT[currentTool]) {
+            try {
+                if (!_dtZoom) { var vp = cornerstone.getViewport(el); vp.scale = (vp.scale || 1) * 2.2; cornerstone.setViewport(el, vp); _dtZoom = true; }
+                else { cornerstone.fitToWindow(el); _dtZoom = false; }
+                updateHud();
+            } catch (x) {}
+            e.preventDefault();
+            _lastTap = 0; return;
+        }
+        _lastTap = now;
+    }, { passive: false });
+
     // Preajustes de ventana (W/L)
     var ddPreset = document.getElementById('dd-preset');
-    document.getElementById('t-preset').addEventListener('click', function (e) { e.stopPropagation(); ddPreset.classList.toggle('open'); });
+    // En móvil la barra tiene overflow (scroll) → el menú absoluto se recortaría.
+    // Lo reposicionamos como fixed bajo el botón para que escape del recorte.
+    function positionPresetMenu() {
+        var menu = document.getElementById('preset-menu');
+        if (window.matchMedia('(max-width:760px)').matches) {
+            var r = document.getElementById('t-preset').getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (r.bottom + 6) + 'px';
+            menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 216)) + 'px';
+            menu.style.right = 'auto';
+        } else {
+            menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; menu.style.right = '';
+        }
+    }
+    document.getElementById('t-preset').addEventListener('click', function (e) {
+        e.stopPropagation();
+        var opening = !ddPreset.classList.contains('open');
+        ddPreset.classList.toggle('open');
+        if (opening) positionPresetMenu();
+    });
     document.getElementById('preset-menu').addEventListener('click', function (e) {
         var b = e.target.closest('button[data-ww]'); if (!b) return;
         applyPreset(b.getAttribute('data-ww'), b.getAttribute('data-wc'));
