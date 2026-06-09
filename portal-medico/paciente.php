@@ -162,6 +162,63 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
     <?php endif; ?>
 </section>
 
+<section class="doctor-card mt-4" id="imaging-card">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="scan" class="h-5 w-5"></i> Estudios de imagen</h2>
+        <span class="doctor-text-soft" id="imaging-count"></span>
+    </header>
+    <div class="doctor-form-pad">
+        <p class="doctor-text-soft" id="imaging-loading">Buscando estudios en el PACS…</p>
+        <div id="imaging-list" class="doctor-img-list"></div>
+    </div>
+</section>
+
+<style>
+.doctor-img-list{display:flex;flex-direction:column;gap:10px}
+.doctor-img-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid #e6e8f0;border-radius:12px;background:#fff}
+.doctor-img-ico{flex:none;width:54px;height:54px;border-radius:10px;background:#0e1320;color:#cdd4e6;display:grid;place-items:center;font-weight:800;font-size:.78rem;letter-spacing:.04em;text-align:center}
+.doctor-img-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.doctor-img-meta strong{color:#1e2540;font-size:.95rem}
+.doctor-img-meta span{color:#64748b;font-size:.82rem}
+@media(max-width:560px){.doctor-img-row{flex-wrap:wrap}}
+</style>
+
+<script>
+(function () {
+    const pid = <?= (int)$id ?>;
+    const viewerBase = <?= json_encode(base_url('portal-medico/visor-imagen.php'), JSON_UNESCAPED_SLASHES) ?>;
+    const listEl = document.getElementById('imaging-list');
+    const loadEl = document.getElementById('imaging-loading');
+    const cntEl  = document.getElementById('imaging-count');
+    const escI = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fdate = d => (d && d.length === 8) ? (d.slice(6, 8) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4)) : (d || '');
+    (async function () {
+        let r;
+        try { r = await window.doctorApi('GET', '/portal-doctor/me/patients/' + pid + '/imaging'); }
+        catch (e) { r = { ok: false }; }
+        if (loadEl) loadEl.style.display = 'none';
+        if (!r || !r.ok) { listEl.innerHTML = '<p class="doctor-text-soft">No se pudo consultar el PACS.</p>'; return; }
+        const studies = (r.data && r.data.studies) || [];
+        const scope = (r.data && r.data.scope) || '';
+        if (cntEl) cntEl.textContent = studies.length ? (studies.length + ' estudio(s)') : '';
+        if (!studies.length) {
+            listEl.innerHTML = '<div class="doctor-empty"><div class="doctor-empty-illustration"><i data-lucide="scan-line" class="h-7 w-7"></i></div><p class="doctor-empty-title">Sin estudios de imagen</p><p>No se encontraron estudios en el PACS para la cédula de este paciente.</p></div>';
+            if (window.lucide) lucide.createIcons(); return;
+        }
+        listEl.innerHTML = studies.map(function (s) {
+            const url = viewerBase + '?study=' + encodeURIComponent(s.studyUID) + '&scope=' + encodeURIComponent(scope);
+            return '<div class="doctor-img-row">'
+                + '<div class="doctor-img-ico">' + escI(s.modality || '—') + '</div>'
+                + '<div class="doctor-img-meta"><strong>' + escI(s.description || 'Estudio') + '</strong>'
+                + '<span>' + fdate(s.date) + ' · ' + (s.instances || 0) + ' imágenes · ' + (s.series || 0) + ' serie(s)</span></div>'
+                + '<a class="doctor-btn doctor-btn-primary" target="_blank" rel="noopener" href="' + url + '"><i data-lucide="eye" class="h-4 w-4"></i> Abrir visor</a>'
+                + '</div>';
+        }).join('');
+        if (window.lucide) lucide.createIcons();
+    })();
+})();
+</script>
+
 <script>
 (function () {
     const pid = <?= (int)$id ?>;
