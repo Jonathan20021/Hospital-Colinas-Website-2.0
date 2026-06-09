@@ -14,7 +14,14 @@ $study = preg_replace('/[^0-9.]/', '', (string)($_GET['study'] ?? ''));
 $scope = preg_replace('/[^A-Za-z0-9._-]/', '', (string)($_GET['scope'] ?? ''));
 $dwrBase = base_url('api/imaging-dwr.php') . '/' . $scope;
 
-if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
+if (!headers_sent()) {
+    header('X-Robots-Tag: noindex, nofollow');
+    // El visor cambia seguido y trae datos del paciente: nunca servir HTML/JS
+    // cacheado (en el PWA instalado no hay "recarga dura"). Así siempre carga
+    // la versión más reciente del visor.
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Pragma: no-cache');
+}
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
@@ -591,6 +598,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     // depender de cstools.stopClip (que en este build no cancela el bucle).
     function stopCine() {
         if (cineTimer) { clearInterval(cineTimer); cineTimer = null; }
+        try { if (cstools && cstools.stopClip) cstools.stopClip(el); } catch (e) {}   // por si quedó un clip de cstools
         cineOn = false;
         var b = document.getElementById('t-cine');
         if (b) { b.textContent = '▶ Cine'; b.classList.remove('active'); }
@@ -598,11 +606,12 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     function toggleCine() {
         if (cineOn) { stopCine(); return; }
         if (stack.imageIds.length < 2) return;
+        if (cineTimer) { clearInterval(cineTimer); cineTimer = null; }   // nunca dos timers
         cineOn = true;
         var b = document.getElementById('t-cine');
         if (b) { b.textContent = '⏸ Pausa'; b.classList.add('active'); }
         cineTimer = setInterval(function () {
-            if (!cineOn || !stack.imageIds.length) return;
+            if (!cineOn || !stack.imageIds.length) { return; }
             showIndex((stack.currentImageIdIndex + 1) % stack.imageIds.length);
         }, 90);   // ~11 fps
     }
