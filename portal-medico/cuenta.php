@@ -120,7 +120,11 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
 <script>
 (function () {
     const canvas = document.getElementById('sig-pad');
-    if (!canvas || !window.doctorApi) return;
+    if (!canvas) return;
+    // portal-medico.js (que define window.doctorApi) puede cargar DESPUÉS de este
+    // script en línea. El DIBUJO no depende de la API → se engancha ya mismo; las
+    // llamadas a la API (estado/guardar/eliminar) esperan a que doctorApi exista.
+    function whenApi(cb) { var n = 0; (function w() { if (window.doctorApi) return cb(); if (n++ < 200) setTimeout(w, 50); })(); }
     const ctx = canvas.getContext('2d');
     ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111827';
     let drawing = false, dirty = false, last = null, uploaded = null;
@@ -170,10 +174,11 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
             delBtn.hidden = !has;
         } catch (e) {}
     }
-    refresh();
+    whenApi(refresh);
 
     document.getElementById('sig-save').addEventListener('click', async () => {
         if (!dirty) { statusEl.textContent = 'Dibuja o sube tu firma primero.'; return; }
+        if (!window.doctorApi) { statusEl.textContent = 'Cargando… intenta de nuevo en un instante.'; return; }
         const dataUri = uploaded || canvas.toDataURL('image/png');
         statusEl.textContent = 'Guardando…';
         const r = await window.doctorApi('POST', '/portal-doctor/me/signature', { image: dataUri });
@@ -183,6 +188,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
 
     delBtn.addEventListener('click', async () => {
         if (!confirm('¿Eliminar tu firma registrada?')) return;
+        if (!window.doctorApi) { statusEl.textContent = 'Cargando… intenta de nuevo en un instante.'; return; }
         const r = await window.doctorApi('DELETE', '/portal-doctor/me/signature');
         statusEl.textContent = r.ok ? '✓ Firma eliminada.' : '⚠ Error al eliminar.';
         if (r.ok) { clearPad(); refresh(); }
