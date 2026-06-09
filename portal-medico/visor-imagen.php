@@ -47,7 +47,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-dd-menu button{appearance:none;border:0;background:transparent;color:#cdd4e6;font:inherit;font-size:.82rem;text-align:left;padding:7px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
     .v-dd-menu button:hover{background:#222c45}
     .v-dd-menu .lbl{font-size:.64rem;text-transform:uppercase;letter-spacing:.5px;color:#5e6a85;padding:7px 10px 2px}
-    .v-main{flex:1;display:flex;min-height:0}
+    .v-main{flex:1;display:flex;min-height:0;position:relative}
     .v-series{width:128px;background:#0e1320;border-right:1px solid #232c42;overflow-y:auto;flex:none}
     .v-series-item{padding:8px;cursor:pointer;border-bottom:1px solid #1a2030;text-align:center;font-size:.72rem;color:#9aa3bb}
     .v-series-item:hover{background:#161d2e}
@@ -104,9 +104,6 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         .v-series.open{transform:translateX(0)}
         .v-overlay{font-size:.66rem;max-width:80%}
     }
-    @media (max-width:480px){
-        .ai-drawer.open,.ai-inner{width:100vw}
-    }
 
     /* ── Asistente de IA (drawer lateral) ───────────────────────────────── */
     .v-ai{background:#3b2f6b;border-color:#5a4aa0;color:#e9e3ff}
@@ -148,7 +145,13 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .ai-send{appearance:none;border:0;background:#2563eb;color:#fff;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:1rem;flex:none;transition:background .12s}
     .ai-send:hover{background:#1d4ed8}.ai-send:disabled{opacity:.45;cursor:default}
     .ai-foot{font-size:.66rem;color:#5e6a85;padding:7px 12px 9px;border-top:1px solid #1a2030;text-align:center;flex:none;line-height:1.4}
-    @media(max-width:760px){ .ai-drawer.open{width:88vw} .ai-inner{width:88vw} }
+    /* Móvil/tablet: el drawer de IA CUBRE el visor (overlay), no lo empuja —
+       así la imagen no se aplasta a una tira ni el overlay del paciente se parte. */
+    @media(max-width:760px){
+        .ai-drawer{position:absolute;top:0;right:0;bottom:0;left:0;width:auto;transform:translateX(100%);transition:transform .28s ease;border-left:0;z-index:12}
+        .ai-drawer.open{width:auto;transform:none}
+        .ai-inner{width:100%}
+    }
 </style>
 </head>
 <body>

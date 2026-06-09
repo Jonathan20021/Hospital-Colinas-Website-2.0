@@ -140,6 +140,29 @@
 .is-app .doctor-search-form{display:flex;align-items:center;gap:8px;position:relative}
 .is-app .doctor-input-search{min-width:240px}
 
+/* ── Responsive móvil: buscador y tabla de pacientes ─────────────────────── */
+@media(max-width:600px){
+  /* Buscador: input que ocupa, botón compacto al lado; sin lupa suelta ni botón gigante */
+  .is-app .doctor-search-form{width:100%;gap:8px}
+  .is-app .doctor-search-form > svg{display:none}
+  .is-app .doctor-input-search{min-width:0;flex:1 1 auto;width:auto}
+  .is-app .doctor-search-submit{flex:0 0 auto;white-space:nowrap}
+}
+@media(max-width:640px){
+  /* Tabla de pacientes: solo lo esencial en móvil (nombre, cédula, teléfono,
+     imagen, abrir); el resto está en la ficha del paciente. Sin quiebres feos. */
+  .is-app .doctor-table{font-size:.82rem}
+  .is-app .doctor-table thead th,.is-app .doctor-table tbody td{padding:11px 10px}
+  .is-app .doctor-table thead th:nth-child(4),.is-app .doctor-table tbody td:nth-child(4),
+  .is-app .doctor-table thead th:nth-child(5),.is-app .doctor-table tbody td:nth-child(5),
+  .is-app .doctor-table thead th:nth-child(6),.is-app .doctor-table tbody td:nth-child(6){display:none}
+  .is-app .doctor-table tbody td:nth-child(2),
+  .is-app .doctor-table tbody td:nth-child(3){white-space:nowrap}
+  .is-app .doctor-table-patient{gap:9px}
+  .is-app .doctor-table-patient-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .is-app .doctor-cell-muted{display:none}
+}
+
 /* ── TIMELINE / FICHA PACIENTE (paciente.php) ────────────── */
 .is-app .doctor-patient-header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--pro-surface);border:1px solid var(--pro-line);border-radius:var(--pro-r-lg);padding:20px 22px;box-shadow:var(--pro-sh-sm);margin-bottom:4px}
 .is-app .doctor-av-xl{width:72px;height:72px;font-size:1.5rem;flex:none}
