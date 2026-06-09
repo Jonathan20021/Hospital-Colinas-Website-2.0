@@ -170,6 +170,10 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
     <div class="doctor-form-pad">
         <p class="doctor-text-soft" id="imaging-loading">Buscando estudios en el PACS…</p>
         <div id="imaging-list" class="doctor-img-list"></div>
+        <div id="imaging-cand-wrap" hidden>
+            <p class="doctor-img-candhead"><i data-lucide="alert-triangle" class="h-4 w-4"></i> Posibles por nombre — <strong>verifica la identidad</strong> antes de abrir</p>
+            <div id="imaging-cand" class="doctor-img-list"></div>
+        </div>
     </div>
 </section>
 
@@ -180,6 +184,10 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
 .doctor-img-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .doctor-img-meta strong{color:#1e2540;font-size:.95rem}
 .doctor-img-meta span{color:#64748b;font-size:.82rem}
+.doctor-img-row.is-cand{border-color:#fcd9a6;background:#fffaf2}
+.doctor-img-candhead{margin:18px 2px 8px;font-size:.85rem;color:#b45309;display:flex;align-items:center;gap:6px}
+.doctor-img-link{color:#0a7a52;font-size:.74rem;font-weight:600;margin-top:1px}
+.doctor-img-warn{color:#be123c;font-size:.76rem;font-weight:600;margin-top:1px}
 @media(max-width:560px){.doctor-img-row{flex-wrap:wrap}}
 </style>
 
@@ -187,33 +195,73 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
 (function () {
     const pid = <?= (int)$id ?>;
     const viewerBase = <?= json_encode(base_url('portal-medico/visor-imagen'), JSON_UNESCAPED_SLASHES) ?>;
+    const ptName = <?= json_encode($patient['name'] ?? '', JSON_UNESCAPED_UNICODE) ?>;
     const listEl = document.getElementById('imaging-list');
+    const candWrap = document.getElementById('imaging-cand-wrap');
+    const candEl = document.getElementById('imaging-cand');
     const loadEl = document.getElementById('imaging-loading');
     const cntEl  = document.getElementById('imaging-count');
     const escI = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fdate = d => (d && d.length === 8) ? (d.slice(6, 8) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4)) : (d || '');
+    function openViewer(uid, scope) { window.open(viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope), '_blank', 'noopener'); }
+
     (async function () {
         let r;
         try { r = await window.doctorApi('GET', '/portal-doctor/me/patients/' + pid + '/imaging'); }
         catch (e) { r = { ok: false }; }
         if (loadEl) loadEl.style.display = 'none';
         if (!r || !r.ok) { listEl.innerHTML = '<p class="doctor-text-soft">No se pudo consultar el PACS.</p>'; return; }
-        const studies = (r.data && r.data.studies) || [];
-        const scope = (r.data && r.data.scope) || '';
-        if (cntEl) cntEl.textContent = studies.length ? (studies.length + ' estudio(s)') : '';
-        if (!studies.length) {
-            listEl.innerHTML = '<div class="doctor-empty"><div class="doctor-empty-illustration"><i data-lucide="scan-line" class="h-7 w-7"></i></div><p class="doctor-empty-title">Sin estudios de imagen</p><p>No se encontraron estudios en el PACS para la cédula de este paciente.</p></div>';
-            if (window.lucide) lucide.createIcons(); return;
+        const data = r.data || {};
+        const studies = data.studies || [];
+        const candidates = data.candidates || [];
+        const scope = data.scope || '';
+        if (cntEl) cntEl.textContent = studies.length ? (studies.length + ' estudio(s)') : (candidates.length ? (candidates.length + ' posible(s)') : '');
+
+        // Confiables (cédula o nombre+fecha)
+        if (studies.length) {
+            listEl.innerHTML = studies.map(function (s) {
+                const tag = s.linkBy === 'cedula' ? '' : '<span class="doctor-img-link">enlazado por nombre + fecha</span>';
+                return '<div class="doctor-img-row">'
+                    + '<div class="doctor-img-ico">' + escI(s.modality || '—') + '</div>'
+                    + '<div class="doctor-img-meta"><strong>' + escI(s.description || 'Estudio') + '</strong>'
+                    + '<span>' + fdate(s.date) + ' · ' + (s.instances || 0) + ' imágenes · ' + (s.series || 0) + ' serie(s)</span>' + tag + '</div>'
+                    + '<button type="button" class="doctor-btn doctor-btn-primary" data-uid="' + escI(s.studyUID) + '"><i data-lucide="eye" class="h-4 w-4"></i> Abrir visor</button>'
+                    + '</div>';
+            }).join('');
+            listEl.querySelectorAll('button[data-uid]').forEach(function (b) { b.addEventListener('click', function () { openViewer(b.dataset.uid, scope); }); });
+        } else if (!candidates.length) {
+            listEl.innerHTML = '<div class="doctor-empty"><div class="doctor-empty-illustration"><i data-lucide="scan-line" class="h-7 w-7"></i></div><p class="doctor-empty-title">Sin estudios de imagen</p><p>No se encontraron estudios en el PACS para este paciente.</p></div>';
         }
-        listEl.innerHTML = studies.map(function (s) {
-            const url = viewerBase + '?study=' + encodeURIComponent(s.studyUID) + '&scope=' + encodeURIComponent(scope);
-            return '<div class="doctor-img-row">'
-                + '<div class="doctor-img-ico">' + escI(s.modality || '—') + '</div>'
-                + '<div class="doctor-img-meta"><strong>' + escI(s.description || 'Estudio') + '</strong>'
-                + '<span>' + fdate(s.date) + ' · ' + (s.instances || 0) + ' imágenes · ' + (s.series || 0) + ' serie(s)</span></div>'
-                + '<a class="doctor-btn doctor-btn-primary" target="_blank" rel="noopener" href="' + url + '"><i data-lucide="eye" class="h-4 w-4"></i> Abrir visor</a>'
-                + '</div>';
-        }).join('');
+
+        // Posibles por nombre (requieren confirmación del médico)
+        if (candidates.length) {
+            candWrap.hidden = false;
+            candEl.innerHTML = candidates.map(function (s, i) {
+                const warn = s.dobMismatch ? '<span class="doctor-img-warn">⚠ fecha de nacimiento distinta</span>' : '';
+                return '<div class="doctor-img-row is-cand">'
+                    + '<div class="doctor-img-ico">' + escI(s.modality || '—') + '</div>'
+                    + '<div class="doctor-img-meta"><strong>' + escI(s.pname || '—') + '</strong>'
+                    + '<span>' + fdate(s.date) + ' · F. nac.: ' + (fdate(s.dob) || '—') + ' · ' + (s.instances || 0) + ' imágenes</span>' + warn + '</div>'
+                    + '<button type="button" class="doctor-btn doctor-btn-outline" data-cand="' + i + '"><i data-lucide="user-check" class="h-4 w-4"></i> Verificar y ver</button>'
+                    + '</div>';
+            }).join('');
+            candEl.querySelectorAll('button[data-cand]').forEach(function (b) {
+                b.addEventListener('click', async function () {
+                    const s = candidates[+b.dataset.cand];
+                    const msg = 'Verifica que este estudio es del paciente:\n\n'
+                        + 'En el PACS:  ' + (s.pname || '') + '  (F. nac. ' + (fdate(s.dob) || '—') + ')\n'
+                        + 'Paciente:    ' + ptName + '\n'
+                        + (s.dobMismatch ? '\n⚠ La fecha de nacimiento NO coincide. Confirma solo si estás seguro de que es la misma persona.\n' : '')
+                        + '\n¿Abrir este estudio?';
+                    if (!confirm(msg)) return;
+                    b.disabled = true;
+                    let g; try { g = await window.doctorApi('POST', '/portal-doctor/me/patients/' + pid + '/imaging/grant', { study: s.studyUID }); } catch (e) { g = { ok: false }; }
+                    b.disabled = false;
+                    if (g && g.ok && g.data && g.data.scope) openViewer(s.studyUID, g.data.scope);
+                    else alert((g && g.message) || 'No se pudo abrir el estudio.');
+                });
+            });
+        }
         if (window.lucide) lucide.createIcons();
     })();
 })();

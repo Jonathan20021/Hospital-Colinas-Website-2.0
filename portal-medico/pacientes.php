@@ -116,6 +116,8 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
 .doctor-img-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#e7f0ff;color:#1d4ed8;border:1px solid #c9ddff;text-decoration:none;transition:background .12s}
 .doctor-img-badge:hover{background:#d6e6ff}
 .doctor-img-badge svg{width:17px;height:17px}
+.doctor-img-badge.is-posible{background:#fff7ed;color:#b45309;border-color:#fed7aa}
+.doctor-img-badge.is-posible:hover{background:#ffedd5}
 .doctor-img-none{color:#cbd5e1}
 .doctor-img-load{color:#cbd5e1;display:inline-block;animation:imgpulse 1s ease-in-out infinite}
 @keyframes imgpulse{0%,100%{opacity:.25}50%{opacity:1}}
@@ -132,8 +134,11 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
         if (!flags) { clearAll(); return; }
         cells.forEach(function (c) {
             var id = c.getAttribute('data-img-cell');
-            if (flags[id]) {
+            var f = flags[id] || {};
+            if (f.c) {
                 c.innerHTML = '<a class="doctor-img-badge" title="Tiene estudios de imagen — ver" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan"></i></a>';
+            } else if (f.n) {
+                c.innerHTML = '<a class="doctor-img-badge is-posible" title="Posibles estudios por nombre — verifica identidad" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan-search"></i></a>';
             } else {
                 c.innerHTML = '<span class="doctor-img-none">—</span>';
             }
