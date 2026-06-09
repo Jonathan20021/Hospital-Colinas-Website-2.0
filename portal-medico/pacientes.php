@@ -57,6 +57,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                         <th>Seguro</th>
                         <th>Última visita</th>
                         <th class="text-right">Visitas</th>
+                        <th class="text-center">Imagen</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -85,6 +86,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                                 <?php else: ?>—<?php endif; ?>
                             </td>
                             <td class="text-right"><span class="doctor-visit-chip"><?= (int)$p['visits_total'] ?></span></td>
+                            <td class="text-center" data-img-cell="<?= (int)$p['id'] ?>"><span class="doctor-img-load" title="Consultando PACS…">·</span></td>
                             <td>
                                 <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$p['id'])) ?>" class="doctor-table-action" title="Ver historial">
                                     <i data-lucide="chevron-right" class="h-5 w-5"></i>
@@ -109,4 +111,35 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
         <?php endif; ?>
     <?php endif; ?>
 </section>
+
+<style>
+.doctor-img-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#e7f0ff;color:#1d4ed8;border:1px solid #c9ddff;text-decoration:none;transition:background .12s}
+.doctor-img-badge:hover{background:#d6e6ff}
+.doctor-img-badge svg{width:17px;height:17px}
+.doctor-img-none{color:#cbd5e1}
+.doctor-img-load{color:#cbd5e1;display:inline-block;animation:imgpulse 1s ease-in-out infinite}
+@keyframes imgpulse{0%,100%{opacity:.25}50%{opacity:1}}
+</style>
+<script>
+(function () {
+    var cells = Array.prototype.slice.call(document.querySelectorAll('[data-img-cell]'));
+    if (!cells.length || !window.doctorApi) return;
+    var ids = cells.map(function (c) { return parseInt(c.getAttribute('data-img-cell'), 10); });
+    var ptBase = <?= json_encode(base_url('portal-medico/paciente.php'), JSON_UNESCAPED_SLASHES) ?>;
+    function clearAll() { cells.forEach(function (c) { c.innerHTML = '<span class="doctor-img-none">—</span>'; }); }
+    window.doctorApi('POST', '/portal-doctor/me/patients/imaging-flags', { ids: ids }).then(function (r) {
+        var flags = (r && r.ok && r.data && r.data.flags) || null;
+        if (!flags) { clearAll(); return; }
+        cells.forEach(function (c) {
+            var id = c.getAttribute('data-img-cell');
+            if (flags[id]) {
+                c.innerHTML = '<a class="doctor-img-badge" title="Tiene estudios de imagen — ver" href="' + ptBase + '?id=' + id + '#imaging-card"><i data-lucide="scan"></i></a>';
+            } else {
+                c.innerHTML = '<span class="doctor-img-none">—</span>';
+            }
+        });
+        if (window.lucide) lucide.createIcons();
+    }).catch(clearAll);
+})();
+</script>
 <?php doctor_layout_end();
