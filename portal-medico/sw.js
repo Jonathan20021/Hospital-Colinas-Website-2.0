@@ -16,7 +16,7 @@
  */
 'use strict';
 
-const VERSION  = 'hglc-medico-v2';
+const VERSION  = 'hglc-medico-v3';
 const PRECACHE = VERSION + '-precache';
 const RUNTIME  = VERSION + '-runtime';
 
@@ -35,6 +35,17 @@ const OFFLINE_URL = new URL('offline.html', self.location).toString();
 /** Solo estáticos propios del portal son cacheables (jamás PHI). */
 function isCacheableStatic(url) {
   return /\/portal-medico\/(icons\/|manifest\.webmanifest$|offline\.html$)/.test(url.pathname);
+}
+
+/**
+ * Estáticos versionados del sitio (?v=mtime), SIN PHI: librerías del visor
+ * (cornerstone, jsPDF), CSS/JS del portal, fuentes, logos. Se cachean
+ * cache-first porque cambian de URL al cambiar el archivo (auto-bust).
+ * NUNCA cachear nada bajo /api/ (proxy del API y DICOM del PACS = PHI).
+ */
+function isStaticAsset(url) {
+  if (url.pathname.indexOf('/api/') !== -1) return false;
+  return /\/assets\/(vendor|css|js|site|fonts)\/.+\.(js|css|png|jpe?g|svg|webp|woff2?|ttf|ico|gif)$/i.test(url.pathname);
 }
 
 self.addEventListener('install', (event) => {
@@ -101,8 +112,27 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 3) Cualquier otra petición in-scope: red directa (sin caché). El navegador
-  //    aplica su propio HTTP cache; nada clínico se persiste en CacheStorage.
+  // 3) Librerías/estáticos versionados del sitio (sin PHI): cache-first.
+  //    El ?v=mtime hace que un archivo nuevo sea otra URL → se refresca solo.
+  if (isStaticAsset(url)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(RUNTIME);
+      const hit = await cache.match(req);
+      if (hit) return hit;
+      try {
+        const res = await fetch(req);
+        if (res && res.status === 200 && (res.type === 'basic' || res.type === 'cors')) cache.put(req, res.clone());
+        return res;
+      } catch (e) {
+        return hit || new Response('', { status: 504 });
+      }
+    })());
+    return;
+  }
+
+  // 4) Cualquier otra petición in-scope (incluido /api/ y el DICOM): red directa
+  //    (sin caché). El navegador aplica su propio HTTP cache; nada clínico se
+  //    persiste jamás en CacheStorage.
 });
 
 // ── Notificaciones push ────────────────────────────────────────────────

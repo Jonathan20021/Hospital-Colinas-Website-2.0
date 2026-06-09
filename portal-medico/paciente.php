@@ -203,7 +203,15 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
     const cntEl  = document.getElementById('imaging-count');
     const escI = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fdate = d => (d && d.length === 8) ? (d.slice(6, 8) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4)) : (d || '');
-    function openViewer(uid, scope) { window.open(viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope), '_blank', 'noopener'); }
+    function openViewer(uid, scope) {
+        var u = viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope);
+        // En el PWA instalado (standalone), abrir en pestaña nueva sacaría al médico
+        // de la app → navegamos dentro. En navegador, pestaña nueva (compara, deja
+        // el historial abierto).
+        var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+        if (standalone) { window.location.href = u; }
+        else { window.open(u, '_blank', 'noopener'); }
+    }
 
     (async function () {
         // portal-medico.js (que define doctorApi) puede cargar DESPUÉS de este script en línea.

@@ -23,12 +23,16 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Visor de imágenes · Hospital General Las Colinas</title>
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b0e16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="icon" type="image/png" href="<?= e(base_url('assets/site/favicon.png')) ?>">
 <style>
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%}
     body{background:#0b0e16;color:#e6e9f2;font-family:Inter,system-ui,Arial,sans-serif;overflow:hidden;display:flex;flex-direction:column}
-    .v-top{display:flex;align-items:center;gap:8px 12px;padding:9px 14px;background:#111726;border-bottom:1px solid #232c42;flex-wrap:wrap}
+    .v-top{display:flex;align-items:center;gap:8px 12px;padding:calc(9px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left));background:#111726;border-bottom:1px solid #232c42;flex-wrap:wrap}
     .v-top .ttl{font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px}
     .v-top .meta{font-size:.78rem;color:#8b93a9;white-space:nowrap}
     .v-tool{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.8rem;border-radius:9px;padding:7px 10px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:background .12s,border-color .12s;white-space:nowrap}
@@ -64,7 +68,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     .v-pdf:hover{background:#1d4ed8}
     .v-overlay{position:absolute;left:12px;top:10px;font-size:.74rem;color:#cfd6ea;text-shadow:0 1px 2px #000,0 0 4px #000;pointer-events:none;line-height:1.55;max-width:62%}
     .v-overlay b{color:#fff;font-weight:700}
-    .v-nav{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(17,23,38,.78);backdrop-filter:blur(6px);border:1px solid #2b3550;border-radius:999px;padding:5px 8px;z-index:6}
+    .v-nav{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(17,23,38,.78);backdrop-filter:blur(6px);border:1px solid #2b3550;border-radius:999px;padding:5px 8px;z-index:6}
     .v-nav button{appearance:none;border:0;background:#1a2236;color:#cdd4e6;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1.3rem;line-height:1;display:grid;place-items:center}
     .v-nav button:hover{background:#28324e}
     .v-nav button:disabled{opacity:.3;cursor:default}
@@ -116,7 +120,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
 </head>
 <body>
 <header class="v-top">
-    <a href="javascript:window.close()" class="v-back" title="Cerrar">✕</a>
+    <a href="#" class="v-back" id="v-close" title="Cerrar" role="button">✕</a>
     <span class="v-brand"><img src="<?= e(base_url('assets/site/logo.png')) ?>" alt="Hospital General Las Colinas"></span>
     <span class="ttl" id="v-title">Visor de imágenes</span>
     <span class="meta" id="v-meta"></span>
@@ -216,6 +220,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     var ROOT  = <?= json_encode($dwrBase, JSON_UNESCAPED_SLASHES) ?>;
     var AI_ENDPOINT = <?= json_encode(base_url('api/ai-imaging.php'), JSON_UNESCAPED_SLASHES) ?>;
     var CSRF = <?= json_encode(doctor_csrf_token()) ?>;
+    var PACIENTES_URL = <?= json_encode(base_url('portal-medico/pacientes'), JSON_UNESCAPED_SLASHES) ?>;
     var msg = document.getElementById('v-msg'), msgTxt = document.getElementById('v-msg-txt');
     var el = document.getElementById('dicom');
 
@@ -467,6 +472,16 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
     document.getElementById('t-cine').addEventListener('click', toggleCine);
     document.getElementById('t-fs').addEventListener('click', toggleFs);
 
+    // Cerrar adaptado al PWA: si se navegó dentro de la app (standalone) → volver
+    // atrás; si fue una pestaña nueva (navegador) → cerrarla; si no se puede → ir
+    // a la lista de pacientes.
+    function closeViewer() {
+        if (window.history.length > 1) { window.history.back(); return; }
+        window.close();
+        setTimeout(function () { if (!window.closed) location.href = PACIENTES_URL; }, 150);
+    }
+    document.getElementById('v-close').addEventListener('click', function (e) { e.preventDefault(); closeViewer(); });
+
     // Preajustes de ventana (W/L)
     var ddPreset = document.getElementById('dd-preset');
     document.getElementById('t-preset').addEventListener('click', function (e) { e.stopPropagation(); ddPreset.classList.toggle('open'); });
@@ -611,7 +626,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
         var ta     = document.getElementById('ai-q');
         var sendBtn= document.getElementById('ai-send');
         if (!drawer || !body) return;
-        var history = [];   // { role:'user'|'assistant', text }
+        var convo = [];   // { role:'user'|'assistant', text }
         var busy = false;
 
         function toggle(force) {
@@ -700,7 +715,7 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
             if (!img) { addMsg('err', 'No hay una imagen cargada para analizar.'); return; }
             var isAnalyze = (question === '__analyze__' || !question);
             if (!isAnalyze) addMsg('user', escH(question));
-            var prior = history.slice();
+            var prior = convo.slice();
             var load = loadingMsg();
             setBusy(true);
             aiFetch({ image: img, context: aiContext(), question: isAnalyze ? '' : question, history: prior })
@@ -708,9 +723,9 @@ if (!headers_sent()) { header('X-Robots-Tag: noindex, nofollow'); }
                     load.remove();
                     if (j && j.success && j.text) {
                         addMsg('ai', mdLite(j.text));
-                        history.push({ role: 'user', text: isAnalyze ? 'Análisis de la imagen actual.' : question });
-                        history.push({ role: 'assistant', text: j.text });
-                        if (history.length > 16) history = history.slice(-16);
+                        convo.push({ role: 'user', text: isAnalyze ? 'Análisis de la imagen actual.' : question });
+                        convo.push({ role: 'assistant', text: j.text });
+                        if (convo.length > 16) convo = convo.slice(-16);
                     } else {
                         addMsg('err', (j && j.message) ? j.message : 'No se pudo obtener respuesta de la IA.');
                     }
