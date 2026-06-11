@@ -31,6 +31,8 @@ DirectoryIndex index.php
     RewriteRule ^medico/([a-zA-Z0-9_\-]+)/?$ medico.php?slug=$1 [L,QSA]
     RewriteRule ^directorio-medico/?$ directorio-medico.php [L,QSA]
     RewriteRule ^directorio/?$ directorio-medico.php [L,QSA,R=301]
+    RewriteRule ^repositorio/?$ repositorio.php [L,QSA]
+    RewriteRule ^repositorio-digital/?$ /repositorio [L,R=301]
     RewriteRule ^noticias/?$ noticias.php [L,QSA]
     RewriteRule ^noticias/([a-zA-Z0-9_\-]+)/?$ noticia.php?slug=$1 [L,QSA]
     RewriteRule ^sala-de-prensa/?$ noticias.php [L,QSA,R=301]

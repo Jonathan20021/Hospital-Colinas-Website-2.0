@@ -31,6 +31,13 @@ function admin_permission_definitions(): array
             'icon' => 'newspaper',
             'active' => 'noticias',
         ],
+        'repository' => [
+            'label' => 'Repositorio',
+            'description' => 'Gestionar los protocolos y guías del Repositorio Digital.',
+            'href' => 'repositorio.php',
+            'icon' => 'library',
+            'active' => 'repositorio',
+        ],
         'users' => [
             'label' => 'Usuarios admin',
             'description' => 'Administrar cuentas, roles y permisos del panel.',

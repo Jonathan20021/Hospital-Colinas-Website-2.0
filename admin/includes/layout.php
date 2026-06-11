@@ -7,6 +7,7 @@ function admin_header(string $title, string $active = 'dashboard'): void
         'usuarios' => ['href' => 'usuario-form.php', 'label' => 'Nuevo usuario', 'icon' => 'user-plus', 'permission' => 'users'],
         'medicos' => ['href' => 'medico-form.php', 'label' => 'Nuevo médico', 'icon' => 'plus', 'permission' => 'doctors'],
         'noticias' => ['href' => 'noticia-form.php', 'label' => 'Nueva noticia', 'icon' => 'plus', 'permission' => 'news'],
+        'repositorio' => ['href' => 'repositorio-form.php', 'label' => 'Nuevo documento', 'icon' => 'plus', 'permission' => 'repository'],
         'dashboard' => ['href' => 'medico-form.php', 'label' => 'Nuevo médico', 'icon' => 'plus', 'permission' => 'doctors'],
     ];
 

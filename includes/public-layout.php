@@ -63,6 +63,7 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('servicios')) ?>" class="<?= e($navClass('servicios')) ?>">Servicios</a>
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="<?= e($navClass('directorio')) ?>">Directorio
                         médico</a>
+                    <a href="<?= e(base_url('repositorio')) ?>" class="<?= e($navClass('repositorio')) ?>">Repositorio</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="<?= e($navClass('noticias')) ?>">Noticias</a>
                 </nav>
 
@@ -98,6 +99,7 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     </details>
                     <a href="<?= e(base_url('servicios')) ?>" class="mobile-link">Servicios</a>
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="mobile-link">Directorio médico</a>
+                    <a href="<?= e(base_url('repositorio')) ?>" class="mobile-link">Repositorio Digital</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="mobile-link">Noticias</a>
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="mobile-link">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
@@ -151,6 +153,7 @@ function render_public_footer(array $assets, array $contact, string $year): void
                 <h3 class="footer-title">Servicios</h3>
                 <ul class="footer-list">
                     <li><a href="<?= e(base_url('servicios')) ?>">Todos los servicios</a></li>
+                    <li><a href="<?= e(base_url('repositorio')) ?>">Repositorio Digital</a></li>
                     <li><a href="<?= e(base_url('servicios/emergencia-adulto-y-pediatrica')) ?>">Emergencias 24/7</a></li>
                     <li><a href="<?= e(base_url('servicios/laboratorio-clinico')) ?>">Laboratorio clínico</a></li>
                     <li><a href="<?= e(base_url('servicios/tomografia')) ?>">Tomografía</a></li>
