@@ -13,6 +13,8 @@ doctor_require_login();
 $study = preg_replace('/[^0-9.]/', '', (string)($_GET['study'] ?? ''));
 $scope = preg_replace('/[^A-Za-z0-9._-]/', '', (string)($_GET['scope'] ?? ''));
 $dwrBase = base_url('api/imaging-dwr.php') . '/' . $scope;
+$hasReport = !empty($_GET['report']);
+$reportUrl = base_url('portal-medico/informe') . '?study=' . rawurlencode($study) . '&scope=' . rawurlencode($scope);
 
 if (!headers_sent()) {
     header('X-Robots-Tag: noindex, nofollow');
@@ -73,6 +75,8 @@ if (!headers_sent()) {
     .v-brand img{height:24px;width:auto;display:block}
     .v-pdf{background:#2563eb;border-color:#3b82f6;color:#fff}
     .v-pdf:hover{background:#1d4ed8}
+    .v-report{background:#0d9488;border-color:#14b8a6;color:#fff}
+    .v-report:hover{background:#0f766e}
     .v-overlay{position:absolute;left:12px;top:10px;font-size:.74rem;color:#cfd6ea;text-shadow:0 1px 2px #000,0 0 4px #000;pointer-events:none;line-height:1.55;max-width:62%}
     .v-overlay b{color:#fff;font-weight:700}
     .v-nav{position:absolute;left:50%;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);display:none;align-items:center;gap:8px;background:rgba(17,23,38,.78);backdrop-filter:blur(6px);border:1px solid #2b3550;border-radius:999px;padding:5px 8px;z-index:6}
@@ -202,6 +206,7 @@ if (!headers_sent()) {
         <button class="v-tool" id="t-reset" title="Restablecer (R)">⟲ Reset</button>
         <span class="v-sep"></span>
         <button class="v-tool" id="t-fs" title="Pantalla completa (F)">⛶</button>
+        <button class="v-tool v-report" id="t-report" title="Ver el informe radiológico (PDF de Autana)" style="display:none">📄 Informe</button>
         <button class="v-tool v-ai" id="t-ai" title="Asistente de IA — apoyo a la lectura (no es diagnóstico)">✨ IA</button>
         <button class="v-tool v-pdf" id="t-pdf" title="Exportar a PDF (con logo y datos del paciente)">⤓ PDF</button>
     </div>
@@ -265,6 +270,8 @@ if (!headers_sent()) {
     var AI_ENDPOINT = <?= json_encode(base_url('api/ai-imaging.php'), JSON_UNESCAPED_SLASHES) ?>;
     var CSRF = <?= json_encode(doctor_csrf_token()) ?>;
     var PACIENTES_URL = <?= json_encode(base_url('portal-medico/pacientes'), JSON_UNESCAPED_SLASHES) ?>;
+    var REPORT_URL = <?= json_encode($reportUrl, JSON_UNESCAPED_SLASHES) ?>;
+    var HAS_REPORT = <?= $hasReport ? 'true' : 'false' ?>;
     var msg = document.getElementById('v-msg'), msgTxt = document.getElementById('v-msg-txt');
     var el = document.getElementById('dicom');
 
@@ -527,6 +534,19 @@ if (!headers_sent()) {
         setTimeout(function () { if (!window.closed) location.href = PACIENTES_URL; }, 150);
     }
     document.getElementById('v-close').addEventListener('click', function (e) { e.preventDefault(); closeViewer(); });
+
+    // Botón de informe radiológico (PDF de Autana). Visible solo si el estudio tiene
+    // informe (se abrió el visor con &report=1). Abre la página de informe embebido.
+    (function () {
+        var rb = document.getElementById('t-report');
+        if (!rb) return;
+        if (HAS_REPORT) rb.style.display = '';
+        rb.addEventListener('click', function () {
+            var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+            if (standalone) { window.location.href = REPORT_URL; }
+            else { window.open(REPORT_URL, '_blank', 'noopener'); }
+        });
+    })();
 
     // Panel de series deslizable (móvil)
     document.getElementById('t-series').addEventListener('click', function () {

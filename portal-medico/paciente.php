@@ -188,13 +188,16 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
 .doctor-img-candhead{margin:18px 2px 8px;font-size:.85rem;color:#b45309;display:flex;align-items:center;gap:6px}
 .doctor-img-link{color:#0a7a52;font-size:.74rem;font-weight:600;margin-top:1px}
 .doctor-img-warn{color:#be123c;font-size:.76rem;font-weight:600;margin-top:1px}
-@media(max-width:560px){.doctor-img-row{flex-wrap:wrap}}
+.doctor-img-actions{flex:none;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.doctor-img-actions .doctor-btn{justify-content:center;white-space:nowrap}
+@media(max-width:560px){.doctor-img-row{flex-wrap:wrap}.doctor-img-actions{flex-direction:row;flex-wrap:wrap;width:100%}.doctor-img-actions .doctor-btn{flex:1}}
 </style>
 
 <script>
 (function () {
     const pid = <?= (int)$id ?>;
     const viewerBase = <?= json_encode(base_url('portal-medico/visor-imagen'), JSON_UNESCAPED_SLASHES) ?>;
+    const reportBase = <?= json_encode(base_url('portal-medico/informe'), JSON_UNESCAPED_SLASHES) ?>;
     const ptName = <?= json_encode($patient['name'] ?? '', JSON_UNESCAPED_UNICODE) ?>;
     const listEl = document.getElementById('imaging-list');
     const candWrap = document.getElementById('imaging-cand-wrap');
@@ -203,14 +206,32 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
     const cntEl  = document.getElementById('imaging-count');
     const escI = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const fdate = d => (d && d.length === 8) ? (d.slice(6, 8) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4)) : (d || '');
-    function openViewer(uid, scope) {
-        var u = viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope);
+    function isStandalone() {
+        return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+    }
+    function openViewer(uid, scope, hasReport) {
+        var u = viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope) + (hasReport ? '&report=1' : '');
         // En el PWA instalado (standalone), abrir en pestaña nueva sacaría al médico
         // de la app → navegamos dentro. En navegador, pestaña nueva (compara, deja
         // el historial abierto).
-        var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-        if (standalone) { window.location.href = u; }
+        if (isStandalone()) { window.location.href = u; }
         else { window.open(u, '_blank', 'noopener'); }
+    }
+    function openReport(uid, scope, unq) {
+        var u = reportBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope) + (unq ? '&u=' + encodeURIComponent(unq) : '');
+        if (isStandalone()) { window.location.href = u; }
+        else { window.open(u, '_blank', 'noopener'); }
+    }
+    // Botón(es) de informe radiológico: uno por informe (un estudio puede tener varios).
+    function reportBtns(s) {
+        if (!s.report || !s.reports || !s.reports.length) return '';
+        if (s.reports.length === 1) {
+            return '<button type="button" class="doctor-btn doctor-btn-outline" data-rep-uid="' + escI(s.studyUID) + '" data-rep-unq="' + escI(s.reports[0].unq) + '"><i data-lucide="file-text" class="h-4 w-4"></i> Informe</button>';
+        }
+        return s.reports.map(function (r) {
+            var lbl = r.modality || r.desc || 'Informe';
+            return '<button type="button" class="doctor-btn doctor-btn-outline" data-rep-uid="' + escI(s.studyUID) + '" data-rep-unq="' + escI(r.unq) + '" title="' + escI(r.desc || '') + '"><i data-lucide="file-text" class="h-4 w-4"></i> ' + escI(lbl) + '</button>';
+        }).join('');
     }
 
     (async function () {
@@ -235,10 +256,14 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
                     + '<div class="doctor-img-ico">' + escI(s.modality || '—') + '</div>'
                     + '<div class="doctor-img-meta"><strong>' + escI(s.description || 'Estudio') + '</strong>'
                     + '<span>' + fdate(s.date) + ' · ' + (s.instances || 0) + ' imágenes · ' + (s.series || 0) + ' serie(s)</span>' + tag + '</div>'
-                    + '<button type="button" class="doctor-btn doctor-btn-primary" data-uid="' + escI(s.studyUID) + '"><i data-lucide="eye" class="h-4 w-4"></i> Abrir visor</button>'
+                    + '<div class="doctor-img-actions">'
+                    + '<button type="button" class="doctor-btn doctor-btn-primary" data-uid="' + escI(s.studyUID) + '" data-has-report="' + (s.report ? '1' : '') + '"><i data-lucide="eye" class="h-4 w-4"></i> Abrir visor</button>'
+                    + reportBtns(s)
+                    + '</div>'
                     + '</div>';
             }).join('');
-            listEl.querySelectorAll('button[data-uid]').forEach(function (b) { b.addEventListener('click', function () { openViewer(b.dataset.uid, scope); }); });
+            listEl.querySelectorAll('button[data-uid]').forEach(function (b) { b.addEventListener('click', function () { openViewer(b.dataset.uid, scope, b.dataset.hasReport === '1'); }); });
+            listEl.querySelectorAll('button[data-rep-uid]').forEach(function (b) { b.addEventListener('click', function () { openReport(b.dataset.repUid, scope, b.dataset.repUnq); }); });
         } else if (!candidates.length) {
             listEl.innerHTML = '<div class="doctor-empty"><div class="doctor-empty-illustration"><i data-lucide="scan-line" class="h-7 w-7"></i></div><p class="doctor-empty-title">Sin estudios de imagen</p><p>No se encontraron estudios en el PACS para este paciente.</p></div>';
         }
