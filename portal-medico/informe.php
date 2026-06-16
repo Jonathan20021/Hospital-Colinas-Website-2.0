@@ -6,6 +6,9 @@
  * el JWT del médico; el unq se resuelve y valida server-side). El navegador nunca ve el
  * unq, la cookie de Autana ni la IP interna del RIS.
  *
+ * Render con PDF.js (a canvas) — funciona en el navegador Y en el PWA instalado, donde un
+ * <iframe>/<embed> NO renderiza PDFs (los webviews móviles no tienen visor de PDF nativo).
+ *
  * Query: ?study=<StudyInstanceUID>&scope=<scope-token>[&u=<unq>]
  */
 require_once __DIR__ . '/_layout.php';
@@ -17,6 +20,10 @@ $unq   = preg_replace('/[^A-Za-z0-9_]/', '', (string)($_GET['u'] ?? ''));
 
 $base = base_url('api/imaging-report.php') . '/' . rawurlencode($scope) . '/' . rawurlencode($study);
 $pdfUrl = $base . ($unq !== '' ? '?u=' . rawurlencode($unq) : '');
+
+$pjsv  = (string)(@filemtime(__DIR__ . '/../assets/vendor/pdfjs/pdf.min.js') ?: 1);
+$pjs   = base_url('assets/vendor/pdfjs/pdf.min.js') . '?v=' . $pjsv;
+$pjsw  = base_url('assets/vendor/pdfjs/pdf.worker.min.js') . '?v=' . $pjsv;
 
 if (!headers_sent()) {
     header('X-Robots-Tag: noindex, nofollow');
@@ -51,16 +58,21 @@ if (!headers_sent()) {
     .r-btn:hover{background:#222c45}
     .r-btn.primary{background:#2563eb;border-color:#3b82f6;color:#fff}
     .r-btn.primary:hover{background:#1d4ed8}
-    .r-main{flex:1;position:relative;min-height:0;background:#1f2430}
-    #pdf{width:100%;height:100%;border:0;display:none;background:#525659}
-    .r-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#9aa3bb;font-size:.92rem;text-align:center;padding:28px}
+    .r-zoom{display:inline-flex;align-items:center;gap:2px;background:#161d2e;border:1px solid #2b3550;border-radius:9px;padding:2px}
+    .r-zoom button{appearance:none;border:0;background:transparent;color:#cdd4e6;font:inherit;font-size:1rem;width:30px;height:30px;border-radius:7px;cursor:pointer}
+    .r-zoom button:hover{background:#222c45}
+    .r-zoom .pg{font-size:.74rem;color:#8b93a9;min-width:54px;text-align:center;font-variant-numeric:tabular-nums}
+    .r-main{flex:1;position:relative;min-height:0}
+    .r-doc{position:absolute;inset:0;overflow:auto;background:#3a3f4b;padding:14px;display:flex;flex-direction:column;align-items:center;gap:14px;-webkit-overflow-scrolling:touch}
+    .r-doc canvas{background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.45);max-width:none;display:block}
+    .r-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#9aa3bb;font-size:.92rem;text-align:center;padding:28px;background:#0b0e16}
     .r-spin{width:38px;height:38px;border:3px solid #2b3550;border-top-color:#6d8bff;border-radius:50%;animation:rspin 1s linear infinite}
     @keyframes rspin{to{transform:rotate(360deg)}}
     .r-msg .ic{font-size:2.4rem}
     .r-msg .t{color:#e6e9f2;font-weight:600;font-size:1rem}
     .r-msg p{max-width:340px;line-height:1.5}
     @media (max-width:760px){
-        .r-ttl{max-width:38vw}
+        .r-ttl{max-width:34vw}
         .r-btn span.lbl{display:none}
         .r-btn{padding:9px 11px}
     }
@@ -72,48 +84,97 @@ if (!headers_sent()) {
     <span class="r-brand"><img src="<?= e(base_url('assets/site/logo.png')) ?>" alt="Hospital General Las Colinas"></span>
     <span class="r-ttl">Informe radiológico</span>
     <div class="r-actions">
+        <span class="r-zoom" id="r-zoom" style="display:none">
+            <button id="r-zout" title="Alejar" aria-label="Alejar">−</button>
+            <span class="pg" id="r-pg">—</span>
+            <button id="r-zin" title="Acercar" aria-label="Acercar">+</button>
+        </span>
         <a href="#" class="r-btn" id="r-open" title="Abrir en otra pestaña" target="_blank" rel="noopener">⤢ <span class="lbl">Abrir</span></a>
         <a href="#" class="r-btn primary" id="r-dl" title="Descargar PDF" download>⤓ <span class="lbl">Descargar</span></a>
     </div>
 </header>
 <div class="r-main">
-    <iframe id="pdf" title="Informe radiológico"></iframe>
+    <div class="r-doc" id="r-doc"></div>
     <div class="r-msg" id="r-msg"><div class="r-spin"></div><div>Cargando informe…</div></div>
 </div>
+<script src="<?= e($pjs) ?>"></script>
 <script>
 (function () {
     'use strict';
     var PDF_URL  = <?= json_encode($pdfUrl, JSON_UNESCAPED_SLASHES) ?>;
     var STUDY    = <?= json_encode($study) ?>;
+    var WORKER   = <?= json_encode($pjsw, JSON_UNESCAPED_SLASHES) ?>;
     var PACIENTES_URL = <?= json_encode(base_url('portal-medico/pacientes'), JSON_UNESCAPED_SLASHES) ?>;
-    var frame = document.getElementById('pdf');
+    var docEl = document.getElementById('r-doc');
     var msgEl = document.getElementById('r-msg');
     var dlEl  = document.getElementById('r-dl');
     var openEl = document.getElementById('r-open');
+    var zoomEl = document.getElementById('r-zoom');
+    var pgEl  = document.getElementById('r-pg');
 
     function showMsg(ic, title, text) {
         msgEl.innerHTML = '<div class="ic">' + ic + '</div>'
             + (title ? '<div class="t">' + title + '</div>' : '')
             + (text ? '<p>' + text + '</p>' : '');
         msgEl.style.display = 'flex';
-        frame.style.display = 'none';
     }
+    function hideMsg() { msgEl.style.display = 'none'; }
 
     if (!STUDY || !PDF_URL || /\/$/.test(PDF_URL.split('?')[0])) {
-        showMsg('⚠', 'Enlace inválido', 'No se pudo identificar el estudio.');
-        return;
+        return showMsg('⚠', 'Enlace inválido', 'No se pudo identificar el estudio.');
+    }
+    if (!window.pdfjsLib) {
+        return showMsg('⚠', 'No disponible', 'No se pudo cargar el visor de PDF.');
+    }
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER;
+
+    var pdfDoc = null, zoom = 1, rendering = false;
+
+    function renderAll() {
+        if (!pdfDoc || rendering) return;
+        rendering = true;
+        docEl.innerHTML = '';
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);   // cap: límite de canvas en iOS
+        var contW = Math.max(280, docEl.clientWidth - 28);   // ancho útil (menos padding)
+        var chain = Promise.resolve();
+        for (var p = 1; p <= pdfDoc.numPages; p++) {
+            (function (pageNum) {
+                chain = chain.then(function () {
+                    return pdfDoc.getPage(pageNum).then(function (page) {
+                        var v1 = page.getViewport({ scale: 1 });
+                        var cssScale = (contW / v1.width) * zoom;
+                        var vp = page.getViewport({ scale: cssScale * dpr });
+                        var canvas = document.createElement('canvas');
+                        canvas.width = Math.floor(vp.width);
+                        canvas.height = Math.floor(vp.height);
+                        canvas.style.width = Math.floor(vp.width / dpr) + 'px';
+                        canvas.style.height = Math.floor(vp.height / dpr) + 'px';
+                        docEl.appendChild(canvas);
+                        return page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+                    });
+                });
+            })(p);
+        }
+        chain.then(function () { rendering = false; }).catch(function () { rendering = false; });
     }
 
-    // Descargamos el PDF como blob (mismo origen) → render inline fiable + descarga/abrir
-    // sin depender de la disposición del servidor. Si el proxy devuelve 404/JSON (sin
-    // informe o no autorizado), mostramos el mensaje correspondiente.
+    function setZoom(z) {
+        zoom = Math.min(3, Math.max(0.5, z));
+        pgEl.textContent = Math.round(zoom * 100) + '%';
+        renderAll();
+    }
+    document.getElementById('r-zin').addEventListener('click', function () { setZoom(zoom + 0.25); });
+    document.getElementById('r-zout').addEventListener('click', function () { setZoom(zoom - 0.25); });
+
+    // Descargamos el PDF como blob (mismo origen) → render con PDF.js + descarga/abrir
+    // fiables. Si el proxy devuelve 404/JSON (sin informe o no autorizado), mostramos
+    // el mensaje correspondiente.
     fetch(PDF_URL, { credentials: 'same-origin' })
         .then(function (r) {
             var ct = (r.headers.get('Content-Type') || '').toLowerCase();
             if (!r.ok || ct.indexOf('application/pdf') < 0) {
                 return r.text().then(function (t) {
-                    var m = '';
-                    try { m = (JSON.parse(t) || {}).message || ''; } catch (e) {}
+                    var m = ''; try { m = (JSON.parse(t) || {}).message || ''; } catch (e) {}
                     if (r.status === 404) showMsg('📄', 'Sin informe', m || 'Este estudio aún no tiene un informe disponible.');
                     else if (r.status === 401) showMsg('🔒', 'Sesión expirada', 'Vuelve a iniciar sesión en el portal.');
                     else if (r.status === 403) showMsg('⛔', 'No autorizado', 'No tienes acceso a este informe.');
@@ -125,16 +186,30 @@ if (!headers_sent()) {
         })
         .then(function (blob) {
             var url = URL.createObjectURL(blob);
-            frame.src = url;
-            frame.style.display = 'block';
-            msgEl.style.display = 'none';
             dlEl.href = url; dlEl.setAttribute('download', 'informe-' + STUDY + '.pdf');
             openEl.href = url;
+            return blob.arrayBuffer();
+        })
+        .then(function (buf) {
+            return window.pdfjsLib.getDocument({ data: buf }).promise;
+        })
+        .then(function (doc) {
+            pdfDoc = doc;
+            zoomEl.style.display = '';
+            pgEl.textContent = '100%';
+            hideMsg();
+            renderAll();
         })
         .catch(function (e) {
             if (e && e.message === 'no-pdf') return;   // ya mostramos el mensaje
-            showMsg('⚠', 'Error de red', 'No se pudo contactar el servidor del informe.');
+            showMsg('⚠', 'Error', 'No se pudo mostrar el informe.');
         });
+
+    var rzTimer = null;
+    window.addEventListener('resize', function () {
+        clearTimeout(rzTimer);
+        rzTimer = setTimeout(function () { if (pdfDoc) renderAll(); }, 200);
+    });
 
     // Cerrar adaptado al PWA: dentro de la app → atrás; pestaña nueva → cerrar; si no → lista.
     document.getElementById('r-close').addEventListener('click', function (e) {
