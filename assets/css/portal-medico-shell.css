@@ -368,3 +368,90 @@ body.doctor-portal-page:not(.is-app){min-height:100dvh;display:flex;flex-directi
 .doctor-push-dot.on{background:#059669;box-shadow:0 0 0 4px rgba(5,150,105,.18)}
 .doctor-push-actions{display:flex;gap:8px;flex-wrap:wrap}
 .doctor-push-hint{margin:14px 0 0;font-size:.84rem;color:#7a8699;line-height:1.5}
+
+/* ============================================================
+   DASHBOARD INTERACTIVO (jun 2026): gráfico de actividad,
+   mini-calendario navegable, listas en vivo, sparklines reales
+   ============================================================ */
+
+/* acciones del header de tarjeta + botón refrescar */
+.dm-card-h-actions{display:flex;align-items:center;gap:10px}
+.dm-refresh{width:30px;height:30px;border-radius:9px;border:1px solid var(--dm-line);background:var(--dm-surface);
+  display:grid;place-items:center;color:var(--dm-muted);cursor:pointer;flex:none;transition:color .15s,background .15s,border-color .15s}
+.dm-refresh:hover{color:var(--dm-brand2);border-color:var(--dm-brand2);background:#f5f6fb}
+.dm-refresh svg{width:15px;height:15px}
+.dm-refresh.spinning svg{animation:dm-spin .7s linear infinite}
+@keyframes dm-spin{to{transform:rotate(360deg)}}
+
+/* control segmentado (rango del gráfico) */
+.dm-seg{display:inline-flex;background:var(--dm-bg);border:1px solid var(--dm-line);border-radius:10px;padding:3px;gap:2px}
+.dm-seg-btn{border:0;background:transparent;color:var(--dm-muted);font-size:.74rem;font-weight:700;
+  padding:5px 11px;border-radius:8px;cursor:pointer;transition:background .15s,color .15s}
+.dm-seg-btn:hover{color:var(--dm-ink2)}
+.dm-seg-btn.on{background:var(--dm-surface);color:var(--dm-brand2);box-shadow:var(--dm-sh-sm)}
+
+/* tarjeta del gráfico de actividad */
+.dm-actcard .dm-card-h{padding-bottom:6px}
+.dm-actwrap{padding:6px 16px 16px;height:248px;position:relative}
+.dm-actwrap canvas{width:100%!important;height:100%!important}
+
+/* KPIs: sparkline real con trazo animado */
+.dm-kpi-spark{display:block;width:100%;height:24px;margin-top:10px}
+.dm-kpi-spark .fill{opacity:.12}
+
+/* navegación del mini-calendario */
+.dm-minical-nav{display:flex;gap:4px}
+.dm-minical-nav button{width:28px;height:28px;border-radius:8px;border:1px solid var(--dm-line);background:var(--dm-surface);
+  display:grid;place-items:center;color:var(--dm-ink2);cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.dm-minical-nav button:hover{color:var(--dm-brand2);border-color:var(--dm-brand2);background:#f5f6fb}
+.dm-minical-nav button svg{width:16px;height:16px}
+
+/* celdas del calendario: interactivas */
+.dm-cal td[data-iso]{cursor:pointer}
+.dm-cal td[data-iso] span{transition:background .12s,color .12s}
+.dm-cal td[data-iso]:hover span{background:#eef0ff;color:var(--dm-brand2)}
+.dm-cal td.today[data-iso]:hover span{background:var(--dm-brand2);color:#fff}
+.dm-cal td.sel span{box-shadow:0 0 0 2px var(--dm-brand2) inset;color:var(--dm-brand2);font-weight:800}
+.dm-cal td.today.sel span{color:#fff;box-shadow:0 0 0 2px #fff inset}
+.dm-cal td:focus-visible{outline:none}
+.dm-cal td:focus-visible span{box-shadow:0 0 0 2px var(--dm-brand2) inset}
+.dm-cal-cnt{position:absolute;top:-4px;right:-4px;min-width:14px;height:14px;padding:0 3px;border-radius:7px;
+  background:#f59e0b;color:#fff;font-size:.56rem;font-weight:800;display:grid;place-items:center;line-height:1}
+.dm-cal td.today .dm-cal-cnt{background:#fff;color:var(--dm-brand2)}
+
+/* detalle del día seleccionado */
+.dm-minical-detail{border-top:1px solid var(--dm-line);margin-top:2px;padding:12px 16px 16px}
+.dm-mcd-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.dm-mcd-h strong{font-family:'Outfit','Inter',sans-serif;font-size:.86rem;color:var(--dm-ink);text-transform:capitalize}
+.dm-mcd-empty{font-size:.8rem;color:var(--dm-muted);margin:4px 0 0}
+.dm-mcd-row{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:10px;transition:background .15s}
+.dm-mcd-row:hover{background:var(--dm-bg)}
+.dm-mcd-row+.dm-mcd-row{margin-top:1px}
+.dm-mcd-t{font-variant-numeric:tabular-nums;font-weight:800;font-size:.78rem;color:var(--dm-ink);flex:none;width:42px}
+.dm-mcd-n{font-size:.82rem;color:var(--dm-ink2);font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* mini-pills de estado (reutilizadas en el detalle del calendario) */
+.dm-pill{font-size:.62rem;font-weight:800;letter-spacing:.02em;padding:3px 8px;border-radius:999px;flex:none;white-space:nowrap}
+.dm-pill-scheduled{background:#eef0ff;color:#4338ca}
+.dm-pill-completed{background:#e7f7ee;color:#047857}
+.dm-pill-cancelled{background:#fde7ec;color:#be123c}
+.dm-pill-pending{background:#fef3e2;color:#b45309}
+
+/* fila de próxima cita con acción de cancelar inline */
+.dm-row-live{display:flex;align-items:center;gap:6px;padding:0}
+.dm-row-live .dm-row-link{display:flex;align-items:center;gap:12px;padding:11px;border-radius:13px;flex:1;min-width:0;transition:background .15s}
+.dm-row-live .dm-row-link:hover{background:var(--dm-bg)}
+.dm-row-cancel{width:30px;height:30px;border-radius:9px;border:1px solid var(--dm-line);background:var(--dm-surface);
+  display:grid;place-items:center;color:var(--dm-muted2);cursor:pointer;flex:none;margin-right:4px;transition:color .15s,border-color .15s,background .15s}
+.dm-row-cancel:hover{color:#be123c;border-color:#f3b9c6;background:#fff5f7}
+.dm-row-cancel svg{width:15px;height:15px}
+.dm-row-cancel:disabled{opacity:.5;cursor:default}
+
+/* flash sutil al refrescar listas en vivo */
+.dm-flash{animation:dm-flash 1s ease}
+@keyframes dm-flash{0%{box-shadow:0 0 0 0 rgba(79,70,229,.0)}30%{box-shadow:0 0 0 3px rgba(79,70,229,.12)}100%{box-shadow:var(--dm-sh-sm)}}
+@media (prefers-reduced-motion: reduce){
+  .dm-refresh.spinning svg{animation:none}
+  .dm-flash{animation:none}
+  .dm-kpi-spark path{transition:none!important}
+}

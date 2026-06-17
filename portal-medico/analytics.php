@@ -110,7 +110,8 @@ doctor_layout_begin('Analytics', 'analytics');
     <?php endif; ?>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="<?= e(base_url('assets/vendor/chartjs/chart.umd.min.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/vendor/chartjs/chart.umd.min.js') ?: time())) ?>"></script>
+<script>window.Chart||document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>');</script>
 <script>
 const monthlyData = <?= json_encode($data['monthly'], JSON_UNESCAPED_UNICODE) ?>;
 const statusData = {

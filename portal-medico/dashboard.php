@@ -24,36 +24,20 @@ $today = date('Y-m-d');
 $todays   = array_values(array_filter($upcoming, fn($a) => substr($a['appointment_time'], 0, 10) === $today));
 $nextOnes = array_slice(array_filter($upcoming, fn($a) => substr($a['appointment_time'], 0, 10) !== $today), 0, 5);
 
-// Días del mes con citas (para el mini-calendario)
+// Días del mes con citas (para el mini-calendario, render inicial sin JS)
 $eventDays = [];
 foreach ($events as $ev) {
     $d = substr((string)($ev['start'] ?? $ev['date'] ?? ''), 0, 10);
     if ($d !== '') $eventDays[$d] = true;
 }
 
-// Sparkline determinista (textura visual en los KPIs)
-$sparkPath = function (int $seed, int $points = 12): array {
-    $vals = []; srand($seed * 7919);
-    for ($i = 0; $i < $points; $i++) $vals[] = rand(20, 90);
-    srand();
-    $W = 100; $H = 24; $step = $W / max(1, ($points - 1)); $d = '';
-    foreach ($vals as $i => $v) {
-        $x = $i * $step; $y = $H - (($v / 100) * $H);
-        $d .= ($i === 0 ? 'M' : 'L') . round($x, 1) . ',' . round($y, 1) . ' ';
-    }
-    return ['line' => trim($d), 'fill' => trim($d) . 'L' . $W . ',' . $H . ' L0,' . $H . ' Z'];
-};
-$sp = [
-    $sparkPath((int)$stats['today_count'] + 3),
-    $sparkPath((int)$stats['pending_count'] + 5),
-    $sparkPath((int)$stats['completed_count'] + 11),
-    $sparkPath((int)$stats['week_count'] + 7),
-];
+// Sparkline de respaldo (sin JS/API): forma plana neutra; JS la sustituye por datos reales.
+$flatSpark = ['line' => 'M0,18 L100,18', 'fill' => 'M0,18 L100,18 L100,24 L0,24 Z'];
 $kpis = [
-    ['Citas de hoy','calendar-clock','indigo','#4f46e5','Hoy',         (int)$stats['today_count'],     $sp[0]],
-    ['Pendientes','clock','amber','#b45309','Por atender',             (int)$stats['pending_count'],   $sp[1]],
-    ['Completadas','check-circle-2','green','#059669','Acumulado',     (int)$stats['completed_count'], $sp[2]],
-    ['Esta semana','calendar-range','violet','#7c3aed','7 días',       (int)$stats['week_count'],      $sp[3]],
+    ['Citas de hoy','calendar-clock','indigo','#4f46e5','Hoy',     (int)$stats['today_count'],     'total'],
+    ['Pendientes','clock','amber','#b45309','Por atender',         (int)$stats['pending_count'],   'scheduled'],
+    ['Completadas','check-circle-2','green','#059669','Acumulado', (int)$stats['completed_count'], 'completed'],
+    ['Esta semana','calendar-range','violet','#7c3aed','7 días',   (int)$stats['week_count'],      'total'],
 ];
 
 doctor_layout_begin('Inicio', 'dashboard');
@@ -80,7 +64,7 @@ doctor_layout_begin('Inicio', 'dashboard');
 
         <!-- KPIs -->
         <div class="dm-kpis">
-            <?php foreach ($kpis as [$lbl,$ic,$tone,$col,$tag,$val,$spk]): ?>
+            <?php foreach ($kpis as [$lbl,$ic,$tone,$col,$tag,$val,$series]): ?>
             <article class="dm-kpi <?= $tone ?>">
                 <div class="dm-kpi-top">
                     <span class="dm-kpi-ic"><i data-lucide="<?= $ic ?>"></i></span>
@@ -88,21 +72,39 @@ doctor_layout_begin('Inicio', 'dashboard');
                 </div>
                 <div class="v"><?= number_format($val) ?></div>
                 <div class="l"><?= e($lbl) ?></div>
-                <svg class="dm-kpi-spark" viewBox="0 0 100 24" preserveAspectRatio="none" style="color:<?= $col ?>">
-                    <path class="fill" fill="currentColor" d="<?= e($spk['fill']) ?>"/>
-                    <path fill="none" stroke="currentColor" stroke-width="2" d="<?= e($spk['line']) ?>"/>
+                <svg class="dm-kpi-spark" data-series="<?= e($series) ?>" viewBox="0 0 100 24" preserveAspectRatio="none" style="color:<?= $col ?>">
+                    <path class="fill" fill="currentColor" d="<?= e($flatSpark['fill']) ?>"/>
+                    <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="<?= e($flatSpark['line']) ?>"/>
                 </svg>
             </article>
             <?php endforeach; ?>
         </div>
 
+        <!-- ACTIVIDAD (gráfico interactivo) -->
+        <section class="dm-card dm-actcard">
+            <header class="dm-card-h">
+                <h2><i data-lucide="bar-chart-3"></i> Actividad de citas</h2>
+                <div class="dm-seg" id="dm-activity-range">
+                    <button type="button" class="dm-seg-btn" data-days="7">7 d</button>
+                    <button type="button" class="dm-seg-btn on" data-days="14">14 d</button>
+                    <button type="button" class="dm-seg-btn" data-days="30">30 d</button>
+                </div>
+            </header>
+            <div class="dm-actwrap">
+                <canvas id="dm-activity-chart"></canvas>
+            </div>
+        </section>
+
         <!-- PRÓXIMAS CITAS -->
-        <section class="dm-card">
+        <section class="dm-card dm-live">
             <header class="dm-card-h">
                 <h2><i data-lucide="list-checks"></i> Próximas citas</h2>
-                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Ver agenda <i data-lucide="arrow-right"></i></a>
+                <div class="dm-card-h-actions">
+                    <button type="button" class="dm-refresh" data-dm-refresh title="Actualizar" aria-label="Actualizar"><i data-lucide="refresh-cw"></i></button>
+                    <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Ver agenda <i data-lucide="arrow-right"></i></a>
+                </div>
             </header>
-            <div class="dm-list">
+            <div class="dm-list" id="dm-upcoming">
                 <?php if (!$nextOnes): ?>
                     <div class="dm-empty">
                         <div class="dm-empty-ic"><i data-lucide="calendar-check"></i></div>
@@ -141,13 +143,16 @@ doctor_layout_begin('Inicio', 'dashboard');
 
     <!-- ASIDE -->
     <aside class="dm-dash-aside">
-        <!-- mini-calendario -->
-        <section class="dm-card">
+        <!-- mini-calendario interactivo -->
+        <section class="dm-card" id="dm-minical">
             <header class="dm-cal-h">
-                <span class="mo"><?= e($mesesES[(int)date('n')] . ' de ' . date('Y')) ?></span>
-                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Agenda</a>
+                <span class="mo" id="dm-minical-label"><?= e($mesesES[(int)date('n')] . ' de ' . date('Y')) ?></span>
+                <div class="dm-minical-nav">
+                    <button type="button" id="dm-minical-prev" aria-label="Mes anterior"><i data-lucide="chevron-left"></i></button>
+                    <button type="button" id="dm-minical-next" aria-label="Mes siguiente"><i data-lucide="chevron-right"></i></button>
+                </div>
             </header>
-            <div class="dm-cal">
+            <div class="dm-cal" id="dm-minical-grid">
                 <table>
                     <thead><tr><th>L</th><th>M</th><th>X</th><th>J</th><th>V</th><th>S</th><th>D</th></tr></thead>
                     <tbody>
@@ -172,15 +177,19 @@ doctor_layout_begin('Inicio', 'dashboard');
                     </tbody>
                 </table>
             </div>
+            <div class="dm-minical-detail" id="dm-minical-detail" hidden></div>
         </section>
 
         <!-- pacientes de hoy -->
-        <section class="dm-card">
+        <section class="dm-card dm-live">
             <header class="dm-card-h">
                 <h2><i data-lucide="users"></i> Pacientes de hoy</h2>
-                <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Ver</a>
+                <div class="dm-card-h-actions">
+                    <button type="button" class="dm-refresh" data-dm-refresh title="Actualizar" aria-label="Actualizar"><i data-lucide="refresh-cw"></i></button>
+                    <a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="dm-clink">Ver</a>
+                </div>
             </header>
-            <div style="padding:8px 0 10px">
+            <div style="padding:8px 0 10px" id="dm-today">
                 <?php if (!$todays): ?>
                     <div class="dm-empty">
                         <div class="dm-empty-ic"><i data-lucide="coffee"></i></div>
@@ -209,4 +218,23 @@ doctor_layout_begin('Inicio', 'dashboard');
         </section>
     </aside>
 </div>
+
+<?php
+$dashJsVer  = (string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-dashboard.js') ?: time());
+$chartJsVer = (string)(@filemtime(__DIR__ . '/../assets/vendor/chartjs/chart.umd.min.js') ?: time());
+?>
+<script>
+window.DM_DASH = {
+    today: <?= json_encode($today) ?>,
+    events: <?= json_encode($events, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) ?>,
+    urls: {
+        consulta: <?= json_encode(base_url('portal-medico/consulta.php'), JSON_UNESCAPED_SLASHES) ?>,
+        agenda:   <?= json_encode(base_url('portal-medico/agenda.php'),   JSON_UNESCAPED_SLASHES) ?>,
+        paciente: <?= json_encode(base_url('portal-medico/paciente.php'), JSON_UNESCAPED_SLASHES) ?>
+    }
+};
+</script>
+<script src="<?= e(base_url('assets/vendor/chartjs/chart.umd.min.js')) ?>?v=<?= e($chartJsVer) ?>"></script>
+<script>window.Chart||document.write('<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"><\/script>');</script>
+<script src="<?= e(base_url('assets/js/portal-medico-dashboard.js')) ?>?v=<?= e($dashJsVer) ?>"></script>
 <?php doctor_layout_end();
