@@ -9,15 +9,15 @@ if ($status !== '') $query['status'] = $status;
 $res = portal_api_call('GET', '/portal/me/appointments', $query, portal_token());
 $list = is_array($res['data'] ?? null) ? $res['data'] : [];
 
+$estadoEs = ['scheduled' => 'Programada', 'completed' => 'Atendida', 'cancelled' => 'Cancelada', 'pending' => 'Pendiente'];
+$mesesES  = [1=>'ene',2=>'feb',3=>'mar',4=>'abr',5=>'may',6=>'jun',7=>'jul',8=>'ago',9=>'sep',10=>'oct',11=>'nov',12=>'dic'];
+
 portal_layout_begin('Mis citas', 'mis-citas');
 ?>
-<header class="portal-header">
-    <div>
-        <p class="section-label">Historial</p>
-        <h1>Mis citas</h1>
-    </div>
-    <a href="<?= e(base_url('portal/agendar.php')) ?>" class="btn btn-green"><i data-lucide="calendar-plus" class="h-4 w-4"></i> Nueva cita</a>
-</header>
+<div class="pa-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div><h1>Mis citas</h1><p>Tus próximas citas y las que ya tuviste.</p></div>
+    <a href="<?= e(base_url('portal/agendar.php')) ?>" class="pa-btn pa-btn-green"><i data-lucide="calendar-plus"></i> Nueva cita</a>
+</div>
 
 <div class="portal-filters">
     <a href="?" class="portal-chip <?= $status === '' ? 'is-active' : '' ?>">Todas</a>
@@ -26,31 +26,33 @@ portal_layout_begin('Mis citas', 'mis-citas');
     <a href="?status=cancelled" class="portal-chip <?= $status === 'cancelled' ? 'is-active' : '' ?>">Canceladas</a>
 </div>
 
-<section class="portal-card">
-    <?php if (!$list): ?>
-        <div class="portal-empty">
-            <i data-lucide="calendar-x" class="h-10 w-10"></i>
-            <p>No hay citas para mostrar.</p>
-        </div>
-    <?php else: ?>
-        <table class="portal-table">
-            <thead><tr><th>Fecha y hora</th><th>Médico</th><th>Especialidad</th><th>Estado</th><th></th></tr></thead>
-            <tbody>
-            <?php foreach ($list as $a): ?>
-                <tr>
-                    <td><?= e(date('d/m/Y H:i', strtotime($a['appointment_time']))) ?></td>
-                    <td><?= e($a['doctor_name'] ?? '') ?></td>
-                    <td><?= e($a['specialty'] ?? '') ?></td>
-                    <td><span class="portal-status portal-status-<?= e($a['status']) ?>"><?= e($a['status']) ?></span></td>
-                    <td>
-                        <?php if ($a['status'] === 'scheduled'): ?>
-                            <button type="button" class="portal-text-link js-cancel-appt" data-appt-id="<?= (int)$a['id'] ?>">Cancelar</button>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
-</section>
+<?php if (!$list): ?>
+    <div class="pa-empty">
+        <div class="ic"><i data-lucide="calendar-x"></i></div>
+        <h2>No hay citas para mostrar</h2>
+        <p>Cuando agendes una cita aparecerá aquí. Puedes reservar con el especialista que necesites.</p>
+        <a href="<?= e(base_url('portal/agendar.php')) ?>" class="pa-btn pa-btn-green" style="margin-top:18px"><i data-lucide="calendar-plus"></i> Agendar una cita</a>
+    </div>
+<?php else: ?>
+    <div class="pa-list">
+        <?php foreach ($list as $a): $ts = strtotime($a['appointment_time']); $st = $a['status']; ?>
+            <div class="pa-item">
+                <span class="pa-item-ic" style="flex-direction:column;width:58px;height:58px;gap:0">
+                    <strong style="font-family:'Outfit';font-size:1.25rem;font-weight:800;line-height:1"><?= (int)date('j', $ts) ?></strong>
+                    <span style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em"><?= e($mesesES[(int)date('n', $ts)]) ?></span>
+                </span>
+                <div class="pa-item-main">
+                    <div class="t"><?= e($a['doctor_name'] ?? 'Médico') ?></div>
+                    <div class="s"><i data-lucide="clock" style="width:15px;height:15px;display:inline;vertical-align:-2px"></i> <?= e(date('H:i', $ts)) ?><?php if (!empty($a['specialty'])): ?> · <?= e($a['specialty']) ?><?php endif; ?></div>
+                    <div class="pa-chips"><span class="portal-status portal-status-<?= e($st) ?>"><?= e($estadoEs[$st] ?? $st) ?></span></div>
+                </div>
+                <?php if ($st === 'scheduled'): ?>
+                    <div class="pa-item-actions">
+                        <button type="button" class="pa-btn pa-btn-soft pa-btn-sm js-cancel-appt" data-appt-id="<?= (int)$a['id'] ?>"><i data-lucide="x"></i> Cancelar</button>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
 <?php portal_layout_end();
