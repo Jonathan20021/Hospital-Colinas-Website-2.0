@@ -58,6 +58,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                         <th>Última visita</th>
                         <th class="text-right">Visitas</th>
                         <th class="text-center">Imagen</th>
+                        <th class="text-center">Lab</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -87,6 +88,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
                             </td>
                             <td class="text-right"><span class="doctor-visit-chip"><?= (int)$p['visits_total'] ?></span></td>
                             <td class="text-center" data-img-cell="<?= (int)$p['id'] ?>"><span class="doctor-img-load" title="Consultando PACS…">·</span></td>
+                            <td class="text-center" data-lab-cell="<?= (int)$p['id'] ?>"><span class="doctor-img-load" title="Consultando laboratorio…">·</span></td>
                             <td>
                                 <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$p['id'])) ?>" class="doctor-table-action" title="Ver historial">
                                     <i data-lucide="chevron-right" class="h-5 w-5"></i>
@@ -121,6 +123,9 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
 .doctor-img-none{color:#cbd5e1}
 .doctor-img-load{color:#cbd5e1;display:inline-block;animation:imgpulse 1s ease-in-out infinite}
 @keyframes imgpulse{0%,100%{opacity:.25}50%{opacity:1}}
+.doctor-lab-badge{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#e7f7ee;color:#047857;border:1px solid #bbf0d2;text-decoration:none;transition:background .12s}
+.doctor-lab-badge:hover{background:#d6f0e1}
+.doctor-lab-badge svg{width:17px;height:17px}
 </style>
 <script>
 (function () {
@@ -148,6 +153,35 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
         }).catch(clearAll);
     }
     // Esperar a que portal-medico.js defina doctorApi (puede cargar DESPUÉS de este script en línea).
+    var tries = 0;
+    (function ready() {
+        if (window.doctorApi) return run();
+        if (tries++ < 100) setTimeout(ready, 50);
+    })();
+})();
+</script>
+<script>
+(function () {
+    var cells = Array.prototype.slice.call(document.querySelectorAll('[data-lab-cell]'));
+    if (!cells.length) return;
+    var ids = cells.map(function (c) { return parseInt(c.getAttribute('data-lab-cell'), 10); });
+    var ptBase = <?= json_encode(base_url('portal-medico/paciente.php'), JSON_UNESCAPED_SLASHES) ?>;
+    function clearAll() { cells.forEach(function (c) { c.innerHTML = '<span class="doctor-img-none">—</span>'; }); }
+    function run() {
+        window.doctorApi('POST', '/portal-doctor/me/patients/lab-flags', { ids: ids }).then(function (r) {
+            var flags = (r && r.ok && r.data && r.data.flags) || null;
+            if (!flags) { clearAll(); return; }
+            cells.forEach(function (c) {
+                var id = c.getAttribute('data-lab-cell');
+                if (flags[id]) {
+                    c.innerHTML = '<a class="doctor-lab-badge" title="Tiene resultados de laboratorio — ver" href="' + ptBase + '?id=' + id + '#lab-card"><i data-lucide="flask-conical"></i></a>';
+                } else {
+                    c.innerHTML = '<span class="doctor-img-none">—</span>';
+                }
+            });
+            if (window.lucide) lucide.createIcons();
+        }).catch(clearAll);
+    }
     var tries = 0;
     (function ready() {
         if (window.doctorApi) return run();

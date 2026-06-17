@@ -302,6 +302,77 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
 })();
 </script>
 
+<!-- ── Resultados de laboratorio (Probeta) ───────────────────────────── -->
+<section class="doctor-card mt-4" id="lab-card">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="flask-conical" class="h-5 w-5"></i> Resultados de laboratorio</h2>
+        <span class="doctor-text-soft" id="lab-count"></span>
+    </header>
+    <div class="doctor-form-pad">
+        <p class="doctor-text-soft" id="lab-loading">Buscando órdenes de laboratorio…</p>
+        <div id="lab-list" class="doctor-lab-list"></div>
+    </div>
+</section>
+<style>
+.doctor-lab-list{display:flex;flex-direction:column;gap:10px}
+.doctor-lab-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid #e6e8f0;border-radius:12px;background:#fff}
+.doctor-lab-ico{flex:none;width:48px;height:48px;border-radius:10px;background:#eef2ff;color:#3949ab;display:grid;place-items:center}
+.doctor-lab-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.doctor-lab-meta strong{color:#1e2540;font-size:.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doctor-lab-meta span{color:#64748b;font-size:.82rem}
+.doctor-lab-tag{flex:none;font-size:.68rem;font-weight:700;padding:3px 9px;border-radius:999px;background:#e7f7ee;color:#047857;white-space:nowrap}
+.doctor-lab-tag.pend{background:#fef3e2;color:#b45309}
+.doctor-lab-actions{flex:none}
+.doctor-lab-actions .doctor-btn{justify-content:center;white-space:nowrap}
+@media(max-width:560px){.doctor-lab-row{flex-wrap:wrap}.doctor-lab-actions{width:100%}.doctor-lab-actions .doctor-btn{width:100%}}
+</style>
+<script>
+(function () {
+    const pid = <?= (int)$id ?>;
+    const labBase = <?= json_encode(base_url('portal-medico/resultados-lab'), JSON_UNESCAPED_SLASHES) ?>;
+    const listEl = document.getElementById('lab-list');
+    const loadEl = document.getElementById('lab-loading');
+    const cntEl  = document.getElementById('lab-count');
+    const escL = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    function isStandalone() { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true; }
+    function openLab(order) { var u = labBase + '?patient=' + pid + '&order=' + encodeURIComponent(order); if (isStandalone()) window.location.href = u; else window.open(u, '_blank', 'noopener'); }
+    function fdate(s) { if (!s) return ''; var d = new Date(String(s).replace(' ', 'T')); if (isNaN(d)) return String(s).slice(0, 10); return ('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear(); }
+
+    (async function () {
+        for (var _i = 0; _i < 100 && !window.doctorApi; _i++) await new Promise(function (res) { setTimeout(res, 50); });
+        let r;
+        try { r = await window.doctorApi('GET', '/portal-doctor/me/patients/' + pid + '/lab'); }
+        catch (e) { r = { ok: false }; }
+        if (loadEl) loadEl.style.display = 'none';
+        if (!r || !r.ok) { listEl.innerHTML = '<p class="doctor-text-soft">No se pudo consultar el laboratorio.</p>'; return; }
+        const orders = (r.data && r.data.orders) || [];
+        if (cntEl) cntEl.textContent = orders.length ? (orders.length + ' orden(es)') : '';
+        if (!orders.length) {
+            listEl.innerHTML = '<div class="doctor-empty"><div class="doctor-empty-illustration"><i data-lucide="flask-conical" class="h-7 w-7"></i></div><p class="doctor-empty-title">Sin resultados de laboratorio</p><p>No se encontraron órdenes de laboratorio para este paciente.</p></div>';
+            if (window.lucide) lucide.createIcons();
+            return;
+        }
+        listEl.innerHTML = orders.map(function (o) {
+            const exams = (o.examenes || []);
+            const exTxt = exams.slice(0, 3).join(', ') + (exams.length > 3 ? (' y ' + (exams.length - 3) + ' más') : '');
+            const hasRes = (o.num_resultados || 0) > 0;
+            const tag = hasRes
+                ? '<span class="doctor-lab-tag">' + o.num_resultados + ' resultado' + (o.num_resultados === 1 ? '' : 's') + '</span>'
+                : '<span class="doctor-lab-tag pend">' + escL(o.estado || 'En proceso') + '</span>';
+            return '<div class="doctor-lab-row">'
+                + '<div class="doctor-lab-ico"><i data-lucide="flask-conical" class="h-5 w-5"></i></div>'
+                + '<div class="doctor-lab-meta"><strong>' + escL(exTxt || ('Orden #' + o.id)) + '</strong>'
+                + '<span>' + fdate(o.fecha) + ' · Orden #' + o.id + (o.doctor ? (' · ' + escL(o.doctor)) : '') + '</span></div>'
+                + tag
+                + (hasRes ? '<div class="doctor-lab-actions"><button type="button" class="doctor-btn doctor-btn-primary" data-order="' + escL(o.id) + '"><i data-lucide="file-text" class="h-4 w-4"></i> Ver resultados</button></div>' : '')
+                + '</div>';
+        }).join('');
+        listEl.querySelectorAll('button[data-order]').forEach(function (b) { b.addEventListener('click', function () { openLab(b.dataset.order); }); });
+        if (window.lucide) lucide.createIcons();
+    })();
+})();
+</script>
+
 <script>
 (function () {
     const pid = <?= (int)$id ?>;
