@@ -18,6 +18,8 @@ if ($token === '') {
 
 portal_layout_begin('Verificar correo', 'verificar');
 ?>
+<div class="portal-auth-shell">
+    <?php portal_auth_intro(); ?>
 <div class="portal-auth-card">
     <?php if ($success): ?>
         <i data-lucide="mail-check" class="h-12 w-12 text-emerald-600 mx-auto"></i>
@@ -30,5 +32,6 @@ portal_layout_begin('Verificar correo', 'verificar');
         <p class="portal-subtitle"><?= e($message) ?></p>
         <a href="<?= e(base_url('portal/login.php')) ?>" class="portal-text-link block mt-4">Volver al inicio de sesión</a>
     <?php endif; ?>
+</div>
 </div>
 <?php portal_layout_end();

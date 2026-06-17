@@ -30,11 +30,11 @@ portal_layout_begin('Mis recetas', 'recetas');
     <div class="pa-list">
         <?php foreach ($recetas as $r): $pdf = base_url('portal/receta-pdf.php?note=' . (int)$r['note_id']); ?>
             <div class="pa-item">
-                <span class="pa-item-ic" style="background:#e3f7ee;color:var(--pa-green)"><i data-lucide="file-text"></i></span>
+                <span class="pa-item-ic portal-item-icon-green"><i data-lucide="file-text"></i></span>
                 <div class="pa-item-main">
                     <div class="t">Receta del <?= e(pa_fecha_larga($r['date'])) ?></div>
                     <div class="s"><strong><?= e($r['doctor']) ?></strong><?= $r['specialty'] ? ' · ' . e($r['specialty']) : '' ?></div>
-                    <?php if (!empty($r['preview'])): ?><div class="s" style="color:var(--pa-muted)"><?= e($r['preview']) ?>…</div><?php endif; ?>
+                    <?php if (!empty($r['preview'])): ?><div class="s portal-muted-copy"><?= e($r['preview']) ?>…</div><?php endif; ?>
                 </div>
                 <div class="pa-item-actions">
                     <a class="pa-btn pa-btn-primary pa-btn-sm" href="<?= e($pdf) ?>" target="_blank" rel="noopener"><i data-lucide="eye"></i> Ver</a>

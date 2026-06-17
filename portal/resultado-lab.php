@@ -77,7 +77,7 @@ if (!headers_sent()) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Informe de resultados · Hospital General Las Colinas</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#0b0e16">
+<meta name="theme-color" content="#262161">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -86,15 +86,15 @@ if (!headers_sent()) {
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%;overscroll-behavior:none}
     body{background:#0b0e16;color:#e6e9f2;font-family:Inter,system-ui,Arial,sans-serif;overflow:hidden;display:flex;flex-direction:column;-webkit-tap-highlight-color:transparent}
-    .r-top{display:flex;align-items:center;gap:8px 12px;padding:calc(9px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left));background:#111726;border-bottom:1px solid #232c42;flex-wrap:wrap}
-    .r-back{color:#cdd4e6;text-decoration:none;font-size:1rem;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:#1a2236;border:1px solid #2b3550;cursor:pointer}
-    .r-back:hover{background:#222c45}
-    .r-ttl{font-weight:700;font-size:.95rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .r-top{display:flex;align-items:center;gap:8px 12px;padding:calc(9px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) 9px calc(14px + env(safe-area-inset-left));background:#fff;border-bottom:1px solid #dfe4ee;flex-wrap:wrap}
+    .r-back{color:#262161;text-decoration:none;font-size:1rem;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9px;background:#f4f5fa;border:1px solid #dfe4ee;cursor:pointer}
+    .r-back:hover{background:#efeff8}
+    .r-ttl{font-weight:800;font-size:.95rem;color:#262161;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .r-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .r-btn{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.82rem;border-radius:9px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none}
-    .r-btn:hover{background:#222c45}
-    .r-btn.primary{background:#2563eb;border-color:#3b82f6;color:#fff}
-    .r-btn.primary:hover{background:#1d4ed8}
+    .r-btn{appearance:none;border:1px solid #cfd5e3;background:#fff;color:#262161;font:inherit;font-size:.82rem;font-weight:700;border-radius:9px;padding:9px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;text-decoration:none}
+    .r-btn:hover{background:#efeff8}
+    .r-btn.primary{background:#4b972d;border-color:#4b972d;color:#fff}
+    .r-btn.primary:hover{background:#397b22;border-color:#397b22}
     .r-main{flex:1;position:relative;min-height:0}
     .r-scroll{position:absolute;inset:0;overflow:auto;background:#3a3f4b;padding:18px 12px;-webkit-overflow-scrolling:touch}
     /* ───── documento (réplica del reporte de Probeta) ───── */
@@ -142,6 +142,7 @@ if (!headers_sent()) {
     .pie{margin-top:20px;padding-top:8px;border-top:1px solid #e3e3e3;display:flex;justify-content:space-between;font-size:9px;color:#888}
     .r-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#9aa3bb;font-size:.92rem;text-align:center;padding:28px;background:#0b0e16}
     .r-msg .ic{font-size:2.4rem}.r-msg .t{color:#e6e9f2;font-weight:600;font-size:1rem}
+    .r-notice{position:fixed;right:16px;bottom:16px;z-index:20;max-width:min(360px,calc(100vw - 32px));padding:13px 15px;border:1px solid #efb8c5;border-radius:10px;background:#fff0f3;color:#8d1932;font-size:.88rem;box-shadow:0 18px 40px -25px rgba(15,22,52,.7)}
     @media (max-width:760px){
         .r-ttl{max-width:40vw}.r-btn span.lbl{display:none}.r-btn{padding:9px 11px}
         .paper{padding:16px 12px;font-size:11px}.cab{flex-direction:column}.mb img{height:42px}
@@ -160,6 +161,7 @@ if (!headers_sent()) {
         <?php endif; ?>
     </div>
 </header>
+<div class="r-notice" id="r-notice" role="alert" hidden></div>
 <div class="r-main">
 <?php if (!$ok): ?>
     <div class="r-msg"><div class="ic">🧪</div>
@@ -252,6 +254,13 @@ if (!headers_sent()) {
 <script>
 (function () {
     var PACIENTES_URL = <?= json_encode(base_url('portal/laboratorio.php'), JSON_UNESCAPED_SLASHES) ?>;
+    function notice(message) {
+        var n = document.getElementById('r-notice');
+        if (!n) return;
+        n.textContent = message;
+        n.hidden = false;
+        window.setTimeout(function () { n.hidden = true; }, 5000);
+    }
     document.getElementById('r-close').addEventListener('click', function (e) {
         e.preventDefault();
         if (window.history.length > 1) { window.history.back(); return; }
@@ -397,7 +406,7 @@ if (!headers_sent()) {
             var fn = 'Resultados_'+String(p.nombre||'').replace(/[^a-z0-9]+/gi,'_').slice(0,30)+'_orden'+h.orden+'.pdf';
             doc.save(fn);
         } catch (e) {
-            alert('No se pudo generar el PDF. Puedes usar la opción de imprimir del navegador.');
+            notice('No se pudo generar el PDF. Puedes usar la opción de imprimir del navegador.');
         } finally {
             pdfBtn.disabled = false; pdfBtn.innerHTML = old;
         }

@@ -14,7 +14,7 @@ $mesesES  = [1=>'ene',2=>'feb',3=>'mar',4=>'abr',5=>'may',6=>'jun',7=>'jul',8=>'
 
 portal_layout_begin('Mis citas', 'mis-citas');
 ?>
-<div class="pa-head" style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap">
+<div class="portal-page-title portal-page-title-row">
     <div><h1>Mis citas</h1><p>Tus próximas citas y las que ya tuviste.</p></div>
     <a href="<?= e(base_url('portal/agendar.php')) ?>" class="pa-btn pa-btn-green"><i data-lucide="calendar-plus"></i> Nueva cita</a>
 </div>
@@ -31,19 +31,19 @@ portal_layout_begin('Mis citas', 'mis-citas');
         <div class="ic"><i data-lucide="calendar-x"></i></div>
         <h2>No hay citas para mostrar</h2>
         <p>Cuando agendes una cita aparecerá aquí. Puedes reservar con el especialista que necesites.</p>
-        <a href="<?= e(base_url('portal/agendar.php')) ?>" class="pa-btn pa-btn-green" style="margin-top:18px"><i data-lucide="calendar-plus"></i> Agendar una cita</a>
+        <a href="<?= e(base_url('portal/agendar.php')) ?>" class="pa-btn pa-btn-green portal-empty-action"><i data-lucide="calendar-plus"></i> Agendar una cita</a>
     </div>
 <?php else: ?>
     <div class="pa-list">
         <?php foreach ($list as $a): $ts = strtotime($a['appointment_time']); $st = $a['status']; ?>
             <div class="pa-item">
-                <span class="pa-item-ic" style="flex-direction:column;width:58px;height:58px;gap:0">
-                    <strong style="font-family:'Outfit';font-size:1.25rem;font-weight:800;line-height:1"><?= (int)date('j', $ts) ?></strong>
-                    <span style="font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em"><?= e($mesesES[(int)date('n', $ts)]) ?></span>
+                <span class="pa-item-ic portal-date-icon">
+                    <strong><?= (int)date('j', $ts) ?></strong>
+                    <span><?= e($mesesES[(int)date('n', $ts)]) ?></span>
                 </span>
                 <div class="pa-item-main">
                     <div class="t"><?= e($a['doctor_name'] ?? 'Médico') ?></div>
-                    <div class="s"><i data-lucide="clock" style="width:15px;height:15px;display:inline;vertical-align:-2px"></i> <?= e(date('H:i', $ts)) ?><?php if (!empty($a['specialty'])): ?> · <?= e($a['specialty']) ?><?php endif; ?></div>
+                    <div class="s"><i data-lucide="clock" class="portal-inline-icon"></i> <?= e(date('H:i', $ts)) ?><?php if (!empty($a['specialty'])): ?> · <?= e($a['specialty']) ?><?php endif; ?></div>
                     <div class="pa-chips"><span class="portal-status portal-status-<?= e($st) ?>"><?= e($estadoEs[$st] ?? $st) ?></span></div>
                 </div>
                 <?php if ($st === 'scheduled'): ?>

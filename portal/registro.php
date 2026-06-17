@@ -39,6 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 portal_layout_begin('Crear cuenta', 'registro');
 ?>
+<div class="portal-auth-shell">
+    <?php portal_auth_intro(); ?>
 <div class="portal-auth-card portal-auth-wide">
     <h1>Crear cuenta de paciente</h1>
     <p class="portal-subtitle">Necesitamos tus datos básicos para crear tu expediente y poder agendar citas en línea.</p>
@@ -85,13 +87,15 @@ portal_layout_begin('Crear cuenta', 'registro');
             </div>
 
             <div class="portal-grid-2">
-                <div>
+                <div class="portal-password-field">
                     <label class="form-label" for="password">Contraseña</label>
                     <input type="password" name="password" id="password" class="form-input" required minlength="8" autocomplete="new-password">
+                    <button type="button" class="portal-password-toggle" data-target="password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
                 </div>
-                <div>
+                <div class="portal-password-field">
                     <label class="form-label" for="password_confirm">Confirmar contraseña</label>
                     <input type="password" name="password_confirm" id="password_confirm" class="form-input" required minlength="8" autocomplete="new-password">
+                    <button type="button" class="portal-password-toggle" data-target="password_confirm" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
                 </div>
             </div>
 
@@ -104,5 +108,6 @@ portal_layout_begin('Crear cuenta', 'registro');
             </p>
         </form>
     <?php endif; ?>
+</div>
 </div>
 <?php portal_layout_end();

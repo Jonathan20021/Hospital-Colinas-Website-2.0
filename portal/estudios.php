@@ -29,6 +29,7 @@ portal_layout_begin('Mis imágenes', 'estudios');
 <script>
 (function () {
     var csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    var proxyUrl = <?= json_encode(base_url('api/portal-proxy.php'), JSON_UNESCAPED_SLASHES) ?>;
     var viewerBase = <?= json_encode(base_url('portal/visor-imagen.php'), JSON_UNESCAPED_SLASHES) ?>;
     var loadEl = document.getElementById('img-loading');
     var listEl = document.getElementById('img-list');
@@ -38,7 +39,7 @@ portal_layout_begin('Mis imágenes', 'estudios');
     function fdate(d){ return (d&&d.length>=8)?(d.slice(6,8)+'/'+d.slice(4,6)+'/'+d.slice(0,4)):'—'; }
 
     function proxy(method, path, payload){
-        return fetch('/api/portal-proxy.php',{method:'POST',credentials:'same-origin',
+        return fetch(proxyUrl,{method:'POST',credentials:'same-origin',
             headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},
             body:JSON.stringify({method:method,path:path,query:method==='GET'?(payload||{}):undefined})
         }).then(function(r){ return r.text().then(function(t){ var j; try{j=JSON.parse(t);}catch(e){j={success:false};} return {ok:r.ok&&j.success,status:r.status,data:j.data,message:j.message}; }); });
@@ -58,10 +59,10 @@ portal_layout_begin('Mis imágenes', 'estudios');
         listEl.hidden = false;
         listEl.innerHTML = studies.map(function(s){
             return '<div class="pa-item">'
-                + '<div class="pa-item-ic" style="background:#fdf0dd;color:#b45309"><i data-lucide="scan"></i></div>'
+                + '<div class="pa-item-ic portal-item-icon-image"><i data-lucide="scan"></i></div>'
                 + '<div class="pa-item-main"><div class="t">' + esc(s.description || 'Estudio de imagen') + '</div>'
                 + '<div class="s">' + fdate(s.date) + ' · ' + (s.instances || 0) + ' imágenes · ' + (s.series || 0) + ' serie(s)</div>'
-                + '<div class="pa-chips"><span class="pa-chip" style="background:#fdf0dd;color:#b45309">' + esc(s.modality || 'Estudio') + '</span></div></div>'
+                + '<div class="pa-chips"><span class="pa-chip portal-chip-image">' + esc(s.modality || 'Estudio') + '</span></div></div>'
                 + '<div class="pa-item-actions"><button type="button" class="pa-btn pa-btn-primary pa-btn-sm" data-uid="' + esc(s.studyUID) + '"><i data-lucide="eye"></i> Ver imágenes</button></div>'
                 + '</div>';
         }).join('');

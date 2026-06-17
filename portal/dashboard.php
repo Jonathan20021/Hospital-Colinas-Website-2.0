@@ -11,15 +11,16 @@ $patient  = $meRes['data'] ?? [];
 $upcoming = is_array($apptRes['data'] ?? null) ? $apptRes['data'] : [];
 $next     = $upcoming[0] ?? null;
 
-// Conteos para las métricas (locales = rápidos; lab puede tardar un poco)
-$cnt = function (string $path, string $key) use ($token): ?int {
-    $r = portal_api_call('GET', $path, [], $token);
-    if (!($r['ok'] ?? false)) return null;
-    return isset($r['data'][$key]) ? (int)$r['data'][$key] : null;
-};
-$nConsultas = $cnt('/portal/me/consultations', 'count');
-$nRecetas   = $cnt('/portal/me/prescriptions', 'count');
-$nLab       = $cnt('/portal/me/lab', 'count');
+$consultRes = portal_api_call('GET', '/portal/me/consultations', [], $token);
+$rxRes      = portal_api_call('GET', '/portal/me/prescriptions', [], $token);
+$labRes     = portal_api_call('GET', '/portal/me/lab', [], $token);
+
+$consultas = is_array($consultRes['data']['consultations'] ?? null) ? $consultRes['data']['consultations'] : [];
+$recetas   = is_array($rxRes['data']['prescriptions'] ?? null) ? $rxRes['data']['prescriptions'] : [];
+$labs      = is_array($labRes['data']['orders'] ?? null) ? $labRes['data']['orders'] : [];
+$nConsultas = $consultRes['ok'] ? (int)($consultRes['data']['count'] ?? count($consultas)) : null;
+$nRecetas   = $rxRes['ok'] ? (int)($rxRes['data']['count'] ?? count($recetas)) : null;
+$nLab       = $labRes['ok'] ? (int)($labRes['data']['count'] ?? count($labs)) : null;
 
 $pName   = (string)($patient['name'] ?? (portal_patient()['name'] ?? ''));
 $friendly= trim(mb_convert_case(mb_strtolower($pName, 'UTF-8'), MB_CASE_TITLE, 'UTF-8'));
@@ -37,84 +38,152 @@ $edad = '';
 if (!empty($patient['dob'])) { $t = strtotime((string)$patient['dob']); if ($t) $edad = (int)((time() - $t) / 31557600) . ' años'; }
 $sexo = ['Male' => 'M', 'Female' => 'F'][$patient['gender'] ?? ''] ?? '';
 $mesesES = [1=>'enero',2=>'febrero',3=>'marzo',4=>'abril',5=>'mayo',6=>'junio',7=>'julio',8=>'agosto',9=>'septiembre',10=>'octubre',11=>'noviembre',12=>'diciembre'];
+$diasES = [1=>'Lunes',2=>'Martes',3=>'Miércoles',4=>'Jueves',5=>'Viernes',6=>'Sábado',7=>'Domingo'];
+
+$activity = [];
+foreach (array_slice($consultas, 0, 2) as $c) {
+    $activity[] = [
+        'ts' => strtotime((string)($c['date'] ?? '')) ?: 0,
+        'icon' => 'stethoscope',
+        'title' => 'Consulta registrada',
+        'detail' => trim((string)($c['doctor'] ?? '') . (!empty($c['specialty']) ? ' · ' . $c['specialty'] : '')),
+        'url' => base_url('portal/consultas.php'),
+    ];
+}
+foreach (array_slice($recetas, 0, 2) as $r) {
+    $activity[] = [
+        'ts' => strtotime((string)($r['date'] ?? '')) ?: 0,
+        'icon' => 'file-text',
+        'title' => 'Receta disponible',
+        'detail' => (string)($r['doctor'] ?? 'Emitida por tu médico'),
+        'url' => base_url('portal/recetas.php'),
+    ];
+}
+foreach (array_slice($labs, 0, 2) as $o) {
+    if ((int)($o['num_resultados'] ?? 0) < 1) continue;
+    $activity[] = [
+        'ts' => strtotime((string)($o['fecha'] ?? '')) ?: 0,
+        'icon' => 'flask-conical',
+        'title' => 'Resultado de laboratorio disponible',
+        'detail' => implode(', ', array_slice((array)($o['examenes'] ?? []), 0, 2)) ?: 'Orden de laboratorio',
+        'url' => base_url('portal/resultado-lab.php?order=' . (int)$o['id']),
+    ];
+}
+usort($activity, fn(array $a, array $b): int => $b['ts'] <=> $a['ts']);
+$activity = array_slice($activity, 0, 4);
 
 portal_layout_begin('Inicio', 'dashboard');
 ?>
-<div class="pa-head">
-    <h1><?= e($saludo) ?><?= $first !== '' ? ', ' . e($first) : '' ?></h1>
-    <p>Bienvenido a tu portal. Aquí tienes tu historial médico en un solo lugar.</p>
-</div>
-
-<div class="pa-dash">
-    <!-- Perfil -->
-    <div class="pa-col">
-        <section class="pa-card2 pa-profile">
-            <div class="pa-avatar"><?= e($initials) ?></div>
-            <div class="pa-name"><?= e($friendly ?: 'Paciente') ?></div>
-            <div class="pa-sub"><?= e(trim($edad . ($edad && $sexo ? ' · ' : '') . ($sexo === 'M' ? 'Masculino' : ($sexo === 'F' ? 'Femenino' : '')))) ?: 'Paciente del hospital' ?></div>
-            <div class="pa-facts">
-                <?php if (!empty($patient['cedula'])): ?><div class="f"><span class="k">Documento</span><span class="v"><?= e($patient['cedula']) ?></span></div><?php endif; ?>
-                <?php if (!empty($patient['phone'])): ?><div class="f"><span class="k">Teléfono</span><span class="v"><?= e($patient['phone']) ?></span></div><?php endif; ?>
-                <div class="f"><span class="k">Seguro</span><span class="v"><?= e($patient['insurance_provider'] ?: 'No registrado') ?></span></div>
-            </div>
-            <a href="<?= e(base_url('portal/perfil.php')) ?>" class="pa-btn pa-btn-soft pa-btn-block pa-btn-sm"><i data-lucide="user-cog"></i> Mi perfil</a>
-        </section>
+<header class="portal-page-title portal-page-title-row">
+    <div>
+        <h1><?= e($saludo) ?><?= $first !== '' ? ', ' . e($first) : '' ?></h1>
+        <p>Aquí tienes un resumen claro de tu información y actividad reciente.</p>
     </div>
+    <a href="<?= e(base_url('portal/agendar.php')) ?>" class="btn btn-green"><i data-lucide="calendar-plus"></i> Agendar una cita</a>
+</header>
 
-    <!-- Próxima cita + métricas -->
-    <div class="pa-col">
-        <section class="pa-card2 pa-next">
-            <div class="pa-card2-head" style="padding:0 0 14px"><h2><i data-lucide="calendar-clock"></i> Tu próxima cita</h2>
-                <a href="<?= e(base_url('portal/mis-citas.php')) ?>" class="pa-clink">Ver todas <i data-lucide="arrow-right"></i></a></div>
+<div class="portal-dashboard-layout">
+    <div class="portal-dashboard-main">
+        <section class="portal-surface portal-next-appointment">
+            <div class="portal-next-head">
+                <h2><i data-lucide="calendar-clock"></i> Tu próxima cita</h2>
+                <a href="<?= e(base_url('portal/mis-citas.php')) ?>" class="portal-text-link">Ver todas</a>
+            </div>
             <?php if ($next): $ts = strtotime($next['appointment_time']); ?>
-                <div class="when">
-                    <span class="d"><?= (int)date('j', $ts) ?> <?= e($mesesES[(int)date('n', $ts)]) ?></span>
-                    <span class="t"><?= e(date('H:i', $ts)) ?></span>
-                    <span class="pa-status"><?= e($next['status'] === 'scheduled' ? 'Confirmada' : $next['status']) ?></span>
+                <div class="portal-next-body">
+                    <div class="portal-date-block">
+                        <span class="day-name"><?= e($diasES[(int)date('N', $ts)]) ?></span>
+                        <strong><?= (int)date('j', $ts) ?></strong>
+                        <span class="month"><?= e(ucfirst($mesesES[(int)date('n', $ts)])) ?> <?= e(date('Y', $ts)) ?></span>
+                    </div>
+                    <div class="portal-appt-details">
+                        <div class="portal-appt-detail"><i data-lucide="clock-3"></i><div><strong><?= e(date('h:i a', $ts)) ?></strong><br><span class="portal-status portal-status-<?= e($next['status'] ?? 'scheduled') ?>"><?= e(($next['status'] ?? '') === 'scheduled' ? 'Confirmada' : ($next['status'] ?? 'Programada')) ?></span></div></div>
+                        <div class="portal-appt-detail"><i data-lucide="user-round"></i><div><strong><?= e($next['doctor_name'] ?? 'Médico') ?></strong><br><?= e($next['specialty'] ?? 'Consulta médica') ?></div></div>
+                        <?php if (!empty($next['office_name'])): ?><div class="portal-appt-detail"><i data-lucide="map-pin"></i><div><?= e($next['office_name']) ?></div></div><?php endif; ?>
+                    </div>
+                    <div class="portal-prep">
+                        <h3>Prepárate para tu cita</h3>
+                        <ul class="portal-checklist">
+                            <li><i data-lucide="circle-check"></i> Llega 15 minutos antes.</li>
+                            <li><i data-lucide="circle-check"></i> Lleva tu cédula y carnet del seguro.</li>
+                            <li><i data-lucide="circle-check"></i> Anota tus dudas o síntomas importantes.</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="who"><?= e($next['doctor_name'] ?? 'Médico') ?> <?php if (!empty($next['specialty'])): ?><span>· <?= e($next['specialty']) ?></span><?php endif; ?></div>
-                <div class="pa-timeline">
-                    <div class="pa-tl"><span class="pa-tl-dot"></span><span class="pa-tl-line"></span><div><div class="l">Llega 15 minutos antes</div><div class="h">Para registrarte con tranquilidad</div></div></div>
-                    <div class="pa-tl"><span class="pa-tl-dot"></span><span class="pa-tl-line"></span><div><div class="l">Trae tu cédula y carnet del seguro</div><div class="h">Te agilizan la admisión</div></div></div>
-                    <div class="pa-tl"><span class="pa-tl-dot"></span><div><div class="l">Consulta con <?= e($next['doctor_name'] ?? 'tu médico') ?></div><div class="h"><?= e(date('d/m/Y', $ts)) ?> · <?= e(date('H:i', $ts)) ?></div></div></div>
+                <div class="portal-next-actions">
+                    <a href="<?= e(base_url('portal/mis-citas.php?status=scheduled')) ?>" class="btn btn-green"><i data-lucide="calendar-check"></i> Ver detalle de la cita</a>
+                    <a href="<?= e(base_url('portal/agendar.php')) ?>" class="btn btn-outline"><i data-lucide="calendar-plus"></i> Agendar otra</a>
                 </div>
             <?php else: ?>
-                <div style="text-align:center;padding:14px 0 6px">
-                    <p style="color:var(--pa-ink2);font-size:1.04rem;margin:0 0 14px">No tienes citas próximas.</p>
-                    <a href="<?= e(base_url('portal/agendar.php')) ?>" class="pa-btn pa-btn-green"><i data-lucide="calendar-plus"></i> Agendar una cita</a>
+                <div class="pa-empty">
+                    <div class="ic"><i data-lucide="calendar-plus"></i></div>
+                    <h2>No tienes citas próximas</h2>
+                    <p>Elige una especialidad, un médico y el horario que te convenga.</p>
+                    <a href="<?= e(base_url('portal/agendar.php')) ?>" class="btn btn-green"><i data-lucide="calendar-plus"></i> Agendar una cita</a>
                 </div>
             <?php endif; ?>
         </section>
 
-        <div class="pa-stats">
-            <a class="pa-stat" href="<?= e(base_url('portal/consultas.php')) ?>">
-                <div class="pa-stat-top"><span class="pa-stat-ic ic-violet"><i data-lucide="stethoscope"></i></span></div>
-                <div class="pa-stat-val"><?= $nConsultas !== null ? $nConsultas : '—' ?></div><div class="pa-stat-lbl">Consultas</div>
+        <div class="portal-metrics">
+            <a class="portal-metric" href="<?= e(base_url('portal/consultas.php')) ?>">
+                <span class="portal-metric-icon"><i data-lucide="stethoscope"></i></span>
+                <span><strong><?= $nConsultas !== null ? $nConsultas : '—' ?></strong>Consultas</span>
+                <i class="portal-metric-arrow" data-lucide="arrow-right"></i>
             </a>
-            <a class="pa-stat" href="<?= e(base_url('portal/recetas.php')) ?>">
-                <div class="pa-stat-top"><span class="pa-stat-ic ic-green"><i data-lucide="file-text"></i></span></div>
-                <div class="pa-stat-val"><?= $nRecetas !== null ? $nRecetas : '—' ?></div><div class="pa-stat-lbl">Recetas</div>
+            <a class="portal-metric" href="<?= e(base_url('portal/recetas.php')) ?>">
+                <span class="portal-metric-icon"><i data-lucide="file-text"></i></span>
+                <span><strong><?= $nRecetas !== null ? $nRecetas : '—' ?></strong>Recetas</span>
+                <i class="portal-metric-arrow" data-lucide="arrow-right"></i>
             </a>
-            <a class="pa-stat" href="<?= e(base_url('portal/laboratorio.php')) ?>">
-                <div class="pa-stat-top"><span class="pa-stat-ic ic-teal"><i data-lucide="flask-conical"></i></span></div>
-                <div class="pa-stat-val"><?= $nLab !== null ? $nLab : '—' ?></div><div class="pa-stat-lbl">Resultados de lab</div>
-            </a>
-            <a class="pa-stat" href="<?= e(base_url('portal/estudios.php')) ?>">
-                <div class="pa-stat-top"><span class="pa-stat-ic ic-amber"><i data-lucide="scan"></i></span></div>
-                <div class="pa-stat-val" style="font-size:1.1rem;padding:6px 0">Ver</div><div class="pa-stat-lbl">Mis imágenes</div>
+            <a class="portal-metric" href="<?= e(base_url('portal/laboratorio.php')) ?>">
+                <span class="portal-metric-icon"><i data-lucide="flask-conical"></i></span>
+                <span><strong><?= $nLab !== null ? $nLab : '—' ?></strong>Órdenes de laboratorio</span>
+                <i class="portal-metric-arrow" data-lucide="arrow-right"></i>
             </a>
         </div>
-    </div>
-</div>
 
-<!-- Accesos -->
-<div class="pa-head" style="margin:30px 0 16px"><h1 style="font-size:1.35rem">Todo tu historial</h1></div>
-<div class="pa-grid">
-    <a class="pa-card" href="<?= e(base_url('portal/agendar.php')) ?>"><span class="pa-card-ic ic-green"><i data-lucide="calendar-plus"></i></span><h2>Agendar una cita</h2><p>Reserva con el especialista que necesites.</p><span class="pa-go">Abrir <i data-lucide="arrow-right"></i></span></a>
-    <a class="pa-card" href="<?= e(base_url('portal/mis-citas.php')) ?>"><span class="pa-card-ic ic-blue"><i data-lucide="calendar-check"></i></span><h2>Mis citas</h2><p>Tus próximas citas y las anteriores.</p><span class="pa-go">Abrir <i data-lucide="arrow-right"></i></span></a>
-    <a class="pa-card" href="<?= e(base_url('portal/consultas.php')) ?>"><span class="pa-card-ic ic-violet"><i data-lucide="stethoscope"></i></span><h2>Mis consultas</h2><p>Lo que te indicó el médico en cada visita.</p><span class="pa-go">Abrir <i data-lucide="arrow-right"></i></span></a>
-    <a class="pa-card" href="<?= e(base_url('portal/recetas.php')) ?>"><span class="pa-card-ic ic-green"><i data-lucide="file-text"></i></span><h2>Mis recetas</h2><p>Verlas o descargarlas en PDF.</p><span class="pa-go">Abrir <i data-lucide="arrow-right"></i></span></a>
-    <a class="pa-card" href="<?= e(base_url('portal/laboratorio.php')) ?>"><span class="pa-card-ic ic-teal"><i data-lucide="flask-conical"></i></span><h2>Resultados de laboratorio</h2><p>Tus análisis de sangre, orina y más.</p><span class="pa-go">Abrir <i data-lucide="arrow-right"></i></span></a>
-    <a class="pa-card" href="<?= e(base_url('portal/estudios.php')) ?>"><span class="pa-card-ic ic-amber"><i data-lucide="scan"></i></span><h2>Mis imágenes</h2><p>Radiografías, sonografías y otros estudios.</p><span class="pa-go">Abrir <i data-lucide="arrow-right"></i></span></a>
+        <section class="portal-surface portal-activity">
+            <h2><i data-lucide="activity"></i> Actividad reciente</h2>
+            <?php if ($activity): ?>
+                <div class="portal-activity-list">
+                    <?php foreach ($activity as $item): ?>
+                        <a class="portal-activity-row" href="<?= e($item['url']) ?>">
+                            <span class="portal-activity-icon"><i data-lucide="<?= e($item['icon']) ?>"></i></span>
+                            <span class="portal-activity-copy"><strong><?= e($item['title']) ?></strong><span><?= e($item['detail']) ?></span></span>
+                            <time datetime="<?= e(date('Y-m-d', $item['ts'])) ?>"><?= e(date('d/m/Y', $item['ts'])) ?></time>
+                            <i data-lucide="chevron-right"></i>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <p class="portal-subtitle">Tu actividad clínica reciente aparecerá aquí.</p>
+            <?php endif; ?>
+        </section>
+    </div>
+
+    <aside class="portal-dashboard-side">
+        <section class="portal-surface portal-health-summary">
+            <h2><i data-lucide="user-round"></i> Resumen de tu cuenta</h2>
+            <dl class="portal-health-list">
+                <div class="portal-health-row"><dt>Nombre</dt><dd><strong><?= e($friendly ?: 'Paciente') ?></strong></dd></div>
+                <?php if ($edad): ?><div class="portal-health-row"><dt>Edad</dt><dd><strong><?= e($edad) ?></strong></dd></div><?php endif; ?>
+                <div class="portal-health-row"><dt>Seguro médico</dt><dd><strong><?= e(($patient['insurance_provider'] ?? '') ?: 'No registrado') ?></strong></dd></div>
+                <div class="portal-health-row"><dt>Correo</dt><dd><strong><?= !empty($patient['email_verified_at']) ? 'Verificado' : 'Pendiente' ?></strong></dd></div>
+            </dl>
+            <a href="<?= e(base_url('portal/perfil.php')) ?>" class="btn btn-outline w-full"><i data-lucide="user-cog"></i> Ver perfil completo</a>
+        </section>
+
+        <section class="portal-surface portal-quick-links">
+            <h2><i data-lucide="layout-list"></i> Accesos rápidos</h2>
+            <nav class="portal-link-list" aria-label="Accesos rápidos">
+                <a class="portal-link-row" href="<?= e(base_url('portal/agendar.php')) ?>"><span class="portal-link-icon"><i data-lucide="calendar-plus"></i></span><span>Agendar una cita</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/mis-citas.php')) ?>"><span class="portal-link-icon"><i data-lucide="calendar-days"></i></span><span>Mis citas</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/consultas.php')) ?>"><span class="portal-link-icon"><i data-lucide="stethoscope"></i></span><span>Mis consultas</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/recetas.php')) ?>"><span class="portal-link-icon"><i data-lucide="file-text"></i></span><span>Mis recetas</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/laboratorio.php')) ?>"><span class="portal-link-icon"><i data-lucide="flask-conical"></i></span><span>Resultados</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/estudios.php')) ?>"><span class="portal-link-icon"><i data-lucide="scan-line"></i></span><span>Mis imágenes</span><i data-lucide="chevron-right"></i></a>
+            </nav>
+        </section>
+    </aside>
 </div>
 <?php portal_layout_end();

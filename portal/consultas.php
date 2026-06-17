@@ -46,13 +46,13 @@ portal_layout_begin('Mis consultas', 'consultas');
                     <div class="row"><div class="k">Procedimientos</div><div class="v"><?= e($c['procedimientos']) ?></div></div>
                 <?php endif; ?>
                 <?php if (empty($c['motivo']) && empty($c['diagnostico']) && empty($c['indicaciones']) && empty($c['procedimientos'])): ?>
-                    <div class="row"><div class="v" style="color:var(--pa-muted)">Esta consulta no tiene notas registradas.</div></div>
+                    <div class="row"><div class="v portal-muted-copy">Esta consulta no tiene notas registradas.</div></div>
                 <?php endif; ?>
             </div>
             <div class="pa-chips">
-                <?php if (!empty($c['has_rx'])): ?><a class="pa-chip rx" href="<?= e(base_url('portal/recetas.php')) ?>" style="text-decoration:none">🧾 Tiene receta — verla</a><?php endif; ?>
-                <?php if (!empty($c['lab_orders'])): ?><a class="pa-chip lab" href="<?= e(base_url('portal/laboratorio.php')) ?>" style="text-decoration:none">🧪 Ordenó laboratorio</a><?php endif; ?>
-                <?php if (!empty($c['imaging_orders'])): ?><a class="pa-chip" href="<?= e(base_url('portal/estudios.php')) ?>" style="text-decoration:none">🩻 Ordenó imágenes</a><?php endif; ?>
+                <?php if (!empty($c['has_rx'])): ?><a class="pa-chip rx" href="<?= e(base_url('portal/recetas.php')) ?>"><i data-lucide="file-text"></i> Ver receta</a><?php endif; ?>
+                <?php if (!empty($c['lab_orders'])): ?><a class="pa-chip lab" href="<?= e(base_url('portal/laboratorio.php')) ?>"><i data-lucide="flask-conical"></i> Ver laboratorio</a><?php endif; ?>
+                <?php if (!empty($c['imaging_orders'])): ?><a class="pa-chip" href="<?= e(base_url('portal/estudios.php')) ?>"><i data-lucide="scan-line"></i> Ver imágenes</a><?php endif; ?>
             </div>
         </article>
     <?php endforeach; ?>

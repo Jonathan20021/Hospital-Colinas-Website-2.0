@@ -13,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 portal_layout_begin('Recuperar contraseña', 'recuperar');
 ?>
+<div class="portal-auth-shell">
+    <?php portal_auth_intro(); ?>
 <div class="portal-auth-card">
     <h1>Recuperar contraseña</h1>
     <p class="portal-subtitle">Indícanos tu correo y te enviaremos un enlace para restablecerla.</p>
@@ -34,5 +36,6 @@ portal_layout_begin('Recuperar contraseña', 'recuperar');
             </p>
         </form>
     <?php endif; ?>
+</div>
 </div>
 <?php portal_layout_end();

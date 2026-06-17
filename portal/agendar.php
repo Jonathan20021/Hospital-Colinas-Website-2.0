@@ -14,6 +14,13 @@ $specialties = is_array($specRes['data'] ?? null) ? $specRes['data'] : [];
 
 $selectedSpec = (int)($_GET['specialty_id'] ?? 0);
 $selectedDoc  = (int)($_GET['doctor_id'] ?? 0);
+$selectedSpecialty = null;
+foreach ($specialties as $specialty) {
+    if ((int)($specialty['id'] ?? 0) === $selectedSpec) {
+        $selectedSpecialty = $specialty;
+        break;
+    }
+}
 
 $doctors = [];
 if ($selectedSpec) {
@@ -43,8 +50,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 portal_layout_begin('Agendar cita', 'agendar');
 ?>
-<header class="portal-header">
-    <div><p class="section-label">Nueva cita</p><h1>Agendar consulta</h1></div>
+<header class="portal-page-title">
+    <h1>Agendar una cita</h1>
+    <p>Elige la especialidad, el médico y el horario que mejor se adapte a ti.</p>
 </header>
 
 <?php if (!portal_email_verified()): ?>
@@ -76,20 +84,65 @@ portal_layout_begin('Agendar cita', 'agendar');
 
 <?php if (!$selectedSpec): ?>
     <!-- Paso 1: especialidad -->
-    <form method="GET" class="portal-card">
-        <label class="form-label" for="specialty_id">Selecciona la especialidad</label>
-        <select name="specialty_id" id="specialty_id" class="form-input" required>
-            <option value="">— Elige una especialidad —</option>
-            <?php foreach ($specialties as $s): ?>
-                <option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option>
+    <form method="GET" class="portal-card" id="specialty-form">
+        <h2 class="portal-section-title">¿Qué especialista necesitas?</h2>
+        <p class="portal-subtitle">Busca por nombre o selecciona una opción de la lista.</p>
+        <div class="agendar-search">
+            <i data-lucide="search" class="agendar-search-icon"></i>
+            <input type="search" id="specialty-search" class="form-input agendar-search-input" placeholder="Buscar especialidad" autocomplete="off">
+            <button type="button" class="agendar-search-clear" id="specialty-search-clear" aria-label="Limpiar búsqueda" hidden><i data-lucide="x"></i></button>
+        </div>
+        <input type="hidden" name="specialty_id" id="specialty_id">
+        <ul class="specialty-grid" id="specialty-grid" data-initial-count="9">
+            <?php foreach ($specialties as $index => $s): ?>
+                <li class="specialty-card-item <?= $index >= 9 ? 'is-extra' : '' ?> <?= $index >= 6 ? 'is-mobile-extra' : '' ?>"
+                    data-specialty-name="<?= e(mb_strtolower((string)$s['name'], 'UTF-8')) ?>">
+                    <button type="button" class="specialty-card" data-specialty-id="<?= (int)$s['id'] ?>">
+                        <span class="specialty-card-icon"><i data-lucide="stethoscope"></i></span>
+                        <span class="specialty-card-name"><?= e($s['name']) ?></span>
+                        <i data-lucide="chevron-right" class="specialty-card-arrow"></i>
+                    </button>
+                </li>
             <?php endforeach; ?>
-        </select>
-        <button type="submit" class="btn btn-green mt-4">Continuar</button>
+        </ul>
+        <div class="specialty-empty" id="specialty-empty" hidden>
+            <i data-lucide="search-x"></i>
+            <span>No encontramos una especialidad con ese nombre.</span>
+        </div>
+        <?php if (count($specialties) > 12): ?>
+            <div class="specialty-disclosure">
+                <button type="button" class="btn btn-outline specialty-show-all" id="specialty-show-all"
+                    data-total="<?= count($specialties) ?>">
+                    <i data-lucide="list-filter"></i>
+                    <span>Ver todas las especialidades (<?= count($specialties) ?>)</span>
+                </button>
+            </div>
+        <?php endif; ?>
+        <p class="specialty-selection-status" id="specialty-selection-status" aria-live="polite"></p>
+        <noscript>
+            <label class="form-label" for="specialty_fallback">Selecciona la especialidad</label>
+            <select name="specialty_id" id="specialty_fallback" class="form-input" required>
+                <option value="">Elige una especialidad</option>
+                <?php foreach ($specialties as $s): ?><option value="<?= (int)$s['id'] ?>"><?= e($s['name']) ?></option><?php endforeach; ?>
+            </select>
+        </noscript>
     </form>
 
 <?php elseif (!$selectedDoc): ?>
     <!-- Paso 2: médico -->
     <div class="portal-card">
+        <?php if ($selectedSpecialty): ?>
+            <div class="portal-selection-summary">
+                <div class="portal-selection-summary-copy">
+                    <span class="portal-selection-summary-icon"><i data-lucide="stethoscope"></i></span>
+                    <div>
+                        <span>Especialidad seleccionada</span>
+                        <strong><?= e($selectedSpecialty['name']) ?></strong>
+                    </div>
+                </div>
+                <a href="?" class="portal-text-link">Cambiar especialidad</a>
+            </div>
+        <?php endif; ?>
         <h2 class="portal-section-title">Médicos disponibles</h2>
         <?php if (!$doctors): ?>
             <div class="portal-empty">
@@ -110,7 +163,7 @@ portal_layout_begin('Agendar cita', 'agendar');
                             <?php endif; ?>
                             <p class="portal-hint">Horario: <?= e(substr($d['schedule_start'], 0, 5)) ?>–<?= e(substr($d['schedule_end'], 0, 5)) ?></p>
                         </div>
-                        <a href="?specialty_id=<?= $selectedSpec ?>&doctor_id=<?= (int)$d['id'] ?>" class="btn btn-green">Ver fechas →</a>
+                        <a href="?specialty_id=<?= $selectedSpec ?>&doctor_id=<?= (int)$d['id'] ?>" class="btn btn-outline">Ver horarios <i data-lucide="arrow-right"></i></a>
                     </article>
                 <?php endforeach; ?>
             </div>
@@ -130,7 +183,6 @@ portal_layout_begin('Agendar cita', 'agendar');
         <div class="portal-card portal-doctor-summary">
             <div class="portal-doctor-icon"><i data-lucide="user-round" class="h-7 w-7"></i></div>
             <div>
-                <p class="section-label">Agendando con</p>
                 <h2><?= e($selectedDoctor['name']) ?></h2>
                 <p class="portal-hint"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($selectedDoctor['specialty']) ?>
                     <?php if (!empty($selectedDoctor['office_name'])): ?>
@@ -164,11 +216,11 @@ portal_layout_begin('Agendar cita', 'agendar');
             <label class="form-label mt-4" for="notes">Motivo o detalles (opcional)</label>
             <textarea name="notes" id="notes" rows="3" class="form-input" placeholder="Cuéntale al médico el motivo de la consulta"></textarea>
 
-            <div class="mt-4 flex gap-3 items-center">
+            <div class="portal-form-actions">
                 <button type="submit" class="btn btn-green" <?= portal_email_verified() ? '' : 'disabled' ?>>
                     <i data-lucide="check" class="h-4 w-4"></i> Confirmar cita
                 </button>
-                <a href="?specialty_id=<?= $selectedSpec ?>" class="portal-text-link">← Cambiar médico</a>
+                <a href="?specialty_id=<?= $selectedSpec ?>" class="btn btn-outline"><i data-lucide="arrow-left"></i> Cambiar médico</a>
             </div>
         </form>
     </div>

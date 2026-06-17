@@ -41,7 +41,7 @@ portal_layout_begin('Resultados de laboratorio', 'laboratorio');
             $hasRes = (int)($o['num_resultados'] ?? 0) > 0;
         ?>
             <div class="pa-item">
-                <span class="pa-item-ic" style="background:#dff5fb;color:var(--pa-teal)"><i data-lucide="flask-conical"></i></span>
+                <span class="pa-item-ic portal-item-icon-lab"><i data-lucide="flask-conical"></i></span>
                 <div class="pa-item-main">
                     <div class="t"><?= e(pa_fecha_larga($o['fecha'])) ?></div>
                     <div class="s"><?= e($exTxt ?: ('Orden #' . (int)$o['id'])) ?></div>
@@ -49,7 +49,7 @@ portal_layout_begin('Resultados de laboratorio', 'laboratorio');
                         <?php if ($hasRes): ?>
                             <span class="pa-chip lab"><?= (int)$o['num_resultados'] ?> resultado<?= (int)$o['num_resultados'] === 1 ? '' : 's' ?></span>
                         <?php else: ?>
-                            <span class="pa-chip" style="background:#fdf0dd;color:var(--pa-amber)">En proceso</span>
+                            <span class="pa-chip portal-chip-pending">En proceso</span>
                         <?php endif; ?>
                     </div>
                 </div>

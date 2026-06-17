@@ -68,6 +68,17 @@ if ($needsAuth) {
     }
 }
 
+// Los datos personales del expediente son de solo lectura para el paciente.
+// El cambio de contraseña usa /portal/me/password y continúa permitido.
+if ($path === '/portal/me' && $method !== 'GET') {
+    http_response_code(403);
+    echo json_encode([
+        'success' => false,
+        'message' => 'La información del expediente solo puede modificarse directamente con el hospital.',
+    ]);
+    exit;
+}
+
 $token = portal_token();
 $res = portal_api_call($method, $path, $method === 'GET' ? $query : $body, $token);
 

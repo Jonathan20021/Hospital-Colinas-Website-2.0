@@ -6,10 +6,11 @@
     'use strict';
 
     const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
+    const proxyUrl = document.querySelector('meta[name="portal-api-url"]')?.content || '/api/portal-proxy.php';
 
     async function proxy(method, path, payload = {}) {
         const isGet = method === 'GET';
-        const res = await fetch('/api/portal-proxy.php', {
+        const res = await fetch(proxyUrl, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -30,6 +31,93 @@
         return { ok: res.ok && json.success, status: res.status, ...json };
     }
 
+    function showToast(message, type = 'info') {
+        const region = document.getElementById('portal-toast-region');
+        if (!region) return;
+        const toast = document.createElement('div');
+        toast.className = `portal-toast is-${type}`;
+        toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+        toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle-2' : type === 'error' ? 'alert-circle' : 'info'}"></i><span></span>`;
+        toast.querySelector('span').textContent = message;
+        region.appendChild(toast);
+        if (window.lucide) window.lucide.createIcons();
+        window.setTimeout(() => toast.remove(), 4200);
+    }
+
+    function setButtonLoading(button, loading, label = 'Procesando…') {
+        if (!button) return;
+        if (loading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<i data-lucide="loader-circle" class="animate-spin"></i><span>${label}</span>`;
+        } else {
+            button.disabled = false;
+            if (button.dataset.originalHtml) button.innerHTML = button.dataset.originalHtml;
+        }
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    const sidebarToggle = document.getElementById('portal-sidebar-toggle');
+    const root = document.documentElement;
+
+    function setSidebarCollapsed(collapsed, persist = true) {
+        root.classList.toggle('portal-sidebar-collapsed', collapsed);
+        if (!sidebarToggle) return;
+        sidebarToggle.setAttribute('aria-expanded', String(!collapsed));
+        sidebarToggle.setAttribute('aria-label', collapsed ? 'Expandir menú' : 'Colapsar menú');
+        sidebarToggle.title = collapsed ? 'Expandir menú' : 'Colapsar menú';
+        sidebarToggle.innerHTML = `<i data-lucide="${collapsed ? 'panel-left-open' : 'panel-left-close'}"></i>`;
+        if (persist) {
+            try { localStorage.setItem('hglc-portal-sidebar', collapsed ? 'collapsed' : 'expanded'); }
+            catch (e) {}
+        }
+        if (window.lucide) window.lucide.createIcons();
+    }
+
+    if (sidebarToggle) {
+        setSidebarCollapsed(root.classList.contains('portal-sidebar-collapsed'), false);
+        sidebarToggle.addEventListener('click', () => {
+            setSidebarCollapsed(!root.classList.contains('portal-sidebar-collapsed'));
+        });
+    }
+
+    document.querySelectorAll('.js-open-more').forEach(button => {
+        button.addEventListener('click', () => {
+            const dialog = document.getElementById('portal-more-dialog');
+            if (dialog && !dialog.open) dialog.showModal();
+        });
+    });
+
+    document.querySelectorAll('.js-close-dialog').forEach(button => {
+        button.addEventListener('click', () => button.closest('dialog')?.close());
+    });
+
+    document.querySelectorAll('.portal-dialog').forEach(dialog => {
+        dialog.addEventListener('click', event => {
+            if (event.target === dialog) dialog.close();
+        });
+    });
+
+    document.querySelectorAll('.portal-password-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            const input = document.getElementById(button.dataset.target || '');
+            if (!input) return;
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            button.setAttribute('aria-label', showing ? 'Mostrar contraseña' : 'Ocultar contraseña');
+            button.innerHTML = `<i data-lucide="${showing ? 'eye' : 'eye-off'}"></i>`;
+            if (window.lucide) window.lucide.createIcons();
+        });
+    });
+
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', () => {
+            const submit = form.querySelector('button[type="submit"]');
+            if (!submit || form.id === 'portal-cancel-form' || (form.id === 'specialty-form' && !document.getElementById('specialty_id')?.value)) return;
+            setButtonLoading(submit, true, submit.dataset.loadingLabel || 'Procesando…');
+        });
+    });
+
     // ── Reenviar verificación de email ──────────────────────────────────────
     const btnResend = document.getElementById('btn-resend-verify');
     if (btnResend) {
@@ -44,19 +132,99 @@
     }
 
     // ── Cancelar cita ───────────────────────────────────────────────────────
+    let appointmentToCancel = null;
+    const cancelDialog = document.getElementById('portal-cancel-dialog');
+    const cancelForm = document.getElementById('portal-cancel-form');
+    const cancelReason = document.getElementById('portal-cancel-reason');
     document.querySelectorAll('.js-cancel-appt').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            if (!confirm('¿Cancelar esta cita?')) return;
-            const id = btn.dataset.apptId;
-            const reason = prompt('Motivo de la cancelación (opcional):') || '';
-            const r = await proxy('DELETE', `/portal/me/appointments/${id}`, { cancellation_reason: reason });
+        btn.addEventListener('click', () => {
+            appointmentToCancel = btn.dataset.apptId || null;
+            if (cancelReason) cancelReason.value = '';
+            if (cancelDialog && !cancelDialog.open) cancelDialog.showModal();
+        });
+    });
+
+    if (cancelForm) {
+        cancelForm.addEventListener('submit', async event => {
+            event.preventDefault();
+            if (!appointmentToCancel) return;
+            const confirmButton = document.getElementById('portal-confirm-cancel');
+            setButtonLoading(confirmButton, true, 'Cancelando…');
+            const r = await proxy('DELETE', `/portal/me/appointments/${appointmentToCancel}`, {
+                cancellation_reason: cancelReason?.value.trim() || '',
+            });
             if (r.ok) {
-                alert('Cita cancelada.');
-                location.reload();
+                cancelDialog?.close();
+                showToast('La cita fue cancelada.', 'success');
+                window.setTimeout(() => location.reload(), 700);
             } else {
-                alert(r.message || 'No se pudo cancelar.');
+                showToast(r.message || 'No se pudo cancelar la cita.', 'error');
+                setButtonLoading(confirmButton, false);
             }
         });
+    }
+
+    // ── Selector de especialidad ────────────────────────────────────────────
+    const specialtySearch = document.getElementById('specialty-search');
+    const specialtyGrid = document.getElementById('specialty-grid');
+    const specialtyInput = document.getElementById('specialty_id');
+    const specialtyEmpty = document.getElementById('specialty-empty');
+    const specialtyClear = document.getElementById('specialty-search-clear');
+    const specialtyShowAll = document.getElementById('specialty-show-all');
+    const specialtyStatus = document.getElementById('specialty-selection-status');
+    const specialtyForm = document.getElementById('specialty-form');
+
+    function filterSpecialties() {
+        if (!specialtyGrid || !specialtySearch) return;
+        const query = specialtySearch.value.trim().toLocaleLowerCase('es');
+        let visible = 0;
+        specialtyGrid.classList.toggle('is-searching', query !== '');
+        specialtyGrid.querySelectorAll('li[data-specialty-name]').forEach(item => {
+            const matches = !query || item.dataset.specialtyName.includes(query);
+            item.hidden = !matches;
+            if (matches) visible += 1;
+        });
+        if (specialtyEmpty) specialtyEmpty.hidden = visible > 0;
+        if (specialtyClear) specialtyClear.hidden = query === '';
+        if (specialtyShowAll) specialtyShowAll.hidden = query !== '' || specialtyGrid.classList.contains('is-expanded');
+    }
+
+    specialtySearch?.addEventListener('input', filterSpecialties);
+    specialtyClear?.addEventListener('click', () => {
+        specialtySearch.value = '';
+        specialtySearch.focus();
+        filterSpecialties();
+    });
+
+    specialtyShowAll?.addEventListener('click', () => {
+        specialtyGrid?.classList.add('is-expanded');
+        specialtyShowAll.hidden = true;
+        specialtyStatus.textContent = `Mostrando las ${specialtyShowAll.dataset.total || ''} especialidades.`;
+    });
+
+    specialtyGrid?.querySelectorAll('.specialty-card').forEach(card => {
+        card.addEventListener('click', () => {
+            specialtyGrid.querySelectorAll('.specialty-card').forEach(item => item.classList.remove('is-selected'));
+            card.classList.add('is-selected');
+            if (specialtyInput) specialtyInput.value = card.dataset.specialtyId || '';
+            card.setAttribute('aria-pressed', 'true');
+            specialtyGrid.querySelectorAll('.specialty-card:not(.is-selected)').forEach(item => item.setAttribute('aria-pressed', 'false'));
+            specialtyGrid.querySelectorAll('.specialty-card').forEach(item => {
+                item.disabled = true;
+            });
+            card.classList.add('is-loading');
+            const arrow = card.querySelector('.specialty-card-arrow');
+            if (arrow) arrow.setAttribute('data-lucide', 'loader-circle');
+            if (specialtyStatus) specialtyStatus.textContent = `Cargando médicos de ${card.querySelector('.specialty-card-name')?.textContent.trim() || 'la especialidad'}…`;
+            if (window.lucide) window.lucide.createIcons();
+            window.setTimeout(() => specialtyForm?.requestSubmit(), 120);
+        });
+    });
+
+    specialtyForm?.addEventListener('submit', event => {
+        if (specialtyInput?.value) return;
+        event.preventDefault();
+        showToast('Selecciona una especialidad para continuar.', 'error');
     });
 
     // ── Slot picker calendar-style (agendar.php paso 3) ─────────────────────

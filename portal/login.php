@@ -74,6 +74,8 @@ $mask = (string)($_SESSION['otp_mask'] ?? '');
 
 portal_layout_begin('Iniciar sesión', 'login');
 ?>
+<div class="portal-auth-shell">
+    <?php portal_auth_intro(); ?>
 <div class="pa-auth">
     <img class="pa-auth-logo" src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas">
 
@@ -102,17 +104,17 @@ portal_layout_begin('Iniciar sesión', 'login');
             </button>
         </form>
         <div class="pa-auth-alt">
-            <form method="POST" style="display:inline">
+            <form method="POST" class="portal-inline-form">
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="request">
                 <input type="hidden" name="identifier" value="<?= e((string)($_SESSION['otp_id'] ?? '')) ?>">
-                <button type="submit" class="pa-link-btn" style="background:none;border:0;color:var(--pa-brand2);font-weight:800;cursor:pointer;font-size:1rem">Reenviar código</button>
+                <button type="submit" class="portal-link-button" data-loading-label="Reenviando…">Reenviar código</button>
             </form>
             &nbsp;·&nbsp;
-            <form method="POST" style="display:inline">
+            <form method="POST" class="portal-inline-form">
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="change">
-                <button type="submit" style="background:none;border:0;color:var(--pa-brand2);font-weight:800;cursor:pointer;font-size:1rem">Usar otro correo o cédula</button>
+                <button type="submit" class="portal-link-button">Usar otro correo o cédula</button>
             </form>
         </div>
 
@@ -132,25 +134,27 @@ portal_layout_begin('Iniciar sesión', 'login');
             </button>
         </form>
 
-        <details class="pa-auth-alt" style="margin-top:22px" <?= $openPassword ? 'open' : '' ?>>
-            <summary style="cursor:pointer;font-weight:800;color:var(--pa-brand2)">Tengo contraseña y prefiero usarla</summary>
-            <form method="POST" autocomplete="on" style="margin-top:14px;text-align:left">
+        <details class="pa-auth-alt portal-auth-password" <?= $openPassword ? 'open' : '' ?>>
+            <summary>Tengo contraseña y prefiero usarla</summary>
+            <form method="POST" autocomplete="on" class="portal-password-form">
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="password">
                 <div class="pa-field">
                     <label class="pa-label" for="email">Correo electrónico</label>
                     <input class="pa-input" type="email" name="email" id="email" autocomplete="username">
                 </div>
-                <div class="pa-field">
+                <div class="pa-field portal-password-field">
                     <label class="pa-label" for="password">Contraseña</label>
                     <input class="pa-input" type="password" name="password" id="password" autocomplete="current-password">
+                    <button type="button" class="portal-password-toggle" data-target="password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
                 </div>
                 <button type="submit" class="pa-btn pa-btn-soft pa-btn-block">Iniciar sesión con contraseña</button>
-                <p style="text-align:center;margin-top:10px"><a href="<?= e(base_url('portal/recuperar.php')) ?>" style="color:var(--pa-brand2);font-weight:700">¿Olvidaste tu contraseña?</a></p>
+                <p class="portal-auth-recovery"><a href="<?= e(base_url('portal/recuperar.php')) ?>" class="portal-text-link">¿Olvidaste tu contraseña?</a></p>
             </form>
         </details>
 
-        <p class="pa-auth-alt" style="margin-top:18px">¿No tienes cuenta? <a href="<?= e(base_url('portal/registro.php')) ?>">Crear cuenta</a></p>
+        <p class="pa-auth-alt portal-auth-register">¿No tienes cuenta? <a href="<?= e(base_url('portal/registro.php')) ?>">Crear cuenta</a></p>
     <?php endif; ?>
+</div>
 </div>
 <?php portal_layout_end();

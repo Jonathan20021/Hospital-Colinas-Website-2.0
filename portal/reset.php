@@ -28,6 +28,8 @@ if ($token === '') {
 
 portal_layout_begin('Restablecer contraseña', 'reset');
 ?>
+<div class="portal-auth-shell">
+    <?php portal_auth_intro(); ?>
 <div class="portal-auth-card">
     <h1>Restablecer contraseña</h1>
 
@@ -46,14 +48,21 @@ portal_layout_begin('Restablecer contraseña', 'reset');
             <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
             <input type="hidden" name="token" value="<?= e($token) ?>">
 
-            <label class="form-label" for="password">Nueva contraseña</label>
-            <input type="password" name="password" id="password" class="form-input" required minlength="8">
+            <div class="portal-password-field">
+                <label class="form-label" for="password">Nueva contraseña</label>
+                <input type="password" name="password" id="password" class="form-input" required minlength="8">
+                <button type="button" class="portal-password-toggle" data-target="password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+            </div>
 
-            <label class="form-label mt-3" for="password_confirm">Confirmar contraseña</label>
-            <input type="password" name="password_confirm" id="password_confirm" class="form-input" required minlength="8">
+            <div class="portal-password-field">
+                <label class="form-label" for="password_confirm">Confirmar contraseña</label>
+                <input type="password" name="password_confirm" id="password_confirm" class="form-input" required minlength="8">
+                <button type="button" class="portal-password-toggle" data-target="password_confirm" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+            </div>
 
             <button type="submit" class="btn btn-green w-full justify-center py-3 mt-4">Guardar nueva contraseña</button>
         </form>
     <?php endif; ?>
+</div>
 </div>
 <?php portal_layout_end();
