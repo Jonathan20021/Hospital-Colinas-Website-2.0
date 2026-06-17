@@ -1,0 +1,129 @@
+/* ============================================================
+   Portal del Paciente — capa de ACCESIBILIDAD (jun 2026)
+   Pensada para personas mayores y no técnicas: texto grande,
+   alto contraste, objetivos grandes, foco muy visible, lenguaje claro.
+   Se carga DESPUÉS de portal.css → prevalece. Namespacing bajo .portal-page.
+   ============================================================ */
+.portal-page{
+  --pa-ink:#13183a; --pa-ink2:#3a4366; --pa-muted:#5d6885;
+  --pa-brand:#262161; --pa-brand2:#3f3aa3; --pa-green:#0a7a52; --pa-line:#e2e6f0;
+  --pa-bg:#f4f6fb; --pa-card:#ffffff; --pa-focus:#2563eb;
+  --pa-blue:#1d4ed8; --pa-violet:#6d28d9; --pa-teal:#0e7490; --pa-amber:#b45309; --pa-rose:#be123c;
+  font-size:17.5px;
+}
+@media(max-width:640px){ .portal-page{font-size:16.5px} }
+
+/* foco muy visible en todo el portal (teclado) */
+.portal-page a:focus-visible,
+.portal-page button:focus-visible,
+.portal-page input:focus-visible,
+.portal-page select:focus-visible,
+.portal-page [tabindex]:focus-visible{
+  outline:3px solid var(--pa-focus); outline-offset:2px; border-radius:8px;
+}
+
+/* ---- Encabezado de página grande y claro ---- */
+.pa-head{margin:4px 0 22px}
+.pa-head h1{font-family:'Outfit','Inter',sans-serif;font-size:2rem;font-weight:800;color:var(--pa-ink);letter-spacing:-.02em;line-height:1.1;margin:0}
+.pa-head p{font-size:1.08rem;color:var(--pa-ink2);margin:8px 0 0;line-height:1.5}
+@media(max-width:640px){ .pa-head h1{font-size:1.6rem} }
+
+/* ============================================================
+   DASHBOARD — tarjetas grandes con ícono, una acción clara
+   ============================================================ */
+.pa-hello{background:linear-gradient(135deg,#2a2566,#3f3aa3 70%,#5b53e0);color:#fff;border-radius:22px;padding:26px 28px;margin-bottom:24px;box-shadow:0 18px 40px -22px rgba(38,33,97,.7)}
+.pa-hello h1{font-family:'Outfit';font-size:1.9rem;font-weight:800;margin:0 0 6px;line-height:1.1}
+.pa-hello p{font-size:1.1rem;color:rgba(255,255,255,.92);margin:0;line-height:1.5}
+@media(max-width:640px){ .pa-hello{padding:20px} .pa-hello h1{font-size:1.5rem} }
+
+.pa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.pa-card{display:flex;flex-direction:column;gap:14px;background:var(--pa-card);border:2px solid var(--pa-line);border-radius:20px;padding:24px;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s,border-color .15s;min-height:184px}
+.pa-card:hover,.pa-card:focus-visible{transform:translateY(-3px);box-shadow:0 16px 34px -18px rgba(20,24,58,.45);border-color:var(--pa-brand2)}
+.pa-card-ic{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;flex:none}
+.pa-card-ic svg{width:32px;height:32px;stroke-width:2.1}
+.pa-card .ic-blue{background:#e7efff;color:var(--pa-blue)}
+.pa-card .ic-green{background:#e3f7ee;color:var(--pa-green)}
+.pa-card .ic-violet{background:#f1e9ff;color:var(--pa-violet)}
+.pa-card .ic-teal{background:#dff5fb;color:var(--pa-teal)}
+.pa-card .ic-amber{background:#fdf0dd;color:var(--pa-amber)}
+.pa-card h2{font-family:'Outfit';font-size:1.3rem;font-weight:800;color:var(--pa-ink);margin:0;line-height:1.15}
+.pa-card p{font-size:1rem;color:var(--pa-ink2);margin:0;line-height:1.45;flex:1}
+.pa-card .pa-go{display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:1rem;color:var(--pa-brand2)}
+.pa-card .pa-go svg{width:18px;height:18px}
+.pa-card .pa-count{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 9px;border-radius:999px;background:var(--pa-brand);color:#fff;font-weight:800;font-size:.95rem;margin-left:auto}
+
+/* ============================================================
+   LISTAS DE SECCIÓN (consultas, recetas, laboratorio) — filas grandes
+   ============================================================ */
+.pa-list{display:flex;flex-direction:column;gap:14px}
+.pa-item{display:flex;align-items:center;gap:16px;background:var(--pa-card);border:2px solid var(--pa-line);border-radius:18px;padding:18px 20px}
+.pa-item-ic{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;flex:none;background:#eef1fb;color:var(--pa-brand2)}
+.pa-item-ic svg{width:27px;height:27px}
+.pa-item-main{flex:1;min-width:0}
+.pa-item-main .t{font-family:'Outfit';font-size:1.18rem;font-weight:800;color:var(--pa-ink);line-height:1.2}
+.pa-item-main .s{font-size:1rem;color:var(--pa-ink2);margin-top:3px;line-height:1.45}
+.pa-item-main .s strong{color:var(--pa-ink)}
+.pa-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.pa-chip{font-size:.84rem;font-weight:700;padding:4px 11px;border-radius:999px;background:#eef1fb;color:var(--pa-brand2)}
+.pa-chip.rx{background:#e3f7ee;color:var(--pa-green)}
+.pa-chip.lab{background:#dff5fb;color:var(--pa-teal)}
+.pa-item-actions{display:flex;flex-direction:column;gap:8px;flex:none}
+@media(max-width:640px){ .pa-item{flex-wrap:wrap}.pa-item-actions{flex-direction:row;width:100%}.pa-item-actions .pa-btn{flex:1} }
+
+/* botones grandes y claros */
+.pa-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:54px;padding:0 22px;border-radius:14px;font-size:1.08rem;font-weight:800;border:2px solid transparent;cursor:pointer;text-decoration:none;transition:background .15s,transform .1s;white-space:nowrap}
+.pa-btn:active{transform:translateY(1px)}
+.pa-btn svg{width:20px;height:20px}
+.pa-btn-primary{background:var(--pa-brand);color:#fff}
+.pa-btn-primary:hover{background:#1c1850}
+.pa-btn-green{background:var(--pa-green);color:#fff}
+.pa-btn-green:hover{background:#086644}
+.pa-btn-soft{background:#eef1fb;color:var(--pa-brand);border-color:#dfe3f2}
+.pa-btn-soft:hover{background:#e3e7f6}
+.pa-btn-sm{min-height:46px;font-size:1rem;padding:0 16px}
+.pa-btn-block{width:100%}
+
+/* estado vacío amable */
+.pa-empty{text-align:center;padding:46px 24px;background:var(--pa-card);border:2px dashed var(--pa-line);border-radius:20px}
+.pa-empty .ic{width:76px;height:76px;border-radius:50%;background:#eef1fb;display:grid;place-items:center;margin:0 auto 16px;color:var(--pa-brand2)}
+.pa-empty .ic svg{width:38px;height:38px}
+.pa-empty h2{font-family:'Outfit';font-size:1.35rem;font-weight:800;color:var(--pa-ink);margin:0 0 6px}
+.pa-empty p{font-size:1.05rem;color:var(--pa-ink2);margin:0 auto;max-width:420px;line-height:1.5}
+
+/* ============================================================
+   LOGIN OTP — pasos grandes y claros
+   ============================================================ */
+.pa-auth{max-width:480px;margin:18px auto;background:#fff;border:2px solid var(--pa-line);border-radius:24px;padding:34px 32px;box-shadow:0 20px 50px -28px rgba(20,24,58,.4)}
+.pa-auth-logo{display:block;height:46px;margin:0 auto 18px}
+.pa-auth h1{font-family:'Outfit';font-size:1.7rem;font-weight:800;text-align:center;color:var(--pa-ink);margin:0 0 6px}
+.pa-auth .lead{text-align:center;font-size:1.08rem;color:var(--pa-ink2);margin:0 0 24px;line-height:1.5}
+.pa-field{margin-bottom:18px}
+.pa-label{display:block;font-size:1.05rem;font-weight:800;color:var(--pa-ink);margin-bottom:8px}
+.pa-input{width:100%;min-height:58px;border:2px solid #cfd6e8;border-radius:14px;padding:0 16px;font-size:1.15rem;color:var(--pa-ink);background:#fff;transition:border-color .15s}
+.pa-input:focus{border-color:var(--pa-focus);outline:none}
+.pa-input-code{text-align:center;letter-spacing:.5em;font-size:1.7rem;font-weight:800;font-variant-numeric:tabular-nums;padding-left:.5em}
+.pa-hint{font-size:.98rem;color:var(--pa-ink2);margin:8px 0 0;line-height:1.45}
+.pa-auth-alt{text-align:center;margin-top:20px;font-size:1rem;color:var(--pa-ink2)}
+.pa-auth-alt a{color:var(--pa-brand2);font-weight:800;text-decoration:none}
+.pa-auth-alt a:hover{text-decoration:underline}
+.pa-msg{display:flex;gap:10px;align-items:flex-start;padding:14px 16px;border-radius:14px;font-size:1.02rem;line-height:1.45;margin-bottom:18px}
+.pa-msg svg{width:22px;height:22px;flex:none;margin-top:1px}
+.pa-msg-info{background:#e7efff;color:#1e3a8a}
+.pa-msg-error{background:#fde7ec;color:#9f1239}
+.pa-msg-ok{background:#e3f7ee;color:#065f46}
+.pa-mask{font-weight:800;color:var(--pa-ink)}
+
+/* ============================================================
+   DOCUMENTO / DETALLE (consulta) — legible
+   ============================================================ */
+.pa-panel{background:#fff;border:2px solid var(--pa-line);border-radius:20px;padding:24px 26px;margin-bottom:18px}
+.pa-panel h2{font-family:'Outfit';font-size:1.3rem;font-weight:800;color:var(--pa-ink);margin:0 0 4px;display:flex;align-items:center;gap:10px}
+.pa-panel h2 svg{width:22px;height:22px;color:var(--pa-brand2)}
+.pa-panel .meta{font-size:1rem;color:var(--pa-ink2);margin:0 0 14px}
+.pa-dl{display:grid;gap:14px}
+.pa-dl .row .k{font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--pa-muted)}
+.pa-dl .row .v{font-size:1.08rem;color:var(--pa-ink);line-height:1.5;white-space:pre-wrap;margin-top:2px}
+.pa-back{display:inline-flex;align-items:center;gap:8px;font-size:1.05rem;font-weight:800;color:var(--pa-brand2);text-decoration:none;margin-bottom:16px}
+.pa-back svg{width:20px;height:20px}
+
+@media (prefers-reduced-motion: reduce){ .portal-page *{transition:none!important} }

@@ -34,7 +34,8 @@ function portal_layout_begin(string $title, string $active = ''): void
         filemtime(__DIR__ . '/../assets/css/app.css'),
         filemtime(__DIR__ . '/../assets/js/app.js'),
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
-        @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0
+        @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-accessible.css') ?: 0
     );
     ?>
     <!DOCTYPE html>
@@ -55,6 +56,7 @@ function portal_layout_begin(string $title, string $active = ''): void
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-accessible.css')) ?>?v=<?= e($assetVersion) ?>">
         <meta name="csrf-token" content="<?= e(portal_csrf_token()) ?>">
     </head>
 
@@ -110,6 +112,15 @@ function portal_layout_begin(string $title, string $active = ''): void
                         <a href="<?= e(base_url('portal/mis-citas.php')) ?>"
                             class="portal-nav-link <?= $active === 'mis-citas' ? 'is-active' : '' ?>"><i
                                 data-lucide="calendar-check" class="h-4 w-4"></i>Mis citas</a>
+                        <a href="<?= e(base_url('portal/consultas.php')) ?>"
+                            class="portal-nav-link <?= $active === 'consultas' ? 'is-active' : '' ?>"><i
+                                data-lucide="stethoscope" class="h-4 w-4"></i>Mis consultas</a>
+                        <a href="<?= e(base_url('portal/recetas.php')) ?>"
+                            class="portal-nav-link <?= $active === 'recetas' ? 'is-active' : '' ?>"><i
+                                data-lucide="file-text" class="h-4 w-4"></i>Mis recetas</a>
+                        <a href="<?= e(base_url('portal/laboratorio.php')) ?>"
+                            class="portal-nav-link <?= $active === 'laboratorio' ? 'is-active' : '' ?>"><i
+                                data-lucide="flask-conical" class="h-4 w-4"></i>Resultados de laboratorio</a>
                         <a href="<?= e(base_url('portal/estudios.php')) ?>"
                             class="portal-nav-link <?= $active === 'estudios' ? 'is-active' : '' ?>"><i
                                 data-lucide="scan" class="h-4 w-4"></i>Mis imágenes</a>
@@ -140,7 +151,8 @@ function portal_layout_end(): void
         filemtime(__DIR__ . '/../assets/css/app.css'),
         filemtime(__DIR__ . '/../assets/js/app.js'),
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
-        @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0
+        @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-accessible.css') ?: 0
     );
     ?>
             </main>
