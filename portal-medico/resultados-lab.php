@@ -55,6 +55,13 @@ $validadores = array_keys($validadores);
 
 $jspdfV = (string)(@filemtime(__DIR__ . '/../assets/vendor/jspdf/jspdf.umd.min.js') ?: 1);
 
+// Sello del laboratorio + firma autorizada (Lic. Minoska Mena) — fijas, van al pie como el reporte oficial.
+$selloFile  = __DIR__ . '/../assets/site/sello-lab.png';
+$firmaFile  = __DIR__ . '/../assets/site/firma-lab.png';
+$hasFirmaImg = is_file($selloFile) && is_file($firmaFile);
+$selloUrl = base_url('assets/site/sello-lab.png') . '?v=' . (string)(@filemtime($selloFile) ?: 1);
+$firmaUrl = base_url('assets/site/firma-lab.png') . '?v=' . (string)(@filemtime($firmaFile) ?: 1);
+
 if (!headers_sent()) {
     header('X-Robots-Tag: noindex, nofollow');
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -122,6 +129,14 @@ if (!headers_sent()) {
     .firma{margin-top:36px;display:flex;justify-content:flex-end;text-align:center}
     .firma .blk{min-width:240px;border-top:1px solid #333;padding-top:4px;font-size:10.5px;color:#333}
     .firma .blk .nm{font-weight:700;color:#111;font-size:11px}
+    /* sello + firma autorizada (reporte oficial) */
+    .firma-zone{margin-top:34px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:0 16px}
+    .firma-zone .sello{width:120px;height:auto;flex:none}
+    .firma-zone .sgn{text-align:center;min-width:230px}
+    .firma-zone .sgn .fimg{height:54px;width:auto;display:block;margin:0 auto -4px}
+    .firma-zone .sgn .ln{border-top:1px solid #333;margin-top:2px;padding-top:4px;font-size:10.5px;color:#333}
+    .firma-zone .sgn .ln .nm{font-weight:700;color:#111;font-size:11px}
+    @media(max-width:760px){.firma-zone{padding:0 4px}.firma-zone .sello{width:92px}.firma-zone .sgn{min-width:170px}}
     .pie{margin-top:20px;padding-top:8px;border-top:1px solid #e3e3e3;display:flex;justify-content:space-between;font-size:9px;color:#888}
     .r-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#9aa3bb;font-size:.92rem;text-align:center;padding:28px;background:#0b0e16}
     .r-msg .ic{font-size:2.4rem}.r-msg .t{color:#e6e9f2;font-weight:600;font-size:1rem}
@@ -209,11 +224,21 @@ if (!headers_sent()) {
             </div>
         <?php endforeach; ?>
 
-        <!-- Firma (validación electrónica; el sello/firma manuscrita del lab vive en el sistema) -->
+        <!-- Sello del laboratorio + firma autorizada (Lic. Minoska Mena) -->
+        <?php if ($hasFirmaImg): ?>
+        <div class="firma-zone">
+            <img class="sello" src="<?= e($selloUrl) ?>" alt="Sello Laboratorio Clínico HGLC">
+            <div class="sgn">
+                <img class="fimg" src="<?= e($firmaUrl) ?>" alt="Firma autorizada">
+                <div class="ln"><div class="nm">Lic. Minoska Mena</div>Firma Autorizada</div>
+            </div>
+        </div>
+        <?php else: ?>
         <div class="firma"><div class="blk">
             <?php if ($validadores): ?><div class="nm"><?= e($validadores[0]) ?></div><?php endif; ?>
             Firma Autorizada
         </div></div>
+        <?php endif; ?>
         <div class="pie">
             <span>Portal Médico · Hospital General Las Colinas</span>
             <span>Validado electrónicamente · <?= e(date('d/m/Y H:i')) ?></span>
@@ -240,19 +265,24 @@ if (!headers_sent()) {
         'deps'     => $deps,
         'validador'=> $validadores[0] ?? '',
         'flagLabel'=> $flagLabel,
+        'hasFirma' => $hasFirmaImg,
+        'selloUrl' => $hasFirmaImg ? $selloUrl : '',
+        'firmaUrl' => $hasFirmaImg ? $firmaUrl : '',
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
     var LOGO  = <?= json_encode(base_url('assets/site/logo.png'), JSON_UNESCAPED_SLASHES) ?>;
     var JSPDF = <?= json_encode(base_url('assets/vendor/jspdf/jspdf.umd.min.js') . '?v=' . $jspdfV, JSON_UNESCAPED_SLASHES) ?>;
 
     function loadScript(src){ return new Promise(function(res,rej){ var s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); }); }
-    function loadLogo(){ return new Promise(function(res){ var i=new Image(); i.crossOrigin='anonymous'; i.onload=function(){ try{ var c=document.createElement('canvas'); c.width=i.naturalWidth; c.height=i.naturalHeight; c.getContext('2d').drawImage(i,0,0); res({d:c.toDataURL('image/png'),w:i.naturalWidth,h:i.naturalHeight}); }catch(e){ res(null);} }; i.onerror=function(){res(null);}; i.src=LOGO; }); }
+    function loadImg(src){ return new Promise(function(res){ if(!src){res(null);return;} var i=new Image(); i.crossOrigin='anonymous'; i.onload=function(){ try{ var c=document.createElement('canvas'); c.width=i.naturalWidth; c.height=i.naturalHeight; c.getContext('2d').drawImage(i,0,0); res({d:c.toDataURL('image/png'),w:i.naturalWidth,h:i.naturalHeight}); }catch(e){ res(null);} }; i.onerror=function(){res(null);}; i.src=src; }); }
     function fdate(s){ if(!s) return ''; var d=new Date(String(s).replace(' ','T')); if(isNaN(d)) return String(s).slice(0,16); var ap=d.getHours()<12?'a.m':'p.m'; var p=function(n){return('0'+n).slice(-2)}; return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' '+p(((d.getHours()+11)%12)+1)+':'+p(d.getMinutes())+' '+ap; }
 
     pdfBtn.addEventListener('click', async function () {
         pdfBtn.disabled = true; var old = pdfBtn.innerHTML; pdfBtn.innerHTML = '⏳ <span class="lbl">Generando…</span>';
         try {
             if (!window.jspdf) await loadScript(JSPDF);
-            var logo = await loadLogo();
+            var logo  = await loadImg(LOGO);
+            var sello = REP.hasFirma ? await loadImg(REP.selloUrl) : null;
+            var firma = REP.hasFirma ? await loadImg(REP.firmaUrl) : null;
             var doc = new window.jspdf.jsPDF({ unit: 'pt', format: 'letter' });
             var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
             var M = 40, y = 0;
@@ -292,14 +322,29 @@ if (!headers_sent()) {
                 kv(rx,ry,'Procedencia:',h.procedencia);
                 y = by + bh + 14;
             }
+            // Sello del laboratorio + firma autorizada (Lic. Minoska Mena) — en cada página, como el reporte oficial.
+            function firmaBlock() {
+                if (!REP.hasFirma) return;
+                var fy = H - 96;
+                if (sello) { var sw = 70, sh = sw*(sello.h/sello.w); doc.addImage(sello.d,'PNG', M+26, fy+ (66-sh)/2, sw, sh); }
+                var cx = W - M - 96;            // centro del bloque de firma (derecha)
+                if (firma) { var fw = 132, fh = fw*(firma.h/firma.w); doc.addImage(firma.d,'PNG', cx-fw/2, fy+44-fh, fw, fh); }
+                doc.setDrawColor(60,60,60); doc.setLineWidth(.6); doc.line(cx-86, fy+46, cx+86, fy+46);
+                doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(17,17,17);
+                doc.text('Lic. Minoska Mena', cx, fy+57, {align:'center'});
+                doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
+                doc.text('Firma Autorizada', cx, fy+67, {align:'center'});
+            }
             function foot(pg) {
-                doc.setDrawColor(225,225,225); doc.setLineWidth(.5); doc.line(M,H-30,W-M,H-30);
+                firmaBlock();
+                doc.setDrawColor(225,225,225); doc.setLineWidth(.5); doc.line(M,H-24,W-M,H-24);
                 doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(140,140,140);
-                doc.text('Portal Médico · Hospital General Las Colinas', M, H-20);
-                doc.text('Validado electrónicamente · Página '+pg, W-M, H-20, {align:'right'});
+                doc.text('Portal Médico · Hospital General Las Colinas', M, H-14);
+                doc.text('Página '+pg, W-M, H-14, {align:'right'});
             }
             var page = 1;
-            function brk(extra){ if (y+(extra||0) > H-46) { foot(page); doc.addPage(); page++; membrete(); } }
+            var bottomY = REP.hasFirma ? H-104 : H-44;   // reserva espacio para sello+firma
+            function brk(extra){ if (y+(extra||0) > bottomY) { foot(page); doc.addPage(); page++; membrete(); } }
 
             membrete();
             REP.deps.forEach(function (d) {
@@ -345,14 +390,7 @@ if (!headers_sent()) {
                 });
                 y += 8;
             });
-            // firma
-            brk(60); y += 24;
-            doc.setDrawColor(60,60,60); doc.setLineWidth(.6); doc.line(W-M-200, y, W-M, y);
-            doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(17,17,17);
-            if (REP.validador) doc.text(REP.validador, W-M-100, y+11, {align:'center'});
-            doc.setFont('helvetica','normal'); doc.setTextColor(80,80,80);
-            doc.text('Firma Autorizada', W-M-100, y+22, {align:'center'});
-            foot(page);
+            foot(page);   // dibuja sello + firma + pie en la última página
 
             var fn = 'Resultados_'+String(p.nombre||'').replace(/[^a-z0-9]+/gi,'_').slice(0,30)+'_orden'+h.orden+'.pdf';
             doc.save(fn);
