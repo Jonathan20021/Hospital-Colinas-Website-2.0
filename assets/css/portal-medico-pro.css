@@ -343,3 +343,31 @@
 .is-app .doctor-ac-item b{color:var(--pro-brand-2);font-weight:700}
 .is-app .doctor-ac-sub{color:var(--pro-muted);font-size:.8rem}
 .is-app .doctor-ac-empty{padding:9px 10px;font-size:.84rem;color:var(--pro-muted)}
+
+/* ============================================================
+   PULIDO (jun 2026) — foco de teclado consistente, estados
+   completos y micro-detalles. Aditivo, no cambia el markup.
+   ============================================================ */
+/* Foco de teclado visible y uniforme en toda la app (accesibilidad) */
+.is-app a:focus-visible,.is-app button:focus-visible,.is-app [role="button"]:focus-visible,
+.is-app input:focus-visible,.is-app select:focus-visible,.is-app textarea:focus-visible,
+.is-app summary:focus-visible,.is-app [tabindex]:focus-visible{
+  outline:none;box-shadow:var(--pro-ring);border-radius:10px
+}
+/* Botón: estado deshabilitado + foco */
+.is-app .doctor-btn:disabled,.is-app .doctor-btn[aria-disabled="true"]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.is-app .doctor-btn:focus-visible{box-shadow:var(--pro-ring)}
+/* Tarjeta interactiva (envuelta en <a>): elevación sutil al pasar */
+.is-app a.doctor-card,.is-app .doctor-card-link{transition:transform .18s cubic-bezier(.22,.61,.36,1),box-shadow .18s cubic-bezier(.22,.61,.36,1)}
+.is-app a.doctor-card:hover,.is-app .doctor-card-link:hover{transform:translateY(-2px);box-shadow:var(--pro-sh)}
+/* Inputs: hover previo al foco (afina la sensación) */
+.is-app .doctor-input:hover:not(:focus),.is-app .doctor-form-grid input:hover:not(:focus){border-color:#cfd5e6}
+/* Pills: legibilidad un punto mayor */
+.is-app .doctor-pill{font-size:.74rem}
+/* Acción de tabla: área táctil mínima cómoda */
+.is-app .doctor-table-action{min-width:36px;min-height:36px}
+/* Enlaces de cabecera de card: subrayado sutil al pasar (no en reposo) */
+.is-app .doctor-clink:hover{text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion: reduce){
+  .is-app a.doctor-card:hover,.is-app .doctor-card-link:hover{transform:none}
+}

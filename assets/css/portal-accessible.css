@@ -1,129 +1,197 @@
 /* ============================================================
-   Portal del Paciente — capa de ACCESIBILIDAD (jun 2026)
-   Pensada para personas mayores y no técnicas: texto grande,
-   alto contraste, objetivos grandes, foco muy visible, lenguaje claro.
-   Se carga DESPUÉS de portal.css → prevalece. Namespacing bajo .portal-page.
+   Portal del Paciente — capa PROFESIONAL + ACCESIBLE (jun 2026)
+   Hospital General Las Colinas. Registro: product (la herramienta
+   desaparece en la tarea). Pensada para personas mayores y no
+   técnicas: texto grande, alto contraste, objetivos grandes,
+   foco muy visible, jerarquía clara, micro-interacciones sobrias.
+   Identidad: navy #262161 + verde #6fb43f, Outfit/Inter.
+   Se carga DESPUÉS de portal.css → prevalece. Scope: .portal-page.
    ============================================================ */
 .portal-page{
-  --pa-ink:#13183a; --pa-ink2:#3a4366; --pa-muted:#5d6885;
-  --pa-brand:#262161; --pa-brand2:#3f3aa3; --pa-green:#0a7a52; --pa-line:#e2e6f0;
-  --pa-bg:#f4f6fb; --pa-card:#ffffff; --pa-focus:#2563eb;
+  --pa-ink:#101633; --pa-ink2:#39426a; --pa-muted:#5b6788;
+  --pa-brand:#262161; --pa-brand2:#3f3aa3; --pa-green:#0a7a52;
+  --pa-line:#e6eaf3; --pa-line2:#eef1f8;
+  --pa-bg:#f3f5fb; --pa-card:#ffffff;
   --pa-blue:#1d4ed8; --pa-violet:#6d28d9; --pa-teal:#0e7490; --pa-amber:#b45309; --pa-rose:#be123c;
-  font-size:17.5px;
+  --pa-focus:#2f6bff;
+  --pa-r-sm:11px; --pa-r:15px; --pa-r-lg:22px;
+  --pa-sh-sm:0 1px 2px rgba(16,22,51,.05), 0 2px 6px -2px rgba(16,22,51,.07);
+  --pa-sh:0 12px 28px -16px rgba(16,22,51,.24), 0 5px 14px -10px rgba(16,22,51,.12);
+  --pa-sh-lg:0 28px 60px -28px rgba(16,22,51,.36);
+  --pa-ring:0 0 0 4px rgba(47,107,255,.24);
+  --pa-ease:cubic-bezier(.22,.61,.36,1);
+  font-size:17.5px; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
 }
 @media(max-width:640px){ .portal-page{font-size:16.5px} }
 
-/* foco muy visible en todo el portal (teclado) */
+/* base de página: fondo frío neutro de marca (no cream) */
+.portal-page.bg-slate-50{background:var(--pa-bg)}
+
+/* foco visible y consistente en todo el portal */
 .portal-page a:focus-visible,
 .portal-page button:focus-visible,
 .portal-page input:focus-visible,
 .portal-page select:focus-visible,
+.portal-page textarea:focus-visible,
+.portal-page summary:focus-visible,
 .portal-page [tabindex]:focus-visible{
-  outline:3px solid var(--pa-focus); outline-offset:2px; border-radius:8px;
+  outline:none; box-shadow:var(--pa-ring); border-radius:10px;
 }
 
-/* ---- Encabezado de página grande y claro ---- */
-.pa-head{margin:4px 0 22px}
-.pa-head h1{font-family:'Outfit','Inter',sans-serif;font-size:2rem;font-weight:800;color:var(--pa-ink);letter-spacing:-.02em;line-height:1.1;margin:0}
-.pa-head p{font-size:1.08rem;color:var(--pa-ink2);margin:8px 0 0;line-height:1.5}
-@media(max-width:640px){ .pa-head h1{font-size:1.6rem} }
+/* ---- Encabezado de página ---- */
+.pa-head{margin:2px 0 24px}
+.pa-head h1{font-family:'Outfit','Inter',sans-serif;font-size:clamp(1.65rem,4.4vw,2.05rem);font-weight:800;color:var(--pa-ink);letter-spacing:-.022em;line-height:1.08;margin:0;text-wrap:balance}
+.pa-head p{font-size:1.06rem;color:var(--pa-ink2);margin:9px 0 0;line-height:1.55;max-width:62ch}
 
 /* ============================================================
-   DASHBOARD — tarjetas grandes con ícono, una acción clara
+   DASHBOARD
    ============================================================ */
-.pa-hello{background:linear-gradient(135deg,#2a2566,#3f3aa3 70%,#5b53e0);color:#fff;border-radius:22px;padding:26px 28px;margin-bottom:24px;box-shadow:0 18px 40px -22px rgba(38,33,97,.7)}
-.pa-hello h1{font-family:'Outfit';font-size:1.9rem;font-weight:800;margin:0 0 6px;line-height:1.1}
-.pa-hello p{font-size:1.1rem;color:rgba(255,255,255,.92);margin:0;line-height:1.5}
-@media(max-width:640px){ .pa-hello{padding:20px} .pa-hello h1{font-size:1.5rem} }
+.pa-hello{position:relative;overflow:hidden;background:
+    radial-gradient(120% 140% at 100% 0%, rgba(111,180,63,.20), transparent 55%),
+    linear-gradient(135deg,#262161 0%, #322a78 55%, #3f3aa3 100%);
+  color:#fff;border-radius:var(--pa-r-lg);padding:30px 32px;margin-bottom:26px;
+  box-shadow:0 22px 48px -26px rgba(38,33,97,.75)}
+.pa-hello::after{content:"";position:absolute;right:-60px;top:-70px;width:230px;height:230px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.10),transparent 62%);pointer-events:none}
+.pa-hello h1{font-family:'Outfit';font-size:clamp(1.55rem,4.6vw,2rem);font-weight:800;margin:0 0 7px;line-height:1.08;letter-spacing:-.02em;position:relative}
+.pa-hello p{font-size:1.1rem;color:rgba(255,255,255,.9);margin:0;line-height:1.5;max-width:54ch;position:relative}
+@media(max-width:640px){ .pa-hello{padding:22px 20px} }
 
-.pa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.pa-card{display:flex;flex-direction:column;gap:14px;background:var(--pa-card);border:2px solid var(--pa-line);border-radius:20px;padding:24px;text-decoration:none;color:inherit;transition:transform .15s,box-shadow .15s,border-color .15s;min-height:184px}
-.pa-card:hover,.pa-card:focus-visible{transform:translateY(-3px);box-shadow:0 16px 34px -18px rgba(20,24,58,.45);border-color:var(--pa-brand2)}
-.pa-card-ic{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;flex:none}
-.pa-card-ic svg{width:32px;height:32px;stroke-width:2.1}
-.pa-card .ic-blue{background:#e7efff;color:var(--pa-blue)}
+.pa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(266px,1fr));gap:18px}
+.pa-card{position:relative;display:flex;flex-direction:column;gap:13px;background:var(--pa-card);
+  border:1px solid var(--pa-line);border-radius:var(--pa-r-lg);padding:24px;text-decoration:none;color:inherit;
+  box-shadow:var(--pa-sh-sm);transition:transform .2s var(--pa-ease),box-shadow .2s var(--pa-ease),border-color .2s var(--pa-ease);
+  min-height:186px;isolation:isolate}
+.pa-card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(160deg,rgba(63,58,163,.35),transparent 42%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .2s var(--pa-ease);pointer-events:none}
+.pa-card:hover,.pa-card:focus-visible{transform:translateY(-4px);box-shadow:var(--pa-sh);border-color:transparent}
+.pa-card:hover::before,.pa-card:focus-visible::before{opacity:1}
+.pa-card:active{transform:translateY(-1px)}
+.pa-card-ic{width:60px;height:60px;border-radius:17px;display:grid;place-items:center;flex:none;transition:transform .2s var(--pa-ease)}
+.pa-card:hover .pa-card-ic{transform:scale(1.06)}
+.pa-card-ic svg{width:31px;height:31px;stroke-width:2.1}
+.pa-card .ic-blue{background:#e8efff;color:var(--pa-blue)}
 .pa-card .ic-green{background:#e3f7ee;color:var(--pa-green)}
 .pa-card .ic-violet{background:#f1e9ff;color:var(--pa-violet)}
 .pa-card .ic-teal{background:#dff5fb;color:var(--pa-teal)}
 .pa-card .ic-amber{background:#fdf0dd;color:var(--pa-amber)}
-.pa-card h2{font-family:'Outfit';font-size:1.3rem;font-weight:800;color:var(--pa-ink);margin:0;line-height:1.15}
+.pa-card h2{font-family:'Outfit';font-size:1.28rem;font-weight:800;color:var(--pa-ink);margin:0;line-height:1.18;letter-spacing:-.01em}
 .pa-card p{font-size:1rem;color:var(--pa-ink2);margin:0;line-height:1.45;flex:1}
 .pa-card .pa-go{display:inline-flex;align-items:center;gap:7px;font-weight:800;font-size:1rem;color:var(--pa-brand2)}
-.pa-card .pa-go svg{width:18px;height:18px}
-.pa-card .pa-count{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 9px;border-radius:999px;background:var(--pa-brand);color:#fff;font-weight:800;font-size:.95rem;margin-left:auto}
+.pa-card .pa-go svg{width:18px;height:18px;transition:transform .2s var(--pa-ease)}
+.pa-card:hover .pa-go svg{transform:translateX(4px)}
 
 /* ============================================================
-   LISTAS DE SECCIÓN (consultas, recetas, laboratorio) — filas grandes
+   LISTAS DE SECCIÓN (consultas, recetas, laboratorio)
    ============================================================ */
 .pa-list{display:flex;flex-direction:column;gap:14px}
-.pa-item{display:flex;align-items:center;gap:16px;background:var(--pa-card);border:2px solid var(--pa-line);border-radius:18px;padding:18px 20px}
+.pa-item{display:flex;align-items:center;gap:16px;background:var(--pa-card);border:1px solid var(--pa-line);
+  border-radius:var(--pa-r);padding:18px 20px;box-shadow:var(--pa-sh-sm);
+  transition:transform .18s var(--pa-ease),box-shadow .18s var(--pa-ease),border-color .18s var(--pa-ease)}
+.pa-item:hover{transform:translateY(-2px);box-shadow:var(--pa-sh);border-color:#dde2f0}
 .pa-item-ic{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;flex:none;background:#eef1fb;color:var(--pa-brand2)}
 .pa-item-ic svg{width:27px;height:27px}
 .pa-item-main{flex:1;min-width:0}
-.pa-item-main .t{font-family:'Outfit';font-size:1.18rem;font-weight:800;color:var(--pa-ink);line-height:1.2}
+.pa-item-main .t{font-family:'Outfit';font-size:1.16rem;font-weight:800;color:var(--pa-ink);line-height:1.22;letter-spacing:-.01em}
 .pa-item-main .s{font-size:1rem;color:var(--pa-ink2);margin-top:3px;line-height:1.45}
-.pa-item-main .s strong{color:var(--pa-ink)}
-.pa-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-.pa-chip{font-size:.84rem;font-weight:700;padding:4px 11px;border-radius:999px;background:#eef1fb;color:var(--pa-brand2)}
-.pa-chip.rx{background:#e3f7ee;color:var(--pa-green)}
-.pa-chip.lab{background:#dff5fb;color:var(--pa-teal)}
+.pa-item-main .s strong{color:var(--pa-ink);font-weight:700}
+.pa-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.pa-chip{display:inline-flex;align-items:center;gap:5px;font-size:.86rem;font-weight:700;padding:5px 12px;border-radius:999px;background:#eef1fb;color:var(--pa-brand2);text-decoration:none;transition:background .15s var(--pa-ease)}
+a.pa-chip:hover{background:#e3e7f7}
+.pa-chip.rx{background:#e3f7ee;color:var(--pa-green)} a.pa-chip.rx:hover{background:#d3f0e1}
+.pa-chip.lab{background:#dff5fb;color:var(--pa-teal)} a.pa-chip.lab:hover{background:#cdeef7}
 .pa-item-actions{display:flex;flex-direction:column;gap:8px;flex:none}
-@media(max-width:640px){ .pa-item{flex-wrap:wrap}.pa-item-actions{flex-direction:row;width:100%}.pa-item-actions .pa-btn{flex:1} }
+@media(max-width:600px){ .pa-item{flex-wrap:wrap}.pa-item-actions{flex-direction:row;width:100%}.pa-item-actions .pa-btn{flex:1} }
 
-/* botones grandes y claros */
-.pa-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:54px;padding:0 22px;border-radius:14px;font-size:1.08rem;font-weight:800;border:2px solid transparent;cursor:pointer;text-decoration:none;transition:background .15s,transform .1s;white-space:nowrap}
+/* ============================================================
+   BOTONES — estados completos (default/hover/active/focus/disabled)
+   ============================================================ */
+.pa-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:54px;padding:0 22px;
+  border-radius:var(--pa-r-sm);font-size:1.06rem;font-weight:800;border:1px solid transparent;cursor:pointer;
+  text-decoration:none;letter-spacing:-.01em;white-space:nowrap;
+  transition:background .16s var(--pa-ease),box-shadow .16s var(--pa-ease),transform .1s var(--pa-ease),border-color .16s var(--pa-ease)}
+.pa-btn svg{width:20px;height:20px;flex:none}
 .pa-btn:active{transform:translateY(1px)}
-.pa-btn svg{width:20px;height:20px}
-.pa-btn-primary{background:var(--pa-brand);color:#fff}
-.pa-btn-primary:hover{background:#1c1850}
-.pa-btn-green{background:var(--pa-green);color:#fff}
-.pa-btn-green:hover{background:#086644}
-.pa-btn-soft{background:#eef1fb;color:var(--pa-brand);border-color:#dfe3f2}
-.pa-btn-soft:hover{background:#e3e7f6}
+.pa-btn:disabled,.pa-btn[aria-disabled="true"]{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.pa-btn-primary{background:var(--pa-brand);color:#fff;box-shadow:0 10px 22px -12px rgba(38,33,97,.6)}
+.pa-btn-primary:hover{background:#1d1850;box-shadow:0 14px 28px -12px rgba(38,33,97,.66)}
+.pa-btn-green{background:var(--pa-green);color:#fff;box-shadow:0 10px 22px -12px rgba(10,122,82,.55)}
+.pa-btn-green:hover{background:#086644;box-shadow:0 14px 28px -12px rgba(10,122,82,.6)}
+.pa-btn-soft{background:#eef1fb;color:var(--pa-brand);border-color:#e0e4f3}
+.pa-btn-soft:hover{background:#e4e8f6;border-color:#d3d9ee}
 .pa-btn-sm{min-height:46px;font-size:1rem;padding:0 16px}
 .pa-btn-block{width:100%}
 
-/* estado vacío amable */
-.pa-empty{text-align:center;padding:46px 24px;background:var(--pa-card);border:2px dashed var(--pa-line);border-radius:20px}
-.pa-empty .ic{width:76px;height:76px;border-radius:50%;background:#eef1fb;display:grid;place-items:center;margin:0 auto 16px;color:var(--pa-brand2)}
-.pa-empty .ic svg{width:38px;height:38px}
-.pa-empty h2{font-family:'Outfit';font-size:1.35rem;font-weight:800;color:var(--pa-ink);margin:0 0 6px}
-.pa-empty p{font-size:1.05rem;color:var(--pa-ink2);margin:0 auto;max-width:420px;line-height:1.5}
+/* ============================================================
+   ESTADO VACÍO — enseña, no "nada aquí"
+   ============================================================ */
+.pa-empty{text-align:center;padding:48px 26px;background:var(--pa-card);border:1px solid var(--pa-line);border-radius:var(--pa-r-lg);box-shadow:var(--pa-sh-sm)}
+.pa-empty .ic{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;color:var(--pa-brand2);
+  background:radial-gradient(circle at 50% 35%,#eef1fb,#e6eaf6)}
+.pa-empty .ic svg{width:39px;height:39px}
+.pa-empty h2{font-family:'Outfit';font-size:1.36rem;font-weight:800;color:var(--pa-ink);margin:0 0 7px}
+.pa-empty p{font-size:1.05rem;color:var(--pa-ink2);margin:0 auto;max-width:44ch;line-height:1.55}
 
 /* ============================================================
-   LOGIN OTP — pasos grandes y claros
+   LOGIN OTP
    ============================================================ */
-.pa-auth{max-width:480px;margin:18px auto;background:#fff;border:2px solid var(--pa-line);border-radius:24px;padding:34px 32px;box-shadow:0 20px 50px -28px rgba(20,24,58,.4)}
-.pa-auth-logo{display:block;height:46px;margin:0 auto 18px}
-.pa-auth h1{font-family:'Outfit';font-size:1.7rem;font-weight:800;text-align:center;color:var(--pa-ink);margin:0 0 6px}
-.pa-auth .lead{text-align:center;font-size:1.08rem;color:var(--pa-ink2);margin:0 0 24px;line-height:1.5}
+.pa-auth{max-width:480px;margin:22px auto;background:#fff;border:1px solid var(--pa-line);border-radius:var(--pa-r-lg);
+  padding:36px 32px;box-shadow:var(--pa-sh-lg)}
+.pa-auth-logo{display:block;height:48px;width:auto;margin:0 auto 20px}
+.pa-auth h1{font-family:'Outfit';font-size:1.72rem;font-weight:800;text-align:center;color:var(--pa-ink);margin:0 0 7px;letter-spacing:-.02em}
+.pa-auth .lead{text-align:center;font-size:1.06rem;color:var(--pa-ink2);margin:0 0 26px;line-height:1.55}
 .pa-field{margin-bottom:18px}
-.pa-label{display:block;font-size:1.05rem;font-weight:800;color:var(--pa-ink);margin-bottom:8px}
-.pa-input{width:100%;min-height:58px;border:2px solid #cfd6e8;border-radius:14px;padding:0 16px;font-size:1.15rem;color:var(--pa-ink);background:#fff;transition:border-color .15s}
-.pa-input:focus{border-color:var(--pa-focus);outline:none}
-.pa-input-code{text-align:center;letter-spacing:.5em;font-size:1.7rem;font-weight:800;font-variant-numeric:tabular-nums;padding-left:.5em}
-.pa-hint{font-size:.98rem;color:var(--pa-ink2);margin:8px 0 0;line-height:1.45}
+.pa-label{display:block;font-size:1.04rem;font-weight:800;color:var(--pa-ink);margin-bottom:8px;letter-spacing:-.01em}
+.pa-input{width:100%;min-height:58px;border:1.5px solid #cdd5e8;border-radius:var(--pa-r-sm);padding:0 16px;
+  font-size:1.14rem;color:var(--pa-ink);background:#fff;transition:border-color .16s var(--pa-ease),box-shadow .16s var(--pa-ease)}
+.pa-input::placeholder{color:#9aa3bd}
+.pa-input:hover{border-color:#b6c0db}
+.pa-input:focus{border-color:var(--pa-focus);outline:none;box-shadow:var(--pa-ring)}
+.pa-input-code{text-align:center;letter-spacing:.42em;font-size:1.7rem;font-weight:800;font-variant-numeric:tabular-nums;padding-left:.42em}
+.pa-hint{font-size:.97rem;color:var(--pa-muted);margin:9px 0 0;line-height:1.5}
 .pa-auth-alt{text-align:center;margin-top:20px;font-size:1rem;color:var(--pa-ink2)}
-.pa-auth-alt a{color:var(--pa-brand2);font-weight:800;text-decoration:none}
+.pa-auth-alt a,.pa-auth-alt summary{color:var(--pa-brand2);font-weight:800;text-decoration:none;cursor:pointer}
 .pa-auth-alt a:hover{text-decoration:underline}
-.pa-msg{display:flex;gap:10px;align-items:flex-start;padding:14px 16px;border-radius:14px;font-size:1.02rem;line-height:1.45;margin-bottom:18px}
+.pa-auth-alt summary{list-style:none;display:inline-flex;align-items:center;gap:6px}
+.pa-auth-alt summary::-webkit-details-marker{display:none}
+.pa-msg{display:flex;gap:11px;align-items:flex-start;padding:14px 16px;border-radius:var(--pa-r-sm);font-size:1.02rem;line-height:1.5;margin-bottom:18px;border:1px solid transparent}
 .pa-msg svg{width:22px;height:22px;flex:none;margin-top:1px}
-.pa-msg-info{background:#e7efff;color:#1e3a8a}
-.pa-msg-error{background:#fde7ec;color:#9f1239}
-.pa-msg-ok{background:#e3f7ee;color:#065f46}
+.pa-msg-info{background:#eaf1ff;color:#16358a;border-color:#d4e0fb}
+.pa-msg-error{background:#fdeaef;color:#9f1239;border-color:#f7cdd8}
+.pa-msg-ok{background:#e6f7ef;color:#075e3f;border-color:#c9eddd}
 .pa-mask{font-weight:800;color:var(--pa-ink)}
 
 /* ============================================================
-   DOCUMENTO / DETALLE (consulta) — legible
+   PANEL / DETALLE (consulta) — legible
    ============================================================ */
-.pa-panel{background:#fff;border:2px solid var(--pa-line);border-radius:20px;padding:24px 26px;margin-bottom:18px}
-.pa-panel h2{font-family:'Outfit';font-size:1.3rem;font-weight:800;color:var(--pa-ink);margin:0 0 4px;display:flex;align-items:center;gap:10px}
-.pa-panel h2 svg{width:22px;height:22px;color:var(--pa-brand2)}
-.pa-panel .meta{font-size:1rem;color:var(--pa-ink2);margin:0 0 14px}
-.pa-dl{display:grid;gap:14px}
-.pa-dl .row .k{font-size:.92rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--pa-muted)}
-.pa-dl .row .v{font-size:1.08rem;color:var(--pa-ink);line-height:1.5;white-space:pre-wrap;margin-top:2px}
-.pa-back{display:inline-flex;align-items:center;gap:8px;font-size:1.05rem;font-weight:800;color:var(--pa-brand2);text-decoration:none;margin-bottom:16px}
+.pa-panel{background:#fff;border:1px solid var(--pa-line);border-radius:var(--pa-r-lg);padding:24px 26px;margin-bottom:18px;box-shadow:var(--pa-sh-sm)}
+.pa-panel h2{font-family:'Outfit';font-size:1.3rem;font-weight:800;color:var(--pa-ink);margin:0 0 4px;display:flex;align-items:center;gap:10px;letter-spacing:-.01em}
+.pa-panel h2 svg{width:23px;height:23px;color:var(--pa-brand2);flex:none}
+.pa-panel .meta{font-size:1.02rem;color:var(--pa-ink2);margin:0 0 16px}
+.pa-dl{display:grid;gap:0}
+.pa-dl .row{padding:14px 0;border-top:1px solid var(--pa-line2)}
+.pa-dl .row:first-child{border-top:0;padding-top:2px}
+.pa-dl .row .k{font-size:.85rem;font-weight:800;text-transform:uppercase;letter-spacing:.045em;color:var(--pa-muted)}
+.pa-dl .row .v{font-size:1.08rem;color:var(--pa-ink);line-height:1.55;white-space:pre-wrap;margin-top:4px}
+.pa-back{display:inline-flex;align-items:center;gap:8px;font-size:1.04rem;font-weight:800;color:var(--pa-brand2);text-decoration:none;margin-bottom:18px;transition:gap .15s var(--pa-ease)}
+.pa-back:hover{gap:12px}
 .pa-back svg{width:20px;height:20px}
 
-@media (prefers-reduced-motion: reduce){ .portal-page *{transition:none!important} }
+/* ============================================================
+   PULIDO del shell del portal (topbar/sidebar) que vienen de portal.css
+   — refinamos sin tocar el markup
+   ============================================================ */
+.portal-page .portal-topbar{border-bottom:1px solid var(--pa-line);box-shadow:0 1px 0 rgba(16,22,51,.02)}
+.portal-page .portal-sidebar .portal-nav-link{font-size:1.02rem;border-radius:12px;transition:background .15s var(--pa-ease),color .15s var(--pa-ease)}
+.portal-page .portal-nav-link.is-active{background:linear-gradient(100deg,rgba(63,58,163,.12),rgba(63,58,163,.04));color:var(--pa-brand)}
+.portal-page .portal-nav-link.is-active i,.portal-page .portal-nav-link.is-active svg{color:var(--pa-brand2)}
+
+/* enlaces de texto del portal: navy en vez de gris claro (contraste) */
+.portal-page .portal-text-link{color:var(--pa-brand2);font-weight:700}
+
+@media (prefers-reduced-motion: reduce){
+  .portal-page *,.portal-page *::before{transition:none!important;animation:none!important}
+  .pa-card:hover,.pa-item:hover{transform:none}
+}
