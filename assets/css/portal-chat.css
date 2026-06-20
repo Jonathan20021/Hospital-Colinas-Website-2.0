@@ -1,0 +1,680 @@
+/* ============================================================================
+   Chat seguro Paciente ↔ Médico — UI compartida por ambos portales.
+   Scope: .hgchat  ·  Tema por host con variables (navy del paciente / médico).
+   Mensajería de clase mundial pero clínica, calmada y accesible.
+   ============================================================================ */
+.hgchat {
+    --hg-navy: #262161;
+    --hg-navy-2: #1b1748;
+    --hg-green: #6fb43f;
+    --hg-green-2: #5da334;
+    --hg-ink: #14121f;
+    --hg-ink-2: #5b5870;
+    --hg-line: #e7e1d6;
+    --hg-line-soft: #f0ebe1;
+    --hg-surface: #ffffff;
+    --hg-canvas: #f7f4ee;
+    --hg-peer-bubble: #f1ece2;
+    --hg-radius: 20px;
+    --hg-shadow: 0 1px 2px rgba(20, 18, 31, .04), 0 12px 34px -18px rgba(20, 18, 31, .22);
+
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    height: var(--hg-h, min(78vh, 820px));
+    background: var(--hg-surface);
+    border: 1px solid var(--hg-line);
+    border-radius: var(--hg-radius);
+    box-shadow: var(--hg-shadow);
+    overflow: hidden;
+    position: relative;
+    font-feature-settings: "cv11", "ss01";
+}
+
+/* El médico añade un riel de contexto clínico (3ª columna). */
+.hgchat.has-context {
+    grid-template-columns: minmax(260px, 330px) minmax(0, 1fr) minmax(280px, 340px);
+}
+
+/* ── Columna 1: lista de conversaciones ─────────────────────────────────── */
+.hgchat-list {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-right: 1px solid var(--hg-line);
+    background: linear-gradient(180deg, #fffefb, var(--hg-canvas));
+}
+
+.hgchat-list-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 18px 18px 12px;
+}
+
+.hgchat-list-head h1 {
+    margin: 0;
+    font-family: "Outfit", "Inter", sans-serif;
+    font-size: 1.28rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--hg-navy);
+}
+
+.hgchat-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--hg-navy);
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 750;
+    cursor: pointer;
+    transition: background .16s ease, transform .16s ease;
+}
+
+.hgchat-new:hover { background: var(--hg-navy-2); }
+.hgchat-new:active { transform: translateY(1px); }
+.hgchat-new svg { width: 17px; height: 17px; }
+
+.hgchat-search {
+    position: relative;
+    padding: 4px 16px 12px;
+}
+
+.hgchat-search svg {
+    position: absolute;
+    left: 28px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 17px;
+    color: var(--hg-ink-2);
+    pointer-events: none;
+}
+
+.hgchat-search input {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 14px 0 38px;
+    border: 1.5px solid var(--hg-line);
+    border-radius: 12px;
+    background: #fff;
+    font-size: .98rem;
+    color: var(--hg-ink);
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+
+.hgchat-search input:focus {
+    outline: none;
+    border-color: var(--hg-navy);
+    box-shadow: 0 0 0 3px rgba(38, 33, 97, .14);
+}
+
+.hgchat-threads {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 4px 10px 14px;
+    scrollbar-width: thin;
+}
+
+.hgchat-item {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 11px 12px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background .14s ease;
+}
+
+.hgchat-item:hover { background: #fff; }
+.hgchat-item.on {
+    background: #fff;
+    box-shadow: inset 0 0 0 1.5px var(--hg-navy), 0 8px 22px -16px rgba(38, 33, 97, .5);
+}
+
+.hgchat-av {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 800;
+    font-size: .98rem;
+    letter-spacing: .02em;
+    background: linear-gradient(135deg, var(--hg-navy), #4b3f9e);
+    box-shadow: 0 6px 16px -8px rgba(38, 33, 97, .6);
+}
+
+.hgchat-item-body { min-width: 0; }
+
+.hgchat-item-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.hgchat-item-name {
+    font-weight: 750;
+    font-size: .98rem;
+    color: var(--hg-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hgchat-item-time {
+    flex: none;
+    font-size: .74rem;
+    color: var(--hg-ink-2);
+}
+
+.hgchat-item-preview {
+    margin-top: 2px;
+    font-size: .88rem;
+    color: var(--hg-ink-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.hgchat-item.unread .hgchat-item-name { font-weight: 850; }
+.hgchat-item.unread .hgchat-item-preview { color: var(--hg-ink); font-weight: 650; }
+
+.hgchat-badge {
+    display: grid;
+    place-items: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--hg-green);
+    color: #fff;
+    font-size: .76rem;
+    font-weight: 800;
+}
+
+/* ── Columna 2: hilo activo ─────────────────────────────────────────────── */
+.hgchat-thread {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    background:
+        radial-gradient(1200px 480px at 80% -10%, rgba(38, 33, 97, .05), transparent 60%),
+        var(--hg-canvas);
+}
+
+.hgchat-thread.is-empty .hgchat-thread-head,
+.hgchat-thread.is-empty .hgchat-banner,
+.hgchat-thread.is-empty .hgchat-msgs,
+.hgchat-thread.is-empty .hgchat-composer { display: none; }
+
+.hgchat-empty {
+    flex: 1;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px;
+    text-align: center;
+    color: var(--hg-ink-2);
+}
+
+.hgchat-thread.is-empty .hgchat-empty { display: flex; }
+.hgchat-empty svg { width: 46px; height: 46px; color: #c7bdab; }
+.hgchat-empty strong { font-size: 1.1rem; color: var(--hg-ink); font-weight: 750; }
+.hgchat-empty span { max-width: 36ch; font-size: .95rem; line-height: 1.55; }
+
+.hgchat-thread-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--hg-line);
+    background: rgba(255, 255, 255, .82);
+    backdrop-filter: blur(8px);
+}
+
+.hgchat-back {
+    display: none;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    place-items: center;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--hg-navy);
+    cursor: pointer;
+}
+.hgchat-back svg { width: 22px; height: 22px; }
+
+.hgchat-peer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1;
+}
+
+.hgchat-peer .hgchat-av { width: 42px; height: 42px; font-size: .9rem; }
+.hgchat-peer-meta { min-width: 0; }
+.hgchat-peer-name {
+    font-weight: 800;
+    font-size: 1.04rem;
+    color: var(--hg-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.hgchat-peer-sub {
+    font-size: .82rem;
+    color: var(--hg-ink-2);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.hgchat-peer-sub svg { width: 13px; height: 13px; color: var(--hg-green-2); }
+
+.hgchat-icon-btn {
+    width: 42px;
+    height: 42px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--hg-line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--hg-navy);
+    cursor: pointer;
+    transition: background .14s ease, border-color .14s ease;
+}
+.hgchat-icon-btn:hover { background: var(--hg-line-soft); }
+.hgchat-icon-btn svg { width: 19px; height: 19px; }
+
+.hgchat-banner {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 12px 16px 0;
+    padding: 9px 13px;
+    border: 1px solid #f1d9a8;
+    border-radius: 12px;
+    background: #fdf6e7;
+    color: #8a5a16;
+    font-size: .82rem;
+    font-weight: 600;
+}
+.hgchat-banner svg { width: 16px; height: 16px; flex: none; }
+
+/* ── Mensajes ───────────────────────────────────────────────────────────── */
+.hgchat-msgs {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 18px clamp(14px, 4%, 40px) 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    scrollbar-width: thin;
+}
+
+.hgchat-day {
+    align-self: center;
+    margin: 14px 0 10px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: rgba(38, 33, 97, .08);
+    color: var(--hg-navy);
+    font-size: .76rem;
+    font-weight: 750;
+}
+
+.hgchat-row { display: flex; margin-top: 2px; }
+.hgchat-row.mine { justify-content: flex-end; }
+.hgchat-row.first { margin-top: 10px; }
+
+.hgchat-bubble {
+    position: relative;
+    max-width: min(72%, 560px);
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: .98rem;
+    line-height: 1.5;
+    color: var(--hg-ink);
+    background: #fff;
+    border: 1px solid var(--hg-line);
+    box-shadow: 0 1px 1px rgba(20, 18, 31, .03);
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+}
+
+.hgchat-row.mine .hgchat-bubble {
+    color: #fff;
+    background: linear-gradient(135deg, var(--hg-navy), #3a3186);
+    border-color: transparent;
+}
+
+.hgchat-row.first .hgchat-bubble { border-top-left-radius: 6px; }
+.hgchat-row.mine.first .hgchat-bubble { border-top-left-radius: 18px; border-top-right-radius: 6px; }
+
+.hgchat-bubble-text { white-space: pre-wrap; }
+
+.hgchat-meta {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 4px;
+    font-size: .7rem;
+    opacity: .72;
+    justify-content: flex-end;
+}
+.hgchat-row:not(.mine) .hgchat-meta { color: var(--hg-ink-2); }
+.hgchat-ticks { display: inline-flex; }
+.hgchat-ticks svg { width: 15px; height: 15px; }
+.hgchat-ticks.read { color: #7fe0ff; }
+
+/* Tarjeta del expediente dentro de una burbuja (receta/lab/imagen/cita) */
+.hgchat-card {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 230px;
+    margin: 2px 0;
+    padding: 11px 13px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .26);
+}
+.hgchat-row:not(.mine) .hgchat-card {
+    background: var(--hg-peer-bubble);
+    border-color: var(--hg-line);
+}
+.hgchat-card-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.18); flex: none; }
+.hgchat-row:not(.mine) .hgchat-card-ic { background: #fff; color: var(--hg-navy); }
+.hgchat-card-ic svg { width: 19px; height: 19px; }
+.hgchat-card-meta { min-width: 0; }
+.hgchat-card-meta strong { display: block; font-size: .92rem; font-weight: 750; }
+.hgchat-card-meta small { font-size: .78rem; opacity: .8; }
+.hgchat-card-go { margin-left: auto; flex: none; opacity: .8; }
+.hgchat-card-go svg { width: 18px; height: 18px; }
+
+.hgchat-sys {
+    align-self: center;
+    margin: 6px 0;
+    font-size: .8rem;
+    color: var(--hg-ink-2);
+    font-style: italic;
+}
+
+/* ── Composer ───────────────────────────────────────────────────────────── */
+.hgchat-composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--hg-line);
+    background: rgba(255, 255, 255, .92);
+}
+
+.hgchat-attach {
+    width: 46px;
+    height: 46px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--hg-line);
+    border-radius: 14px;
+    background: #fff;
+    color: var(--hg-navy);
+    cursor: pointer;
+    transition: background .14s ease;
+}
+.hgchat-attach:hover { background: var(--hg-line-soft); }
+.hgchat-attach svg { width: 20px; height: 20px; }
+
+.hgchat-input {
+    flex: 1;
+    min-height: 46px;
+    max-height: 160px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--hg-line);
+    border-radius: 16px;
+    background: #fff;
+    font: inherit;
+    font-size: .99rem;
+    line-height: 1.45;
+    color: var(--hg-ink);
+    resize: none;
+    transition: border-color .16s ease, box-shadow .16s ease;
+}
+.hgchat-input:focus {
+    outline: none;
+    border-color: var(--hg-navy);
+    box-shadow: 0 0 0 3px rgba(38, 33, 97, .12);
+}
+
+.hgchat-send {
+    width: 50px;
+    height: 50px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: var(--hg-green);
+    color: #fff;
+    cursor: pointer;
+    transition: background .16s ease, transform .16s ease, opacity .16s ease;
+    box-shadow: 0 10px 20px -10px rgba(111, 180, 63, .8);
+}
+.hgchat-send:hover { background: var(--hg-green-2); }
+.hgchat-send:active { transform: scale(.94); }
+.hgchat-send:disabled { opacity: .45; cursor: default; box-shadow: none; }
+.hgchat-send svg { width: 21px; height: 21px; }
+
+/* ── Columna 3 (médico): contexto clínico ───────────────────────────────── */
+.hgchat-context {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    border-left: 1px solid var(--hg-line);
+    background: linear-gradient(180deg, #fffefb, var(--hg-canvas));
+    padding: 16px;
+    gap: 14px;
+    scrollbar-width: thin;
+}
+.hgchat-context.empty { align-items: center; justify-content: center; color: var(--hg-ink-2); text-align: center; }
+.hgchat-ctx-card {
+    background: #fff;
+    border: 1px solid var(--hg-line);
+    border-radius: 14px;
+    padding: 13px 14px;
+}
+.hgchat-ctx-card h4 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 9px;
+    font-size: .76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--hg-ink-2);
+}
+.hgchat-ctx-card h4 svg { width: 15px; height: 15px; }
+.hgchat-ctx-name { font-family: "Outfit", sans-serif; font-size: 1.12rem; font-weight: 800; color: var(--hg-navy); }
+.hgchat-ctx-sub { font-size: .84rem; color: var(--hg-ink-2); margin-top: 2px; }
+.hgchat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 3px 4px 0 0;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .8rem;
+    font-weight: 700;
+    background: var(--hg-line-soft);
+    color: var(--hg-ink);
+}
+.hgchat-chip.sev-severa { background: #fde7e7; color: #b42318; }
+.hgchat-chip.sev-moderada { background: #fdf1de; color: #9a6312; }
+.hgchat-chip.sev-leve { background: #eaf3e2; color: #4a7a23; }
+.hgchat-ctx-links { display: grid; gap: 8px; }
+.hgchat-ctx-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--hg-line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--hg-ink);
+    text-decoration: none;
+    font-size: .9rem;
+    font-weight: 650;
+    transition: background .14s ease, border-color .14s ease;
+}
+.hgchat-ctx-link:hover { background: var(--hg-line-soft); border-color: #d8cfbe; }
+.hgchat-ctx-link svg { width: 17px; height: 17px; color: var(--hg-navy); }
+.hgchat-ctx-link .go { margin-left: auto; opacity: .55; }
+
+/* ── Estados de carga / vacío de listas ─────────────────────────────────── */
+.hgchat-skeleton { padding: 14px; display: grid; gap: 10px; }
+.hgchat-sk { height: 56px; border-radius: 14px; background: linear-gradient(90deg, #f0ebe1, #f7f3ec, #f0ebe1); background-size: 200% 100%; animation: hgsk 1.3s ease infinite; }
+@keyframes hgsk { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.hgchat-list-empty { padding: 30px 20px; text-align: center; color: var(--hg-ink-2); font-size: .9rem; line-height: 1.6; }
+
+/* ── “Nuevo chat”: hoja de contactos ────────────────────────────────────── */
+.hgchat-sheet { position: absolute; inset: 0; z-index: 5; display: none; flex-direction: column; background: rgba(20, 18, 31, .42); }
+.hgchat-sheet.open { display: flex; }
+.hgchat-sheet-panel {
+    margin-top: auto;
+    max-height: 76%;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -20px 50px -20px rgba(20, 18, 31, .5);
+    animation: hgsheet .26s cubic-bezier(.22,.61,.36,1);
+}
+@media (min-width: 760px) {
+    .hgchat-sheet { align-items: center; justify-content: center; }
+    .hgchat-sheet-panel { margin: 0; width: min(480px, 90%); max-height: 70%; border-radius: 20px; animation: hgpop .2s ease; }
+}
+@keyframes hgsheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes hgpop { from { transform: scale(.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.hgchat-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; }
+.hgchat-sheet-head h3 { margin: 0; font-family: "Outfit", sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--hg-navy); }
+.hgchat-sheet-list { overflow-y: auto; padding: 4px 10px 16px; }
+
+/* ── Responsive: < 900px una sola columna; el hilo cubre la lista ───────── */
+@media (max-width: 980px) {
+    .hgchat, .hgchat.has-context {
+        grid-template-columns: 1fr;
+        --hg-h: calc(100dvh - var(--hg-chrome, 150px));
+    }
+    .hgchat-thread, .hgchat-context {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        transform: translateX(100%);
+        transition: transform .26s cubic-bezier(.22,.61,.36,1);
+    }
+    .hgchat { position: relative; }
+    .hgchat.show-thread .hgchat-thread { transform: translateX(0); }
+    .hgchat.show-context .hgchat-context { transform: translateX(0); z-index: 4; }
+    .hgchat-back { display: grid; }
+    .hgchat-context { border-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hgchat *, .hgchat *::before, .hgchat *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Toast efímero dentro del hilo (errores de envío) */
+.hgchat-flash {
+    position: absolute;
+    left: 50%;
+    bottom: 86px;
+    transform: translate(-50%, 8px);
+    max-width: 80%;
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: #2a2230;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 650;
+    box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 6;
+}
+.hgchat-flash.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* Riel de contexto: estado inicial (sin paciente seleccionado) */
+.hgchat-ctx-hint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+    color: var(--hg-ink-2);
+    padding: 30px 12px;
+}
+.hgchat-ctx-hint svg { width: 30px; height: 30px; color: #c7bdab; }
+.hgchat-ctx-hint p { margin: 0; font-size: .9rem; line-height: 1.5; }
+
+/* ── Adjuntos en burbujas ───────────────────────────────────────────────── */
+.hgchat-att-imgwrap { display: block; margin: 2px 0; }
+.hgchat-att-img {
+    display: block;
+    max-width: min(280px, 60vw);
+    max-height: 340px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+.hgchat-att-file {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 220px;
+    margin: 2px 0;
+    padding: 10px 12px;
+    border-radius: 13px;
+    text-decoration: none;
+    color: inherit;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .26);
+}
+.hgchat-row:not(.mine) .hgchat-att-file { background: var(--hg-peer-bubble); border-color: var(--hg-line); color: var(--hg-ink); }
+.hgchat-att-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 9px; background: rgba(255, 255, 255, .2); flex: none; }
+.hgchat-row:not(.mine) .hgchat-att-ic { background: #fff; color: var(--hg-navy); }
+.hgchat-att-ic svg { width: 19px; height: 19px; }
+.hgchat-att-meta { min-width: 0; flex: 1; }
+.hgchat-att-meta strong { display: block; font-size: .9rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hgchat-att-meta small { font-size: .76rem; opacity: .8; }
+.hgchat-att-dl { flex: none; opacity: .85; }
+.hgchat-att-dl svg { width: 18px; height: 18px; }
+.hgchat-attach:disabled { opacity: .5; cursor: default; }
+/* Burbuja con solo imagen: padding mínimo (marco de foto) */
+.hgchat-bubble:has(.hgchat-att-img) { padding: 5px; }
+.hgchat-bubble:has(.hgchat-att-img) .hgchat-meta { padding: 0 6px 2px; }

@@ -67,7 +67,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
 
     <?php
     $dmLogged = doctor_is_logged_in();
-    $dmTitles = ['dashboard'=>'Inicio','agenda'=>'Mi agenda','pacientes'=>'Pacientes','consulta'=>'Consulta','disponibilidad'=>'Disponibilidad','analytics'=>'Analytics','cuenta'=>'Mi cuenta','perfil'=>'Mi perfil'];
+    $dmTitles = ['dashboard'=>'Inicio','agenda'=>'Mi agenda','pacientes'=>'Pacientes','mensajes'=>'Mensajes','consulta'=>'Consulta','disponibilidad'=>'Disponibilidad','analytics'=>'Analytics','cuenta'=>'Mi cuenta','perfil'=>'Mi perfil'];
     $dmPg = $dmTitles[$active] ?? $title;
     if ($dmLogged) {
         $doctor = doctor_current() ?? [];
@@ -80,6 +80,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
             ['dashboard','layout-dashboard','Inicio'],
             ['agenda','calendar-days','Mi agenda'],
             ['pacientes','users','Pacientes'],
+            ['mensajes','messages-square','Mensajes'],
             ['consulta','stethoscope','Consulta'],
             ['disponibilidad','calendar-clock','Disponibilidad'],
             ['analytics','bar-chart-3','Analytics'],

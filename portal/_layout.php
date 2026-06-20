@@ -139,6 +139,9 @@ function portal_layout_begin(string $title, string $active = ''): void
                         <a href="<?= e(base_url('portal/mis-citas.php')) ?>" title="Mis citas"
                             class="portal-nav-link <?= $active === 'mis-citas' ? 'is-active' : '' ?>"><i
                                 data-lucide="calendar-check" class="h-4 w-4"></i><span class="portal-nav-label">Mis citas</span></a>
+                        <a href="<?= e(base_url('portal/mensajes.php')) ?>" title="Mensajes"
+                            class="portal-nav-link <?= $active === 'mensajes' ? 'is-active' : '' ?>"><i
+                                data-lucide="messages-square" class="h-4 w-4"></i><span class="portal-nav-label">Mensajes</span></a>
                         <a href="<?= e(base_url('portal/consultas.php')) ?>" title="Mis consultas"
                             class="portal-nav-link <?= $active === 'consultas' ? 'is-active' : '' ?>"><i
                                 data-lucide="stethoscope" class="h-4 w-4"></i><span class="portal-nav-label">Mis consultas</span></a>
@@ -230,6 +233,7 @@ function portal_layout_end(): void
                 </div>
                 <div class="portal-dialog-body">
                     <nav class="portal-more-nav" aria-label="Opciones adicionales">
+                        <a href="<?= e(base_url('portal/mensajes.php')) ?>"><i data-lucide="messages-square"></i> Mensajes</a>
                         <a href="<?= e(base_url('portal/consultas.php')) ?>"><i data-lucide="stethoscope"></i> Mis consultas</a>
                         <a href="<?= e(base_url('portal/recetas.php')) ?>"><i data-lucide="file-text"></i> Mis recetas</a>
                         <a href="<?= e(base_url('portal/estudios.php')) ?>"><i data-lucide="scan-line"></i> Mis imágenes</a>
