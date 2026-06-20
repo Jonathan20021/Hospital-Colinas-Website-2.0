@@ -15,6 +15,7 @@ if (!empty($_GET['next'])) $_SESSION['otp_next'] = (string)$_GET['next'];
 $step = !empty($_SESSION['otp_id']) ? 'verify' : 'request';
 $msg = null; $msgType = 'error'; $idInput = '';
 $openPassword = false;
+$openActivate = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     portal_csrf_check();
@@ -32,6 +33,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $step = 'request';
             $msg = $res['message'] ?? 'No pudimos enviar el código.';
+            // Si la cuenta no tiene correo, guiar a la activación por cédula + teléfono.
+            if (!empty($res['errors']['no_email']) || !empty($res['errors']['no_contact'])) {
+                $openActivate = true;
+            }
         }
     } elseif ($action === 'verify') {
         $code = preg_replace('/\D/', '', (string)($_POST['code'] ?? ''));
@@ -54,8 +59,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $step = 'request';
     } elseif ($action === 'password') {
         $res = portal_api_call('POST', '/portal/auth/login', [
-            'email'    => trim((string)($_POST['email'] ?? '')),
-            'password' => (string)($_POST['password'] ?? ''),
+            'identifier' => trim((string)($_POST['identifier'] ?? '')),
+            'password'   => (string)($_POST['password'] ?? ''),
         ]);
         if ($res['ok']) {
             portal_login_session($res['data']);
@@ -66,6 +71,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $step = 'request'; $openPassword = true;
             $msg = $res['message'] ?? 'No se pudo iniciar sesión.';
+        }
+    } elseif ($action === 'activate') {
+        if ((string)($_POST['new_password'] ?? '') !== (string)($_POST['new_password_confirm'] ?? '')) {
+            $step = 'request'; $openActivate = true;
+            $msg = 'Las contraseñas no coinciden.';
+        } else {
+            $res = portal_api_call('POST', '/portal/auth/activate', [
+                'identifier'   => trim((string)($_POST['identifier'] ?? '')),
+                'phone'        => trim((string)($_POST['phone'] ?? '')),
+                'new_password' => (string)($_POST['new_password'] ?? ''),
+            ]);
+            if ($res['ok']) {
+                portal_login_session($res['data']);
+                $next = $_SESSION['otp_next'] ?? base_url('portal/dashboard.php');
+                unset($_SESSION['otp_next']);
+                header('Location: ' . $next);
+                exit;
+            } else {
+                $step = 'request'; $openActivate = true;
+                $msg = $res['message'] ?? 'No se pudo activar la cuenta.';
+            }
         }
     }
 }
@@ -140,8 +166,8 @@ portal_layout_begin('Iniciar sesión', 'login');
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="password">
                 <div class="pa-field">
-                    <label class="pa-label" for="email">Correo electrónico</label>
-                    <input class="pa-input" type="email" name="email" id="email" autocomplete="username">
+                    <label class="pa-label" for="identifier_pw">Cédula o correo electrónico</label>
+                    <input class="pa-input" type="text" name="identifier" id="identifier_pw" autocomplete="username" placeholder="001-1234567-8  o  nombre@correo.com">
                 </div>
                 <div class="pa-field portal-password-field">
                     <label class="pa-label" for="password">Contraseña</label>
@@ -150,6 +176,35 @@ portal_layout_begin('Iniciar sesión', 'login');
                 </div>
                 <button type="submit" class="pa-btn pa-btn-soft pa-btn-block">Iniciar sesión con contraseña</button>
                 <p class="portal-auth-recovery"><a href="<?= e(base_url('portal/recuperar.php')) ?>" class="portal-text-link">¿Olvidaste tu contraseña?</a></p>
+            </form>
+        </details>
+
+        <details class="pa-auth-alt portal-auth-password" <?= $openActivate ? 'open' : '' ?>>
+            <summary>Primera vez · No tengo correo</summary>
+            <p class="pa-hint">Si no tienes correo registrado, activa tu cuenta con tu <strong>cédula</strong> y el <strong>número de celular</strong> que diste en el hospital. No necesitas contraseña previa.</p>
+            <form method="POST" autocomplete="off" class="portal-password-form">
+                <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
+                <input type="hidden" name="step" value="activate">
+                <div class="pa-field">
+                    <label class="pa-label" for="act_cedula">Cédula</label>
+                    <input class="pa-input" type="text" name="identifier" id="act_cedula" required placeholder="001-1234567-8">
+                </div>
+                <div class="pa-field">
+                    <label class="pa-label" for="act_phone">Celular registrado en el hospital</label>
+                    <input class="pa-input" type="tel" name="phone" id="act_phone" required placeholder="(809) 000-0000">
+                </div>
+                <div class="pa-field portal-password-field">
+                    <label class="pa-label" for="act_pass">Crea tu contraseña</label>
+                    <input class="pa-input" type="password" name="new_password" id="act_pass" minlength="8" required autocomplete="new-password">
+                    <button type="button" class="portal-password-toggle" data-target="act_pass" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+                </div>
+                <div class="pa-field portal-password-field">
+                    <label class="pa-label" for="act_pass2">Repite tu contraseña</label>
+                    <input class="pa-input" type="password" name="new_password_confirm" id="act_pass2" minlength="8" required autocomplete="new-password">
+                    <button type="button" class="portal-password-toggle" data-target="act_pass2" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
+                </div>
+                <button type="submit" class="pa-btn pa-btn-green pa-btn-block"><i data-lucide="shield-check"></i> Activar y entrar</button>
+                <p class="pa-hint">¿Tu número cambió? Llámanos para actualizarlo y poder activarte.</p>
             </form>
         </details>
 
