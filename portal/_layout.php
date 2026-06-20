@@ -71,7 +71,7 @@ function portal_layout_begin(string $title, string $active = ''): void
         </script>
     </head>
 
-    <body class="bg-slate-50 font-sans text-slate-950 antialiased portal-page">
+    <body class="bg-slate-50 font-sans text-slate-950 antialiased portal-page<?= $active !== '' ? ' portal-page-' . e(preg_replace('/[^a-z0-9_-]/i', '', $active)) : '' ?>">
         <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
         <?php

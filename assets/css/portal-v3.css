@@ -2271,3 +2271,30 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
         transition-duration: .01ms !important;
     }
 }
+
+/* ============================================================
+   Login del paciente en una sola pantalla (sin scroll).
+   Aplica SOLO a /portal/login (body.portal-page-login).
+   Las demás páginas de auth (registro, recuperar, reset,
+   verificar-email) conservan su scroll natural porque son
+   más largas. Se usa min-height (no height fija) + centrado,
+   así nunca se recorta el contenido: si el panel de
+   "Tengo contraseña" se expande en pantallas muy bajas, la
+   página vuelve a permitir scroll de forma natural.
+   ============================================================ */
+@media (min-width: 901px) {
+    .portal-page-login .portal-shell-auth {
+        min-height: calc(100dvh - var(--portal-topbar-height));
+        padding-top: clamp(12px, 2.4vh, 30px);
+        padding-bottom: clamp(12px, 2.4vh, 30px);
+        align-content: center;
+    }
+
+    .portal-page-login .portal-main {
+        padding-block: 0;
+    }
+
+    .portal-page-login .portal-auth-intro {
+        min-height: 0;
+    }
+}
