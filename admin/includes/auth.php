@@ -114,6 +114,7 @@ function admin_ensure_security_schema(): void
         'totp_enabled'    => 'TINYINT(1) NOT NULL DEFAULT 0',
         'failed_attempts' => 'INT NOT NULL DEFAULT 0',
         'locked_until'    => 'DATETIME NULL',
+        'recovery_codes'  => 'TEXT NULL',
     ];
     try {
         foreach ($columns as $col => $definition) {
@@ -318,6 +319,63 @@ function admin_verify_login_totp(int $userId, string $code): bool
     }
     $secret = admin_totp_secret($userId);
     return $secret && totp_verify($secret, $code);
+}
+
+// ── Códigos de recuperación (entrar sin el teléfono) ────────────────────────
+
+function admin_normalize_recovery_code(string $code): string
+{
+    return strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $code));
+}
+
+/** Genera N códigos de un solo uso, guarda sus hashes y devuelve los códigos en claro (mostrar una vez). */
+function admin_generate_recovery_codes(int $userId, int $count = 8): array
+{
+    admin_ensure_security_schema();
+    $plain = [];
+    $hashes = [];
+    for ($i = 0; $i < $count; $i++) {
+        $raw  = strtoupper(bin2hex(random_bytes(5)));   // 10 hex
+        $code = substr($raw, 0, 5) . '-' . substr($raw, 5, 5);
+        $plain[]  = $code;
+        $hashes[] = password_hash(admin_normalize_recovery_code($code), PASSWORD_BCRYPT);
+    }
+    db()->prepare('UPDATE admin_users SET recovery_codes = ? WHERE id = ?')->execute([json_encode($hashes), $userId]);
+    return $plain;
+}
+
+/** Consume un código de recuperación válido (lo elimina). Devuelve true si era válido. */
+function admin_consume_recovery_code(int $userId, string $code): bool
+{
+    admin_ensure_security_schema();
+    $norm = admin_normalize_recovery_code($code);
+    if (strlen($norm) < 8) {
+        return false;
+    }
+    $stmt = db()->prepare('SELECT recovery_codes FROM admin_users WHERE id = ? LIMIT 1');
+    $stmt->execute([$userId]);
+    $hashes = json_decode((string) ($stmt->fetchColumn() ?: '[]'), true);
+    if (!is_array($hashes)) {
+        return false;
+    }
+    foreach ($hashes as $idx => $h) {
+        if (is_string($h) && password_verify($norm, $h)) {
+            unset($hashes[$idx]);
+            db()->prepare('UPDATE admin_users SET recovery_codes = ? WHERE id = ?')
+                ->execute([json_encode(array_values($hashes)), $userId]);
+            return true;
+        }
+    }
+    return false;
+}
+
+function admin_recovery_codes_remaining(int $userId): int
+{
+    admin_ensure_security_schema();
+    $stmt = db()->prepare('SELECT recovery_codes FROM admin_users WHERE id = ? LIMIT 1');
+    $stmt->execute([$userId]);
+    $hashes = json_decode((string) ($stmt->fetchColumn() ?: '[]'), true);
+    return is_array($hashes) ? count($hashes) : 0;
 }
 
 function csrf_token(): string

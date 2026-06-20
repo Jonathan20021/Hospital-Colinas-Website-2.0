@@ -61,13 +61,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$pid) {
             $error = 'La sesión de acceso expiró. Vuelve a iniciar.';
         } elseif (admin_confirm_enrollment($pid, $_POST['code'] ?? '')) {
+            $_SESSION['admin_recovery_codes'] = admin_generate_recovery_codes($pid);
             admin_complete_login(['id' => $pid]);
-            header('Location: ' . admin_first_allowed_url());
+            header('Location: recovery-codes.php');
             exit;
         } else {
             $error = 'Código incorrecto. Asegúrate de haber escaneado el QR y vuelve a intentar.';
             $stage = 'enroll';
         }
+    } elseif ($step === 'recovery') {
+        $pid = admin_2fa_pending_id();
+        if (!$pid) {
+            $error = 'La sesión de acceso expiró. Vuelve a iniciar.';
+        } elseif (admin_consume_recovery_code($pid, $_POST['code'] ?? '')) {
+            admin_complete_login(['id' => $pid]);
+            header('Location: ' . admin_first_allowed_url());
+            exit;
+        } else {
+            $error = 'Código de recuperación inválido o ya usado.';
+            $stage = 'recovery';
+        }
+    }
+}
+
+// Si hay un acceso pendiente de 2FA, mostrar el paso correspondiente
+// (sobrevive recargas y permite alternar entre código del teléfono y recuperación).
+$pendingId = admin_2fa_pending_id();
+if ($stage === 'credentials' && $pendingId) {
+    if (isset($_GET['recovery']) && $_GET['recovery'] !== '0') {
+        $stage = 'recovery';
+    } else {
+        $stage = admin_totp_is_enabled($pendingId) ? 'verify' : 'enroll';
     }
 }
 
@@ -195,7 +219,7 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
             <a class="login-back" href="login.php?reset=1" style="text-align:center;">Cancelar</a>
         </form>
 
-        <?php else: /* verify */ ?>
+        <?php elseif ($stage === 'verify'): ?>
         <form method="post" class="login-form" autocomplete="off">
             <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
             <input type="hidden" name="step" value="verify">
@@ -221,7 +245,42 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
                 <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
                 Entrar al panel
             </button>
+            <p class="login-help" style="text-align:center;margin:.25rem 0 0;">
+                ¿Perdiste tu teléfono? <a href="login.php?recovery=1">Usar un código de recuperación</a>
+            </p>
             <a class="login-back" href="login.php?reset=1" style="text-align:center;">Volver</a>
+        </form>
+
+        <?php else: /* recovery */ ?>
+        <form method="post" class="login-form" autocomplete="off">
+            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+            <input type="hidden" name="step" value="recovery">
+
+            <div class="login-steps"><span class="is-on"></span><span class="is-on"></span></div>
+            <div>
+                <h2>Código de recuperación</h2>
+                <p>Escribe uno de los códigos de un solo uso que guardaste al configurar tu verificación.</p>
+            </div>
+
+            <?php if ($error): ?>
+                <div class="admin-alert is-error">
+                    <i data-lucide="shield-alert" style="width: 18px; height: 18px; flex-shrink:0;"></i>
+                    <span><?= e($error) ?></span>
+                </div>
+            <?php endif; ?>
+
+            <label>
+                <span>Código de recuperación</span>
+                <input class="login-secret" type="text" name="code" required autofocus autocomplete="off" placeholder="XXXXX-XXXXX" style="text-transform:uppercase;">
+            </label>
+            <button type="submit">
+                <i data-lucide="key-round" style="width: 18px; height: 18px;"></i>
+                Entrar con código de recuperación
+            </button>
+            <p class="login-help" style="text-align:center;margin:.25rem 0 0;">
+                Cada código sirve una sola vez. Tras entrar podrás reconfigurar tu app autenticadora.
+            </p>
+            <a class="login-back" href="login.php?recovery=0" style="text-align:center;">Volver al código del teléfono</a>
         </form>
         <?php endif; ?>
     </main>
