@@ -78,6 +78,11 @@ admin_header('Usuarios admin', 'usuarios');
                         <td><?= e($user['last_login'] ?: 'Sin acceso registrado') ?></td>
                         <td class="admin-actions">
                             <a href="usuario-form.php?id=<?= e((string) $user['id']) ?>">Editar</a>
+                            <form action="usuario-reset-2fa.php" method="post" onsubmit="return confirm('¿Restablecer el 2FA de este usuario? Tendrá que volver a configurarlo (escanear el QR) en su próximo acceso. También desbloquea la cuenta.');">
+                                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                <input type="hidden" name="id" value="<?= e((string) $user['id']) ?>">
+                                <button type="submit">Restablecer 2FA</button>
+                            </form>
                             <form action="usuario-delete.php" method="post" onsubmit="return confirm('¿Eliminar este usuario admin?');">
                                 <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                                 <input type="hidden" name="id" value="<?= e((string) $user['id']) ?>">

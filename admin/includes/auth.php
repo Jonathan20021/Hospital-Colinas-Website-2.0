@@ -2,8 +2,24 @@
 
 require_once __DIR__ . '/../../includes/helpers.php';
 require_once __DIR__ . '/../../includes/db.php';
+require_once __DIR__ . '/totp.php';
+
+// Política de seguridad del 2FA del admin.
+const ADMIN_MAX_FAILED   = 5;     // intentos fallidos antes de bloquear
+const ADMIN_LOCK_MINUTES = 15;    // duración del bloqueo
+const ADMIN_2FA_TTL      = 300;   // segundos de validez del paso 2FA pendiente
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
+    $secure = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
+        || ((string) ($_SERVER['SERVER_PORT'] ?? '') === '443')
+        || (strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure'   => $secure,
+    ]);
     session_start();
 }
 
@@ -79,6 +95,33 @@ function admin_ensure_permissions_schema(): void
         $check->execute();
         if ((int) $check->fetchColumn() === 0) {
             db()->exec('ALTER TABLE admin_users ADD COLUMN permissions TEXT NULL AFTER role');
+        }
+        $ensured = true;
+    } catch (Throwable) {
+        $ensured = true;
+    }
+}
+
+function admin_ensure_security_schema(): void
+{
+    static $ensured = false;
+    if ($ensured || !db()) {
+        return;
+    }
+
+    $columns = [
+        'totp_secret'     => 'VARCHAR(64) NULL',
+        'totp_enabled'    => 'TINYINT(1) NOT NULL DEFAULT 0',
+        'failed_attempts' => 'INT NOT NULL DEFAULT 0',
+        'locked_until'    => 'DATETIME NULL',
+    ];
+    try {
+        foreach ($columns as $col => $definition) {
+            $check = db()->prepare("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'admin_users' AND COLUMN_NAME = ?");
+            $check->execute([$col]);
+            if ((int) $check->fetchColumn() === 0) {
+                db()->exec("ALTER TABLE admin_users ADD COLUMN {$col} {$definition}");
+            }
         }
         $ensured = true;
     } catch (Throwable) {
@@ -180,26 +223,101 @@ function require_admin_permission(string $permission): array
     return $user;
 }
 
-function admin_login(string $email, string $password): bool
+/**
+ * Paso 1: valida correo + contraseña con lockout por fuerza bruta.
+ * NO inicia sesión (el acceso real ocurre tras el 2FA).
+ * @return array{status:string, user?:array, retry_minutes?:int}  status: 'ok'|'invalid'|'locked'
+ */
+function admin_check_credentials(string $email, string $password): array
 {
     if (!db_ready()) {
-        return false;
+        return ['status' => 'invalid'];
     }
-
     admin_ensure_permissions_schema();
+    admin_ensure_security_schema();
 
     $stmt = db()->prepare('SELECT * FROM admin_users WHERE email = ? AND is_active = 1 LIMIT 1');
     $stmt->execute([trim($email)]);
     $user = $stmt->fetch();
 
-    if (!$user || !password_verify($password, $user['password_hash'])) {
-        return false;
+    if (!$user) {
+        return ['status' => 'invalid'];
     }
 
-    $_SESSION['admin_user_id'] = (int) $user['id'];
-    db()->prepare('UPDATE admin_users SET last_login = NOW() WHERE id = ?')->execute([(int) $user['id']]);
+    if (!empty($user['locked_until']) && strtotime((string) $user['locked_until']) > time()) {
+        $mins = (int) ceil((strtotime((string) $user['locked_until']) - time()) / 60);
+        return ['status' => 'locked', 'retry_minutes' => max(1, $mins)];
+    }
 
+    if (!password_verify($password, $user['password_hash'])) {
+        $attempts = (int) ($user['failed_attempts'] ?? 0) + 1;
+        if ($attempts >= ADMIN_MAX_FAILED) {
+            db()->prepare('UPDATE admin_users SET failed_attempts = 0, locked_until = DATE_ADD(NOW(), INTERVAL ? MINUTE) WHERE id = ?')
+                ->execute([ADMIN_LOCK_MINUTES, (int) $user['id']]);
+            return ['status' => 'locked', 'retry_minutes' => ADMIN_LOCK_MINUTES];
+        }
+        db()->prepare('UPDATE admin_users SET failed_attempts = ? WHERE id = ?')->execute([$attempts, (int) $user['id']]);
+        return ['status' => 'invalid'];
+    }
+
+    db()->prepare('UPDATE admin_users SET failed_attempts = 0, locked_until = NULL WHERE id = ?')->execute([(int) $user['id']]);
+    return ['status' => 'ok', 'user' => $user];
+}
+
+/** Inicia la sesión real (tras el 2FA). Regenera el id de sesión (anti-fijación). */
+function admin_complete_login(array $user): void
+{
+    session_regenerate_id(true);
+    $_SESSION['admin_user_id'] = (int) $user['id'];
+    unset($_SESSION['admin_2fa_user_id'], $_SESSION['admin_2fa_time']);
+    db()->prepare('UPDATE admin_users SET last_login = NOW() WHERE id = ?')->execute([(int) $user['id']]);
+}
+
+function admin_totp_secret(int $userId): ?string
+{
+    admin_ensure_security_schema();
+    $stmt = db()->prepare('SELECT totp_secret FROM admin_users WHERE id = ? LIMIT 1');
+    $stmt->execute([$userId]);
+    $s = $stmt->fetchColumn();
+    return $s ? (string) $s : null;
+}
+
+function admin_totp_is_enabled(int $userId): bool
+{
+    admin_ensure_security_schema();
+    $stmt = db()->prepare('SELECT totp_enabled FROM admin_users WHERE id = ? LIMIT 1');
+    $stmt->execute([$userId]);
+    return (int) $stmt->fetchColumn() === 1;
+}
+
+/** Genera y guarda un secreto nuevo (sin activar). Devuelve el secreto para el QR. */
+function admin_begin_enrollment(int $userId): array
+{
+    admin_ensure_security_schema();
+    $secret = totp_generate_secret();
+    db()->prepare('UPDATE admin_users SET totp_secret = ?, totp_enabled = 0 WHERE id = ?')->execute([$secret, $userId]);
+    return ['secret' => $secret];
+}
+
+/** Confirma la inscripción: verifica el código y activa el 2FA. */
+function admin_confirm_enrollment(int $userId, string $code): bool
+{
+    $secret = admin_totp_secret($userId);
+    if (!$secret || !totp_verify($secret, $code)) {
+        return false;
+    }
+    db()->prepare('UPDATE admin_users SET totp_enabled = 1 WHERE id = ?')->execute([$userId]);
     return true;
+}
+
+/** Verifica el código TOTP en el login (2FA ya activado). */
+function admin_verify_login_totp(int $userId, string $code): bool
+{
+    if (!admin_totp_is_enabled($userId)) {
+        return false;
+    }
+    $secret = admin_totp_secret($userId);
+    return $secret && totp_verify($secret, $code);
 }
 
 function csrf_token(): string
