@@ -97,7 +97,7 @@ if (count($cleaned) === 0 || end($cleaned)['role'] !== 'user') {
     exit;
 }
 
-$systemPrompt = ai_build_system_prompt($settings, $services, $assets, $contact);
+$systemPrompt = ai_build_system_prompt($settings, $services, $assets, $contact, $insurers);
 
 $openaiMessages = array_merge(
     [['role' => 'system', 'content' => $systemPrompt]],

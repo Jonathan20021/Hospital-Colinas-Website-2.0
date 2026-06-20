@@ -706,6 +706,48 @@ $leadershipGerencias = [
             </div>
         </section>
 
+        <section id="seguros" class="insurers-section" aria-labelledby="insurersTitle">
+            <div class="insurers-orb" aria-hidden="true"></div>
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="insurers-head">
+                    <span class="insurers-kicker">
+                        <i data-lucide="shield-check" class="h-4 w-4"></i>
+                        Convenios y aseguradoras
+                    </span>
+                    <h2 id="insurersTitle">Aceptamos tus seguros médicos</h2>
+                    <p>
+                        En el Hospital General Las Colinas trabajamos con las principales ARS del país. Agiliza la
+                        autorización de tus consultas y estudios escribiéndonos por
+                        <a href="<?= e($contact['whatsapp']) ?>" target="_blank" rel="noopener">WhatsApp: <?= e($contact['whatsapp_phone']) ?></a>.
+                    </p>
+                </div>
+
+                <div class="insurers-marquee" role="list" aria-label="Aseguradoras aceptadas">
+                    <div class="insurers-track">
+                        <?php for ($pass = 0; $pass < 2; $pass++): ?>
+                            <?php foreach ($insurers as $insurer): ?>
+                                <div class="insurer-card" role="listitem"<?= $pass === 1 ? ' aria-hidden="true"' : '' ?>>
+                                    <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>"
+                                        alt="<?= $pass === 1 ? '' : e($insurer['name']) ?>" loading="lazy"
+                                        <?= $pass === 1 ? 'aria-hidden="true"' : '' ?>>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endfor; ?>
+                    </div>
+                </div>
+
+                <div class="insurers-foot">
+                    <span><i data-lucide="badge-check" class="h-4 w-4"></i> Cobertura ambulatoria y hospitalaria</span>
+                    <span class="insurers-dot" aria-hidden="true"></span>
+                    <span><i data-lucide="file-check-2" class="h-4 w-4"></i> Autorizaciones más rápidas</span>
+                    <a href="<?= e(base_url('seguros-aceptados')) ?>" class="insurers-link">
+                        ¿No ves tu ARS? Consúltanos
+                        <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <section id="especialistas" class="featured-doctors">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="featured-doctors-head">

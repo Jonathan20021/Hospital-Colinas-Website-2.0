@@ -373,7 +373,7 @@
             return;
         }
         if (type === 'whatsapp') {
-            window.open('https://wa.me/18098060444', '_blank', 'noopener');
+            window.open('https://wa.me/18095012002', '_blank', 'noopener');
             return;
         }
         if (type === 'email') {

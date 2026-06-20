@@ -10737,3 +10737,224 @@ body.cai-locked .mobile-actionbar {
         grid-template-columns: 1fr;
     }
 }
+
+/* ============================================================
+   Seguros aceptados / Aseguradoras (marquee premium)
+   ============================================================ */
+.insurers-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(3.5rem, 6vw, 5.75rem) 0;
+    background:
+        radial-gradient(120% 100% at 50% -20%, rgba(38, 33, 97, .06), transparent 60%),
+        linear-gradient(180deg, var(--paper) 0%, var(--ice) 100%);
+    border-top: 1px solid var(--warm-line);
+    border-bottom: 1px solid var(--warm-line);
+}
+
+.insurers-orb {
+    position: absolute;
+    z-index: -1;
+    top: -180px;
+    left: 50%;
+    width: 620px;
+    height: 620px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(111, 180, 63, .14), transparent 70%);
+    filter: blur(8px);
+    pointer-events: none;
+}
+
+.insurers-head {
+    max-width: 46rem;
+    margin: 0 auto clamp(2rem, 4vw, 3rem);
+    text-align: center;
+}
+
+.insurers-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(38, 33, 97, .14);
+    background: rgba(255, 255, 255, .8);
+    padding: .5rem 1.05rem;
+    color: var(--navy);
+    font-family: "Outfit", Inter, sans-serif;
+    font-size: .78rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    box-shadow: 0 10px 26px rgba(38, 33, 97, .08);
+}
+
+.insurers-kicker i {
+    color: var(--green);
+}
+
+.insurers-head h2 {
+    margin: 1.1rem 0 .85rem;
+    font-family: "Outfit", "Plus Jakarta Sans", Inter, sans-serif;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -.02em;
+    color: var(--navy);
+    font-size: clamp(1.85rem, 4vw, 2.85rem);
+}
+
+.insurers-head p {
+    margin: 0 auto;
+    max-width: 38rem;
+    color: var(--muted);
+    font-size: clamp(.98rem, 1.4vw, 1.08rem);
+    line-height: 1.65;
+}
+
+.insurers-head a {
+    color: var(--green-2);
+    font-weight: 800;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(111, 180, 63, .35);
+    transition: border-color .2s ease, color .2s ease;
+}
+
+.insurers-head a:hover {
+    color: var(--green);
+    border-color: var(--green);
+}
+
+/* Marquee shell with edge fades */
+.insurers-marquee {
+    position: relative;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+.insurers-track {
+    display: flex;
+    width: max-content;
+    gap: 1.25rem;
+    padding: 1rem .25rem;
+    animation: insurersScroll 34s linear infinite;
+    will-change: transform;
+}
+
+.insurers-marquee:hover .insurers-track {
+    animation-play-state: paused;
+}
+
+@keyframes insurersScroll {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.insurer-card {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: clamp(180px, 22vw, 248px);
+    height: clamp(112px, 14vw, 138px);
+    padding: 1.25rem 1.6rem;
+    overflow: hidden;
+    border-radius: 20px;
+    background: var(--paper);
+    border: 1px solid var(--warm-line);
+    box-shadow: 0 12px 30px rgba(38, 33, 97, .07);
+    transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s ease, border-color .35s ease;
+}
+
+.insurer-card img {
+    max-width: 100%;
+    max-height: clamp(64px, 9vw, 88px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform .35s ease;
+}
+
+.insurer-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(111, 180, 63, .5);
+    box-shadow: 0 22px 48px rgba(38, 33, 97, .14);
+}
+
+.insurer-card:hover img {
+    transform: scale(1.04);
+}
+
+/* Footer trust strip */
+.insurers-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem 1.4rem;
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+    color: var(--muted);
+    font-size: .92rem;
+    font-weight: 700;
+}
+
+.insurers-foot span {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.insurers-foot i {
+    color: var(--green);
+}
+
+.insurers-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--warm-line);
+}
+
+.insurers-dot:last-of-type {
+    display: none;
+}
+
+.insurers-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    color: var(--navy);
+    font-weight: 800;
+    text-decoration: none;
+    transition: gap .2s ease, color .2s ease;
+}
+
+.insurers-link:hover {
+    color: var(--green-2);
+    gap: .7rem;
+}
+
+@media (max-width: 640px) {
+    .insurers-foot {
+        flex-direction: column;
+        gap: .75rem;
+    }
+    .insurers-dot {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .insurers-track {
+        animation: none;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 100%;
+    }
+    .insurers-marquee {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+    .insurer-card[aria-hidden="true"] {
+        display: none;
+    }
+}

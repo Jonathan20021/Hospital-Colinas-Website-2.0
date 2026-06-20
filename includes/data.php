@@ -208,6 +208,16 @@ $floors = [
     ['num' => '1', 'level' => '1er Nivel', 'content' => 'Emergencias, farmacia, imágenes y servicios generales.'],
 ];
 
+// Aseguradoras / ARS con convenio. Fuente única para la web y el asistente IA.
+$insurersDir = 'assets/LOGO%20ASEGURADORAS/';
+$insurers = [
+    ['name' => 'ARS Humano', 'file' => 'HUMANO.svg'],
+    ['name' => 'ARS Primera', 'file' => 'PRIMERA.png'],
+    ['name' => 'SENASA', 'file' => 'SENASA.png'],
+    ['name' => 'ARS SEMMA', 'file' => 'SEMMA.png'],
+    ['name' => 'Seguro Médico UASD (ARS UASD)', 'file' => 'UASD.png'],
+];
+
 $gallery = [
     ['src' => $assets['hero'], 'title' => 'Fachada principal', 'text' => 'Acceso hospitalario conectado a Colinas Mall.'],
     ['src' => $assets['doctors'], 'title' => 'Equipo médico', 'text' => 'Especialistas con enfoque humano y resolutivo.'],
@@ -226,5 +236,6 @@ $contact = [
     'instagram' => 'https://www.instagram.com/colinashospital/',
     'facebook' => 'https://www.facebook.com/profile.php?id=61583184854928',
     'maps' => 'https://www.google.com/maps/search/?api=1&query=Hospital%20General%20Las%20Colinas%20Santiago',
-    'whatsapp' => 'https://wa.me/18098060444',
+    'whatsapp' => 'https://wa.me/18095012002',
+    'whatsapp_phone' => '(809) 501-2002',
 ];

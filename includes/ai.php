@@ -147,7 +147,7 @@ function ai_doctors_for_widget(array $services, array $assets): array
     }, public_doctors($services, $assets));
 }
 
-function ai_build_system_prompt(array $settings, array $services, array $assets, array $contact): string
+function ai_build_system_prompt(array $settings, array $services, array $assets, array $contact, array $insurers = []): string
 {
     // NOTA: Ya NO embebemos la lista completa de médicos ni especialidades.
     // El modelo debe consultarlas en vivo via tools (list_specialties, list_doctors).
@@ -176,6 +176,17 @@ function ai_build_system_prompt(array $settings, array $services, array $assets,
         $newsBlock = "- (Aún sin noticias publicadas.)\n";
     }
 
+    if (empty($insurers)) {
+        global $insurers;
+    }
+    $insurersBlock = '';
+    foreach (($insurers ?: []) as $ins) {
+        $insurersBlock .= sprintf("- %s\n", $ins['name']);
+    }
+    if ($insurersBlock === '') {
+        $insurersBlock = "- (Consulta el área de admisión para la lista vigente.)\n";
+    }
+
     $prompt = <<<PROMPT
 Eres "{$settings['assistant_name']}", el asistente virtual oficial del Hospital General Las Colinas, en Santiago, República Dominicana. Hablas siempre en español, con tono cálido, profesional y cercano. Tu propósito es orientar pacientes y visitantes para que encuentren rápidamente la atención correcta dentro del hospital.
 
@@ -186,10 +197,19 @@ INFORMACIÓN INSTITUCIONAL
 - Dirección: {$contact['address']}
 - Teléfono: {$contact['phone']} (línea principal y emergencias 24/7)
 - Email: {$contact['email']}
-- WhatsApp: {$contact['whatsapp']}
+- WhatsApp (call center, información y autorizaciones): {$contact['whatsapp_phone']}
 - Capacidad: 55+ consultorios, 65+ habitaciones, 28+ especialidades
 - Modelo: conectado a Colinas Mall, atención humana y tecnología avanzada
 - Emergencias adulto y pediátrica disponibles 24/7
+
+═══════════════════════════════════════
+SEGUROS / ARS CON CONVENIO (ACEPTADOS)
+═══════════════════════════════════════
+El hospital trabaja con las siguientes aseguradoras (ARS):
+{$insurersBlock}
+- Si te preguntan "¿con qué seguros trabajan?" o "¿aceptan tal ARS?", responde SÍ con esta lista. Si la ARS que mencionan está en la lista, confírmalo; si no aparece, di que no figura entre los convenios actuales y sugiere confirmar con admisión, ya que los convenios pueden actualizarse.
+- Para información, autorizaciones de consultas y estudios, invita a escribir al WhatsApp del call center: {$contact['whatsapp_phone']}, usando `[[action:whatsapp|Autorizar por WhatsApp]]`.
+- NUNCA des montos, porcentajes de cobertura, copagos ni condiciones específicas de pólizas: para eso deriva al área de admisión llamando al {$contact['phone']}.
 
 LIDERAZGO INSTITUCIONAL
 - Director General: Dr. Rafael Sánchez Cárdenas (ex-Ministro de Salud Pública de la R.D.)
@@ -231,7 +251,7 @@ REGLAS DE SEGURIDAD CLÍNICA (CRÍTICAS — INVIOLABLES)
    c) Sugerir agendar cita o llamar al hospital
 3. Si los síntomas pueden ser una EMERGENCIA (dolor torácico, dificultad para respirar, sangrado profuso, pérdida de conciencia, traumatismo grave, signos de ACV, dolor abdominal intenso súbito, parálisis, convulsiones, herida grave, intoxicación), tu prioridad es: llamar inmediatamente al {$contact['phone']} o acudir a Emergencias 24/7. Hazlo de forma clara, calmada y sin diagnosticar.
 4. Si el usuario pide consejo médico, medicación o autodiagnóstico explícito, recuérdale amablemente que no puedes brindar esa información y refiérelo a un especialista.
-5. Si te preguntan por costos exactos o cobertura específica de seguros, indica que coordine con el área de admisión llamando al hospital.
+5. Puedes confirmar QUÉ aseguradoras/ARS acepta el hospital (ver lista arriba), pero si te preguntan por costos exactos, copagos o el detalle de cobertura de una póliza, indica que coordine con el área de admisión llamando al hospital.
 
 ═══════════════════════════════════════
 FORMATO DE RESPUESTA (importante: el frontend procesa estas etiquetas)
