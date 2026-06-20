@@ -22,12 +22,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'request') {
         $idInput = trim((string)($_POST['identifier'] ?? ''));
-        $res = portal_api_call('POST', '/portal/auth/otp-request', ['identifier' => $idInput]);
+        // Canal preferido opcional: '', 'sms' o 'email' (para "enviar por otro medio").
+        $reqChannel = in_array(($_POST['channel'] ?? ''), ['sms', 'email'], true) ? $_POST['channel'] : '';
+        $payload = ['identifier' => $idInput];
+        if ($reqChannel !== '') $payload['channel'] = $reqChannel;
+        $res = portal_api_call('POST', '/portal/auth/otp-request', $payload);
         if ($res['ok']) {
-            $_SESSION['otp_id']   = $idInput;
-            $_SESSION['otp_mask'] = $res['data']['email_masked'] ?? '';
+            $channel = $res['data']['channel'] ?? 'email';
+            $_SESSION['otp_id']       = $idInput;
+            $_SESSION['otp_channel']  = $channel;
+            $_SESSION['otp_mask']     = $res['data']['destination_masked'] ?? ($res['data']['email_masked'] ?? '');
+            $_SESSION['otp_channels'] = $res['data']['available_channels'] ?? [];
             $step = 'verify';
-            $msg = 'Te enviamos un código a tu correo. Revisa también la carpeta de spam.';
+            $msg = $channel === 'sms'
+                ? 'Te enviamos un código por SMS a tu celular.'
+                : 'Te enviamos un código a tu correo. Revisa también la carpeta de spam.';
             $msgType = 'ok';
         } else {
             $step = 'request';
@@ -50,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msg = $res['message'] ?? 'Código incorrecto.';
         }
     } elseif ($action === 'change') {
-        unset($_SESSION['otp_id'], $_SESSION['otp_mask']);
+        unset($_SESSION['otp_id'], $_SESSION['otp_mask'], $_SESSION['otp_channel'], $_SESSION['otp_channels']);
         $step = 'request';
     } elseif ($action === 'password') {
         $res = portal_api_call('POST', '/portal/auth/login', [
@@ -70,7 +79,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$mask = (string)($_SESSION['otp_mask'] ?? '');
+$mask     = (string)($_SESSION['otp_mask'] ?? '');
+$channel  = (string)($_SESSION['otp_channel'] ?? 'email');
+$channels = (array)($_SESSION['otp_channels'] ?? []);
+$isSms    = $channel === 'sms';
+// Canal alternativo disponible (para "enviar por otro medio")
+$altChannel = $isSms
+    ? (in_array('email', $channels, true) ? 'email' : '')
+    : (in_array('sms', $channels, true) ? 'sms' : '');
 
 portal_layout_begin('Iniciar sesión', 'login');
 ?>
@@ -88,7 +104,7 @@ portal_layout_begin('Iniciar sesión', 'login');
 
     <?php if ($step === 'verify'): ?>
         <h1>Escribe tu código</h1>
-        <p class="lead">Enviamos un código de 6 dígitos a tu correo<?php if ($mask): ?>:<br><span class="pa-mask"><?= e($mask) ?></span><?php endif; ?></p>
+        <p class="lead">Enviamos un código de 6 dígitos <?= $isSms ? 'por SMS a tu celular' : 'a tu correo' ?><?php if ($mask): ?>:<br><span class="pa-mask"><?= e($mask) ?></span><?php endif; ?></p>
         <form method="POST" autocomplete="off">
             <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
             <input type="hidden" name="step" value="verify">
@@ -108,29 +124,40 @@ portal_layout_begin('Iniciar sesión', 'login');
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="request">
                 <input type="hidden" name="identifier" value="<?= e((string)($_SESSION['otp_id'] ?? '')) ?>">
+                <input type="hidden" name="channel" value="<?= e($channel) ?>">
                 <button type="submit" class="portal-link-button" data-loading-label="Reenviando…">Reenviar código</button>
             </form>
+            <?php if ($altChannel !== ''): ?>
+            &nbsp;·&nbsp;
+            <form method="POST" class="portal-inline-form">
+                <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
+                <input type="hidden" name="step" value="request">
+                <input type="hidden" name="identifier" value="<?= e((string)($_SESSION['otp_id'] ?? '')) ?>">
+                <input type="hidden" name="channel" value="<?= e($altChannel) ?>">
+                <button type="submit" class="portal-link-button"><?= $altChannel === 'sms' ? 'Enviar por SMS' : 'Enviar por correo' ?></button>
+            </form>
+            <?php endif; ?>
             &nbsp;·&nbsp;
             <form method="POST" class="portal-inline-form">
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="change">
-                <button type="submit" class="portal-link-button">Usar otro correo o cédula</button>
+                <button type="submit" class="portal-link-button">Usar otro dato</button>
             </form>
         </div>
 
     <?php else: ?>
         <h1>Entrar al portal</h1>
-        <p class="lead">Escribe tu <strong>cédula</strong> o tu <strong>correo</strong> y te enviaremos un código para entrar. Sin contraseñas.</p>
+        <p class="lead">Escribe tu <strong>cédula</strong>, tu <strong>número de celular</strong> o tu <strong>correo</strong> y te enviaremos un código para entrar. Sin contraseñas.</p>
         <form method="POST" autocomplete="on">
             <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
             <input type="hidden" name="step" value="request">
             <div class="pa-field">
-                <label class="pa-label" for="identifier">Cédula o correo electrónico</label>
+                <label class="pa-label" for="identifier">Cédula, celular o correo electrónico</label>
                 <input class="pa-input" type="text" name="identifier" id="identifier" required autofocus
-                       value="<?= e($idInput) ?>" placeholder="Ej.: 001-1234567-8  o  nombre@correo.com">
+                       value="<?= e($idInput) ?>" placeholder="Ej.: 001-1234567-8 · 809-123-4567 · nombre@correo.com">
             </div>
             <button type="submit" class="pa-btn pa-btn-green pa-btn-block">
-                <i data-lucide="mail"></i> Enviarme un código
+                <i data-lucide="send"></i> Enviarme un código
             </button>
         </form>
 
