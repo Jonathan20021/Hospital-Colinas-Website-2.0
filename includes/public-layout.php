@@ -21,11 +21,11 @@ function render_public_header(array $assets, array $contact, string $active = ''
                         <i data-lucide="user-round-cog" class="h-4 w-4"></i>
                         Portal del paciente
                     </a>
-                    <a href="<?= e(base_url('pacientes')) ?>" class="utility-link">
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="utility-link">
                         <i data-lucide="users-round" class="h-4 w-4"></i>
                         Pacientes y visitantes
                     </a>
-                    <a href="<?= e(base_url('directorio-medico')) ?>" class="utility-link">
+                    <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="utility-link">
                         <i data-lucide="user-round-check" class="h-4 w-4"></i>
                         Profesionales médicos
                     </a>
@@ -111,6 +111,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('portal/login.php')) ?>" class="mt-2 btn btn-outline w-full justify-center">
                         <i data-lucide="user-round" class="h-4 w-4"></i>
                         Portal de paciente
+                    </a>
+                    <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="mt-2 btn btn-outline w-full justify-center">
+                        <i data-lucide="user-round-check" class="h-4 w-4"></i>
+                        Portal médico
                     </a>
                 </nav>
             </div>
