@@ -529,6 +529,15 @@
         }
         h += '<div class="tool-out" data-out><div class="tool-out-row"><span class="tool-out-val">—</span><span class="tool-out-unit"></span></div><div class="tool-out-tag">Completa los campos</div></div>';
         if (def.note) h += '<p class="tool-note"><i data-lucide="info"></i> ' + esc(def.note) + '</p>';
+        const g = (window.DM_GUIDES || {})[def.id];
+        if (g) {
+            const row = (label, val, cls) => val ? ('<div class="tg-item' + (cls ? ' ' + cls : '') + '"><b>' + label + '</b><p>' + val + '</p></div>') : '';
+            h += '<details class="tool-guide"><summary><span class="tg-sum"><i data-lucide="graduation-cap"></i> Guía clínica</span><i data-lucide="chevron-down" class="tg-chev"></i></summary><div class="tool-guide-body">'
+                + row('¿Qué es?', g.what) + row('Cómo se usa', g.use) + row('Interpretación', g.interpret)
+                + row('Cuándo usarla', g.when) + row('Advertencias', g.caveat, 'tg-warn')
+                + (g.ref ? '<div class="tg-ref"><i data-lucide="book-open"></i> ' + g.ref + '</div>' : '')
+                + '</div></details>';
+        }
         return h;
     }
 

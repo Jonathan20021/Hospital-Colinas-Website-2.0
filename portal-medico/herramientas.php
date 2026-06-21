@@ -139,5 +139,6 @@ doctor_layout_begin('Herramientas', 'herramientas');
 <script>
 window.DM_TOOLS = { specialty: <?= json_encode((string)(doctor_current()['specialty'] ?? ''), JSON_UNESCAPED_UNICODE) ?> };
 </script>
+<script src="<?= e(base_url('assets/js/portal-medico-guias.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-guias.js') ?: time())) ?>"></script>
 <script src="<?= e(base_url('assets/js/portal-medico-herramientas.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-herramientas.js') ?: time())) ?>"></script>
 <?php doctor_layout_end();

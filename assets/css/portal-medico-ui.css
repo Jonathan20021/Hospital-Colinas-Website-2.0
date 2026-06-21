@@ -732,6 +732,25 @@ body.tool-modal-open{overflow:hidden}
 @keyframes tm-pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 @media(max-width:560px){.is-app .tool-modal{padding:0;align-items:flex-end}.is-app .tool-modal-panel{max-width:none;max-height:92vh;border-radius:22px 22px 0 0}}
 
+/* Guía clínica (acordeón dentro del modal) */
+.is-app .tool-guide{margin-top:16px;border:1px solid var(--hg-line-2);border-radius:14px;overflow:hidden;background:var(--hg-surface-2)}
+.is-app .tool-guide>summary{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 15px;cursor:pointer;font-weight:800;font-size:.88rem;color:var(--hg-navy);list-style:none}
+.is-app .tool-guide>summary::-webkit-details-marker{display:none}
+.is-app .tool-guide .tg-sum{display:inline-flex;align-items:center;gap:8px}
+.is-app .tool-guide .tg-sum svg{width:17px;height:17px;color:var(--hg-navy-600)}
+.is-app .tool-guide .tg-chev{width:16px;height:16px;color:var(--hg-muted);transition:transform .2s var(--hg-ease)}
+.is-app .tool-guide[open] .tg-chev{transform:rotate(180deg)}
+.is-app .tool-guide[open]>summary{border-bottom:1px solid var(--hg-line-2)}
+.is-app .tool-guide-body{padding:4px 15px 14px}
+.is-app .tg-item{padding:11px 0;border-bottom:1px solid var(--hg-line-2)}
+.is-app .tg-item:last-of-type{border-bottom:0}
+.is-app .tg-item b{display:block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--hg-navy-600);margin-bottom:3px}
+.is-app .tg-item p{font-size:.86rem;color:var(--hg-ink-2);line-height:1.5;margin:0}
+.is-app .tg-item.tg-warn b{color:#b45309}
+.is-app .tg-item.tg-warn p{color:#7c4a12}
+.is-app .tg-ref{display:flex;align-items:flex-start;gap:7px;margin-top:10px;font-size:.74rem;color:var(--hg-muted);font-style:italic}
+.is-app .tg-ref svg{width:13px;height:13px;flex:none;margin-top:2px}
+
 /* Grid de tarjetas */
 .is-app .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
 .is-app .tool-card-wide{grid-column:1 / -1}
