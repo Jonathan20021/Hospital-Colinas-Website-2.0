@@ -730,7 +730,7 @@
 body.tool-modal-open{overflow:hidden}
 @keyframes tm-fade{from{opacity:0}to{opacity:1}}
 @keyframes tm-pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
-@media(max-width:560px){.is-app .tool-modal{padding:0;align-items:flex-end}.is-app .tool-modal-panel{max-width:none;max-height:92vh;border-radius:22px 22px 0 0}}
+@media(max-width:560px){.is-app .tool-modal{padding:0;align-items:flex-end}.is-app .tool-modal-panel{max-width:none;max-height:92dvh;border-radius:22px 22px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}}
 
 /* Guía clínica (acordeón dentro del modal) */
 .is-app .tool-guide{margin-top:16px;border:1px solid var(--hg-line-2);border-radius:14px;overflow:hidden;background:var(--hg-surface-2)}
