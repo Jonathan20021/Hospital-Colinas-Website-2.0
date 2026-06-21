@@ -650,3 +650,86 @@
   .doctor-portal-page.is-app{background:#fff}
   .is-app [data-reveal]{opacity:1!important;transform:none!important;filter:none!important}
 }
+
+/* ============================================================================
+   11. HERRAMIENTAS — calculadoras clínicas (apoyo a la decisión)
+   ============================================================================ */
+/* Buscador de paciente (pre-llenado) */
+.is-app .tool-patientbar{margin-bottom:16px}
+.is-app .tool-pb-search{position:relative;display:flex;align-items:center;gap:10px;background:var(--hg-surface);border:1px solid var(--hg-line-2);border-radius:16px;padding:2px 14px;box-shadow:var(--hg-sh-sm)}
+.is-app .tool-pb-search>svg{width:20px;height:20px;color:var(--hg-navy-600);flex:none}
+.is-app .tool-pb-search .doctor-input{border:0;background:transparent;box-shadow:none;padding:12px 0;flex:1;font-size:.95rem}
+.is-app .tool-pb-search .doctor-input:focus{box-shadow:none;outline:none}
+.is-app .tool-pb-results{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;background:var(--hg-surface);border:1px solid var(--hg-line-2);border-radius:14px;box-shadow:var(--hg-sh-lg,0 18px 40px -12px rgba(38,33,97,.28));overflow:hidden;max-height:340px;overflow-y:auto}
+.is-app .tool-pb-item{display:flex;flex-direction:column;gap:1px;width:100%;text-align:left;padding:11px 15px;border:0;background:transparent;cursor:pointer;border-bottom:1px solid var(--hg-line-2)}
+.is-app .tool-pb-item:last-child{border-bottom:0}
+.is-app .tool-pb-item:hover{background:var(--hg-navy-50)}
+.is-app .tool-pb-item strong{font-size:.9rem;color:var(--hg-ink);font-weight:700}
+.is-app .tool-pb-item span{font-size:.78rem;color:var(--hg-muted)}
+.is-app .tool-pb-empty{padding:14px 16px;color:var(--hg-muted);font-size:.85rem}
+.is-app .tool-pb-chip{display:inline-flex;align-items:center;gap:11px;margin-top:10px;padding:9px 9px 9px 14px;background:var(--hg-navy-50);border:1px solid var(--hg-navy-100);border-radius:14px}
+.is-app .tool-pb-chip>svg{width:18px;height:18px;color:var(--hg-green);flex:none}
+.is-app .tool-pb-chip-info{display:flex;flex-direction:column;line-height:1.2}
+.is-app .tool-pb-chip-info strong{font-size:.88rem;color:var(--hg-ink);font-weight:700}
+.is-app .tool-pb-chip-info span{font-size:.74rem;color:var(--hg-muted)}
+.is-app .tool-pb-chip button{width:28px;height:28px;border-radius:9px;border:0;background:transparent;color:var(--hg-muted-2);cursor:pointer;display:grid;place-items:center}
+.is-app .tool-pb-chip button:hover{background:#fff;color:var(--hg-navy)}
+
+/* Filtros por categoría */
+.is-app .tool-filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.is-app .tool-chip{padding:8px 16px;border-radius:999px;border:1px solid var(--hg-line);background:var(--hg-surface);color:var(--hg-muted);font-weight:700;font-size:.8rem;cursor:pointer;transition:color .2s var(--hg-ease),background .2s var(--hg-ease),border-color .2s var(--hg-ease)}
+.is-app .tool-chip:hover{border-color:var(--hg-navy-100);color:var(--hg-navy)}
+.is-app .tool-chip.on{background:var(--hg-navy-600);border-color:var(--hg-navy-600);color:#fff;box-shadow:0 6px 14px -7px rgba(38,33,97,.6)}
+
+/* Grid de tarjetas */
+.is-app .tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.is-app .tool-card-wide{grid-column:1 / -1}
+.is-app .tool-card{display:flex;flex-direction:column;background:var(--hg-surface);border:1px solid var(--hg-line-2);border-radius:20px;padding:20px;box-shadow:var(--hg-sh-sm);transition:border-color .25s var(--hg-ease),box-shadow .25s var(--hg-ease),transform .25s var(--hg-ease)}
+.is-app .tool-card:hover{border-color:var(--hg-navy-100);box-shadow:var(--hg-sh-md,0 14px 30px -14px rgba(38,33,97,.22));transform:translateY(-2px)}
+.is-app .tool-card-h{display:flex;align-items:center;gap:13px;margin-bottom:16px}
+.is-app .tool-ic{width:44px;height:44px;border-radius:13px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,var(--hg-navy-600),var(--hg-navy));color:#fff}
+.is-app .tool-ic svg{width:22px;height:22px}
+.is-app .tool-card-t h3{font-family:'Outfit',sans-serif;font-size:1.02rem;font-weight:800;color:var(--hg-ink);line-height:1.15;margin:0}
+.is-app .tool-tag{font-size:.7rem;font-weight:700;color:var(--hg-muted);text-transform:uppercase;letter-spacing:.04em}
+
+/* Campos */
+.is-app .tool-fields{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:14px}
+.is-app .tool-fields.tool-cols-2{grid-template-columns:1fr 1fr}
+.is-app .tool-f{display:flex;flex-direction:column;gap:6px;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--hg-muted)}
+.is-app .tool-f .doctor-input{text-transform:none;letter-spacing:normal;font-weight:600}
+
+/* Checks (scores) */
+.is-app .tool-checks{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.is-app .tool-card-wide .tool-checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.is-app .tool-check{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1px solid var(--hg-line-2);border-radius:12px;background:var(--hg-surface-2);cursor:pointer;font-size:.84rem;color:var(--hg-ink-2);transition:border-color .18s var(--hg-ease),background .18s var(--hg-ease)}
+.is-app .tool-check:hover{border-color:var(--hg-navy-100)}
+.is-app .tool-check input{width:18px;height:18px;flex:none;accent-color:var(--hg-navy-600);cursor:pointer}
+.is-app .tool-check span{flex:1}
+.is-app .tool-check b{font-weight:800;color:var(--hg-muted);font-size:.78rem}
+.is-app .tool-check:has(input:checked){border-color:var(--hg-navy-600);background:var(--hg-navy-50)}
+.is-app .tool-check:has(input:checked) b{color:var(--hg-navy-600)}
+
+/* Salida con nivel de color */
+.is-app .tool-out{margin-top:auto;border-radius:14px;padding:14px 16px;border:1px solid var(--hg-line-2);background:var(--hg-surface-2);transition:background .25s var(--hg-ease),border-color .25s var(--hg-ease)}
+.is-app .tool-out-row{display:flex;align-items:baseline;gap:7px}
+.is-app .tool-out-val{font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;line-height:1;color:var(--hg-ink)}
+.is-app .tool-out-unit{font-size:.82rem;font-weight:700;color:var(--hg-muted)}
+.is-app .tool-out-tag{font-size:.82rem;font-weight:600;margin-top:5px;color:var(--hg-muted)}
+.is-app .tool-out.tool-lvl-ok{background:rgba(93,163,52,.1);border-color:rgba(93,163,52,.3)}
+.is-app .tool-out.tool-lvl-ok .tool-out-val,.is-app .tool-out.tool-lvl-ok .tool-out-tag{color:#3f7a1f}
+.is-app .tool-out.tool-lvl-warn{background:rgba(180,83,9,.09);border-color:rgba(180,83,9,.28)}
+.is-app .tool-out.tool-lvl-warn .tool-out-val,.is-app .tool-out.tool-lvl-warn .tool-out-tag{color:#b45309}
+.is-app .tool-out.tool-lvl-danger{background:rgba(190,18,60,.08);border-color:rgba(190,18,60,.26)}
+.is-app .tool-out.tool-lvl-danger .tool-out-val,.is-app .tool-out.tool-lvl-danger .tool-out-tag{color:#be123c}
+
+/* Notas y disclaimer */
+.is-app .tool-note{display:flex;align-items:flex-start;gap:7px;margin-top:12px;font-size:.74rem;color:var(--hg-muted-2);line-height:1.35}
+.is-app .tool-note svg{width:14px;height:14px;flex:none;margin-top:1px;color:var(--hg-navy-400)}
+.is-app .tool-disclaimer{display:flex;align-items:flex-start;gap:10px;margin-top:22px;padding:14px 18px;border-radius:14px;background:var(--hg-navy-50);border:1px solid var(--hg-navy-100);font-size:.82rem;color:var(--hg-ink-2);line-height:1.4}
+.is-app .tool-disclaimer svg{width:18px;height:18px;flex:none;color:var(--hg-navy-600);margin-top:1px}
+
+@media(max-width:900px){
+  .is-app .tool-grid{grid-template-columns:1fr}
+  .is-app .tool-card-wide{grid-column:auto}
+  .is-app .tool-card-wide .tool-checks{grid-template-columns:1fr}
+}
