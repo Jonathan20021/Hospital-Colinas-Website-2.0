@@ -689,8 +689,42 @@
 .is-app .tool-spec-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:700;color:var(--hg-ink-2);cursor:pointer;white-space:nowrap}
 .is-app .tool-spec-toggle input{width:16px;height:16px;accent-color:var(--hg-navy-600);cursor:pointer}
 
+/* Galería: tarjeta compacta (launcher) */
+.is-app .tool-tile{display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:15px 16px;border-radius:16px;border:1px solid var(--hg-line-2);background:var(--hg-surface);cursor:pointer;box-shadow:var(--hg-sh-sm);transition:border-color .2s var(--hg-ease),box-shadow .2s var(--hg-ease),transform .2s var(--hg-ease)}
+.is-app .tool-tile:hover{border-color:var(--hg-navy-100);box-shadow:var(--hg-sh-md,0 14px 30px -14px rgba(38,33,97,.22));transform:translateY(-2px)}
+.is-app .tool-tile:active{transform:translateY(0) scale(.99)}
+.is-app .tool-tile-ic{width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,var(--hg-navy-600),var(--hg-navy));color:#fff}
+.is-app .tool-tile-ic svg{width:21px;height:21px}
+.is-app .tool-tile-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.is-app .tool-tile-t strong{font-family:'Outfit',sans-serif;font-size:.92rem;font-weight:800;color:var(--hg-ink);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.is-app .tool-tile-t span{font-size:.71rem;color:var(--hg-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.is-app .tool-tile-go{width:16px;height:16px;flex:none;color:var(--hg-navy-100);transition:transform .2s var(--hg-ease),color .2s var(--hg-ease)}
+.is-app .tool-tile:hover .tool-tile-go{color:var(--hg-navy-600);transform:translateX(3px)}
+
+/* Modal: espacio único por herramienta */
+.is-app .tool-modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.is-app .tool-modal[hidden]{display:none}
+.is-app .tool-modal-backdrop{position:absolute;inset:0;background:rgba(20,18,60,.5);backdrop-filter:blur(3px);animation:tm-fade .2s ease}
+.is-app .tool-modal-panel{position:relative;z-index:1;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;background:var(--hg-surface);border-radius:22px;box-shadow:0 40px 90px -30px rgba(20,18,60,.6);animation:tm-pop .25s var(--hg-ease)}
+.is-app .tool-modal-h{display:flex;align-items:center;gap:13px;padding:20px 22px;border-bottom:1px solid var(--hg-line-2);position:sticky;top:0;background:var(--hg-surface);z-index:1;border-radius:22px 22px 0 0}
+.is-app .tool-modal-ic{width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,var(--hg-navy-600),var(--hg-navy));color:#fff}
+.is-app .tool-modal-ic svg{width:23px;height:23px}
+.is-app .tool-modal-ht{flex:1;min-width:0}
+.is-app .tool-modal-title{font-family:'Outfit',sans-serif;font-size:1.15rem;font-weight:800;color:var(--hg-ink);line-height:1.15;margin:0}
+.is-app .tool-modal-tag{font-size:.74rem;color:var(--hg-muted);font-weight:600}
+.is-app .tool-modal-close{width:38px;height:38px;border-radius:11px;border:0;background:var(--hg-surface-2);color:var(--hg-muted);cursor:pointer;display:grid;place-items:center;flex:none;transition:background .2s var(--hg-ease),color .2s var(--hg-ease)}
+.is-app .tool-modal-close:hover{background:#fdeaee;color:#be123c}
+.is-app .tool-modal-close svg{width:19px;height:19px}
+.is-app .tool-modal-body{padding:20px 22px 24px}
+.is-app .tool-modal-body .tool-out{margin-top:18px}
+.is-app .tool-modal-body .tool-out-val{font-size:2.4rem}
+body.tool-modal-open{overflow:hidden}
+@keyframes tm-fade{from{opacity:0}to{opacity:1}}
+@keyframes tm-pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:560px){.is-app .tool-modal{padding:0;align-items:flex-end}.is-app .tool-modal-panel{max-width:none;max-height:92vh;border-radius:22px 22px 0 0}}
+
 /* Grid de tarjetas */
-.is-app .tool-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.is-app .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:14px}
 .is-app .tool-card-wide{grid-column:1 / -1}
 .is-app .tool-card{display:flex;flex-direction:column;background:var(--hg-surface);border:1px solid var(--hg-line-2);border-radius:20px;padding:20px;box-shadow:var(--hg-sh-sm);transition:border-color .25s var(--hg-ease),box-shadow .25s var(--hg-ease),transform .25s var(--hg-ease)}
 .is-app .tool-card:hover{border-color:var(--hg-navy-100);box-shadow:var(--hg-sh-md,0 14px 30px -14px rgba(38,33,97,.22));transform:translateY(-2px)}

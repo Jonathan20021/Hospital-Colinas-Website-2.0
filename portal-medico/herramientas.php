@@ -116,6 +116,19 @@ doctor_layout_begin('Herramientas', 'herramientas');
     </p>
 </div><!-- /#tab-cert -->
 
+<!-- MODAL: cada herramienta en su espacio único -->
+<div id="tool-modal" class="tool-modal" hidden>
+    <div class="tool-modal-backdrop" data-modal-close></div>
+    <div class="tool-modal-panel" role="dialog" aria-modal="true" aria-label="Calculadora">
+        <header class="tool-modal-h">
+            <span class="tool-modal-ic"><i data-lucide="calculator"></i></span>
+            <div class="tool-modal-ht"><h3 class="tool-modal-title">—</h3><span class="tool-modal-tag">—</span></div>
+            <button type="button" class="tool-modal-close" data-modal-close aria-label="Cerrar"><i data-lucide="x"></i></button>
+        </header>
+        <div class="tool-modal-body"></div>
+    </div>
+</div>
+
 <script>
 window.DM_TOOLS = { specialty: <?= json_encode((string)(doctor_current()['specialty'] ?? ''), JSON_UNESCAPED_UNICODE) ?> };
 </script>

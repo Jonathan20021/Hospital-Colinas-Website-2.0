@@ -401,6 +401,51 @@
           checks: [['Usa el teléfono de forma autónoma', 1], ['Hace las compras', 1], ['Prepara la comida', 1], ['Cuida la casa', 1], ['Lava la ropa', 1], ['Usa transporte de forma independiente', 1], ['Maneja su medicación', 1], ['Maneja sus finanzas', 1]],
           note: 'Marca lo que el paciente realiza de forma independiente. 8 máxima autonomía.',
           calc: (v) => { const sc = v.checks; let t, l; if (sc >= 8) { t = 'Autonomía total'; l = 'ok'; } else if (sc >= 5) { t = 'Dependencia leve'; l = 'warn'; } else { t = 'Dependencia importante'; l = 'danger'; } return { val: sc, unit: '/ 8', tag: t, level: l }; } },
+
+        // ===== LOTE 3: scores avanzados =====
+        { id: 'nihss', spec: ['neuro'], name: 'NIHSS', tag: 'Neurología · severidad del ACV', icon: 'brain', wide: true,
+          fields: [
+            { k: 'n1', label: '1a. Nivel de conciencia', type: 'sel', sum: true, opts: [['0', '0 alerta'], ['1', '1 somnoliento'], ['2', '2 estuporoso'], ['3', '3 coma']] },
+            { k: 'n2', label: '1b. Preguntas (mes y edad)', type: 'sel', sum: true, opts: [['0', '0 ambas'], ['1', '1 una'], ['2', '2 ninguna']] },
+            { k: 'n3', label: '1c. Órdenes', type: 'sel', sum: true, opts: [['0', '0 ambas'], ['1', '1 una'], ['2', '2 ninguna']] },
+            { k: 'n4', label: '2. Mirada conjugada', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 parcial'], ['2', '2 desviación forzada']] },
+            { k: 'n5', label: '3. Campos visuales', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 cuadrantanopsia'], ['2', '2 hemianopsia'], ['3', '3 ceguera bilateral']] },
+            { k: 'n6', label: '4. Parálisis facial', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 leve'], ['2', '2 parcial'], ['3', '3 completa']] },
+            { k: 'n7', label: '5a. Motor brazo izquierdo', type: 'sel', sum: true, opts: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4']] },
+            { k: 'n8', label: '5b. Motor brazo derecho', type: 'sel', sum: true, opts: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4']] },
+            { k: 'n9', label: '6a. Motor pierna izquierda', type: 'sel', sum: true, opts: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4']] },
+            { k: 'n10', label: '6b. Motor pierna derecha', type: 'sel', sum: true, opts: [['0', '0'], ['1', '1'], ['2', '2'], ['3', '3'], ['4', '4']] },
+            { k: 'n11', label: '7. Ataxia de miembros', type: 'sel', sum: true, opts: [['0', '0 ausente'], ['1', '1 una extremidad'], ['2', '2 dos']] },
+            { k: 'n12', label: '8. Sensibilidad', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 leve-moderada'], ['2', '2 grave']] },
+            { k: 'n13', label: '9. Lenguaje', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 afasia leve-mod'], ['2', '2 afasia grave'], ['3', '3 mutismo/global']] },
+            { k: 'n14', label: '10. Disartria', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 leve-moderada'], ['2', '2 grave']] },
+            { k: 'n15', label: '11. Extinción/inatención', type: 'sel', sum: true, opts: [['0', '0 normal'], ['1', '1 parcial'], ['2', '2 completa']] },
+          ], note: '0 sin déficit · 1-4 leve · 5-15 moderado · 16-20 mod-grave · 21-42 grave.',
+          calc: (v) => { if (!v.anyFilled) return null; const sc = v.sum; let t, l; if (sc === 0) { t = 'Sin déficit'; l = 'ok'; } else if (sc <= 4) { t = 'ACV leve'; l = 'ok'; } else if (sc <= 15) { t = 'ACV moderado'; l = 'warn'; } else if (sc <= 20) { t = 'Moderado-grave'; l = 'danger'; } else { t = 'ACV grave'; l = 'danger'; } return { val: sc, unit: '/ 42', tag: t, level: l }; } },
+        { id: 'findrisc', spec: ['endo', 'nutri', 'interna'], name: 'FINDRISC', tag: 'Endocrino · riesgo de diabetes a 10 años', icon: 'candy', wide: true,
+          fields: [
+            { k: 'f1', label: 'Edad', type: 'sel', sum: true, opts: [['0', '<45'], ['2', '45-54'], ['3', '55-64'], ['4', '>64']] },
+            { k: 'f2', label: 'IMC', type: 'sel', sum: true, opts: [['0', '<25'], ['1', '25-30'], ['3', '>30']] },
+            { k: 'f3', label: 'Perímetro abdominal', type: 'sel', sum: true, opts: [['0', 'H<94 / M<80 cm'], ['3', 'H 94-102 / M 80-88'], ['4', 'H>102 / M>88']] },
+            { k: 'f4', label: 'Actividad física ≥30 min/día', type: 'sel', sum: true, opts: [['0', 'Sí'], ['2', 'No']] },
+            { k: 'f5', label: 'Come frutas/verduras a diario', type: 'sel', sum: true, opts: [['0', 'Sí'], ['1', 'No']] },
+            { k: 'f6', label: 'Toma antihipertensivos', type: 'sel', sum: true, opts: [['0', 'No'], ['2', 'Sí']] },
+            { k: 'f7', label: 'Glucosa alta detectada antes', type: 'sel', sum: true, opts: [['0', 'No'], ['5', 'Sí']] },
+            { k: 'f8', label: 'Antecedente familiar de diabetes', type: 'sel', sum: true, opts: [['0', 'No'], ['3', 'Abuelos/tíos/primos'], ['5', 'Padres/hermanos/hijos']] },
+          ], note: '<7 bajo · 7-11 ligeramente elevado · 12-14 moderado · 15-20 alto · >20 muy alto.',
+          calc: (v) => { if (!v.anyFilled) return null; const sc = v.sum; let t, l; if (sc < 7) { t = 'Riesgo bajo (~1%)'; l = 'ok'; } else if (sc <= 11) { t = 'Ligeramente elevado (~4%)'; l = 'ok'; } else if (sc <= 14) { t = 'Moderado (~17%)'; l = 'warn'; } else if (sc <= 20) { t = 'Alto (~33%)'; l = 'danger'; } else { t = 'Muy alto (~50%)'; l = 'danger'; } return { val: sc, unit: '/ 26', tag: t, level: l }; } },
+        { id: 'karnofsky', spec: ['onco', 'geriatria'], name: 'Karnofsky', tag: 'Oncología · estado funcional', icon: 'activity',
+          fields: [{ k: 'k', label: 'Índice de Karnofsky', type: 'sel', opts: [['', '—'], ['100', '100 — normal, sin quejas'], ['90', '90 — actividad normal, signos leves'], ['80', '80 — actividad con esfuerzo'], ['70', '70 — se cuida, sin actividad normal'], ['60', '60 — ayuda ocasional'], ['50', '50 — ayuda considerable'], ['40', '40 — incapacitado'], ['30', '30 — gravemente incapacitado'], ['20', '20 — muy enfermo'], ['10', '10 — moribundo']] }],
+          note: '≥70: autonomía · <70: dependencia creciente.',
+          calc: (v) => { const k = v.s('k'); if (!k) return null; const n = +k; const l = n >= 70 ? 'ok' : n >= 40 ? 'warn' : 'danger'; return { val: k + '%', unit: '', tag: n >= 70 ? 'Funcionalmente autónomo' : n >= 40 ? 'Requiere asistencia' : 'Dependencia grave', level: l }; } },
+        { id: 'iief5', spec: ['uro'], name: 'IIEF-5 (SHIM)', tag: 'Urología · función eréctil', icon: 'clipboard-list', wide: true,
+          fields: ['Confianza para lograr/mantener erección', 'Erección suficiente para penetración', 'Mantener erección tras la penetración', 'Mantener erección hasta completar la relación', 'Satisfacción con la relación'].map((t, i) => ({ k: 'q' + i, label: t, type: 'sel', sum: true, opts: [['1', '1'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5']] })),
+          note: '22-25 sin DE · 17-21 leve · 12-16 leve-moderada · 8-11 moderada · 5-7 grave.',
+          calc: (v) => { if (!v.anyFilled) return null; const sc = v.sum; let t, l; if (sc >= 22) { t = 'Sin disfunción'; l = 'ok'; } else if (sc >= 17) { t = 'Disfunción leve'; l = 'warn'; } else if (sc >= 12) { t = 'Leve-moderada'; l = 'warn'; } else if (sc >= 8) { t = 'Moderada'; l = 'danger'; } else { t = 'Grave'; l = 'danger'; } return { val: sc, unit: '/ 25', tag: t, level: l }; } },
+        { id: 'mmse', spec: ['neuro', 'psiq', 'geriatria'], name: 'Mini-Mental (MMSE)', tag: 'Cognición · cribado de demencia', icon: 'brain',
+          fields: [{ k: 'sc', label: 'Puntuación total obtenida (0-30)', type: 'num', min: 0, max: 30 }],
+          note: '≥27 normal · 24-26 deterioro leve · 18-23 moderado · <18 grave. Ajustar por escolaridad.',
+          calc: (v) => { const sc = v.n('sc'); if (isNaN(sc)) return null; let t, l; if (sc >= 27) { t = 'Normal'; l = 'ok'; } else if (sc >= 24) { t = 'Deterioro leve'; l = 'warn'; } else if (sc >= 18) { t = 'Deterioro moderado'; l = 'warn'; } else { t = 'Deterioro grave'; l = 'danger'; } return { val: sc, unit: '/ 30', tag: t, level: l }; } },
     ];
 
     // ── Render de una tarjeta ────────────────────────────────────────────────────
@@ -415,10 +460,16 @@
         const attrs = (f.step ? ' step="' + f.step + '"' : '') + (f.min != null ? ' min="' + f.min + '"' : '') + (f.max != null ? ' max="' + f.max + '"' : '');
         return '<label class="tool-f">' + esc(f.label) + '<input type="number" class="doctor-input" data-k="' + f.k + '"' + fill + sum + attrs + ' inputmode="decimal"></label>';
     }
-    function cardHtml(def) {
-        let h = '<article class="tool-card' + (def.wide ? ' tool-card-wide' : '') + '" data-tool="' + def.id + '">';
-        h += '<header class="tool-card-h"><div class="tool-ic"><i data-lucide="' + (def.icon || 'calculator') + '"></i></div>';
-        h += '<div class="tool-card-t"><h3>' + esc(def.name) + '</h3><span class="tool-tag">' + esc(def.tag) + '</span></div></header>';
+    // Tarjeta compacta (galería / launcher)
+    function tileHtml(def) {
+        return '<button type="button" class="tool-tile" data-tool="' + def.id + '">'
+            + '<span class="tool-tile-ic"><i data-lucide="' + (def.icon || 'calculator') + '"></i></span>'
+            + '<span class="tool-tile-t"><strong>' + esc(def.name) + '</strong><span>' + esc(def.tag) + '</span></span>'
+            + '<i data-lucide="arrow-right" class="tool-tile-go"></i></button>';
+    }
+    // Cuerpo de la calculadora (se monta dentro del modal)
+    function calcBodyHtml(def) {
+        let h = '';
         if (def.fields && def.fields.length) {
             const cols = def.fields.length >= 2 ? ' tool-cols-2' : '';
             h += '<div class="tool-fields' + cols + '">' + def.fields.map(fieldHtml).join('') + '</div>';
@@ -428,7 +479,6 @@
         }
         h += '<div class="tool-out" data-out><div class="tool-out-row"><span class="tool-out-val">—</span><span class="tool-out-unit"></span></div><div class="tool-out-tag">Completa los campos</div></div>';
         if (def.note) h += '<p class="tool-note"><i data-lucide="info"></i> ' + esc(def.note) + '</p>';
-        h += '</article>';
         return h;
     }
 
@@ -451,7 +501,6 @@
         const v = { n: (k) => { const x = parseFloat(get(k)); return isNaN(x) ? NaN : x; }, s: (k) => get(k) || '', sum: sum, checks: checks, anyFilled: anyFilled };
         try { setOut(card, def.calc(v)); } catch (e) { setOut(card, null); }
     }
-    function recalcAll() { $$('#tool-grid .tool-card').forEach(recalc); }
 
     // ── Filtrado por especialidad ─────────────────────────────────────────────────
     let myFamilies = ['general'], showAll = false, activeFam = 'all';
@@ -459,19 +508,17 @@
         if (showAll) return CALC;
         return CALC.filter((d) => d.spec.some((s) => myFamilies.indexOf(s) !== -1));
     }
-    function renderGrid() {
+    function renderGallery() {
         const grid = $('#tool-grid'); if (!grid) return;
         let defs = visibleDefs();
         if (activeFam !== 'all') defs = defs.filter((d) => d.spec.indexOf(activeFam) !== -1);
-        grid.innerHTML = defs.map(cardHtml).join('');
-        $('#tool-empty').hidden = defs.length > 0;
-        recalcAll();
+        grid.innerHTML = defs.map(tileHtml).join('');
+        const empty = $('#tool-empty'); if (empty) empty.hidden = defs.length > 0;
         if (window.lucide) lucide.createIcons();
     }
     function renderFilters() {
         const bar = $('#tool-filters'); if (!bar) return;
         const fams = showAll ? Object.keys(FAMILIES) : myFamilies;
-        // solo familias que tienen al menos una calc visible
         const present = fams.filter((f) => CALC.some((d) => d.spec.indexOf(f) !== -1));
         let h = '<button type="button" class="tool-chip on" data-fam="all">Todas</button>';
         h += present.map((f) => '<button type="button" class="tool-chip" data-fam="' + f + '">' + esc(FAMILIES[f].label) + '</button>').join('');
@@ -479,12 +526,36 @@
         activeFam = 'all';
         bar.querySelectorAll('.tool-chip').forEach((ch) => ch.addEventListener('click', () => {
             bar.querySelectorAll('.tool-chip').forEach((x) => x.classList.remove('on'));
-            ch.classList.add('on'); activeFam = ch.dataset.fam; renderGrid();
+            ch.classList.add('on'); activeFam = ch.dataset.fam; renderGallery();
         }));
     }
 
-    // ── Pre-llenado de paciente ────────────────────────────────────────────────────
-    function setFill(key, value) { if (value == null || value === '') return; $$('[data-fill="' + key + '"]').forEach((el) => { el.value = value; }); }
+    // ── Modal: cada herramienta en su espacio único ─────────────────────────────
+    let activeDef = null;
+    function openTool(def) {
+        activeDef = def;
+        const modal = $('#tool-modal'); if (!modal) return;
+        const icn = modal.querySelector('.tool-modal-ic i'); if (icn) icn.setAttribute('data-lucide', def.icon || 'calculator');
+        modal.querySelector('.tool-modal-title').textContent = def.name;
+        modal.querySelector('.tool-modal-tag').textContent = def.tag;
+        const body = modal.querySelector('.tool-modal-body');
+        body.dataset.tool = def.id;
+        body.innerHTML = calcBodyHtml(def);
+        applyPatientToCard(body);
+        modal.hidden = false; document.body.classList.add('tool-modal-open');
+        recalc(body);
+        if (window.lucide) lucide.createIcons();
+        const first = body.querySelector('input,select'); if (first) { try { first.focus(); } catch (e) {} }
+    }
+    function closeTool() { const modal = $('#tool-modal'); if (!modal) return; modal.hidden = true; document.body.classList.remove('tool-modal-open'); activeDef = null; }
+
+    // ── Pre-llenado de paciente (persistente) ───────────────────────────────────────
+    let currentPatient = null;
+    function applyPatientToCard(container) {
+        if (!currentPatient || !container) return;
+        const set = (key, val) => { if (val == null || val === '') return; container.querySelectorAll('[data-fill="' + key + '"]').forEach((el) => { el.value = val; }); };
+        set('age', currentPatient.age); set('sex', currentPatient.sex); set('weight', currentPatient.weight); set('height', currentPatient.height);
+    }
     function normSex(g) { if (!g) return ''; const s = String(g).trim().toLowerCase(); if (s[0] === 'm') return 'M'; if (s[0] === 'f') return 'F'; return ''; }
     function ageFromDob(dob) { if (!dob) return null; const d = new Date(dob); if (isNaN(d.getTime())) return null; const t = new Date(); let a = t.getFullYear() - d.getFullYear(); const mm = t.getMonth() - d.getMonth(); if (mm < 0 || (mm === 0 && t.getDate() < d.getDate())) a--; return (a >= 0 && a < 130) ? a : null; }
     async function selectPatient(item) {
@@ -493,15 +564,19 @@
         const age = ageFromDob(item.dob), sx = normSex(item.gender);
         $('#tool-patient-meta').textContent = [item.cedula || '', age != null ? (age + ' años') : '', sx].filter(Boolean).join(' · ');
         $('#tool-patient-chip').hidden = false; $('#tool-patient-results').hidden = true; $('#tool-patient-q').value = '';
-        if (age != null) setFill('age', age); if (sx) setFill('sex', sx);
-        if (api) { try { const r = await api('GET', '/portal-doctor/me/patients/' + item.id); if (r && r.ok && r.data) { const vit = (r.data.vitals && r.data.vitals[0]) || null; if (vit) { if (vit.weight_kg) setFill('weight', vit.weight_kg); if (vit.height_cm) setFill('height', vit.height_cm); } } } catch (e) {} }
-        recalcAll(); if (window.lucide) lucide.createIcons();
+        currentPatient = { age: age != null ? age : '', sex: sx || '', weight: '', height: '' };
+        if (api) { try { const r = await api('GET', '/portal-doctor/me/patients/' + item.id); if (r && r.ok && r.data) { const vit = (r.data.vitals && r.data.vitals[0]) || null; if (vit) { if (vit.weight_kg) currentPatient.weight = vit.weight_kg; if (vit.height_cm) currentPatient.height = vit.height_cm; } } } catch (e) {} }
+        const modal = $('#tool-modal'), body = $('#tool-modal .tool-modal-body');
+        if (modal && body && body.dataset.tool && !modal.hidden) { applyPatientToCard(body); recalc(body); }
+        if (window.lucide) lucide.createIcons();
     }
+    function clearPatient() { currentPatient = null; $('#tool-patient-chip').hidden = true; }
     let timer = null;
     async function doSearch(q) {
         api = window.doctorApi || api;
         const box = $('#tool-patient-results');
         if (!api || q.trim().length < 2) { box.hidden = true; return; }
+        box.innerHTML = '<div class="tool-pb-empty">Buscando…</div>'; box.hidden = false;
         try {
             const r = await api('GET', '/portal-doctor/me/patients', { q: q.trim(), per_page: 8 });
             const items = (r && r.ok && r.data && r.data.items) || [];
@@ -524,14 +599,24 @@
             $('#tool-spec-name').textContent = spec ? spec : 'tu especialidad';
             const all = $('#tool-spec-all');
             all.checked = showAll;
-            all.addEventListener('change', () => { showAll = all.checked; renderFilters(); renderGrid(); });
+            all.addEventListener('change', () => { showAll = all.checked; renderFilters(); renderGallery(); });
         }
         renderFilters();
-        renderGrid();
+        renderGallery();
 
+        // Abrir cada herramienta en su espacio único (modal) al tocar un tile
         const grid = $('#tool-grid');
-        grid.addEventListener('input', (e) => { const c = e.target.closest('.tool-card'); if (c) recalc(c); });
-        grid.addEventListener('change', (e) => { const c = e.target.closest('.tool-card'); if (c) recalc(c); });
+        grid.addEventListener('click', (e) => { const tile = e.target.closest('.tool-tile'); if (!tile) return; const def = CALC.find((d) => d.id === tile.dataset.tool); if (def) openTool(def); });
+
+        // Modal: recálculo en vivo + cierre
+        const modal = $('#tool-modal');
+        if (modal) {
+            const body = modal.querySelector('.tool-modal-body');
+            body.addEventListener('input', () => recalc(body));
+            body.addEventListener('change', () => recalc(body));
+            modal.querySelectorAll('[data-modal-close]').forEach((b) => b.addEventListener('click', closeTool));
+        }
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const m = $('#tool-modal'); if (m && !m.hidden) closeTool(); } });
 
         const q = $('#tool-patient-q');
         if (q) {
@@ -540,7 +625,7 @@
         }
         const box = $('#tool-patient-results');
         if (box) box.addEventListener('click', (e) => { const btn = e.target.closest('.tool-pb-item'); if (!btn) return; const it = (box._items || [])[parseInt(btn.dataset.i, 10)]; if (it) selectPatient(it); });
-        const clr = $('#tool-patient-clear'); if (clr) clr.addEventListener('click', () => { $('#tool-patient-chip').hidden = true; });
+        const clr = $('#tool-patient-clear'); if (clr) clr.addEventListener('click', clearPatient);
         document.addEventListener('click', (e) => { if (!e.target.closest('.tool-pb-search')) { const b = $('#tool-patient-results'); if (b) b.hidden = true; } });
     }
 
@@ -581,6 +666,7 @@
     async function certSearch(q) {
         api = window.doctorApi || api; const box = $('#cert-patient-results');
         if (!api || q.trim().length < 2) { box.hidden = true; return; }
+        box.innerHTML = '<div class="tool-pb-empty">Buscando…</div>'; box.hidden = false;
         try {
             const r = await api('GET', '/portal-doctor/me/patients', { q: q.trim(), per_page: 8 });
             const items = (r && r.ok && r.data && r.data.items) || [];
