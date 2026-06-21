@@ -37,6 +37,10 @@
         onco:      { label: 'Oncología',         kw: ['oncolog'] },
         geriatria: { label: 'Geriatría',         kw: ['geriatr'] },
         trauma:    { label: 'Traumatología',     kw: ['traumat', 'ortoped'] },
+        anestesia: { label: 'Anestesiología',    kw: ['anestesi'] },
+        cirugia:   { label: 'Cirugía',           kw: ['cirug', 'maxilofacial'] },
+        derma:     { label: 'Dermatología',      kw: ['dermatolog'] },
+        otorrino:  { label: 'Otorrinolaringología', kw: ['otorrino'] },
     };
     function doctorFamilies(specialty) {
         const s = norm(specialty);
@@ -249,6 +253,154 @@
             { k: 'esc', label: 'Escaleras', type: 'sel', sum: true, opts: [['10', 'Independiente'], ['5', 'Ayuda'], ['0', 'Dependiente']] },
           ], note: '100 independiente · 60-95 leve · 40-55 moderada · 20-35 grave · <20 total.',
           calc: (v) => { if (!v.anyFilled) return null; const sc = v.sum; let t, l; if (sc >= 100) { t = 'Independiente'; l = 'ok'; } else if (sc >= 60) { t = 'Dependencia leve'; l = 'ok'; } else if (sc >= 40) { t = 'Dependencia moderada'; l = 'warn'; } else if (sc >= 20) { t = 'Dependencia grave'; l = 'danger'; } else { t = 'Dependencia total'; l = 'danger'; } return { val: sc, unit: '/ 100', tag: t, level: l }; } },
+
+        // ===== GENERALES (ampliación) =====
+        { id: 'pam', spec: ['general'], name: 'Presión arterial media', tag: 'General · hemodinámia', icon: 'gauge',
+          fields: [{ k: 'pas', label: 'Sistólica (mmHg)', type: 'num', min: 40, max: 300 }, { k: 'pad', label: 'Diastólica (mmHg)', type: 'num', min: 20, max: 200 }], note: 'PAM = (PAS + 2·PAD) / 3. Objetivo de perfusión ≥65.',
+          calc: (v) => { const s = v.n('pas'), d = v.n('pad'); if (!s || !d) return null; const m = (s + 2 * d) / 3; return { val: Math.round(m), unit: 'mmHg', tag: m < 65 ? 'Hipoperfusión (PAM <65)' : 'Perfusión adecuada', level: m < 65 ? 'danger' : 'ok' }; } },
+        { id: 'osmol', spec: ['general', 'nefro', 'endo'], name: 'Osmolaridad plasmática', tag: 'General · medio interno', icon: 'flask-conical',
+          fields: [{ k: 'na', label: 'Na (mEq/L)', type: 'num', min: 100, max: 180 }, { k: 'glu', label: 'Glucosa (mg/dL)', type: 'num', min: 30 }, { k: 'bun', label: 'BUN (mg/dL)', type: 'num', min: 1 }], note: '2·Na + glucosa/18 + BUN/2.8. Normal 275-295.',
+          calc: (v) => { const na = v.n('na'), glu = v.n('glu'), bun = v.n('bun'); if (!na || !glu || !bun) return null; const o = 2 * na + glu / 18 + bun / 2.8; let l = (o > 295 || o < 275) ? 'warn' : 'ok'; return { val: Math.round(o), unit: 'mOsm/kg', tag: o > 295 ? 'Elevada' : o < 275 ? 'Baja' : 'Normal', level: l }; } },
+        { id: 'calcioCorr', spec: ['general', 'nefro', 'endo'], name: 'Calcio corregido', tag: 'General · por albúmina', icon: 'flask-conical',
+          fields: [{ k: 'ca', label: 'Calcio total (mg/dL)', type: 'num', min: 3, max: 20, step: '0.1' }, { k: 'alb', label: 'Albúmina (g/dL)', type: 'num', min: 0.5, max: 7, step: '0.1' }], note: 'Ca + 0.8·(4 − albúmina). Normal 8.5-10.5.',
+          calc: (v) => { const ca = v.n('ca'), alb = v.n('alb'); if (!ca || !alb) return null; const c = ca + 0.8 * (4 - alb); let l = (c > 10.5 || c < 8.5) ? 'warn' : 'ok'; return { val: c.toFixed(1), unit: 'mg/dL', tag: c > 10.5 ? 'Hipercalcemia' : c < 8.5 ? 'Hipocalcemia' : 'Normal', level: l }; } },
+        { id: 'goteo', spec: ['general'], name: 'Goteo intravenoso', tag: 'General · velocidad de infusión', icon: 'droplets',
+          fields: [{ k: 'vol', label: 'Volumen (mL)', type: 'num', min: 1 }, { k: 'h', label: 'Tiempo (horas)', type: 'num', min: 0.1, step: '0.1' }, { k: 'factor', label: 'Equipo', type: 'sel', opts: [['20', 'Macrogotero (20 gtt/mL)'], ['15', 'Macrogotero (15 gtt/mL)'], ['60', 'Microgotero (60 gtt/mL)']] }], note: 'gotas/min = (volumen × factor) / (horas × 60).',
+          calc: (v) => { const vol = v.n('vol'), h = v.n('h'); const f = parseFloat(v.s('factor')) || 20; if (!vol || !h) return null; const g = (vol * f) / (h * 60); return { val: Math.round(g), unit: 'gotas/min', tag: '≈ ' + Math.round(vol / h) + ' mL/h', level: 'ok' }; } },
+
+        // ===== ANESTESIOLOGÍA =====
+        { id: 'asa', spec: ['anestesia', 'cirugia'], name: 'Clasificación ASA', tag: 'Anestesia · riesgo físico', icon: 'heart-pulse',
+          fields: [{ k: 'a', label: 'Estado físico', type: 'sel', opts: [['', '—'], ['1', 'ASA I — sano'], ['2', 'ASA II — enfermedad leve'], ['3', 'ASA III — enfermedad grave'], ['4', 'ASA IV — amenaza vital constante'], ['5', 'ASA V — moribundo'], ['6', 'ASA VI — muerte cerebral']] }], note: 'Añadir "E" en cirugía de emergencia.',
+          calc: (v) => { const a = v.s('a'); if (!a) return null; const R = ['', 'I', 'II', 'III', 'IV', 'V', 'VI'], T = ['', 'Paciente sano', 'Enfermedad sistémica leve', 'Enfermedad sistémica grave', 'Amenaza vital constante', 'Moribundo', 'Muerte cerebral (donante)']; const l = +a >= 4 ? 'danger' : +a >= 3 ? 'warn' : 'ok'; return { val: 'ASA ' + R[+a], unit: '', tag: T[+a], level: l }; } },
+        { id: 'mallampati', spec: ['anestesia'], name: 'Mallampati', tag: 'Anestesia · vía aérea difícil', icon: 'scan-face',
+          fields: [{ k: 'm', label: 'Clase', type: 'sel', opts: [['', '—'], ['1', 'I — paladar blando, úvula, pilares'], ['2', 'II — paladar blando y úvula'], ['3', 'III — paladar blando y base úvula'], ['4', 'IV — solo paladar duro']] }], note: 'III-IV predicen intubación difícil.',
+          calc: (v) => { const m = v.s('m'); if (!m) return null; const l = +m >= 3 ? 'danger' : +m === 2 ? 'warn' : 'ok'; return { val: 'Clase ' + ['', 'I', 'II', 'III', 'IV'][+m], unit: '', tag: +m >= 3 ? 'Predicción de vía aérea difícil' : 'Vía aérea favorable', level: l }; } },
+        { id: 'stopbang', spec: ['anestesia', 'otorrino', 'neumo'], name: 'STOP-BANG', tag: 'Anestesia · apnea del sueño', icon: 'moon', wide: true,
+          checks: [['Ronquido fuerte', 1], ['Cansancio/somnolencia diurna', 1], ['Apneas observadas', 1], ['Hipertensión arterial', 1], ['IMC >35', 1], ['Edad >50 años', 1], ['Circunferencia cuello >40 cm', 1], ['Sexo masculino', 1]],
+          note: '0-2 bajo · 3-4 intermedio · ≥5 alto riesgo de SAOS.',
+          calc: (v) => { const sc = v.checks; let t, l; if (sc <= 2) { t = 'Riesgo bajo'; l = 'ok'; } else if (sc <= 4) { t = 'Riesgo intermedio'; l = 'warn'; } else { t = 'Riesgo alto de SAOS'; l = 'danger'; } return { val: sc, unit: '/ 8', tag: t, level: l }; } },
+        { id: 'apfel', spec: ['anestesia'], name: 'Apfel (NVPO)', tag: 'Anestesia · náusea/vómito postop', icon: 'thermometer',
+          checks: [['Sexo femenino', 1], ['No fumador', 1], ['Antecedente de NVPO o cinetosis', 1], ['Uso de opioides postoperatorios', 1]],
+          note: 'Riesgo NVPO: 0≈10% · 1≈20% · 2≈40% · 3≈60% · 4≈80%.',
+          calc: (v) => { const sc = v.checks; const pct = [10, 20, 40, 60, 80][sc]; let l = sc >= 3 ? 'danger' : sc === 2 ? 'warn' : 'ok'; return { val: sc, unit: '/ 4', tag: '≈ ' + pct + '% de riesgo', level: l }; } },
+        { id: 'anestLocal', spec: ['anestesia', 'cirugia', 'derma'], name: 'Dosis máx. anestésico local', tag: 'Anestesia · toxicidad', icon: 'syringe',
+          fields: [F.weight, { k: 'd', label: 'Fármaco', type: 'sel', opts: [['4.5', 'Lidocaína (4.5 mg/kg)'], ['7', 'Lidocaína + epinefrina (7 mg/kg)'], ['2', 'Bupivacaína (2 mg/kg)'], ['3', 'Bupivacaína + epinefrina (3 mg/kg)']] }], note: 'Dosis máxima total; no exceder por riesgo de toxicidad sistémica.',
+          calc: (v) => { const w = v.n('weight'); const mgkg = parseFloat(v.s('d')); if (!w || !mgkg) return null; return { val: Math.round(w * mgkg), unit: 'mg máx', tag: '≈ ' + (w * mgkg).toFixed(0) + ' mg (' + mgkg + ' mg/kg)', level: 'warn' }; } },
+
+        // ===== CIRUGÍA =====
+        { id: 'alvarado', spec: ['cirugia', 'interna'], name: 'Alvarado (apendicitis)', tag: 'Cirugía · apendicitis aguda', icon: 'stethoscope', wide: true,
+          checks: [['Dolor migra a fosa ilíaca derecha', 1], ['Anorexia', 1], ['Náusea o vómito', 1], ['Dolor en fosa ilíaca derecha', 2], ['Dolor de rebote', 1], ['Fiebre ≥37.3 °C', 1], ['Leucocitosis >10,000', 2], ['Neutrofilia >75%', 1]],
+          note: '≤4 improbable · 5-6 posible · 7-8 probable · 9-10 muy probable.',
+          calc: (v) => { const sc = v.checks; let t, l; if (sc <= 4) { t = 'Apendicitis improbable'; l = 'ok'; } else if (sc <= 6) { t = 'Posible — observación/imagen'; l = 'warn'; } else { t = 'Probable — valoración quirúrgica'; l = 'danger'; } return { val: sc, unit: '/ 10', tag: t, level: l }; } },
+        { id: 'rcri', spec: ['cirugia', 'anestesia', 'cardio'], name: 'RCRI (Lee)', tag: 'Cirugía · riesgo cardíaco perioperatorio', icon: 'heart-pulse', wide: true,
+          checks: [['Cirugía de alto riesgo (intratorácica/abdominal/vascular)', 1], ['Cardiopatía isquémica', 1], ['Insuficiencia cardíaca', 1], ['Enfermedad cerebrovascular', 1], ['Diabetes en insulina', 1], ['Creatinina >2 mg/dL', 1]],
+          note: '0≈0.4% · 1≈1% · 2≈2.4% · ≥3≈5.4% de evento cardíaco mayor.',
+          calc: (v) => { const sc = v.checks; const pct = ['0.4', '1.0', '2.4', '5.4'][Math.min(sc, 3)]; let l = sc >= 2 ? 'danger' : sc === 1 ? 'warn' : 'ok'; return { val: sc, unit: '/ 6', tag: '≈ ' + pct + '% riesgo cardíaco', level: l }; } },
+
+        // ===== DERMATOLOGÍA =====
+        { id: 'quemados', spec: ['derma', 'cirugia'], name: 'Superficie quemada', tag: 'Dermatología · regla de los 9', icon: 'flame', wide: true,
+          checks: [['Cabeza y cuello (9%)', 9], ['Tórax anterior (9%)', 9], ['Abdomen anterior (9%)', 9], ['Espalda superior (9%)', 9], ['Espalda inferior (9%)', 9], ['Brazo derecho (9%)', 9], ['Brazo izquierdo (9%)', 9], ['Muslo/pierna derecha (18%)', 18], ['Muslo/pierna izquierda (18%)', 18], ['Genitales (1%)', 1]],
+          note: 'Regla de los 9 (adulto). ≥15-20% SCQ: valorar reposición de líquidos.',
+          calc: (v) => { const sc = v.checks; if (!sc) return null; let l = sc >= 20 ? 'danger' : sc >= 10 ? 'warn' : 'ok'; return { val: sc, unit: '% SCQ', tag: sc >= 15 ? 'Quemadura extensa — líquidos (Parkland)' : 'Superficie estimada', level: l }; } },
+        { id: 'abcde', spec: ['derma'], name: 'ABCDE del melanoma', tag: 'Dermatología · lesión sospechosa', icon: 'scan-search',
+          checks: [['Asimetría', 1], ['Bordes irregulares', 1], ['Color heterogéneo', 1], ['Diámetro >6 mm', 1], ['Evolución/cambio reciente', 1]],
+          note: '≥2 criterios: derivar para valoración dermatológica/dermatoscopia.',
+          calc: (v) => { const sc = v.checks; let l = sc >= 2 ? 'danger' : sc === 1 ? 'warn' : 'ok'; return { val: sc, unit: '/ 5', tag: sc >= 2 ? 'Sospechoso — derivar' : 'Vigilar', level: l }; } },
+
+        // ===== OTORRINOLARINGOLOGÍA =====
+        { id: 'centor', spec: ['otorrino', 'interna', 'pedia'], name: 'Centor / McIsaac', tag: 'ORL · faringitis estreptocócica', icon: 'thermometer', wide: true,
+          fields: [{ k: 'edad', label: 'Edad', type: 'sel', sum: true, opts: [['1', '3-14 años (+1)'], ['0', '15-44 años (0)'], ['-1', '≥45 años (−1)']] }],
+          checks: [['Fiebre >38 °C', 1], ['Ausencia de tos', 1], ['Adenopatías cervicales dolorosas', 1], ['Exudado/inflamación amigdalina', 1]],
+          note: '≤0 sin pruebas · 1 criterio clínico · 2-3 test rápido · ≥4 valorar tratar.',
+          calc: (v) => { if (!v.s('edad') && !v.checks) return null; const sc = v.sum + v.checks; let t, l; if (sc <= 1) { t = 'Bajo riesgo — sin antibiótico'; l = 'ok'; } else if (sc <= 3) { t = 'Riesgo intermedio — test rápido'; l = 'warn'; } else { t = 'Alto — valorar antibiótico'; l = 'danger'; } return { val: sc, unit: 'pts', tag: t, level: l }; } },
+        { id: 'epworth', spec: ['otorrino', 'neumo', 'neuro'], name: 'Epworth (somnolencia)', tag: 'ORL · somnolencia diurna', icon: 'moon', wide: true,
+          fields: ['Sentado leyendo', 'Viendo televisión', 'Sentado inactivo en público', 'De pasajero 1 h sin parar', 'Recostado en la tarde', 'Sentado conversando', 'Tras comer (sin alcohol)', 'En el auto, detenido en tráfico'].map((t, i) => ({ k: 'q' + i, label: t, type: 'sel', sum: true, opts: [['0', '0 — nunca'], ['1', '1 — leve'], ['2', '2 — moderada'], ['3', '3 — alta']] })),
+          note: '<10 normal · 10-12 leve · 13-17 moderada · >17 grave.',
+          calc: (v) => { if (!v.anyFilled) return null; const sc = v.sum; let t, l; if (sc < 10) { t = 'Normal'; l = 'ok'; } else if (sc <= 12) { t = 'Somnolencia leve'; l = 'warn'; } else if (sc <= 17) { t = 'Moderada'; l = 'warn'; } else { t = 'Grave — estudiar SAOS'; l = 'danger'; } return { val: sc, unit: '/ 24', tag: t, level: l }; } },
+
+        // ===== CARDIOLOGÍA (ampliación) =====
+        { id: 'heart', spec: ['cardio', 'interna'], name: 'HEART score', tag: 'Cardiología · dolor torácico', icon: 'heart-pulse', wide: true,
+          fields: [
+            { k: 'h', label: 'Historia', type: 'sel', sum: true, opts: [['0', 'Poco sospechosa'], ['1', 'Moderadamente sospechosa'], ['2', 'Muy sospechosa']] },
+            { k: 'e', label: 'ECG', type: 'sel', sum: true, opts: [['0', 'Normal'], ['1', 'Alteración inespecífica'], ['2', 'Desviación ST significativa']] },
+            { k: 'a', label: 'Edad', type: 'sel', sum: true, opts: [['0', '<45'], ['1', '45-64'], ['2', '≥65']] },
+            { k: 'r', label: 'Factores de riesgo', type: 'sel', sum: true, opts: [['0', 'Ninguno'], ['1', '1-2 factores'], ['2', '≥3 o ateroesclerosis']] },
+            { k: 't', label: 'Troponina', type: 'sel', sum: true, opts: [['0', 'Normal'], ['1', '1-3× límite'], ['2', '>3× límite']] },
+          ], note: '0-3 bajo (alta) · 4-6 moderado (observación) · ≥7 alto.',
+          calc: (v) => { if (!v.s('h') || !v.s('e') || !v.s('a') || !v.s('r') || !v.s('t')) return null; const sc = v.sum; let t, l; if (sc <= 3) { t = 'Bajo riesgo (≈1.7% MACE)'; l = 'ok'; } else if (sc <= 6) { t = 'Moderado — observación'; l = 'warn'; } else { t = 'Alto — manejo invasivo'; l = 'danger'; } return { val: sc, unit: '/ 10', tag: t, level: l }; } },
+        { id: 'timi', spec: ['cardio', 'interna'], name: 'TIMI (SCASEST)', tag: 'Cardiología · angina inestable/IAMSEST', icon: 'activity', wide: true,
+          checks: [['Edad ≥65 años', 1], ['≥3 factores de riesgo coronario', 1], ['Estenosis coronaria conocida ≥50%', 1], ['Desviación del ST', 1], ['≥2 episodios de angina en 24 h', 1], ['Uso de aspirina en 7 días previos', 1], ['Marcadores cardíacos elevados', 1]],
+          note: '0-2 bajo · 3-4 intermedio · 5-7 alto riesgo a 14 días.',
+          calc: (v) => { const sc = v.checks; let t, l; if (sc <= 2) { t = 'Bajo riesgo'; l = 'ok'; } else if (sc <= 4) { t = 'Riesgo intermedio'; l = 'warn'; } else { t = 'Alto riesgo'; l = 'danger'; } return { val: sc, unit: '/ 7', tag: t, level: l }; } },
+        { id: 'killip', spec: ['cardio'], name: 'Killip-Kimball', tag: 'Cardiología · IAM, clase clínica', icon: 'heart-pulse',
+          fields: [{ k: 'k', label: 'Clase', type: 'sel', opts: [['', '—'], ['1', 'I — sin insuficiencia cardíaca'], ['2', 'II — estertores/galope S3'], ['3', 'III — edema agudo de pulmón'], ['4', 'IV — shock cardiogénico']] }], note: 'Mortalidad creciente de clase I a IV.',
+          calc: (v) => { const k = v.s('k'); if (!k) return null; const T = ['', 'Sin IC (≈6%)', 'IC leve (≈17%)', 'Edema pulmonar (≈38%)', 'Shock cardiogénico (≈67%)']; const l = +k >= 3 ? 'danger' : +k === 2 ? 'warn' : 'ok'; return { val: 'Clase ' + ['', 'I', 'II', 'III', 'IV'][+k], unit: '', tag: T[+k], level: l }; } },
+
+        // ===== NEUMOLOGÍA (ampliación) =====
+        { id: 'crb65', spec: ['neumo', 'interna'], name: 'CRB-65', tag: 'Neumología · neumonía (sin laboratorio)', icon: 'wind',
+          fields: [F.age],
+          checks: [['Confusión', 1], ['Frecuencia respiratoria ≥30/min', 1], ['TA sistólica <90 o diastólica ≤60', 1]],
+          note: 'Versión sin urea (ambulatorio). 0 bajo · 1-2 intermedio · 3-4 alto.',
+          calc: (v) => { let sc = v.checks; if (v.n('age') >= 65) sc += 1; let t, l; if (sc === 0) { t = 'Bajo — ambulatorio'; l = 'ok'; } else if (sc <= 2) { t = 'Intermedio — valorar ingreso'; l = 'warn'; } else { t = 'Alto — ingreso urgente'; l = 'danger'; } return { val: sc, unit: '/ 4', tag: t, level: l }; } },
+
+        // ===== GASTROENTEROLOGÍA (ampliación) =====
+        { id: 'fib4', spec: ['gastro', 'interna'], name: 'FIB-4', tag: 'Gastro · fibrosis hepática', icon: 'gauge',
+          fields: [F.age, { k: 'ast', label: 'AST/TGO (U/L)', type: 'num', min: 1 }, { k: 'alt', label: 'ALT/TGP (U/L)', type: 'num', min: 1 }, { k: 'plt', label: 'Plaquetas (×10⁹/L)', type: 'num', min: 1 }], note: '<1.45 fibrosis improbable · >3.25 fibrosis avanzada probable.',
+          calc: (v) => { const age = v.n('age'), ast = v.n('ast'), alt = v.n('alt'), plt = v.n('plt'); if (!age || !ast || !alt || !plt) return null; const f = (age * ast) / (plt * Math.sqrt(alt)); let t, l; if (f < 1.45) { t = 'Fibrosis improbable'; l = 'ok'; } else if (f <= 3.25) { t = 'Indeterminado'; l = 'warn'; } else { t = 'Fibrosis avanzada probable'; l = 'danger'; } return { val: f.toFixed(2), unit: '', tag: t, level: l }; } },
+
+        // ===== ENDOCRINOLOGÍA (ampliación) =====
+        { id: 'homair', spec: ['endo', 'interna'], name: 'HOMA-IR', tag: 'Endocrino · resistencia a la insulina', icon: 'candy',
+          fields: [{ k: 'glu', label: 'Glucosa en ayuno (mg/dL)', type: 'num', min: 30 }, { k: 'ins', label: 'Insulina en ayuno (µU/mL)', type: 'num', min: 0.1, step: '0.1' }], note: '(glucosa × insulina) / 405. >2.5-3 sugiere resistencia.',
+          calc: (v) => { const glu = v.n('glu'), ins = v.n('ins'); if (!glu || !ins) return null; const h = (glu * ins) / 405; let l = h >= 3 ? 'danger' : h >= 2.5 ? 'warn' : 'ok'; return { val: h.toFixed(2), unit: '', tag: h >= 2.5 ? 'Resistencia a la insulina' : 'Sensibilidad normal', level: l }; } },
+
+        // ===== NEUROLOGÍA (ampliación) =====
+        { id: 'mrs', spec: ['neuro'], name: 'Rankin modificado (mRS)', tag: 'Neurología · discapacidad post-ACV', icon: 'accessibility',
+          fields: [{ k: 'r', label: 'Grado', type: 'sel', opts: [['', '—'], ['0', '0 — sin síntomas'], ['1', '1 — sin discapacidad significativa'], ['2', '2 — discapacidad leve'], ['3', '3 — discapacidad moderada'], ['4', '4 — moderada-grave'], ['5', '5 — discapacidad grave'], ['6', '6 — fallecido']] }], note: '0-2: independiente · 3-5: dependiente.',
+          calc: (v) => { const r = v.s('r'); if (r === '') return null; const l = +r >= 3 ? 'danger' : +r === 2 ? 'warn' : 'ok'; return { val: r, unit: '/ 6', tag: +r <= 2 ? 'Independiente' : +r === 6 ? 'Fallecido' : 'Dependiente', level: l }; } },
+        { id: 'hunthess', spec: ['neuro'], name: 'Hunt-Hess', tag: 'Neurocirugía · hemorragia subaracnoidea', icon: 'brain',
+          fields: [{ k: 'h', label: 'Grado', type: 'sel', opts: [['', '—'], ['1', 'I — asintomático/cefalea leve'], ['2', 'II — cefalea intensa, rigidez nucal'], ['3', 'III — somnolencia/déficit leve'], ['4', 'IV — estupor, hemiparesia'], ['5', 'V — coma, descerebración']] }], note: 'Mayor grado, peor pronóstico quirúrgico.',
+          calc: (v) => { const h = v.s('h'); if (!h) return null; const l = +h >= 4 ? 'danger' : +h === 3 ? 'warn' : 'ok'; return { val: 'Grado ' + ['', 'I', 'II', 'III', 'IV', 'V'][+h], unit: '', tag: +h >= 4 ? 'Alto riesgo' : +h === 3 ? 'Riesgo intermedio' : 'Buen pronóstico', level: l }; } },
+
+        // ===== PEDIATRÍA (ampliación) =====
+        { id: 'tet', spec: ['pedia'], name: 'Tubo endotraqueal', tag: 'Pediatría · vía aérea', icon: 'ruler',
+          fields: [{ k: 'edad', label: 'Edad (años)', type: 'num', fill: 'age', min: 0, max: 16, step: '0.5' }], note: 'TET sin balón = (edad/4)+4. Con balón restar 0.5.',
+          calc: (v) => { const e = v.n('edad'); if (isNaN(e)) return null; const sin = (e / 4) + 4; return { val: sin.toFixed(1), unit: 'mm (DI)', tag: 'Con balón: ' + (sin - 0.5).toFixed(1) + ' mm · prof. ≈ ' + (sin * 3).toFixed(0) + ' cm', level: 'ok' }; } },
+        { id: 'silverman', spec: ['pedia'], name: 'Silverman-Andersen', tag: 'Neonatología · dificultad respiratoria', icon: 'baby', wide: true,
+          fields: [
+            { k: 'q0', label: 'Quejido espiratorio', type: 'sel', sum: true, opts: [['0', '0 — ausente'], ['1', '1 — audible con estetoscopio'], ['2', '2 — audible sin estetoscopio']] },
+            { k: 'q1', label: 'Aleteo nasal', type: 'sel', sum: true, opts: [['0', '0 — ausente'], ['1', '1 — mínimo'], ['2', '2 — marcado']] },
+            { k: 'q2', label: 'Tiraje intercostal', type: 'sel', sum: true, opts: [['0', '0 — ausente'], ['1', '1 — leve'], ['2', '2 — marcado']] },
+            { k: 'q3', label: 'Retracción xifoidea', type: 'sel', sum: true, opts: [['0', '0 — ausente'], ['1', '1 — leve'], ['2', '2 — marcada']] },
+            { k: 'q4', label: 'Disociación toracoabdominal', type: 'sel', sum: true, opts: [['0', '0 — sincronizado'], ['1', '1 — tórax inmóvil'], ['2', '2 — disociación']] },
+          ], note: '0 sin dificultad · 1-3 leve · 4-6 moderada · ≥7 grave.',
+          calc: (v) => { if (!v.s('q0') && !v.s('q1') && !v.s('q2') && !v.s('q3') && !v.s('q4')) return null; const sc = v.sum; let t, l; if (sc === 0) { t = 'Sin dificultad'; l = 'ok'; } else if (sc <= 3) { t = 'Dificultad leve'; l = 'warn'; } else if (sc <= 6) { t = 'Moderada'; l = 'warn'; } else { t = 'Grave — soporte ventilatorio'; l = 'danger'; } return { val: sc, unit: '/ 10', tag: t, level: l }; } },
+
+        // ===== HEMATOLOGÍA (ampliación) =====
+        { id: 'satTransf', spec: ['hemato', 'interna'], name: 'Saturación de transferrina', tag: 'Hematología · estado del hierro', icon: 'percent',
+          fields: [{ k: 'fe', label: 'Hierro sérico (µg/dL)', type: 'num', min: 1 }, { k: 'tibc', label: 'TIBC / capacidad total (µg/dL)', type: 'num', min: 50 }], note: '(hierro / TIBC) × 100. <20% ferropenia · >45% sobrecarga.',
+          calc: (v) => { const fe = v.n('fe'), tibc = v.n('tibc'); if (!fe || !tibc) return null; const s = fe / tibc * 100; let t, l; if (s < 20) { t = 'Ferropenia'; l = 'warn'; } else if (s > 45) { t = 'Sobrecarga de hierro'; l = 'warn'; } else { t = 'Normal'; l = 'ok'; } return { val: s.toFixed(1), unit: '%', tag: t, level: l }; } },
+
+        // ===== ONCOLOGÍA (ampliación) =====
+        { id: 'ecog', spec: ['onco'], name: 'ECOG performance status', tag: 'Oncología · estado funcional', icon: 'activity',
+          fields: [{ k: 'e', label: 'Grado', type: 'sel', opts: [['', '—'], ['0', '0 — actividad normal'], ['1', '1 — síntomas, ambulatorio'], ['2', '2 — en cama <50% del día'], ['3', '3 — en cama >50% del día'], ['4', '4 — postrado'], ['5', '5 — fallecido']] }], note: 'Orienta tolerancia a quimioterapia (≥2: precaución).',
+          calc: (v) => { const e = v.s('e'); if (e === '') return null; const l = +e >= 3 ? 'danger' : +e === 2 ? 'warn' : 'ok'; return { val: 'ECOG ' + e, unit: '', tag: +e <= 1 ? 'Buen estado funcional' : +e === 2 ? 'Funcional limitado' : 'Mal estado funcional', level: l }; } },
+
+        // ===== UROLOGÍA (ampliación) =====
+        { id: 'psadens', spec: ['uro'], name: 'Densidad de PSA', tag: 'Urología · riesgo prostático', icon: 'gauge',
+          fields: [{ k: 'psa', label: 'PSA (ng/mL)', type: 'num', min: 0, step: '0.1' }, { k: 'vol', label: 'Volumen prostático (cc)', type: 'num', min: 1 }], note: 'PSA / volumen. >0.15 ng/mL/cc: mayor sospecha de cáncer.',
+          calc: (v) => { const psa = v.n('psa'), vol = v.n('vol'); if (!psa || !vol) return null; const d = psa / vol; let l = d > 0.15 ? 'danger' : 'ok'; return { val: d.toFixed(3), unit: 'ng/mL/cc', tag: d > 0.15 ? 'Densidad elevada — valorar biopsia' : 'Densidad baja', level: l }; } },
+
+        // ===== PSIQUIATRÍA (ampliación) =====
+        { id: 'cage', spec: ['psiq', 'interna'], name: 'CAGE (alcohol)', tag: 'Psiquiatría · tamizaje de alcoholismo', icon: 'wine',
+          checks: [['¿Ha sentido que debe reducir (Cut down) el consumo?', 1], ['¿Le molesta (Annoyed) que critiquen su forma de beber?', 1], ['¿Se ha sentido culpable (Guilty) por beber?', 1], ['¿Bebe al despertar (Eye-opener) para calmar los nervios?', 1]],
+          note: '≥2 respuestas afirmativas: sospecha de consumo problemático.',
+          calc: (v) => { const sc = v.checks; let l = sc >= 2 ? 'danger' : sc === 1 ? 'warn' : 'ok'; return { val: sc, unit: '/ 4', tag: sc >= 2 ? 'Tamizaje positivo' : 'Negativo', level: l }; } },
+
+        // ===== GERIATRÍA (ampliación) =====
+        { id: 'lawton', spec: ['geriatria'], name: 'Lawton-Brody (AIVD)', tag: 'Geriatría · actividades instrumentales', icon: 'accessibility', wide: true,
+          checks: [['Usa el teléfono de forma autónoma', 1], ['Hace las compras', 1], ['Prepara la comida', 1], ['Cuida la casa', 1], ['Lava la ropa', 1], ['Usa transporte de forma independiente', 1], ['Maneja su medicación', 1], ['Maneja sus finanzas', 1]],
+          note: 'Marca lo que el paciente realiza de forma independiente. 8 máxima autonomía.',
+          calc: (v) => { const sc = v.checks; let t, l; if (sc >= 8) { t = 'Autonomía total'; l = 'ok'; } else if (sc >= 5) { t = 'Dependencia leve'; l = 'warn'; } else { t = 'Dependencia importante'; l = 'danger'; } return { val: sc, unit: '/ 8', tag: t, level: l }; } },
     ];
 
     // ── Render de una tarjeta ────────────────────────────────────────────────────
