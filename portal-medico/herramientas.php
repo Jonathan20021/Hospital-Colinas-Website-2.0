@@ -45,6 +45,13 @@ doctor_layout_begin('Herramientas', 'herramientas');
     <label class="tool-spec-toggle"><input type="checkbox" id="tool-spec-all"> Ver todas las especialidades</label>
 </div>
 
+<!-- BUSCADOR DE CALCULADORAS -->
+<div class="tool-calcsearch" data-reveal data-reveal-d="1">
+    <i data-lucide="search"></i>
+    <input type="text" id="tool-search" class="doctor-input" autocomplete="off" placeholder="Buscar calculadora: IMC, Glasgow, sepsis, TVP…">
+    <button type="button" id="tool-search-clear" hidden aria-label="Limpiar búsqueda"><i data-lucide="x"></i></button>
+</div>
+
 <!-- FILTROS (dinámicos, según especialidad) -->
 <div class="tool-filters" id="tool-filters" data-reveal data-reveal-d="1"></div>
 

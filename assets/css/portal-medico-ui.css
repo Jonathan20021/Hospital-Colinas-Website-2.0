@@ -689,6 +689,15 @@
 .is-app .tool-spec-toggle{display:flex;align-items:center;gap:8px;font-size:.8rem;font-weight:700;color:var(--hg-ink-2);cursor:pointer;white-space:nowrap}
 .is-app .tool-spec-toggle input{width:16px;height:16px;accent-color:var(--hg-navy-600);cursor:pointer}
 
+/* Buscador de calculadoras */
+.is-app .tool-calcsearch{position:relative;display:flex;align-items:center;gap:10px;background:var(--hg-surface);border:1px solid var(--hg-line-2);border-radius:14px;padding:2px 14px;box-shadow:var(--hg-sh-sm);margin-bottom:14px}
+.is-app .tool-calcsearch>svg{width:19px;height:19px;color:var(--hg-navy-600);flex:none}
+.is-app .tool-calcsearch .doctor-input{border:0;background:transparent;box-shadow:none;padding:12px 0;flex:1;font-size:.95rem}
+.is-app .tool-calcsearch .doctor-input:focus{box-shadow:none;outline:none}
+.is-app #tool-search-clear{width:30px;height:30px;border-radius:9px;border:0;background:var(--hg-surface-2);color:var(--hg-muted);cursor:pointer;display:grid;place-items:center;flex:none}
+.is-app #tool-search-clear:hover{background:var(--hg-navy-50);color:var(--hg-navy)}
+.is-app #tool-search-clear svg{width:16px;height:16px}
+
 /* Galería: tarjeta compacta (launcher) */
 .is-app .tool-tile{display:flex;align-items:center;gap:13px;width:100%;text-align:left;padding:15px 16px;border-radius:16px;border:1px solid var(--hg-line-2);background:var(--hg-surface);cursor:pointer;box-shadow:var(--hg-sh-sm);transition:border-color .2s var(--hg-ease),box-shadow .2s var(--hg-ease),transform .2s var(--hg-ease)}
 .is-app .tool-tile:hover{border-color:var(--hg-navy-100);box-shadow:var(--hg-sh-md,0 14px 30px -14px rgba(38,33,97,.22));transform:translateY(-2px)}

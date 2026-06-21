@@ -553,17 +553,26 @@
     }
 
     // ── Filtrado por especialidad ─────────────────────────────────────────────────
-    let myFamilies = ['general'], showAll = false, activeFam = 'all';
+    let myFamilies = ['general'], showAll = false, activeFam = 'all', query = '';
     function visibleDefs() {
         if (showAll) return CALC;
         return CALC.filter((d) => d.spec.some((s) => myFamilies.indexOf(s) !== -1));
     }
     function renderGallery() {
         const grid = $('#tool-grid'); if (!grid) return;
-        let defs = visibleDefs();
-        if (activeFam !== 'all') defs = defs.filter((d) => d.spec.indexOf(activeFam) !== -1);
+        let defs;
+        if (query) {
+            // Búsqueda por texto: en TODO el catálogo (nombre, descripción/tag, id, familia)
+            const q = norm(query);
+            defs = CALC.filter((d) => norm(d.name).indexOf(q) !== -1 || norm(d.tag).indexOf(q) !== -1 || norm(d.id).indexOf(q) !== -1
+                || (d.spec || []).some((s) => FAMILIES[s] && norm(FAMILIES[s].label).indexOf(q) !== -1));
+        } else {
+            defs = visibleDefs();
+            if (activeFam !== 'all') defs = defs.filter((d) => d.spec.indexOf(activeFam) !== -1);
+        }
         grid.innerHTML = defs.map(tileHtml).join('');
         const empty = $('#tool-empty'); if (empty) empty.hidden = defs.length > 0;
+        const fbar = $('#tool-filters'); if (fbar) fbar.style.display = query ? 'none' : '';
         if (window.lucide) lucide.createIcons();
     }
     function renderFilters() {
@@ -657,6 +666,11 @@
         // Abrir cada herramienta en su espacio único (modal) al tocar un tile
         const grid = $('#tool-grid');
         grid.addEventListener('click', (e) => { const tile = e.target.closest('.tool-tile'); if (!tile) return; const def = CALC.find((d) => d.id === tile.dataset.tool); if (def) openTool(def); });
+
+        // Buscador de calculadoras por nombre (busca en todo el catálogo)
+        const search = $('#tool-search'), sclr = $('#tool-search-clear');
+        if (search) search.addEventListener('input', () => { query = search.value.trim(); if (sclr) sclr.hidden = !query; renderGallery(); });
+        if (sclr) sclr.addEventListener('click', () => { query = ''; if (search) { search.value = ''; search.focus(); } sclr.hidden = true; renderGallery(); });
 
         // Modal: recálculo en vivo + cierre
         const modal = $('#tool-modal');
