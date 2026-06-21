@@ -176,8 +176,166 @@
         } catch (e) { box.hidden = true; }
     }
 
+    // ── TABS (Calculadoras | Certificados) ─────────────────────────────────────
+    let certLoaded = false;
+    function initTabs() {
+        const tabs = $$('.tool-tab');
+        if (!tabs.length) return;
+        tabs.forEach((t) => t.addEventListener('click', () => {
+            tabs.forEach((x) => x.classList.remove('on'));
+            t.classList.add('on');
+            const which = t.dataset.tab;
+            const calc = $('#tab-calc'), cert = $('#tab-cert');
+            if (calc) calc.hidden = which !== 'calc';
+            if (cert) cert.hidden = which !== 'cert';
+            if (which === 'cert' && !certLoaded) { certLoaded = true; loadCerts(); }
+            if (window.lucide) lucide.createIcons();
+        }));
+    }
+
+    // ── CERTIFICADOS ────────────────────────────────────────────────────────────
+    const CERT_FIELDS = {
+        reposo: '<div class="tool-fields tool-cols-2">'
+            + '<label class="tool-f">Días de reposo<input type="number" class="doctor-input" data-ck="dias" min="1" max="120" inputmode="numeric"></label>'
+            + '<label class="tool-f">Diagnóstico (opcional)<input type="text" class="doctor-input" data-ck="diagnostico"></label>'
+            + '<label class="tool-f">Desde<input type="date" class="doctor-input" data-ck="desde"></label>'
+            + '<label class="tool-f">Hasta<input type="date" class="doctor-input" data-ck="hasta"></label></div>',
+        asistencia: '<div class="tool-fields tool-cols-2">'
+            + '<label class="tool-f">Fecha<input type="date" class="doctor-input" data-ck="fecha"></label>'
+            + '<label class="tool-f">Motivo (opcional)<input type="text" class="doctor-input" data-ck="motivo"></label>'
+            + '<label class="tool-f">Hora desde<input type="time" class="doctor-input" data-ck="hora_desde"></label>'
+            + '<label class="tool-f">Hora hasta<input type="time" class="doctor-input" data-ck="hora_hasta"></label></div>',
+        aptitud: '<div class="tool-fields tool-cols-2">'
+            + '<label class="tool-f">Propósito<input type="text" class="doctor-input" data-ck="proposito" placeholder="laboral, escolar, deportivo…"></label>'
+            + '<label class="tool-f">Resultado<select class="doctor-input" data-ck="apto"><option value="1">Apto</option><option value="0">No apto</option></select></label></div>',
+    };
+    let certType = 'reposo', certPatient = null, certTimer = null;
+
+    function renderCertFields() {
+        const box = $('#cert-fields');
+        if (box) box.innerHTML = CERT_FIELDS[certType] || '';
+        if (window.lucide) lucide.createIcons();
+    }
+    function collectCertData() {
+        const data = {};
+        $$('#cert-fields [data-ck]').forEach((el) => { if (el.value !== '') data[el.dataset.ck] = el.value; });
+        return data;
+    }
+    function certStatus(msg, type) {
+        const el = $('#cert-status'); if (!el) return;
+        el.textContent = msg || '';
+        el.className = 'doctor-save-status' + (type === 'saved' ? ' doctor-save-saved' : type === 'error' ? ' doctor-save-error' : '');
+    }
+    async function certSearch(q) {
+        api = window.doctorApi || api;
+        const box = $('#cert-patient-results');
+        if (!api || q.trim().length < 2) { box.hidden = true; return; }
+        try {
+            const r = await api('GET', '/portal-doctor/me/patients', { q: q.trim(), per_page: 8 });
+            const items = (r && r.ok && r.data && r.data.items) || [];
+            if (!items.length) { box.innerHTML = '<div class="tool-pb-empty">Sin coincidencias</div>'; box.hidden = false; return; }
+            box.innerHTML = items.map((it, i) => '<button type="button" class="tool-pb-item" data-i="' + i + '"><strong>' + esc(it.name) + '</strong><span>' + esc(it.cedula) + '</span></button>').join('');
+            box._items = items; box.hidden = false;
+        } catch (e) { box.hidden = true; }
+    }
+    function certSelect(item) {
+        certPatient = item;
+        $('#cert-patient-name').textContent = item.name || '—';
+        $('#cert-patient-meta').textContent = [item.cedula || '', normSex(item.gender)].filter(Boolean).join(' · ');
+        $('#cert-patient-chip').hidden = false;
+        $('#cert-patient-results').hidden = true;
+        $('#cert-patient-q').value = '';
+        if (window.lucide) lucide.createIcons();
+    }
+    function resetCertForm() {
+        certPatient = null;
+        $('#cert-patient-chip').hidden = true;
+        const ext = $('#cert-ext'); if (ext) ext.checked = false;
+        $('#cert-ext-fields').hidden = true;
+        $('#cert-ext-name').value = ''; $('#cert-ext-ced').value = '';
+        $('#cert-obs').value = '';
+        renderCertFields();
+    }
+    async function emitCert() {
+        api = window.doctorApi || api;
+        const btn = $('#cert-emit');
+        const ext = $('#cert-ext') && $('#cert-ext').checked;
+        const body = { type: certType, data: collectCertData(), body_text: $('#cert-obs').value || '' };
+        if (ext) {
+            const nm = $('#cert-ext-name').value.trim(), cd = $('#cert-ext-ced').value.trim();
+            if (!nm) { certStatus('Escribe el nombre del paciente externo.', 'error'); return; }
+            body.patient_name = nm; body.patient_cedula = cd;
+        } else {
+            if (!certPatient) { certStatus('Selecciona un paciente o marca "paciente externo".', 'error'); return; }
+            body.patient_id = certPatient.id;
+        }
+        btn.disabled = true; certStatus('Emitiendo…', '');
+        try {
+            const r = await api('POST', '/portal-doctor/me/certificates', body);
+            if (r && r.ok && r.data) {
+                certStatus('✓ Certificado ' + (r.data.folio || '') + ' emitido.', 'saved');
+                window.open('certificado-pdf.php?id=' + r.data.id, '_blank');
+                resetCertForm(); loadCerts();
+            } else { certStatus((r && r.message) || 'No se pudo emitir el certificado.', 'error'); }
+        } catch (e) { certStatus('Error de conexión.', 'error'); }
+        btn.disabled = false;
+    }
+    async function loadCerts() {
+        api = window.doctorApi || api;
+        const box = $('#cert-list'); if (!box) return;
+        try {
+            const r = await api('GET', '/portal-doctor/me/certificates');
+            renderCertList((r && r.ok && Array.isArray(r.data)) ? r.data : []);
+        } catch (e) { box.innerHTML = '<div class="doctor-empty" style="padding:30px 16px"><p>No se pudo cargar.</p></div>'; }
+    }
+    function renderCertList(items) {
+        const box = $('#cert-list'); if (!box) return;
+        if (!items.length) { box.innerHTML = '<div class="doctor-empty" style="padding:30px 16px"><p class="doctor-empty-title">Sin certificados aún</p><p>Los que emitas aparecerán aquí.</p></div>'; return; }
+        const TL = { reposo: 'Reposo', asistencia: 'Asistencia', aptitud: 'Aptitud' };
+        box.innerHTML = items.map((c) => {
+            const d = c.issued_at ? new Date(String(c.issued_at).replace(' ', 'T')) : null;
+            const fecha = (d && !isNaN(d)) ? (d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear()) : '';
+            return '<div class="cert-item"><div class="cert-item-info"><strong>' + esc(c.patient_name) + '</strong>'
+                + '<span>' + (TL[c.type] || 'Certificado') + ' · ' + esc(c.folio || '') + ' · ' + fecha + (c.revoked_at ? ' · <em>anulado</em>' : '') + '</span></div>'
+                + '<a class="cert-item-pdf" href="certificado-pdf.php?id=' + c.id + '" target="_blank" rel="noopener" title="Abrir PDF"><i data-lucide="file-text"></i></a></div>';
+        }).join('');
+        if (window.lucide) lucide.createIcons();
+    }
+    function initCerts() {
+        if (!$('#tab-cert')) return;
+        renderCertFields();
+        $$('.cert-type').forEach((b) => b.addEventListener('click', () => {
+            $$('.cert-type').forEach((x) => x.classList.remove('on'));
+            b.classList.add('on'); certType = b.dataset.type; renderCertFields();
+        }));
+        const ext = $('#cert-ext');
+        if (ext) ext.addEventListener('change', () => {
+            $('#cert-ext-fields').hidden = !ext.checked;
+            if (ext.checked) { certPatient = null; $('#cert-patient-chip').hidden = true; }
+        });
+        const q = $('#cert-patient-q');
+        if (q) {
+            q.addEventListener('input', () => { clearTimeout(certTimer); certTimer = setTimeout(() => certSearch(q.value), 280); });
+            q.addEventListener('focus', () => { if (q.value.trim().length >= 2) certSearch(q.value); });
+        }
+        const box = $('#cert-patient-results');
+        if (box) box.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tool-pb-item'); if (!btn) return;
+            const it = (box._items || [])[parseInt(btn.dataset.i, 10)]; if (it) certSelect(it);
+        });
+        const clr = $('#cert-patient-clear'); if (clr) clr.addEventListener('click', () => { certPatient = null; $('#cert-patient-chip').hidden = true; });
+        const emit = $('#cert-emit'); if (emit) emit.addEventListener('click', emitCert);
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#cert-patient-q') && !e.target.closest('#cert-patient-results')) {
+                const b = $('#cert-patient-results'); if (b) b.hidden = true;
+            }
+        });
+    }
+
     function init() {
         api = window.doctorApi || api;
+        initTabs();
+        initCerts();
         const grid = $('#tool-grid');
         if (grid) {
             grid.addEventListener('input', (e) => { const c = e.target.closest('.tool-card'); if (c) recalc(c); });
