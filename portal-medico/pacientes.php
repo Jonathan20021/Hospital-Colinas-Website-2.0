@@ -16,7 +16,7 @@ $pag   = $res['data']['pagination'] ?? ['page'=>1,'pages'=>1,'total'=>0];
 
 doctor_layout_begin('Mis pacientes', 'pacientes');
 ?>
-<header class="doctor-header">
+<header class="doctor-header" data-reveal>
     <div>
         <p class="doctor-eyebrow">Mis pacientes</p>
         <h1>Pacientes atendidos</h1>
@@ -32,7 +32,7 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
     </form>
 </header>
 
-<section class="doctor-card">
+<section class="doctor-card" data-reveal data-reveal-d="1">
     <header class="doctor-card-header">
         <h2><i data-lucide="users" class="h-5 w-5"></i> <?= (int)$pag['total'] ?> pacientes</h2>
         <?php if ($q): ?><span class="doctor-text-link">resultados de "<?= e($q) ?>"</span><?php endif; ?>

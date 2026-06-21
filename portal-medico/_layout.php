@@ -36,6 +36,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-ui.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico-pwa.js') ?: 0
     );
@@ -54,7 +55,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
             rel="stylesheet">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
@@ -62,7 +63,9 @@ function doctor_layout_begin(string $title, string $active = ''): void
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-shell.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-pro.css')) ?>?v=<?= e($assetVersion) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-ui.css')) ?>?v=<?= e($assetVersion) ?>">
         <meta name="csrf-token" content="<?= e(doctor_csrf_token()) ?>">
+        <meta name="doctor-api-proxy" content="<?= e(base_url('api/doctor-proxy.php')) ?>">
     </head>
 
     <?php
@@ -119,12 +122,20 @@ function doctor_layout_begin(string $title, string $active = ''): void
             <div class="dm-maincol">
                 <header class="dm-top">
                     <button type="button" class="dm-burger" data-dm-toggle aria-label="Mostrar u ocultar menú"><i data-lucide="menu"></i></button>
-                    <div>
+                    <div class="dm-top-title">
                         <div class="dm-pg"><?= e($dmPg) ?></div>
                         <div class="dm-crumb">Portal Médico · Hospital Las Colinas</div>
                     </div>
+                    <form class="dm-search" action="<?= e(base_url('portal-medico/pacientes.php')) ?>" method="GET" role="search">
+                        <i data-lucide="search"></i>
+                        <input type="search" name="q" placeholder="Buscar paciente por nombre o cédula…" aria-label="Buscar paciente">
+                    </form>
                     <div class="dm-topr">
+                        <a class="dm-tbtn" href="<?= e(base_url('portal-medico/mensajes.php')) ?>" title="Mensajes" aria-label="Mensajes"><i data-lucide="messages-square"></i></a>
                         <span class="dm-tbtn" title="Conexión segura · verificación en dos pasos"><i data-lucide="shield-check"></i></span>
+                        <a class="dm-topav" href="<?= e(base_url('portal-medico/cuenta.php')) ?>" title="Mi cuenta" aria-label="Mi cuenta">
+                            <span class="dm-av" style="background:linear-gradient(135deg, <?= e($avc1) ?>, <?= e($avc2) ?>);"><?= e($avInitials) ?></span>
+                        </a>
                     </div>
                 </header>
                 <main id="contenido" class="doctor-main">
@@ -165,6 +176,7 @@ function doctor_layout_end(): void
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-ui.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico-pwa.js') ?: 0
     );
@@ -290,6 +302,7 @@ function doctor_layout_begin_bare(string $title): void
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-shell.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-medico-pro.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-medico-ui.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0
     );
     ?>
@@ -301,14 +314,16 @@ function doctor_layout_begin_bare(string $title): void
         <title><?= e($title) ?> | HGLC</title>
         <meta name="robots" content="noindex, nofollow">
         <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-shell.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-pro.css')) ?>?v=<?= e($v) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-ui.css')) ?>?v=<?= e($v) ?>">
         <meta name="csrf-token" content="<?= e(doctor_csrf_token()) ?>">
+        <meta name="doctor-api-proxy" content="<?= e(base_url('api/doctor-proxy.php')) ?>">
         <style>html,body{background:#fff}.doctor-portal-page.is-app .doctor-main{max-width:none;margin:0;padding:14px 16px}</style>
     </head>
     <body class="bg-white font-sans text-slate-950 antialiased portal-page doctor-portal-page is-app">

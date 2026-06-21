@@ -16,9 +16,9 @@ $appointments = $apptRes['data']['items'] ?? [];
 // Construir eventos para FullCalendar
 $events = [];
 foreach ($appointments as $a) {
-    $color = '#2563eb';
-    if ($a['status'] === 'completed') $color = '#16a34a';
-    if ($a['status'] === 'cancelled') $color = '#dc2626';
+    $color = '#322d82'; // navy de marca (agendada)
+    if ($a['status'] === 'completed') $color = '#5da334'; // verde de marca
+    if ($a['status'] === 'cancelled') $color = '#be123c';
     $events[] = [
         'id'    => (int)$a['id'],
         'title' => $a['patient_name'],
@@ -35,7 +35,7 @@ foreach ($appointments as $a) {
 
 doctor_layout_begin('Mi agenda', 'agenda');
 ?>
-<header class="doctor-header">
+<header class="doctor-header" data-reveal>
     <div>
         <p class="doctor-eyebrow">Mi agenda</p>
         <h1>Calendario de citas</h1>
@@ -48,12 +48,12 @@ doctor_layout_begin('Mi agenda', 'agenda');
     </div>
 </header>
 
-<section class="doctor-card">
+<section class="doctor-card" data-reveal data-reveal-d="1">
     <div id="doctor-agenda" data-events='<?= e(json_encode($events, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)) ?>' style="padding: 1.25rem; min-height: 640px;"></div>
     <div class="doctor-calendar-legend">
-        <span><i class="doctor-dot" style="background:#2563eb"></i> Agendada</span>
-        <span><i class="doctor-dot" style="background:#16a34a"></i> Completada</span>
-        <span><i class="doctor-dot" style="background:#dc2626"></i> Cancelada</span>
+        <span><i class="doctor-dot" style="background:#322d82"></i> Agendada</span>
+        <span><i class="doctor-dot" style="background:#5da334"></i> Completada</span>
+        <span><i class="doctor-dot" style="background:#be123c"></i> Cancelada</span>
     </div>
 </section>
 

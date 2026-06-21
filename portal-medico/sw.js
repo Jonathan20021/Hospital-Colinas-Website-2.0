@@ -16,7 +16,7 @@
  */
 'use strict';
 
-const VERSION  = 'hglc-medico-v3';
+const VERSION  = 'hglc-medico-v4';
 const PRECACHE = VERSION + '-precache';
 const RUNTIME  = VERSION + '-runtime';
 

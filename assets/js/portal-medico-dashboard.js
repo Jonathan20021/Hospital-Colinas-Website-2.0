@@ -14,8 +14,11 @@
     'use strict';
 
     const CFG = window.DM_DASH || {};
-    const api = window.doctorApi;
-    if (!api) return;
+    // OJO: en el dashboard, portal-medico.js (que define window.doctorApi) carga
+    // DESPUÉS de este archivo. Por eso NO se captura aquí (sería undefined y
+    // abortaría todo el módulo), sino dentro del boot (DOMContentLoaded), cuando
+    // todos los <script> síncronos ya se ejecutaron.
+    let api = window.doctorApi;
 
     const $  = (sel, ctx) => (ctx || document).querySelector(sel);
     const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
@@ -124,27 +127,31 @@
         const cancelled = slice.map((d) => +d.cancelled);
 
         const cx = canvas.getContext('2d');
-        const grad = (hex) => { const g = cx.createLinearGradient(0, 0, 0, 180); g.addColorStop(0, hex + 'cc'); g.addColorStop(1, hex + '55'); return g; };
-        const tip = { backgroundColor: '#0f1729', titleColor: '#fff', bodyColor: '#cbd2e0', padding: 11, cornerRadius: 10, boxPadding: 5, usePointStyle: true, titleFont: { weight: '700' } };
+        // Área apilada suave · paleta de marca HGLC (verde/navy/rojo)
+        const grad = (hex) => { const g = cx.createLinearGradient(0, 0, 0, 250); g.addColorStop(0, hex + 'cc'); g.addColorStop(1, hex + '7a'); return g; };
+        const tip = { backgroundColor: '#262161', titleColor: '#fff', bodyColor: '#d7d5ec', padding: 12, cornerRadius: 12, boxPadding: 6, usePointStyle: true, titleFont: { weight: '700', family: 'Outfit' } };
+        // Área apilada en bandas limpias (fill al dataset anterior, no a origin → sin superposición turbia)
+        const mk = (label, data, hex, fillTo) => ({ label, data, borderColor: hex, backgroundColor: grad(hex), fill: fillTo, tension: .4, borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, pointHoverBackgroundColor: hex, pointHoverBorderColor: '#fff', pointHoverBorderWidth: 2 });
 
         const data = {
             labels,
             datasets: [
-                { label: 'Completadas', data: completed, backgroundColor: grad('#059669'), borderRadius: 5, stack: 's', maxBarThickness: 26 },
-                { label: 'Agendadas',   data: scheduled, backgroundColor: grad('#4f46e5'), borderRadius: 5, stack: 's', maxBarThickness: 26 },
-                { label: 'Canceladas',  data: cancelled, backgroundColor: grad('#e11d48'), borderRadius: 5, stack: 's', maxBarThickness: 26 },
+                mk('Completadas', completed, '#5da334', 'origin'),
+                mk('Agendadas',   scheduled, '#322d82', '-1'),
+                mk('Canceladas',  cancelled, '#be123c', '-1'),
             ],
         };
         const options = {
             responsive: true, maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
+            layout: { padding: { left: 6, right: 12, top: 6 } },
             plugins: {
-                legend: { position: 'bottom', labels: { usePointStyle: true, pointStyle: 'circle', boxWidth: 8, boxHeight: 8, padding: 14, font: { size: 11.5, weight: '600' } } },
+                legend: { display: false },
                 tooltip: tip,
             },
             scales: {
-                x: { stacked: true, grid: { display: false }, border: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 10 } },
-                y: { stacked: true, beginAtZero: true, grid: { color: 'rgba(15,23,41,.06)' }, border: { display: false }, ticks: { precision: 0, font: { size: 10 } } },
+                x: { stacked: true, offset: true, grid: { display: false }, border: { display: false }, ticks: { color: '#9aa2bb', font: { size: 10.5, family: 'Plus Jakarta Sans' }, maxRotation: 0, autoSkip: true, autoSkipPadding: 12, maxTicksLimit: 10 } },
+                y: { stacked: true, beginAtZero: true, grid: { color: 'rgba(38,33,97,.06)' }, border: { display: false }, ticks: { precision: 0, color: '#9aa2bb', font: { size: 10.5, family: 'Plus Jakarta Sans' } } },
             },
         };
         if (activityChart) {
@@ -152,8 +159,54 @@
             activityChart.options = options;
             activityChart.update();
         } else {
-            activityChart = new Chart(canvas, { type: 'bar', data, options });
+            activityChart = new Chart(canvas, { type: 'line', data, options });
         }
+    }
+
+    // ── Doughnut "Estado de citas" (distribución del período) ──────────────────
+    let diagChart = null;
+    function renderDiagnoseDonut(series) {
+        const canvas = $('#dm-diag-chart');
+        if (!canvas || typeof Chart === 'undefined') return;
+        let completed, scheduled, cancelled;
+        if (series && series.length) {
+            completed = series.reduce((s, d) => s + (+d.completed || 0), 0);
+            scheduled = series.reduce((s, d) => s + (+d.scheduled || 0), 0);
+            cancelled = series.reduce((s, d) => s + (+d.cancelled || 0), 0);
+        } else {
+            completed = +canvas.dataset.completed || 0;
+            scheduled = +canvas.dataset.scheduled || 0;
+            cancelled = +canvas.dataset.cancelled || 0;
+        }
+        const total = completed + scheduled + cancelled;
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        set('dm-donut-total', total.toLocaleString('es'));
+        set('dm-dl-completed', completed); set('dm-dl-scheduled', scheduled); set('dm-dl-cancelled', cancelled);
+        const data = { labels: ['Completadas', 'Agendadas', 'Canceladas'], datasets: [{ data: [completed, scheduled, cancelled], backgroundColor: ['#5da334', '#322d82', '#be123c'], borderWidth: 0, hoverOffset: 6, spacing: 2 }] };
+        const options = { responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: false }, tooltip: { backgroundColor: '#262161', padding: 11, cornerRadius: 11, usePointStyle: true, bodyFont: { family: 'Plus Jakarta Sans' } } } };
+        if (diagChart) { diagChart.data = data; diagChart.update(); }
+        else diagChart = new Chart(canvas, { type: 'doughnut', data, options });
+    }
+
+    // ── Deltas reales de los KPIs (últimos 7 d vs 7 d previos) ─────────────────
+    function fechaCorta(dt) { return dt.getDate() + ' ' + MES_CORTO[dt.getMonth()].toLowerCase() + ' ' + dt.getFullYear(); }
+    function renderDeltas(series) {
+        if (!series || series.length < 14) return;
+        const n = series.length;
+        const sum = (key, a, b) => series.slice(a, b).reduce((s, d) => s + (+d[key] || 0), 0);
+        const metric = { today: 'total', pending: 'scheduled', completed: 'completed', week: 'total' };
+        Object.keys(metric).forEach((k) => {
+            const el = $('[data-k="' + k + '"] [data-k-delta]');
+            if (!el) return;
+            const recent = sum(metric[k], n - 7, n), prev = sum(metric[k], n - 14, n - 7);
+            if (recent === 0 && prev === 0) { el.hidden = true; return; }
+            const pct = prev === 0 ? 100 : Math.round((recent - prev) / prev * 100);
+            const up = pct >= 0;
+            el.className = 'dm-k-delta ' + (up ? 'up' : 'down');
+            el.innerHTML = '<i data-lucide="' + (up ? 'trending-up' : 'trending-down') + '"></i> ' + (up ? '+' : '') + pct + '% · 7 d';
+            el.hidden = false;
+        });
+        if (window.lucide) window.lucide.createIcons();
     }
 
     let activitySeries = null;
@@ -162,6 +215,8 @@
         if (!r.ok || !r.data || !Array.isArray(r.data.series)) return;
         activitySeries = r.data.series;
         renderSparklines(activitySeries);
+        renderDiagnoseDonut(activitySeries);
+        renderDeltas(activitySeries);
 
         // rango por defecto = el del botón activo (14)
         const seg = $('#dm-activity-range');
@@ -288,20 +343,16 @@
         const box = $('#dm-upcoming');
         if (!box) return;
         const today = CFG.today;
-        const next = (list || []).filter((a) => String(a.appointment_time).slice(0, 10) !== today).slice(0, 5);
+        const next = (list || []).filter((a) => String(a.appointment_time).slice(0, 10) !== today).slice(0, 6);
         if (!next.length) return; // conserva el empty server-rendered
         box.innerHTML = next.map((a) => {
             const dt = new Date(a.appointment_time);
             const time = pad(dt.getHours()) + ':' + pad(dt.getMinutes());
-            const phone = a.patient_phone ? ' · <i data-lucide="phone"></i> ' + esc(a.patient_phone) : '';
-            return '<div class="dm-row dm-row-live">' +
-                '<a class="dm-row-link" href="' + esc(CFG.urls.consulta) + '?appt=' + (a.id | 0) + '">' +
-                  '<div class="dm-rdate"><strong>' + pad(dt.getDate()) + '</strong><span>' + MES_CORTO[dt.getMonth()] + '</span></div>' +
-                  '<div class="dm-rinfo"><div class="n">' + esc(a.patient_name) + '</div>' +
-                  '<div class="m"><i data-lucide="clock"></i> ' + time + phone + '</div></div>' +
-                '</a>' +
-                '<button type="button" class="dm-row-cancel" data-cancel="' + (a.id | 0) + '" title="Cancelar cita" aria-label="Cancelar cita"><i data-lucide="x"></i></button>' +
-                '</div>';
+            const av = window.doctorAvatar ? window.doctorAvatar(a.patient_name, 'md') : '';
+            const sub = fechaCorta(dt) + (a.patient_phone ? ' · ' + esc(a.patient_phone) : '');
+            return '<a class="dm-vrow" href="' + esc(CFG.urls.consulta) + '?appt=' + (a.id | 0) + '">' + av +
+                '<div class="info"><div class="n">' + esc(a.patient_name) + '</div><div class="s">' + sub + '</div></div>' +
+                '<span class="when"><b>' + time + '</b>' + MES_CORTO[dt.getMonth()] + ' ' + pad(dt.getDate()) + '</span></a>';
         }).join('');
         if (window.lucide) window.lucide.createIcons();
     }
@@ -374,8 +425,12 @@
 
     // ── Boot ──────────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
+        api = window.doctorApi || api;       // ya definido: portal-medico.js corrió antes del DOMContentLoaded
+        renderDiagnoseDonut();               // doughnut con los datos del PHP (no necesita la API)
+        if (!api) return;                    // sin API se conserva el contenido server-rendered
         initActivity();
         initCalendar();
         initLiveLists();
+        // El reveal de entrada lo gestiona portal-medico.js (global a todas las páginas).
     });
 })();

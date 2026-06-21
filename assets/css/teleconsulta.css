@@ -16,8 +16,8 @@
 .tele-precall-msg.ok{color:#0a7a52}
 .tele-precall-msg.err{color:#be123c}
 .tele-btn-primary{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:1rem;color:#fff;
-  background:linear-gradient(120deg,#4f46e5,#6d4bd8);padding:.85rem 1.6rem;border-radius:13px;display:inline-flex;align-items:center;gap:9px;
-  box-shadow:0 14px 28px -14px rgba(79,70,229,.7);transition:transform .14s,filter .16s}
+  background:linear-gradient(120deg,#322d82,#433d9e);padding:.85rem 1.6rem;border-radius:13px;display:inline-flex;align-items:center;gap:9px;
+  box-shadow:0 14px 28px -14px rgba(38,33,97,.7);transition:transform .14s,filter .16s}
 .tele-btn-primary:hover:not(:disabled){filter:brightness(1.06)}
 .tele-btn-primary:active{transform:translateY(1px)}
 .tele-btn-primary:disabled{opacity:.5;cursor:not-allowed}
@@ -32,7 +32,7 @@ video.tele-remote-media{grid-area:1/1}
   border-radius:12px;border:2px solid rgba(255,255,255,.5);box-shadow:0 10px 24px -10px rgba(0,0,0,.6);background:#0b1020;transform:scaleX(-1);z-index:3}
 .tele-waiting{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#c7cbe6;z-index:2}
 .tele-waiting p{font-size:.95rem}
-.tele-spin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#8b8ff5;animation:teleSpin 1s linear infinite}
+.tele-spin{width:42px;height:42px;border-radius:50%;border:3px solid rgba(255,255,255,.2);border-top-color:#8f8be0;animation:teleSpin 1s linear infinite}
 @keyframes teleSpin{to{transform:rotate(360deg)}}
 
 /* Controles */

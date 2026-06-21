@@ -19,7 +19,7 @@ $bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta mé
 ?>
 
 <?php if (!$appt): ?>
-    <div class="doctor-empty-state">
+    <div class="doctor-empty-state" data-reveal>
         <div class="doctor-empty-state-ic"><i data-lucide="stethoscope"></i></div>
         <h1>Selecciona una cita para iniciar</h1>
         <p>Abre una cita desde tu agenda o desde el listado de pacientes para registrar la consulta, la receta y las indicaciones.</p>
@@ -37,7 +37,7 @@ $bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta mé
 ?>
     <?php if (!$bare): ?><a href="<?= e(base_url('portal-medico/agenda.php')) ?>" class="doctor-back-link"><i data-lucide="arrow-left" class="h-4 w-4"></i> Volver a la agenda</a><?php endif; ?>
 
-    <header class="doctor-consult-header">
+    <header class="doctor-consult-header" data-reveal>
         <div>
             <p class="doctor-eyebrow">Consulta · <?= e(doctor_fecha_corta($ts, true)) ?></p>
             <h1><?= e($appt['patient_name']) ?></h1>

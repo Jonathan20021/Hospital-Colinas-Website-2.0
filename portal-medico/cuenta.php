@@ -34,7 +34,7 @@ function activity_label(string $reason, bool $success): string {
 
 doctor_layout_begin('Mi cuenta', 'cuenta');
 ?>
-<header class="doctor-header">
+<header class="doctor-header" data-reveal>
     <div>
         <p class="doctor-eyebrow">Mi cuenta</p>
         <h1>Seguridad de tu cuenta</h1>
@@ -42,7 +42,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
     </div>
 </header>
 
-<div class="doctor-grid-2">
+<div class="doctor-grid-2" data-reveal data-reveal-d="1">
     <div class="doctor-card">
         <header class="doctor-card-header">
             <h2><i data-lucide="user" class="h-4 w-4"></i> Tu cuenta</h2>
@@ -97,7 +97,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
     </div>
 </div>
 
-<div class="doctor-card mt-6">
+<div class="doctor-card mt-6" data-reveal data-reveal-d="2">
     <header class="doctor-card-header">
         <h2><i data-lucide="pen-tool" class="h-4 w-4"></i> Mi firma</h2>
     </header>
@@ -198,7 +198,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
 })();
 </script>
 
-<div class="doctor-grid-2 mt-6">
+<div class="doctor-grid-2 mt-6" data-reveal>
     <div class="doctor-card">
         <header class="doctor-card-header">
             <h2><i data-lucide="history" class="h-4 w-4"></i> Actividad reciente</h2>

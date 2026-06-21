@@ -33,7 +33,7 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
 ?>
 <a href="<?= e(base_url('portal-medico/pacientes.php')) ?>" class="doctor-back-link"><i data-lucide="arrow-left" class="h-4 w-4"></i> Volver a pacientes</a>
 
-<header class="doctor-patient-header">
+<header class="doctor-patient-header" data-reveal>
     <div class="doctor-av doctor-av-xl" style="background: linear-gradient(135deg, <?= e($avc1) ?>, <?= e($avc2) ?>);"><?= e($initials) ?></div>
     <div class="doctor-patient-info">
         <h1><?= e($patient['name']) ?></h1>

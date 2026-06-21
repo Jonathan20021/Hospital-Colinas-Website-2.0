@@ -33,6 +33,11 @@
 
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const CSRF = csrfMeta ? csrfMeta.content : '';
+    // Ruta del proxy: base_url() la resuelve bien en producción (raíz) y en
+    // local (subcarpeta /Hospital-Colinas-Website-2.0/). Sin el meta, cae al
+    // path absoluto (solo válido en raíz).
+    const proxyMeta = document.querySelector('meta[name="doctor-api-proxy"]');
+    const PROXY = (proxyMeta && proxyMeta.content) || '/api/doctor-proxy.php';
 
     /** Cliente del proxy server-side. Devuelve { ok, data, message, errors }. */
     window.doctorApi = async function (method, path, payload) {
@@ -41,7 +46,7 @@
         if (method === 'GET') body.query = payload || {};
         else                  body.body  = payload || {};
 
-        const r = await fetch('/api/doctor-proxy.php', {
+        const r = await fetch(PROXY, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -218,6 +223,19 @@
         }
     };
 
+    /** Reveal de entrada al hacer scroll — global a todas las páginas del portal.
+     *  El CSS oculta [data-reveal] (opacity:0) y aquí se le añade .in al entrar al
+     *  viewport. Si no hay IntersectionObserver, se muestran de inmediato. */
+    function initReveal() {
+        const els = document.querySelectorAll('.is-app [data-reveal]');
+        if (!els.length) return;
+        if (!('IntersectionObserver' in window)) { els.forEach((el) => el.classList.add('in')); return; }
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+        els.forEach((el) => io.observe(el));
+    }
+
     /** Boot. */
     document.addEventListener('DOMContentLoaded', () => {
         // KPI counters animation
@@ -228,6 +246,8 @@
             const el = document.getElementById(id);
             if (el) mountCalendar(el);
         });
+
+        initReveal();
 
         // Lucide refresh tras mounts
         if (window.lucide) window.lucide.createIcons();
