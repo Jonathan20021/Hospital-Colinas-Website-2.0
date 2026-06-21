@@ -568,7 +568,9 @@
 .is-app .av-item-badge{font-size:.66rem;font-weight:800;color:var(--hg-navy-600);background:var(--hg-navy-50);padding:2px 7px;border-radius:999px;flex:none}
 .is-app .av-del{flex:none;width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:var(--hg-muted-2);cursor:pointer;display:grid;place-items:center;transition:background .2s var(--hg-ease),color .2s var(--hg-ease)}
 .is-app .av-del:hover{background:#fdeaee;color:#be123c}
-@media(max-width:680px){.is-app .av-cell{height:42px}.is-app .av-day{width:36px;height:36px}}
+@media(max-width:680px){.is-app .av-cell{height:44px}.is-app .av-day{width:38px;height:38px}
+  /* área táctil ampliada (~40x44) sin agrandar el disco ni solapar celdas vecinas */
+  .is-app .av-day::before{content:"";position:absolute;inset:-3px -1px;border-radius:14px}}
 
 /* ===== 8. MOTION — reveal de entrada ==================================== */
 .is-app [data-reveal]{opacity:0;transform:translateY(20px);filter:blur(6px);
