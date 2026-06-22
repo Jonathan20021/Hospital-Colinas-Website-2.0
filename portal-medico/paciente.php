@@ -210,7 +210,7 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
         return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
     }
     function openViewer(uid, scope, hasReport) {
-        var u = viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope) + (hasReport ? '&report=1' : '');
+        var u = viewerBase + '?study=' + encodeURIComponent(uid) + '&scope=' + encodeURIComponent(scope) + (hasReport ? '&report=1' : '') + '&pid=' + encodeURIComponent(pid);
         // En el PWA instalado (standalone), abrir en pestaña nueva sacaría al médico
         // de la app → navegamos dentro. En navegador, pestaña nueva (compara, deja
         // el historial abierto).

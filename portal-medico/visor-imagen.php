@@ -14,6 +14,7 @@ $study = preg_replace('/[^0-9.]/', '', (string)($_GET['study'] ?? ''));
 $scope = preg_replace('/[^A-Za-z0-9._-]/', '', (string)($_GET['scope'] ?? ''));
 $dwrBase = base_url('api/imaging-dwr.php') . '/' . $scope;
 $hasReport = !empty($_GET['report']);
+$pid       = (int)($_GET['pid'] ?? 0);   // para listar otros estudios del paciente (comparar)
 $reportUrl = base_url('portal-medico/informe') . '?study=' . rawurlencode($study) . '&scope=' . rawurlencode($scope);
 
 if (!headers_sent()) {
@@ -272,6 +273,8 @@ if (!headers_sent()) {
     var PACIENTES_URL = <?= json_encode(base_url('portal-medico/pacientes'), JSON_UNESCAPED_SLASHES) ?>;
     var REPORT_URL = <?= json_encode($reportUrl, JSON_UNESCAPED_SLASHES) ?>;
     var HAS_REPORT = <?= $hasReport ? 'true' : 'false' ?>;
+    var PID = <?= (int)$pid ?>;
+    var PROXY = <?= json_encode(base_url('api/doctor-proxy.php'), JSON_UNESCAPED_SLASHES) ?>;
     var msg = document.getElementById('v-msg'), msgTxt = document.getElementById('v-msg-txt');
     var el = document.getElementById('dicom');
 
@@ -306,7 +309,7 @@ if (!headers_sent()) {
     function tag(md, t) { try { return md[t].Value; } catch (e) { return undefined; } }
     function tag1(md, t) { var v = tag(md, t); return v && v.length ? v[0] : undefined; }
 
-    var EXCLUSIVE = ['Wwwc', 'Zoom', 'Pan', 'Length', 'Angle', 'EllipticalRoi', 'ArrowAnnotate', 'Probe', 'Magnify'];
+    var EXCLUSIVE = ['Wwwc', 'Zoom', 'Pan', 'Length', 'Angle', 'EllipticalRoi', 'RectangleRoi', 'Bidirectional', 'ArrowAnnotate', 'Probe', 'Magnify'];
     var currentTool = 'Wwwc';
     function setActiveTool(name, btnId) {
         currentTool = name;
@@ -451,6 +454,7 @@ if (!headers_sent()) {
                 ensureTools();
                 msg.style.display = 'none';
                 updateHud();
+                try { el.dispatchEvent(new CustomEvent('hgv:series', { detail: { seriesUID: seriesUID, mod: mod, desc: desc, count: ids.length } })); } catch (e) {}
             });
         }).catch(function (e) { fail('No se pudieron cargar las imágenes. ' + (e && e.message ? e.message : '')); });
     }
@@ -466,6 +470,8 @@ if (!headers_sent()) {
         addT(cstools.LengthTool);
         addT(cstools.AngleTool);
         addT(cstools.EllipticalRoiTool);
+        addT(cstools.RectangleRoiTool);
+        addT(cstools.BidirectionalTool);
         addT(cstools.ProbeTool);
         addT(cstools.MagnifyTool);
         addT(cstools.ArrowAnnotateTool, {
@@ -876,7 +882,27 @@ if (!headers_sent()) {
             }
         });
     })();
+
+    // ── API mínima para el módulo "pro" (mediciones avanzadas, comparación, IA+).
+    //    Se monta ENCIMA del visor sin alterar su flujo: el módulo escucha los eventos
+    //    hgv:ready / hgv:series y usa estas referencias. Si el módulo no carga, el visor
+    //    sigue funcionando exactamente igual.
+    window.HGV = {
+        cornerstone: cornerstone, cstools: cstools, cwil: cwil, dicomParser: window.dicomParser, Hammer: window.Hammer,
+        el: el, ROOT: ROOT, STUDY: STUDY, PID: PID, PROXY: PROXY, CSRF: CSRF, AI_ENDPOINT: AI_ENDPOINT,
+        CLINIC: CLINIC, logoImg: logoImg,
+        dj: dj, tag: tag, tag1: tag1, pn: pn, escH: escH, fdate: fdate,
+        setActiveTool: setActiveTool, showIndex: showIndex, updateHud: updateHud, loadSeries: loadSeries, addT: addT,
+        applyPreset: applyPreset, generatePdf: generatePdf,
+        getStack: function () { return stack; },
+        getStudyMeta: function () { return studyMeta; },
+        getCurrentTool: function () { return currentTool; },
+        getSeriesDesc: function () { return currentSeriesDesc; }
+    };
+    try { el.dispatchEvent(new CustomEvent('hgv:ready')); } catch (e) {}
 })();
 </script>
+<link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-visor-pro.css')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/css/portal-medico-visor-pro.css') ?: 1) ?>">
+<script src="<?= e(base_url('assets/js/portal-medico-visor-pro.js')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-visor-pro.js') ?: 1) ?>"></script>
 </body>
 </html>

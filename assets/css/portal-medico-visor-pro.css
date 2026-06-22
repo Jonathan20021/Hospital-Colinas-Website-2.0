@@ -1,0 +1,136 @@
+/* =============================================================================
+   Visor de imágenes — módulo "pro" (mediciones avanzadas, comparación, IA+).
+   Se monta encima del visor base (visor-imagen.php). Paleta oscura del visor.
+   100% responsive: paneles flotantes en escritorio, hoja inferior en móvil.
+   ============================================================================= */
+
+/* Botones pro reusan .v-tool del visor. Acentos por familia. */
+.v-tool.hgv-pro.active{background:#2f3e66;border-color:#4a5fa0;color:#fff}
+.hgv-tool-img.active{background:#1f4a3e;border-color:#2f7d63;color:#eafff6}
+.hgv-badge{display:inline-block;min-width:16px;height:16px;line-height:16px;padding:0 4px;border-radius:8px;background:#2563eb;color:#fff;font-size:.62rem;font-weight:700;margin-left:4px;text-align:center;vertical-align:top}
+
+/* ── Paneles flotantes ──────────────────────────────────────────────────── */
+.hgv-panel{
+  position:absolute;z-index:14;top:12px;right:12px;width:300px;max-width:calc(100vw - 24px);
+  background:#111726;border:1px solid #2b3550;border-radius:14px;
+  box-shadow:0 20px 50px -16px rgba(0,0,0,.7);color:#e6e9f2;
+  display:none;flex-direction:column;overflow:hidden;max-height:calc(100% - 24px)
+}
+.hgv-panel.open{display:flex;animation:hgv-pop .18s ease}
+@keyframes hgv-pop{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.hgv-panel-h{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid #232c42;flex:none}
+.hgv-panel-h .t{font-weight:700;font-size:.86rem;color:#fff;flex:1;display:flex;align-items:center;gap:7px}
+.hgv-panel-h .x{appearance:none;border:0;background:#1a2236;color:#cdd4e6;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.8rem;flex:none}
+.hgv-panel-h .x:hover{background:#28324e}
+.hgv-panel-b{padding:12px;overflow-y:auto;min-height:0}
+.hgv-panel-foot{padding:9px 12px;border-top:1px solid #1a2030;font-size:.7rem;color:#6b7693;flex:none;line-height:1.45}
+
+/* ── Histograma ─────────────────────────────────────────────────────────── */
+.hgv-hist-canvas{width:100%;height:130px;background:#0b0e16;border:1px solid #232c42;border-radius:8px;display:block}
+.hgv-hist-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;margin-top:10px;font-size:.76rem}
+.hgv-hist-stats div{display:flex;justify-content:space-between;gap:8px}
+.hgv-hist-stats b{color:#9aa3bb;font-weight:600}
+.hgv-hist-stats span{color:#fff;font-variant-numeric:tabular-nums}
+.hgv-hist-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+/* Botones genéricos del módulo pro */
+.hgv-btn{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.8rem;
+  border-radius:9px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .12s,border-color .12s}
+.hgv-btn:hover{background:#222c45}
+.hgv-btn.primary{background:#2563eb;border-color:#3b82f6;color:#fff}
+.hgv-btn.primary:hover{background:#1d4ed8}
+.hgv-btn.ghost{background:transparent}
+.hgv-btn:disabled{opacity:.45;cursor:default}
+
+/* ── Realce de imagen (lista de opciones en el panel) ───────────────────── */
+.hgv-enh-list{display:flex;flex-direction:column;gap:6px}
+.hgv-enh-opt{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid #232c42;border-radius:10px;
+  background:#141b2c;cursor:pointer;transition:background .12s,border-color .12s}
+.hgv-enh-opt:hover{background:#1b2540}
+.hgv-enh-opt.on{background:#1f4a3e;border-color:#2f7d63}
+.hgv-enh-opt .ic{font-size:1.05rem;width:22px;text-align:center;flex:none}
+.hgv-enh-opt .tx{flex:1;min-width:0}
+.hgv-enh-opt .tx b{display:block;font-size:.82rem;color:#fff;font-weight:600}
+.hgv-enh-opt .tx span{display:block;font-size:.7rem;color:#8b93a9;line-height:1.35}
+.hgv-enh-strength{margin-top:12px;display:none}
+.hgv-enh-strength.show{display:block}
+.hgv-enh-strength label{font-size:.74rem;color:#9aa3bb;display:flex;justify-content:space-between;margin-bottom:5px}
+.hgv-enh-strength input[type=range]{width:100%;accent-color:#2f7d63}
+
+/* ── Hint flotante (calibración / instrucciones de herramienta) ─────────── */
+.hgv-hint{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:16;
+  background:rgba(20,27,44,.95);border:1px solid #3a4a74;color:#dfe6f7;
+  font-size:.78rem;padding:9px 14px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.5);
+  display:none;align-items:center;gap:10px;max-width:calc(100vw - 28px);text-align:center}
+.hgv-hint.show{display:flex;animation:hgv-pop .18s ease}
+.hgv-hint b{color:#9ec2ff}
+.hgv-hint .hgv-hint-x{appearance:none;border:0;background:#2b3550;color:#cdd4e6;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.7rem;flex:none}
+
+/* ── Imágenes clave ─────────────────────────────────────────────────────── */
+.hgv-key-empty{color:#8b93a9;font-size:.8rem;text-align:center;padding:20px 8px;line-height:1.5}
+.hgv-key-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hgv-key-item{position:relative;border:1px solid #232c42;border-radius:9px;overflow:hidden;cursor:pointer;background:#000}
+.hgv-key-item img{width:100%;height:74px;object-fit:contain;display:block}
+.hgv-key-item .cap{font-size:.64rem;color:#aeb6cc;padding:3px 5px;background:#0e1320;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hgv-key-item .del{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;border:0;
+  background:rgba(10,12,20,.8);color:#fecaca;cursor:pointer;font-size:.7rem;line-height:1;display:grid;place-items:center}
+.hgv-key-item .del:hover{background:#3a1d22}
+
+/* =============================================================================
+   COMPARAR ESTUDIOS — rejilla de viewports
+   ============================================================================= */
+.hgv-grid{position:absolute;inset:0;display:grid;gap:2px;background:#05070d}
+.hgv-grid.cols-1{grid-template-columns:1fr}
+.hgv-grid.cols-2{grid-template-columns:1fr 1fr}
+.hgv-grid.rows-2{grid-template-rows:1fr 1fr}
+.hgv-vp{position:relative;background:#000;overflow:hidden;min-width:0;min-height:0}
+.hgv-vp .hgv-vp-el{width:100%;height:100%;touch-action:none}
+.hgv-vp.sel{box-shadow:inset 0 0 0 2px #4a5fa0}
+.hgv-vp-tag{position:absolute;left:8px;top:6px;z-index:3;font-size:.68rem;color:#cfd6ea;text-shadow:0 1px 2px #000,0 0 4px #000;
+  pointer-events:none;line-height:1.4;max-width:80%}
+.hgv-vp-tag b{color:#fff}
+.hgv-vp-pick{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;
+  color:#8b93a9;font-size:.82rem;text-align:center;padding:18px;cursor:pointer;background:#0b0e16}
+.hgv-vp-pick:hover{background:#0e1422}
+.hgv-vp-pick .ic{font-size:1.8rem;opacity:.7}
+.hgv-vp-spin{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45)}
+.hgv-vp-spin.on{display:flex}
+.hgv-vp-spin .s{width:30px;height:30px;border:3px solid #2b3550;border-top-color:#6d8bff;border-radius:50%;animation:vspin 1s linear infinite}
+
+/* Selector de estudios (lista) para comparar */
+.hgv-studies{display:flex;flex-direction:column;gap:7px}
+.hgv-study{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid #232c42;border-radius:10px;
+  background:#141b2c;cursor:pointer;transition:background .12s,border-color .12s;text-align:left}
+.hgv-study:hover{background:#1b2540;border-color:#34406a}
+.hgv-study .mod{flex:none;width:42px;height:42px;border-radius:9px;background:#0b0e16;border:1px solid #232c42;
+  display:grid;place-items:center;font-weight:700;font-size:.74rem;color:#9ec2ff}
+.hgv-study .info{flex:1;min-width:0}
+.hgv-study .info b{display:block;font-size:.82rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hgv-study .info span{display:block;font-size:.72rem;color:#8b93a9}
+.hgv-study.current{opacity:.5;pointer-events:none}
+.hgv-study.current::after{content:"actual";font-size:.64rem;color:#6d8bff}
+
+/* Toolbar de comparación (control de layout + sync) */
+.hgv-cmp-bar{display:none;align-items:center;gap:6px;margin-left:auto}
+.hgv-cmp-bar.show{display:inline-flex}
+.hgv-seg{display:inline-flex;border:1px solid #2b3550;border-radius:9px;overflow:hidden}
+.hgv-seg button{appearance:none;border:0;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.78rem;padding:7px 10px;cursor:pointer}
+.hgv-seg button.on{background:#2f3e66;color:#fff}
+.hgv-seg button+button{border-left:1px solid #2b3550}
+
+/* ── Responsive: paneles como hoja inferior en móvil ────────────────────── */
+@media (max-width:760px){
+  .hgv-panel{top:auto;left:0;right:0;bottom:0;width:100%;max-width:none;max-height:80vh;
+    border-radius:16px 16px 0 0;border-bottom:0}
+  .hgv-panel.open{animation:hgv-sheet .24s ease}
+  @keyframes hgv-sheet{from{transform:translateY(100%)}to{transform:none}}
+  .hgv-key-grid{grid-template-columns:1fr 1fr 1fr}
+  /* En móvil, comparar se apila vertical (mejor que aplastar a tiras) */
+  .hgv-grid.cols-2{grid-template-columns:1fr;grid-template-rows:1fr 1fr}
+  .hgv-grid.cols-2.rows-2{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+  .hgv-cmp-bar{order:5}
+}
+@media (pointer:coarse){
+  .hgv-btn{padding:10px 13px}
+  .hgv-enh-opt{padding:11px}
+}
