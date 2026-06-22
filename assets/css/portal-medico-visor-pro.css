@@ -134,3 +134,7 @@
   .hgv-btn{padding:10px 13px}
   .hgv-enh-opt{padding:11px}
 }
+
+/* Mensaje de IA con posible hallazgo crítico (resaltado de seguridad) */
+.ai-msg.ai-critical{border-color:#b3424f!important;background:#2a1417;color:#ffe2e6}
+.ai-msg.ai-critical strong{color:#ff9fab}

@@ -24,6 +24,19 @@ function ai_out(int $code, array $data): void {
     exit;
 }
 
+/** Orientación de lectura según la modalidad DICOM (no identificante). */
+function ai_modality_guidance(string $m): string {
+    $m = strtoupper(trim($m));
+    if ($m === '') return '';
+    if (strpos($m, 'CT') !== false) return 'Orientación TC: considera densidades / escala Hounsfield y evalúa por planos.';
+    if ($m === 'CR' || $m === 'DX' || strpos($m, 'XR') !== false || strpos($m, 'RX') !== false)
+        return 'Orientación radiografía: valora proyección y técnica; en tórax revisa campos pulmonares, silueta cardiomediastínica, senos costofrénicos, hilios y estructuras óseas.';
+    if (strpos($m, 'MR') !== false) return 'Orientación RM: indica la secuencia si es evaluable y describe la señal (hiper/hipointensa).';
+    if (strpos($m, 'US') !== false) return 'Orientación ecografía: describe ecogenicidad, márgenes y sombra acústica.';
+    if (strpos($m, 'MG') !== false) return 'Orientación mamografía: evalúa densidad, asimetrías, calcificaciones y distorsión.';
+    return '';
+}
+
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     ai_out(405, ['success' => false, 'message' => 'Método no permitido.']);
 }
@@ -58,6 +71,10 @@ $image    = (string)($payload['image'] ?? '');
 $question = trim((string)($payload['question'] ?? ''));
 $ctxIn    = is_array($payload['context'] ?? null) ? $payload['context'] : [];
 $histIn   = is_array($payload['history'] ?? null) ? $payload['history'] : [];
+$mode     = (string)($payload['mode'] ?? 'analyze');
+if (!in_array($mode, ['analyze', 'followup', 'compare', 'patient'], true)) $mode = 'analyze';
+$image2   = (string)($payload['image2'] ?? '');                // 2.ª imagen (solo modo comparar)
+$hasImg2  = (bool)preg_match('#^data:image/(jpeg|png|webp);base64,#', $image2) && strlen($image2) <= 9 * 1024 * 1024;
 
 if (!preg_match('#^data:image/(jpeg|png|webp);base64,#', $image)) {
     ai_out(400, ['success' => false, 'message' => 'Imagen inválida.']);
@@ -85,7 +102,44 @@ if ($age > 0)   $ctxParts[] = 'edad ' . $age . ' años';
 $ctxLine = $ctxParts ? ('Contexto del estudio: ' . implode(', ', $ctxParts) . '.') : '';
 
 // ── Prompt del sistema ───────────────────────────────────────────────────────
-$system = <<<SYS
+$critico = "Si observas un hallazgo que podría requerir ATENCIÓN URGENTE (por ejemplo neumotórax, fractura inestable, luxación, hemorragia, perforación de víscera, neumoperitoneo o signos de isquemia), comienza tu respuesta con esta línea EXACTA, en su propio renglón:\n⚠️ POSIBLE HALLAZGO CRÍTICO — requiere correlación clínica inmediata.\nLuego continúa con el análisis.";
+$modGuide = ai_modality_guidance($modality);
+
+if ($mode === 'patient') {
+    $system = <<<SYS
+Eres un asistente de IA que ayuda a EXPLICAR AL PACIENTE, en español sencillo y empático, una imagen médica que le acaban de tomar. NO eres su médico y NO das diagnósticos.
+
+Reglas:
+- Lenguaje muy claro, sin tecnicismos (y si usas alguno, explícalo en palabras simples). Tono calmado y respetuoso.
+- Explica qué tipo de estudio es y, en general, qué se observa, sin afirmar enfermedades ni dar certezas.
+- No alarmes. Si algo parece relevante, indica que su médico lo valorará con el resto de su información.
+- No incluyas datos personales (no los tienes).
+- Sé breve (4–8 líneas), dirígete al paciente ("tu radiografía…").
+
+Termina SIEMPRE con esta línea exacta:
+_Información orientativa generada por IA. No reemplaza la valoración de tu médico._
+SYS;
+} elseif ($mode === 'compare') {
+    $system = <<<SYS
+Eres un asistente de IA que APOYA a un médico COMPARANDO dos imágenes del mismo paciente. NO emites diagnósticos: produces un BORRADOR que el médico confirma.
+
+Recibirás DOS imágenes: la PRIMERA es el estudio MÁS RECIENTE (actual) y la SEGUNDA es un estudio PREVIO. Si no es posible determinar la correspondencia o no son comparables, dilo con claridad.
+
+$critico
+
+Estructura la respuesta así:
+**Comparabilidad** — si los estudios son comparables (misma región/técnica/proyección) o no.
+**Cambios** — qué apareció, desapareció, aumentó o disminuyó (viñetas).
+**Impresión de evolución** — mejoría, estabilidad o progresión, con cautela.
+**Sugerencias** — correlación clínica o seguimiento.
+
+Responde en español, claro y clínico, breve, en markdown. Describe SOLO lo observable.
+
+Termina SIEMPRE con esta línea exacta:
+_Borrador generado por IA — no sustituye el criterio médico ni el informe radiológico oficial._
+SYS;
+} else {
+    $system = <<<SYS
 Eres un asistente de inteligencia artificial que APOYA a un médico en la lectura de imágenes médicas (radiografía, TC, RM, ecografía, etc.) en un hospital de República Dominicana. NO eres radiólogo y NO emites diagnósticos: produces un BORRADOR de apoyo que el médico tratante revisa y confirma. La decisión clínica es siempre del médico.
 
 Reglas:
@@ -94,6 +148,8 @@ Reglas:
 - Si la imagen es insuficiente, de baja calidad o un aspecto no es evaluable, dilo de forma explícita.
 - No incluyas datos de identificación del paciente (no los tienes).
 - Ante hallazgos potencialmente graves, recomienda correlación clínica y valoración por radiólogo/especialista.
+
+$critico
 
 Para una solicitud de ANÁLISIS estructura la respuesta así:
 **Estudio y calidad** — tipo/proyección y si la calidad permite evaluar.
@@ -106,6 +162,8 @@ Para PREGUNTAS de seguimiento responde directo y conciso, con la misma cautela.
 Termina SIEMPRE con esta línea exacta:
 _Borrador generado por IA — no sustituye el criterio médico ni el informe radiológico oficial._
 SYS;
+}
+if ($modGuide !== '') { $system .= "\n\n" . $modGuide; }
 
 $messages = [['role' => 'system', 'content' => $system]];
 
@@ -117,19 +175,24 @@ foreach ($histIn as $h) {
     if ($text !== '') $messages[] = ['role' => $role, 'content' => $text];
 }
 
-// Turno actual: texto + imagen (la imagen viaja en cada llamada; el modelo es sin estado).
-if ($question !== '') {
+// Turno actual: texto + imagen(es). La imagen viaja en cada llamada (modelo sin estado).
+if ($mode === 'patient') {
+    $userText = trim('Explica al paciente, en lenguaje sencillo, qué muestra esta imagen. ' . $ctxLine);
+} elseif ($mode === 'compare') {
+    $userText = trim('Compara estas dos imágenes (la primera es la ACTUAL, la segunda la PREVIA) e indica los cambios y la evolución. ' . $ctxLine);
+} elseif ($question !== '') {
     $userText = substr($question, 0, 1500);
 } else {
     $userText = trim('Analiza esta imagen médica. ' . $ctxLine);
 }
-$messages[] = [
-    'role'    => 'user',
-    'content' => [
-        ['type' => 'text', 'text' => $userText],
-        ['type' => 'image_url', 'image_url' => ['url' => $image, 'detail' => 'high']],
-    ],
+$content = [
+    ['type' => 'text', 'text' => $userText],
+    ['type' => 'image_url', 'image_url' => ['url' => $image, 'detail' => 'high']],
 ];
+if ($mode === 'compare' && $hasImg2) {
+    $content[] = ['type' => 'image_url', 'image_url' => ['url' => $image2, 'detail' => 'high']];
+}
+$messages[] = ['role' => 'user', 'content' => $content];
 
 // ── Cuerpo de la petición (adapta parámetros según familia del modelo) ─────────
 $reqBody = ['model' => $model, 'messages' => $messages];

@@ -612,7 +612,23 @@
     /* exponer para depuración / extensiones */
     HGV.pro = { toast: toast, makePanel: makePanel, mk: mk, toolBtn: toolBtn, addAfter: addAfter,
       enterCompare: enterCompare, exitCompare: exitCompare, getComparableStudies: getComparableStudies,
-      loadInto: function (i, uid) { if (vps[i]) vpLoadStudy(vps[i], uid); }, vpCount: function () { return vps.length; } };
+      loadInto: function (i, uid) { if (vps[i]) vpLoadStudy(vps[i], uid); }, vpCount: function () { return vps.length; },
+      // Captura los 2 primeros viewports con imagen (para "Comparar con IA").
+      captureComparePair: function () {
+        if (!compareOn) return null;
+        var withImg = vps.filter(function (v) { try { return !!cs.getImage(v.elem); } catch (e) { return false; } });
+        if (withImg.length < 2) return null;
+        function cap(elem) {
+          var ee; try { ee = cs.getEnabledElement(elem); } catch (e) {}
+          if (!ee || !ee.canvas) return null;
+          var src = ee.canvas, mx = 1280, sc = Math.min(1, mx / Math.max(src.width, src.height));
+          var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(src.width * sc)); c.height = Math.max(1, Math.round(src.height * sc));
+          var x = c.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, c.width, c.height);
+          try { x.drawImage(src, 0, 0, c.width, c.height); } catch (e) { return null; }
+          try { return c.toDataURL('image/jpeg', 0.9); } catch (e) { return null; }
+        }
+        return { a: cap(withImg[0].elem), b: cap(withImg[1].elem) };
+      } };
 
     /* limpiar realce al reset */
     var resetBtn = document.getElementById('t-reset');

@@ -242,6 +242,8 @@ if (!headers_sent()) {
             </div>
             <div class="ai-suggest" id="ai-suggest">
                 <button class="ai-chip" data-q="__analyze__">↻ Analizar imagen actual</button>
+                <button class="ai-chip" data-mode="patient">🧑‍⚕️ Explicar al paciente</button>
+                <button class="ai-chip" data-mode="compare">⚖️ Comparar (2 estudios)</button>
                 <button class="ai-chip" data-q="Describe los hallazgos principales.">Describir hallazgos</button>
                 <button class="ai-chip" data-q="¿Se observa alguna fractura o lesión ósea?">¿Hay fractura?</button>
                 <button class="ai-chip" data-q="¿Qué recomiendas como siguiente paso?">¿Qué recomiendas?</button>
@@ -835,21 +837,35 @@ if (!headers_sent()) {
             });
         }
 
-        function run(question) {
+        function run(question, mode) {
             if (busy) return;
-            var img = captureImage();
-            if (!img) { addMsg('err', 'No hay una imagen cargada para analizar.'); return; }
-            var isAnalyze = (question === '__analyze__' || !question);
-            if (!isAnalyze) addMsg('user', escH(question));
-            var prior = convo.slice();
+            mode = mode || 'analyze';
+            var payload = { context: aiContext(), history: convo.slice() }, userLabel = '';
+            if (mode === 'compare') {
+                var pair = (window.HGV && window.HGV.pro && window.HGV.pro.captureComparePair) ? window.HGV.pro.captureComparePair() : null;
+                if (!pair || !pair.a || !pair.b) { addMsg('err', 'Para comparar con IA abre “⊞ Comparar”, carga dos estudios y vuelve a intentarlo.'); return; }
+                payload.mode = 'compare'; payload.image = pair.a; payload.image2 = pair.b; payload.question = '';
+                userLabel = '⚖️ Comparar los dos estudios en pantalla.';
+            } else if (mode === 'patient') {
+                var imgP = captureImage(); if (!imgP) { addMsg('err', 'No hay una imagen cargada.'); return; }
+                payload.mode = 'patient'; payload.image = imgP; payload.question = '';
+                userLabel = '🧑‍⚕️ Explicar al paciente esta imagen.';
+            } else {
+                var img = captureImage(); if (!img) { addMsg('err', 'No hay una imagen cargada para analizar.'); return; }
+                var isAnalyze = (question === '__analyze__' || !question);
+                payload.mode = isAnalyze ? 'analyze' : 'followup'; payload.image = img; payload.question = isAnalyze ? '' : question;
+                if (!isAnalyze) userLabel = question;
+            }
+            if (userLabel) addMsg('user', escH(userLabel));
             var load = loadingMsg();
             setBusy(true);
-            aiFetch({ image: img, context: aiContext(), question: isAnalyze ? '' : question, history: prior })
+            aiFetch(payload)
                 .then(function (j) {
                     load.remove();
                     if (j && j.success && j.text) {
-                        addMsg('ai', mdLite(j.text));
-                        convo.push({ role: 'user', text: isAnalyze ? 'Análisis de la imagen actual.' : question });
+                        var critical = /HALLAZGO\s+CR[IÍ]TICO/i.test(j.text);
+                        addMsg('ai' + (critical ? ' ai-critical' : ''), mdLite(j.text));
+                        convo.push({ role: 'user', text: userLabel || 'Análisis de la imagen actual.' });
                         convo.push({ role: 'assistant', text: j.text });
                         if (convo.length > 16) convo = convo.slice(-16);
                     } else {
@@ -864,7 +880,8 @@ if (!headers_sent()) {
         document.getElementById('ai-analyze').addEventListener('click', function () { run('__analyze__'); });
         document.getElementById('ai-suggest').addEventListener('click', function (e) {
             var b = e.target.closest('.ai-chip'); if (!b) return;
-            run(b.getAttribute('data-q'));
+            if (b.getAttribute('data-mode')) run(null, b.getAttribute('data-mode'));
+            else run(b.getAttribute('data-q'));
         });
         document.getElementById('ai-form').addEventListener('submit', function (e) {
             e.preventDefault();
