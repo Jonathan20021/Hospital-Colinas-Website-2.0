@@ -57,7 +57,7 @@ if (!headers_sent()) {
     .v-dd-menu button{appearance:none;border:0;background:transparent;color:#cdd4e6;font:inherit;font-size:.82rem;text-align:left;padding:7px 10px;border-radius:7px;cursor:pointer;white-space:nowrap}
     .v-dd-menu button:hover{background:#222c45}
     .v-dd-menu .lbl{font-size:.64rem;text-transform:uppercase;letter-spacing:.5px;color:#5e6a85;padding:7px 10px 2px}
-    .v-main{flex:1;display:flex;min-height:0;position:relative}
+    .v-main{flex:1;display:flex;min-height:0;position:relative;overflow:hidden}
     .v-series{width:128px;background:#0e1320;border-right:1px solid #232c42;overflow-y:auto;flex:none}
     .v-series-item{padding:8px;cursor:pointer;border-bottom:1px solid #1a2030;text-align:center;font-size:.72rem;color:#9aa3bb}
     .v-series-item:hover{background:#161d2e}
