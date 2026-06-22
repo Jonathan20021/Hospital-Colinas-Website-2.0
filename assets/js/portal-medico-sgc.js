@@ -12,6 +12,15 @@
   function fdate(s) { if (!s) return ''; var d = new Date(String(s).replace(' ', 'T')); if (isNaN(d)) return String(s).slice(0, 10); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
   function nl(s) { return esc(s).replace(/\r?\n/g, '<br>'); }
   function has(a) { return Array.isArray(a) && a.length > 0; }
+  function itemLine(it) {
+    var d = [];
+    if (it.dosis && Number(it.dosis) > 0) d.push('dosis ' + (+it.dosis) + (it.medida ? ' ' + esc(it.medida) : ''));
+    else if (it.medida) d.push(esc(it.medida));
+    if (it.via) d.push(esc(it.via));
+    if (it.frecuencia) d.push(esc(it.frecuencia));
+    if (it.cantidad && Number(it.cantidad) > 0) d.push('cant. ' + (+it.cantidad));
+    return '<li><b>' + esc(it.nombre) + '</b>' + (d.length ? ' <span class="sgc-il">' + d.join(' · ') + '</span>' : '') + '</li>';
+  }
 
   function init() {
     var card = document.getElementById('sgc-card');
@@ -114,12 +123,21 @@
 
     // Recetas
     if (has(rec.recetas)) {
-      var rx = rec.recetas.map(function (r) { return item('Receta', [fdate(r.fecha), r.medico ? 'Dr/a. ' + esc(r.medico) : ''].filter(Boolean).join('  ·  '), nl(r.receta)); }).join('');
+      var rx = rec.recetas.map(function (r) {
+        var its = (r.items || []);
+        var list = its.length ? ('<ul class="sgc-ul">' + its.map(function (it) { return '<li><b>' + esc(it.nombre) + '</b>' + (it.comentario ? ' <span class="sgc-il">' + esc(it.comentario) + '</span>' : '') + '</li>'; }).join('') + '</ul>') : '';
+        return item('Receta', [fdate(r.fecha), r.medico ? 'Dr/a. ' + esc(r.medico) : ''].filter(Boolean).join('  ·  '), (r.receta ? nl(r.receta) : '') + list);
+      }).join('');
       html += acc('pill', 'Recetas', c.recetas, rx);
     }
     // Órdenes médicas
     if (has(rec.ordenes)) {
-      var or = rec.ordenes.map(function (o) { return item('Orden médica', [fdate(o.fecha), o.medico ? 'Dr/a. ' + esc(o.medico) : ''].filter(Boolean).join('  ·  '), (o.nota ? nl(o.nota) : '') + (o.dieta ? '<div class="sgc-sub"><b>Dieta:</b> ' + nl(o.dieta) + '</div>' : '')); }).join('');
+      var or = rec.ordenes.map(function (o) {
+        var its = (o.items || []);
+        var list = its.length ? ('<ul class="sgc-ul">' + its.map(itemLine).join('') + '</ul>') : '';
+        var b2 = list + (o.nota ? nl(o.nota) : '') + (o.dieta ? '<div class="sgc-sub"><b>Dieta:</b> ' + nl(o.dieta) + '</div>' : '');
+        return item('Orden médica', [fdate(o.fecha), o.medico ? 'Dr/a. ' + esc(o.medico) : '', its.length ? (its.length + ' ítem' + (its.length === 1 ? '' : 's')) : ''].filter(Boolean).join('  ·  '), b2 || '<span class="sgc-il">Sin detalle</span>');
+      }).join('');
       html += acc('list-checks', 'Órdenes médicas', c.ordenes, or);
     }
     // Procedimientos
