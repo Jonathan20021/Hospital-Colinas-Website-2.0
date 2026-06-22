@@ -372,8 +372,247 @@
     el.addEventListener('hgv:series', function () { if (histPanel.isOpen()) drawHistogram(); if (curEnh !== 'normal') applyEnhancement(); });
     el.addEventListener('cornerstonenewimage', function () { if (histPanel.isOpen()) drawHistogram(); });
 
-    /* exponer para el bloque de comparación (se carga aparte) */
-    HGV.pro = { toast: toast, makePanel: makePanel, mk: mk, toolBtn: toolBtn, addAfter: addAfter };
+    /* ===================================================================
+       5) COMPARAR ESTUDIOS lado a lado (1×2 / 2×2) con sincronización
+       =================================================================== */
+    var ROOT = HGV.ROOT;
+    var compareOn = false, vps = [], syncOn = false;   // sync opt-in: solo tiene sentido entre estudios equivalentes (p.ej. 2 TC)
+    var syncW = null, syncPZ = null, syncStack = null, studiesCache = null;
+
+    var bCompare = toolBtn('t-compare', '⊞ Comparar', 'Comparar dos estudios lado a lado', 'hgv-pro');
+    addAfter('t-key-view', bCompare);
+
+    // Barra de comparación (layout + sincronización + salir), oculta hasta activar
+    var cmpBar = mk('div', 'hgv-cmp-bar'); cmpBar.id = 'hgv-cmp-bar';
+    cmpBar.innerHTML =
+      '<div class="hgv-seg" id="hgv-layout"><button type="button" data-n="2" class="on">▱▱ 1×2</button><button type="button" data-n="4">⊞ 2×2</button></div>'
+      + '<button type="button" class="v-tool" id="hgv-sync">🔗 Sincronizado</button>'
+      + '<button type="button" class="v-tool" id="hgv-cmp-exit">✕ Salir</button>';
+    toolbar.appendChild(cmpBar);
+
+    var pickPanel = makePanel('pick', '⊞', 'Elegir estudio para comparar',
+      'Otros estudios de este paciente. Se cargan con el mismo permiso seguro.');
+    var pickTargetVp = null;
+
+    // UIDs disponibles: del token de scope (JWT) que ya autoriza al visor.
+    function scopeUids() {
+      // El token de scope (ImagingScope) es "payload.firma" (base64url). El payload
+      // puede estar en cualquier segmento según el formato; probamos todos y tomamos
+      // el que traiga uids[]. Solo leemos uids para poblar el selector; la
+      // autorización real la hace el proxy en el servidor.
+      try {
+        var sc = ROOT.split('imaging-dwr.php/')[1] || '';
+        var parts = sc.split('.');
+        for (var i = 0; i < parts.length; i++) {
+          try {
+            var json = JSON.parse(decodeURIComponent(escape(atob(parts[i].replace(/-/g, '+').replace(/_/g, '/')))));
+            if (json && Array.isArray(json.uids)) return json.uids;
+          } catch (e) {}
+        }
+      } catch (e) {}
+      return [];
+    }
+    function fetchStudiesViaProxy() {
+      if (!HGV.PID) return Promise.resolve([]);
+      return fetch(HGV.PROXY, {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': HGV.CSRF },
+        body: JSON.stringify({ method: 'GET', path: '/portal-doctor/me/patients/' + HGV.PID + '/imaging' })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        var d = (j && j.data) ? j.data : j; var st = (d && d.studies) || [];
+        return st.map(function (s) { return { uid: s.studyUID, modality: s.modality, date: s.date, desc: s.description }; });
+      }).catch(function () { return []; });
+    }
+    function getComparableStudies() {
+      if (studiesCache) return Promise.resolve(studiesCache);
+      var uids = scopeUids();
+      if (!uids.length) return fetchStudiesViaProxy().then(function (l) { studiesCache = l; return l; });
+      return Promise.all(uids.map(function (uid) {
+        return HGV.dj(ROOT + '/studies?StudyInstanceUID=' + uid + '&includefield=00080060&includefield=00080020&includefield=00081030')
+          .then(function (r) { var s = r && r[0]; return { uid: uid, modality: s ? HGV.tag1(s, '00080060') : '', date: s ? HGV.tag1(s, '00080020') : '', desc: s ? HGV.tag1(s, '00081030') : '' }; })
+          .catch(function () { return { uid: uid, modality: '', date: '', desc: '' }; });
+      })).then(function (list) { studiesCache = list; return list; });
+    }
+
+    function vpTools(elem) {
+      try {
+        cstools.addToolForElement(elem, cstools.WwwcTool);
+        cstools.addToolForElement(elem, cstools.PanTool);
+        cstools.addToolForElement(elem, cstools.ZoomTool);
+        cstools.addToolForElement(elem, cstools.StackScrollMouseWheelTool);
+        cstools.addToolForElement(elem, cstools.ZoomTouchPinchTool);
+        cstools.addToolForElement(elem, cstools.PanMultiTouchTool);
+        cstools.addToolForElement(elem, cstools.StackScrollMultiTouchTool);
+        cstools.setToolActiveForElement(elem, 'Wwwc', { mouseButtonMask: 1 });
+        cstools.setToolActiveForElement(elem, 'Zoom', { mouseButtonMask: 2 });
+        cstools.setToolActiveForElement(elem, 'Pan', { mouseButtonMask: 4 });
+        cstools.setToolActiveForElement(elem, 'StackScrollMouseWheel', {});
+        cstools.setToolActiveForElement(elem, 'ZoomTouchPinch', {});
+        cstools.setToolActiveForElement(elem, 'PanMultiTouch', {});
+        cstools.setToolActiveForElement(elem, 'StackScrollMultiTouch', {});
+      } catch (e) {}
+    }
+
+    function vpLoadStudy(vp, uid) {
+      vp.uid = uid; vp.spin(true); vp.setTag('Cargando…'); vp.hidePick();
+      HGV.dj(ROOT + '/studies/' + uid + '/series').then(function (series) {
+        if (!series || !series.length) { vp.spin(false); vp.setTag('Estudio sin series'); return; }
+        series.sort(function (a, b) { return (HGV.tag1(a, '00200011') || 0) - (HGV.tag1(b, '00200011') || 0); });
+        var s0 = series[0], su = HGV.tag1(s0, '0020000E'), mod = HGV.tag1(s0, '00080060') || '';
+        return HGV.dj(ROOT + '/studies/' + uid + '/series/' + su + '/metadata').then(function (insts) {
+          insts.sort(function (a, b) { return (HGV.tag1(a, '00200013') || 0) - (HGV.tag1(b, '00200013') || 0); });
+          var ids = [];
+          insts.forEach(function (md) {
+            var sop = HGV.tag1(md, '00080018'); if (!sop) return;
+            var frames = parseInt(HGV.tag1(md, '00280008') || '1', 10) || 1;
+            for (var f = 1; f <= frames; f++) {
+              var id = 'wadors:' + ROOT + '/studies/' + uid + '/series/' + su + '/instances/' + sop + '/frames/' + f;
+              HGV.cwil.wadors.metaDataManager.add(id, md); ids.push(id);
+            }
+          });
+          if (!ids.length) { vp.spin(false); vp.setTag('Serie sin imágenes'); return; }
+          var m0 = insts[0];
+          vp.meta = {
+            pname: (HGV.pn(m0, '00100010') || '').replace(/\^/g, ' ').replace(/\s+/g, ' ').trim(),
+            studyDate: HGV.tag1(m0, '00080020') || '', modality: HGV.tag1(m0, '00080060') || mod,
+            desc: HGV.tag1(m0, '0008103E') || HGV.tag1(m0, '00081030') || ''
+          };
+          vp.stack = { currentImageIdIndex: 0, imageIds: ids };
+          return cs.loadAndCacheImage(ids[0]).then(function (image) {
+            cs.displayImage(vp.elem, image);
+            vpTools(vp.elem);
+            try { cstools.clearToolState(vp.elem, 'stack'); } catch (e) {}
+            try { cstools.addToolState(vp.elem, 'stack', { currentImageIdIndex: 0, imageIds: ids }); } catch (e) {}
+            vp.spin(false); vp.tagFromMeta();
+            if (syncOn) attachSync(vp.elem);
+            setTimeout(function () { try { cs.resize(vp.elem, true); } catch (e) {} }, 30);
+          });
+        });
+      }).catch(function (e) { vp.spin(false); vp.setTag('Error al cargar'); });
+    }
+
+    function buildGrid(n) {
+      var grid = mk('div', 'hgv-grid ' + (n === 4 ? 'cols-2 rows-2' : 'cols-2'));
+      grid.id = 'hgv-grid';
+      vps = [];
+      for (var i = 0; i < n; i++) {
+        var wrap = mk('div', 'hgv-vp'), elx = mk('div', 'hgv-vp-el'),
+            tag = mk('div', 'hgv-vp-tag'), pick = mk('div', 'hgv-vp-pick', '<span class="ic">⊕</span><span>Elegir estudio</span>'),
+            spin = mk('div', 'hgv-vp-spin', '<div class="s"></div>');
+        wrap.appendChild(elx); wrap.appendChild(tag); wrap.appendChild(pick); wrap.appendChild(spin);
+        grid.appendChild(wrap);
+        (function (elx, tag, pick, spin, idx) {
+          var vp = {
+            elem: elx, idx: idx, meta: null, uid: null,
+            spin: function (on) { spin.classList.toggle('on', !!on); },
+            setTag: function (t) { tag.innerHTML = t; },
+            tagFromMeta: function () { var m = vp.meta || {}; tag.innerHTML = '<b>' + esc(m.modality || '') + '</b> ' + esc(m.desc || '') + '<br>' + esc(HGV.fdate(m.studyDate) || ''); },
+            showPick: function () { pick.style.display = 'flex'; },
+            hidePick: function () { pick.style.display = 'none'; }
+          };
+          try { cs.enable(elx); } catch (e) {}
+          pick.addEventListener('click', function (ev) { ev.stopPropagation(); openStudyPicker(vp); });
+          vps.push(vp);
+        })(elx, tag, pick, spin, i);
+      }
+      return grid;
+    }
+
+    function openStudyPicker(vp) {
+      pickTargetVp = vp; pickPanel.open();
+      pickPanel.body.innerHTML = '<div class="hgv-key-empty">Cargando estudios…</div>';
+      getComparableStudies().then(function (list) {
+        list = (list || []).filter(function (s) { return s.uid; });
+        if (!list.length) { pickPanel.body.innerHTML = '<div class="hgv-key-empty">No hay otros estudios disponibles para comparar.</div>'; return; }
+        var usedUids = vps.map(function (v) { return v.uid; });
+        pickPanel.body.innerHTML = '<div class="hgv-studies">' + list.map(function (s) {
+          var taken = usedUids.indexOf(s.uid) >= 0 && (!pickTargetVp || pickTargetVp.uid !== s.uid);
+          return '<button type="button" class="hgv-study' + (taken ? ' current' : '') + '" data-uid="' + esc(s.uid) + '">'
+            + '<span class="mod">' + esc(s.modality || '—') + '</span>'
+            + '<span class="info"><b>' + esc(s.desc || 'Estudio') + '</b><span>' + esc(HGV.fdate(s.date) || '') + '</span></span></button>';
+        }).join('') + '</div>';
+        pickPanel.body.querySelectorAll('.hgv-study[data-uid]').forEach(function (b) {
+          b.addEventListener('click', function () { pickPanel.close(); vpLoadStudy(pickTargetVp, b.getAttribute('data-uid')); });
+        });
+      });
+    }
+
+    function initSyncs() {
+      try {
+        syncW = new cstools.Synchronizer('cornerstoneimagerendered', cstools.wwwcSynchronizer);
+        syncPZ = new cstools.Synchronizer('cornerstoneimagerendered', cstools.panZoomSynchronizer);
+        syncStack = new cstools.Synchronizer('cornerstonenewimage', cstools.stackImageIndexSynchronizer);
+      } catch (e) { syncW = syncPZ = syncStack = null; }
+    }
+    function attachSync(elem) { if (!syncOn) return; try { syncW.add(elem); syncPZ.add(elem); syncStack.add(elem); } catch (e) {} }
+    function detachSync(elem) { try { syncW.remove(elem); syncPZ.remove(elem); syncStack.remove(elem); } catch (e) {} }
+    function setSync(on) {
+      syncOn = on;
+      document.getElementById('hgv-sync').classList.toggle('active', on);
+      document.getElementById('hgv-sync').innerHTML = on ? '🔗 Sincronizado' : '⛓️‍💥 Independiente';
+      vps.forEach(function (v) { if (v.uid) { if (on) attachSync(v.elem); else detachSync(v.elem); } });
+    }
+
+    function baseOverlays(hide) {
+      ['v-overlay', 'v-hud', 'v-hud2', 'v-nav'].forEach(function (id) { var n = document.getElementById(id); if (n) n.style.display = hide ? 'none' : ''; });
+    }
+    function resizeVps() { vps.forEach(function (v) { try { cs.resize(v.elem, true); } catch (e) {} }); }
+
+    function teardownGrid() {
+      vps.forEach(function (v) { detachSync(v.elem); try { cs.disable(v.elem); } catch (e) {} });
+      vps = []; var g = document.getElementById('hgv-grid'); if (g) g.remove();
+    }
+    function setLayoutButtons(n) {
+      document.querySelectorAll('#hgv-layout button').forEach(function (b) { b.classList.toggle('on', (+b.getAttribute('data-n')) === n); });
+    }
+
+    function enterCompare(n) {
+      n = n || 2;
+      if (compareOn) { relayout(n); return; }
+      compareOn = true;
+      Object.keys(panels).forEach(function (k) { if (k !== 'pick') panels[k].close(); });
+      var dicom = document.getElementById('dicom'); if (dicom) dicom.style.display = 'none';
+      baseOverlays(true);
+      if (!syncW) initSyncs();
+      stage.appendChild(buildGrid(n));
+      cmpBar.classList.add('show'); bCompare.classList.add('active');
+      setLayoutButtons(n);
+      vpLoadStudy(vps[0], HGV.STUDY);
+      for (var i = 1; i < vps.length; i++) vps[i].showPick();
+      setSync(syncOn);
+      setTimeout(resizeVps, 70);
+    }
+    function relayout(n) {
+      var prev = vps.map(function (v) { return v.uid; });
+      teardownGrid();
+      stage.appendChild(buildGrid(n));
+      setLayoutButtons(n);
+      vpLoadStudy(vps[0], prev[0] || HGV.STUDY);
+      for (var i = 1; i < n; i++) { if (prev[i]) vpLoadStudy(vps[i], prev[i]); else vps[i].showPick(); }
+      setSync(syncOn);
+      setTimeout(resizeVps, 70);
+    }
+    function exitCompare() {
+      if (!compareOn) return; compareOn = false;
+      teardownGrid();
+      var dicom = document.getElementById('dicom'); if (dicom) dicom.style.display = '';
+      baseOverlays(false);
+      cmpBar.classList.remove('show'); bCompare.classList.remove('active');
+      setTimeout(function () { try { cs.resize(el, true); } catch (e) {} }, 70);
+    }
+
+    bCompare.addEventListener('click', function () { if (compareOn) exitCompare(); else enterCompare(2); });
+    document.getElementById('hgv-cmp-exit').addEventListener('click', exitCompare);
+    document.getElementById('hgv-sync').addEventListener('click', function () { setSync(!syncOn); });
+    document.getElementById('hgv-layout').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-n]'); if (!b) return; enterCompare(+b.getAttribute('data-n'));
+    });
+    window.addEventListener('resize', function () { if (compareOn) resizeVps(); });
+
+    /* exponer para depuración / extensiones */
+    HGV.pro = { toast: toast, makePanel: makePanel, mk: mk, toolBtn: toolBtn, addAfter: addAfter,
+      enterCompare: enterCompare, exitCompare: exitCompare, getComparableStudies: getComparableStudies,
+      loadInto: function (i, uid) { if (vps[i]) vpLoadStudy(vps[i], uid); }, vpCount: function () { return vps.length; } };
 
     /* limpiar realce al reset */
     var resetBtn = document.getElementById('t-reset');
