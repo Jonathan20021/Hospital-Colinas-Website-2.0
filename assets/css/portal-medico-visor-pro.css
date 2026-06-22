@@ -138,3 +138,11 @@
 /* Mensaje de IA con posible hallazgo crítico (resaltado de seguridad) */
 .ai-msg.ai-critical{border-color:#b3424f!important;background:#2a1417;color:#ffe2e6}
 .ai-msg.ai-critical strong{color:#ff9fab}
+
+/* Menú desplegable del módulo pro (agrupar mediciones → toolbar más limpia) */
+.hgv-dd{position:relative;display:inline-flex;flex:none}
+.hgv-dd-menu{position:absolute;top:calc(100% + 6px);left:0;background:#161d2e;border:1px solid #2b3550;border-radius:10px;
+  padding:6px;display:none;flex-direction:column;gap:4px;z-index:30;min-width:184px;box-shadow:0 12px 34px rgba(0,0,0,.55)}
+.hgv-dd.open .hgv-dd-menu{display:flex}
+.hgv-dd-menu .v-tool{width:100%;justify-content:flex-start;white-space:nowrap}
+.hgv-caret{font-size:.7em;opacity:.7;margin-left:3px}

@@ -293,25 +293,7 @@
       try { x.drawImage(c, 0, 0, o.width, o.height); } catch (e) { return null; }
       try { return o.toDataURL('image/jpeg', 0.85); } catch (e) { return null; }
     }
-    var keyPanel = makePanel('key', '★', 'Imágenes clave',
-      'Capturas marcadas en esta sesión. No se guardan al cerrar el visor.');
-    function renderKeyPanel() {
-      var b = keyPanel.body;
-      if (!keyImages.length) { b.innerHTML = '<div class="hgv-key-empty">Sin imágenes clave.<br>Pulsa <b>★ Clave</b> para marcar la vista actual.</div>'; return; }
-      b.innerHTML = '<div class="hgv-key-grid">' + keyImages.map(function (k, i) {
-        return '<div class="hgv-key-item" data-i="' + i + '"><button type="button" class="del" data-del="' + i + '" aria-label="Quitar">✕</button>'
-          + '<img src="' + k.thumb + '" alt=""><div class="cap">' + esc(k.cap) + '</div></div>';
-      }).join('') + '</div>'
-        + '<div class="hgv-hist-actions"><button type="button" class="hgv-btn primary" id="hgv-key-pdf">⤓ Exportar a PDF</button>'
-        + '<button type="button" class="hgv-btn ghost" id="hgv-key-clear">Vaciar</button></div>';
-      b.querySelector('#hgv-key-pdf').addEventListener('click', exportKeyPdf);
-      b.querySelector('#hgv-key-clear').addEventListener('click', function () { keyImages = []; updateKeyBadge(); renderKeyPanel(); });
-    }
-    keyPanel.body.addEventListener('click', function (e) {
-      var del = e.target.closest('[data-del]');
-      if (del) { keyImages.splice(+del.getAttribute('data-del'), 1); updateKeyBadge(); renderKeyPanel(); return; }
-    });
-    bKey.addEventListener('click', function () {
+    function markCurrent() {
       var thumb = capture(320), full = capture(1400);
       if (!thumb) { toast('No hay imagen para marcar.'); return; }
       var st = HGV.getStack(), meta = HGV.getStudyMeta();
@@ -319,14 +301,35 @@
         thumb: thumb, full: full,
         cap: (HGV.getSeriesDesc() || meta.modality || 'Imagen') + ' · ' + ((st.currentImageIdIndex || 0) + 1) + '/' + (st.imageIds.length || 1)
       });
-      updateKeyBadge(); toast('Imagen marcada como clave (' + keyImages.length + ').');
-      if (keyPanel.isOpen()) renderKeyPanel();
+      updateKeyBadge(); toast('Imagen marcada (' + keyImages.length + ').');
+      renderKeyPanel();
+    }
+    var keyPanel = makePanel('key', '★', 'Imágenes clave',
+      'Capturas marcadas en esta sesión. No se guardan al cerrar el visor.');
+    function renderKeyPanel() {
+      var b = keyPanel.body;
+      var head = '<div class="hgv-hist-actions" style="margin:0 0 12px"><button type="button" class="hgv-btn primary" id="hgv-key-add">➕ Marcar imagen actual</button></div>';
+      if (!keyImages.length) {
+        b.innerHTML = head + '<div class="hgv-key-empty">Aún no has marcado imágenes.<br>Pulsa <b>➕ Marcar imagen actual</b> para guardar la vista.</div>';
+      } else {
+        b.innerHTML = head + '<div class="hgv-key-grid">' + keyImages.map(function (k, i) {
+          return '<div class="hgv-key-item" data-i="' + i + '"><button type="button" class="del" data-del="' + i + '" aria-label="Quitar">✕</button>'
+            + '<img src="' + k.thumb + '" alt=""><div class="cap">' + esc(k.cap) + '</div></div>';
+        }).join('') + '</div>'
+          + '<div class="hgv-hist-actions"><button type="button" class="hgv-btn primary" id="hgv-key-pdf">⤓ Exportar a PDF</button>'
+          + '<button type="button" class="hgv-btn ghost" id="hgv-key-clear">Vaciar</button></div>';
+        b.querySelector('#hgv-key-pdf').addEventListener('click', exportKeyPdf);
+        b.querySelector('#hgv-key-clear').addEventListener('click', function () { keyImages = []; updateKeyBadge(); renderKeyPanel(); });
+      }
+      var add = b.querySelector('#hgv-key-add'); if (add) add.addEventListener('click', markCurrent);
+    }
+    keyPanel.body.addEventListener('click', function (e) {
+      var del = e.target.closest('[data-del]');
+      if (del) { keyImages.splice(+del.getAttribute('data-del'), 1); updateKeyBadge(); renderKeyPanel(); return; }
     });
-    // doble clic en ★ abre el panel; además un botón "Ver clave" explícito (claro en móvil)
-    bKey.addEventListener('dblclick', function (e) { e.preventDefault(); keyPanel.open(); renderKeyPanel(); });
-    var bKeyView = toolBtn('t-key-view', '☆ Ver clave', 'Ver las imágenes clave marcadas', 'hgv-pro');
-    addAfter('t-key', bKeyView);
-    bKeyView.addEventListener('click', function () { keyPanel.toggle(); if (keyPanel.isOpen()) renderKeyPanel(); });
+    // Un solo botón "★ Clave" abre el panel; marcar y ver viven dentro (UX más limpia).
+    bKey.title = 'Imágenes clave (marcar y ver)'; bKey.setAttribute('aria-label', 'Imágenes clave');
+    bKey.addEventListener('click', function () { keyPanel.toggle(); if (keyPanel.isOpen()) renderKeyPanel(); });
 
     function exportKeyPdf() {
       if (!window.jspdf || !window.jspdf.jsPDF) { toast('No se pudo cargar el generador de PDF.'); return; }
@@ -383,7 +386,7 @@
     function selectVp(vp) { activeVp = vp; vps.forEach(function (v) { if (v.wrap) v.wrap.classList.toggle('sel', v === vp); }); }
 
     var bCompare = toolBtn('t-compare', '⊞ Comparar', 'Comparar dos estudios lado a lado', 'hgv-pro');
-    addAfter('t-key-view', bCompare);
+    addAfter('t-key', bCompare);
 
     // Barra de comparación (layout + sincronización + salir), oculta hasta activar
     var cmpBar = mk('div', 'hgv-cmp-bar'); cmpBar.id = 'hgv-cmp-bar';
@@ -661,6 +664,31 @@
         } catch (e) {}
         var dd = document.getElementById('dd-preset'); if (dd) dd.classList.remove('open');
       }, true);
+    })();
+
+    // Agrupar las mediciones en un menú desplegable → toolbar menos saturada.
+    // Mover los botones a otro contenedor conserva sus listeners e IDs (setActiveTool usa getElementById).
+    (function groupMeasure() {
+      var ids = ['t-length', 't-angle', 't-roi', 't-rect', 't-bidir', 't-arrow', 't-probe', 't-calib'];
+      var btns = ids.map(function (id) { return document.getElementById(id); }).filter(Boolean);
+      if (btns.length < 3) return;
+      var dd = mk('div', 'hgv-dd'); dd.id = 'hgv-measure-dd';
+      var trg = toolBtn('hgv-measure-trg', '📐 Medir <span class="hgv-caret">▾</span>', 'Herramientas de medición', 'hgv-pro');
+      var menu = mk('div', 'hgv-dd-menu'); menu.id = 'hgv-measure-menu';
+      btns[0].parentNode.insertBefore(dd, btns[0]);
+      dd.appendChild(trg); dd.appendChild(menu);
+      btns.forEach(function (b) { menu.appendChild(b); });
+      function markActive() { trg.classList.toggle('active', btns.some(function (b) { return b.classList.contains('active'); })); }
+      function pos() {
+        if (window.matchMedia('(max-width:760px)').matches) {
+          var r = trg.getBoundingClientRect();
+          menu.style.position = 'fixed'; menu.style.top = (r.bottom + 6) + 'px';
+          menu.style.left = Math.max(8, Math.min(r.left, window.innerWidth - 200)) + 'px'; menu.style.right = 'auto';
+        } else { menu.style.position = ''; menu.style.top = ''; menu.style.left = ''; menu.style.right = ''; }
+      }
+      trg.addEventListener('click', function (e) { e.stopPropagation(); var op = !dd.classList.contains('open'); dd.classList.toggle('open'); if (op) pos(); });
+      document.addEventListener('click', function (e) { if (!dd.contains(e.target)) dd.classList.remove('open'); });
+      menu.addEventListener('click', function (e) { if (e.target.closest('.v-tool')) { dd.classList.remove('open'); setTimeout(markActive, 0); } });
     })();
 
     /* exponer para depuración / extensiones */
