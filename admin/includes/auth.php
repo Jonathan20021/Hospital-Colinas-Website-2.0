@@ -61,6 +61,13 @@ function admin_permission_definitions(): array
             'icon' => 'shield-user',
             'active' => 'usuarios',
         ],
+        'audit' => [
+            'label' => 'Auditoría',
+            'description' => 'Bitácora de accesos a datos de pacientes (PHI) desde los portales.',
+            'href' => 'auditoria.php',
+            'icon' => 'history',
+            'active' => 'auditoria',
+        ],
         'ai' => [
             'label' => 'Colinas IA',
             'description' => 'Configurar el asistente virtual, modelo y credenciales.',

@@ -21,6 +21,7 @@
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/portal_client.php';
 require_once __DIR__ . '/../includes/doctor_portal_session.php';
+require_once __DIR__ . '/../includes/phi_audit.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -62,6 +63,13 @@ if (!doctor_is_logged_in()) {
 
 $token = doctor_token();
 $res = portal_api_call($method, $path, $method === 'GET' ? $query : $body, $token);
+
+// Bitácora de auditoría de PHI: acceso del médico a datos de pacientes
+// (todo lo que cuelga de /portal-doctor/me es expediente/clínico).
+if (str_starts_with($path, '/portal-doctor/me')) {
+    $doc = doctor_current();
+    phi_audit_record('doctor', isset($doc['id']) ? (int) $doc['id'] : null, phi_audit_actor_label($doc), $method, $path, (int) ($res['status'] ?? 0));
+}
 
 // Si el upstream devuelve 401, limpiar sesion local
 if ($res['status'] === 401) {

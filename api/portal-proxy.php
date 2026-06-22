@@ -21,6 +21,7 @@
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/portal_client.php';
 require_once __DIR__ . '/../includes/portal_session.php';
+require_once __DIR__ . '/../includes/phi_audit.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -81,6 +82,13 @@ if ($path === '/portal/me' && $method !== 'GET') {
 
 $token = portal_token();
 $res = portal_api_call($method, $path, $method === 'GET' ? $query : $body, $token);
+
+// Bitácora de auditoría de PHI: el paciente accede a sus propios datos.
+if ($needsAuth && str_starts_with($path, '/portal/me')) {
+    $pat = portal_patient();
+    $pid = isset($pat['id']) ? (int) $pat['id'] : null;
+    phi_audit_record('patient', $pid, phi_audit_actor_label($pat), $method, $path, (int) ($res['status'] ?? 0), $pid);
+}
 
 // Si el upstream devuelve 401, limpiar sesión local
 if ($res['status'] === 401 && $needsAuth) {
