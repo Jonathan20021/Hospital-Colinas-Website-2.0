@@ -269,6 +269,69 @@ function portal_layout_end(): void
                     </div>
                 </form>
             </dialog>
+
+            <?php if (empty(portal_patient()['email'])): ?>
+            <dialog class="portal-dialog portal-onboard" id="portal-email-dialog" aria-labelledby="portal-onboard-title">
+                <button type="button" class="portal-onboard-x js-close-dialog" aria-label="Cerrar"><i data-lucide="x"></i></button>
+
+                <div class="portal-onboard-step" data-step="email">
+                    <div class="portal-onboard-hero">
+                        <span class="portal-onboard-badge"><i data-lucide="mail-plus"></i></span>
+                        <h2 id="portal-onboard-title">Agrega tu correo y entra más fácil</h2>
+                        <p>La próxima vez entra con tu correo: te enviamos un código y listo. Sin recordar contraseñas.</p>
+                    </div>
+                    <ul class="portal-onboard-benefits">
+                        <li><span><i data-lucide="key-round"></i></span> Entra con un código que llega a tu correo</li>
+                        <li><span><i data-lucide="rotate-ccw"></i></span> Recupera tu acceso sin llamar al hospital</li>
+                        <li><span><i data-lucide="bell"></i></span> Recibe avisos importantes de tus citas</li>
+                    </ul>
+                    <form class="portal-onboard-form" data-form="email" novalidate>
+                        <div class="portal-onboard-field">
+                            <label for="onb-email">Tu correo electrónico</label>
+                            <input type="email" id="onb-email" inputmode="email" autocomplete="email" placeholder="nombre@correo.com" required>
+                        </div>
+                        <div class="portal-onboard-field">
+                            <label for="onb-email2">Repite tu correo</label>
+                            <input type="email" id="onb-email2" inputmode="email" autocomplete="email" placeholder="nombre@correo.com" required>
+                        </div>
+                        <p class="portal-onboard-error" data-error hidden></p>
+                        <button type="submit" class="btn btn-green portal-onboard-cta"><i data-lucide="send"></i> Enviarme el código</button>
+                        <button type="button" class="portal-onboard-skip js-close-dialog">Ahora no</button>
+                    </form>
+                </div>
+
+                <div class="portal-onboard-step" data-step="code" hidden>
+                    <div class="portal-onboard-hero">
+                        <span class="portal-onboard-badge"><i data-lucide="mail-check"></i></span>
+                        <h2>Revisa tu correo</h2>
+                        <p>Enviamos un código de 6 dígitos a <strong data-masked>tu correo</strong>. Escríbelo aquí para confirmarlo.</p>
+                    </div>
+                    <form class="portal-onboard-form" data-form="code" novalidate>
+                        <div class="portal-onboard-field">
+                            <label for="onb-code">Código de 6 dígitos</label>
+                            <input type="text" id="onb-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" placeholder="••••••" class="portal-onboard-code" required>
+                        </div>
+                        <p class="portal-onboard-hint">El código vence en 10 minutos. No lo compartas con nadie.</p>
+                        <p class="portal-onboard-error" data-error hidden></p>
+                        <button type="submit" class="btn btn-green portal-onboard-cta"><i data-lucide="check-check"></i> Confirmar</button>
+                        <div class="portal-onboard-altrow">
+                            <button type="button" class="portal-link-button" data-action="resend">Reenviar código</button>
+                            <span aria-hidden="true">·</span>
+                            <button type="button" class="portal-link-button" data-action="change">Usar otro correo</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="portal-onboard-step" data-step="done" hidden>
+                    <div class="portal-onboard-hero">
+                        <span class="portal-onboard-badge is-ok"><i data-lucide="party-popper"></i></span>
+                        <h2>¡Listo! Tu correo quedó guardado</h2>
+                        <p>La próxima vez puedes entrar con tu correo y un código que te enviaremos. También sirve para recuperar tu acceso.</p>
+                    </div>
+                    <button type="button" class="btn btn-green portal-onboard-cta" data-action="finish"><i data-lucide="check-check"></i> Entendido</button>
+                </div>
+            </dialog>
+            <?php endif; ?>
         <?php endif; ?>
 
         <div class="portal-toast-region" id="portal-toast-region" aria-live="polite" aria-atomic="true"></div>
@@ -283,6 +346,12 @@ function portal_layout_end(): void
             };
         </script>
         <script src="<?= e(base_url('assets/js/portal-pwa.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+        <?php if (portal_is_logged_in() && empty(portal_patient()['email'])): ?>
+        <script>
+            window.HGLC_ONBOARD = { page: <?= json_encode($GLOBALS['portal_active'] ?? '') ?> };
+        </script>
+        <script src="<?= e(base_url('assets/js/portal-email-onboarding.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-email-onboarding.js') ?: 1)) ?>"></script>
+        <?php endif; ?>
     </body>
 
     </html>

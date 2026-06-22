@@ -83,6 +83,17 @@ if ($path === '/portal/me' && $method !== 'GET') {
 $token = portal_token();
 $res = portal_api_call($method, $path, $method === 'GET' ? $query : $body, $token);
 
+// Al confirmar un correo nuevo, refrescar la sesión (el correo y el estado de
+// verificación) para que el portal deje de pedirlo y el perfil lo muestre al instante.
+if ($path === '/portal/me/email-confirm' && ($res['status'] ?? 0) === 200) {
+    $j = json_decode($res['raw'] ?? '', true);
+    $newEmail = $j['data']['email'] ?? null;
+    if ($newEmail) {
+        $_SESSION['portal_patient']['email'] = $newEmail;
+        portal_set_verified(true);
+    }
+}
+
 // Bitácora de auditoría de PHI: el paciente accede a sus propios datos.
 if ($needsAuth && str_starts_with($path, '/portal/me')) {
     $pat = portal_patient();

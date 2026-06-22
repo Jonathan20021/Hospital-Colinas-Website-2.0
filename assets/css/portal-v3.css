@@ -2298,3 +2298,191 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
         min-height: 0;
     }
 }
+
+/* ── Onboarding: alta de correo del paciente ─────────────────────────────── */
+.portal-onboard {
+    width: min(94vw, 460px);
+    max-height: 92vh;
+    overflow: auto;
+    position: relative;
+}
+.portal-onboard-x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 9px;
+    background: var(--portal-surface-muted);
+    color: var(--portal-muted);
+    cursor: pointer;
+    z-index: 2;
+}
+.portal-onboard-x:hover { background: var(--portal-line-soft); color: var(--portal-ink); }
+.portal-onboard-x svg { width: 18px; height: 18px; }
+.portal-onboard-step { padding: 30px 26px 26px; }
+.portal-onboard-hero { text-align: center; }
+.portal-onboard-badge {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 14px;
+    display: grid;
+    place-items: center;
+    border-radius: 19px;
+    background: linear-gradient(140deg, var(--portal-navy), #3a3490);
+    color: #fff;
+    box-shadow: 0 16px 32px -16px rgba(38, 33, 97, .75);
+}
+.portal-onboard-badge svg { width: 28px; height: 28px; }
+.portal-onboard-badge.is-ok {
+    background: linear-gradient(140deg, var(--portal-green), var(--portal-green-strong));
+    box-shadow: 0 16px 32px -16px rgba(75, 151, 45, .7);
+}
+.portal-onboard-hero h2 {
+    margin: 0 0 7px;
+    color: var(--portal-navy);
+    font-family: "Outfit", "Inter", sans-serif;
+    font-size: 1.34rem;
+    line-height: 1.2;
+}
+.portal-onboard-hero p {
+    margin: 0 auto;
+    max-width: 36ch;
+    color: var(--portal-text);
+    font-size: .95rem;
+    line-height: 1.5;
+}
+.portal-onboard-benefits {
+    list-style: none;
+    margin: 18px 0 2px;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+.portal-onboard-benefits li {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: var(--portal-ink);
+    font-size: .92rem;
+    font-weight: 600;
+    text-align: left;
+}
+.portal-onboard-benefits li span {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px;
+    background: var(--portal-green-soft);
+    color: var(--portal-green-strong);
+}
+.portal-onboard-benefits li span svg { width: 17px; height: 17px; }
+.portal-onboard-form { margin-top: 18px; display: grid; gap: 13px; }
+.portal-onboard-field { display: grid; gap: 6px; text-align: left; }
+.portal-onboard-field label { font-size: .86rem; font-weight: 700; color: var(--portal-ink); }
+.portal-onboard-field input {
+    width: 100%;
+    height: 48px;
+    padding: 0 14px;
+    border: 1.5px solid var(--portal-line);
+    border-radius: 12px;
+    background: var(--portal-surface);
+    color: var(--portal-ink);
+    font-size: 1rem;
+    transition: border-color .15s, box-shadow .15s;
+}
+.portal-onboard-field input:focus {
+    outline: none;
+    border-color: var(--portal-navy);
+    box-shadow: 0 0 0 4px var(--portal-navy-soft);
+}
+.portal-onboard-code {
+    text-align: center;
+    letter-spacing: .45em;
+    font-size: 1.4rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    padding-right: calc(14px - .45em);
+}
+.portal-onboard-cta { width: 100%; justify-content: center; min-height: 50px; font-size: 1rem; }
+.portal-onboard-skip {
+    margin-top: 2px;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--portal-muted);
+    font-size: .92rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px;
+}
+.portal-onboard-skip:hover { color: var(--portal-ink); }
+.portal-onboard-hint { margin: -2px 2px 0; color: var(--portal-muted); font-size: .82rem; text-align: left; }
+.portal-onboard-error {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fdecec;
+    color: #b42318;
+    font-size: .86rem;
+    font-weight: 600;
+    border: 1px solid #f7c9c9;
+    text-align: left;
+}
+.portal-onboard-altrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--portal-muted);
+    font-size: .9rem;
+}
+.portal-onboard .portal-link-button {
+    border: 0;
+    background: transparent;
+    color: var(--portal-navy);
+    font-weight: 700;
+    cursor: pointer;
+    font-size: .9rem;
+}
+.portal-onboard .portal-link-button:hover { text-decoration: underline; }
+
+/* CTA "Agrega tu correo" dentro del perfil */
+.portal-email-cta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--portal-navy-soft);
+    border-radius: var(--portal-radius);
+    background: linear-gradient(135deg, var(--portal-navy-soft), var(--portal-surface));
+}
+.portal-email-cta-ic {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--portal-navy);
+    border: 1px solid var(--portal-line);
+}
+.portal-email-cta-copy { flex: 1 1 auto; min-width: 0; }
+.portal-email-cta-copy strong { display: block; color: var(--portal-navy); font-size: .98rem; }
+.portal-email-cta-copy span { color: var(--portal-text); font-size: .88rem; }
+.portal-email-cta .btn { flex: none; }
+
+@media (max-width: 480px) {
+    .portal-onboard { width: calc(100vw - 20px); }
+    .portal-onboard-step { padding: 26px 18px 22px; }
+    .portal-onboard-hero h2 { font-size: 1.22rem; }
+    .portal-email-cta { flex-wrap: wrap; }
+    .portal-email-cta .btn { width: 100%; justify-content: center; }
+}

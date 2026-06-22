@@ -108,7 +108,13 @@ portal_layout_begin('Mi perfil', 'perfil');
         </div>
         <div>
             <dt><i data-lucide="mail"></i> Correo electrónico</dt>
-            <dd><?= e($displayValue($p['email'] ?? null)) ?></dd>
+            <dd>
+                <?php if (trim((string)($p['email'] ?? '')) !== ''): ?>
+                    <?= e($p['email']) ?>
+                <?php else: ?>
+                    <button type="button" class="portal-text-link" data-open-email-onboarding>Agregar correo</button>
+                <?php endif; ?>
+            </dd>
         </div>
         <div>
             <dt><i data-lucide="phone"></i> Teléfono</dt>
@@ -135,6 +141,17 @@ portal_layout_begin('Mi perfil', 'perfil');
             <dd><?= e($displayValue($p['insurance_policy'] ?? null)) ?></dd>
         </div>
     </dl>
+
+    <?php if (trim((string)($p['email'] ?? '')) === ''): ?>
+    <div class="portal-email-cta">
+        <span class="portal-email-cta-ic"><i data-lucide="mail-plus"></i></span>
+        <div class="portal-email-cta-copy">
+            <strong>Agrega tu correo y entra más fácil</strong>
+            <span>Entra con un código que te llega al correo, sin recordar contraseñas.</span>
+        </div>
+        <button type="button" class="btn btn-green" data-open-email-onboarding><i data-lucide="mail-plus"></i> Agregar correo</button>
+    </div>
+    <?php endif; ?>
 </section>
 
 <aside class="portal-profile-aside">
