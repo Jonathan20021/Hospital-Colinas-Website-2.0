@@ -88,6 +88,9 @@
     requestAnimationFrame(function () { t.classList.add('in'); });
   }
 
+  var swReg = null;
+  function checkUpdate() { if (swReg) { try { swReg.update(); } catch (e) {} } }
+
   function registerSW() {
     if (!('serviceWorker' in navigator) || !CFG.sw) return;
     var refreshing = false;
@@ -99,6 +102,7 @@
 
     navigator.serviceWorker.register(CFG.sw, CFG.scope ? { scope: CFG.scope } : undefined)
       .then(function (reg) {
+        swReg = reg;
         if (reg.waiting && navigator.serviceWorker.controller) showUpdate(reg.waiting);
         reg.addEventListener('updatefound', function () {
           var nw = reg.installing;
@@ -107,13 +111,18 @@
             if (nw.state === 'installed' && navigator.serviceWorker.controller) showUpdate(nw);
           });
         });
-        // Revisa actualizaciones cada hora mientras la app esté abierta.
-        setInterval(function () { reg.update().catch(function () {}); }, 3600000);
+        // Revisa actualizaciones periódicamente mientras la app esté abierta.
+        setInterval(checkUpdate, 900000);
       })
       .catch(function () { /* SW no disponible: el portal sigue funcionando normal */ });
   }
 
   // ── Instalación (Android/Chromium) ───────────────────────────────
+  // Comprobar actualización al volver a la app (cambiar de pestaña, desbloquear,
+  // reabrir el PWA) → el aviso "Nueva versión" aparece de inmediato tras un deploy.
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) checkUpdate(); });
+  window.addEventListener('focus', checkUpdate);
+
   var deferredPrompt = null;
   function showInstall() {
     if (isStandalone() || document.querySelector('.pwa-install')) return;

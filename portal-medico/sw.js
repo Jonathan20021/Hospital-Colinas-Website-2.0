@@ -121,7 +121,18 @@ self.addEventListener('fetch', (event) => {
       if (hit) return hit;
       try {
         const res = await fetch(req);
-        if (res && res.status === 200 && (res.type === 'basic' || res.type === 'cors')) cache.put(req, res.clone());
+        if (res && res.status === 200 && (res.type === 'basic' || res.type === 'cors')) {
+          // Anti-acumulación: borra versiones anteriores (?v viejo) del MISMO
+          // archivo antes de guardar la nueva, para que la caché no crezca sin fin.
+          const keys = await cache.keys();
+          await Promise.all(keys.map(async (k) => {
+            const ku = new URL(k.url);
+            if (ku.origin === url.origin && ku.pathname === url.pathname && ku.search !== url.search) {
+              await cache.delete(k);
+            }
+          }));
+          await cache.put(req, res.clone());
+        }
         return res;
       } catch (e) {
         return hit || new Response('', { status: 504 });
