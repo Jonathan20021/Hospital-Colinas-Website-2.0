@@ -1,0 +1,128 @@
+/* =============================================================================
+   Visor de imágenes — módulo MPR (reconstrucción multiplanar 3D del paciente).
+   Reconstruye axial / coronal / sagital desde el volumen de una serie TC/RM
+   y los muestra con crosshairs sincronizados estilo 3D Slicer.
+   Tema oscuro, coherente con el visor base. 100% client-side.
+   ============================================================================= */
+
+/* Botón de la toolbar (deshabilitado si la serie no es volumétrica) */
+.v-tool.mpr-btn[disabled]{opacity:.4;cursor:not-allowed}
+.v-tool.mpr-btn[disabled]:hover{background:#1a2236}
+
+/* Barra de controles MPR (aparece al entrar en MPR) */
+.mpr-bar{display:none;align-items:center;gap:6px;flex-wrap:wrap;width:100%;margin-top:6px;padding-top:7px;border-top:1px solid #232c42}
+.mpr-bar.show{display:flex}
+.mpr-bar .seg{display:inline-flex;background:#11182a;border:1px solid #2b3550;border-radius:9px;overflow:hidden}
+.mpr-bar .seg button{appearance:none;border:0;background:transparent;color:#aeb6cc;font:inherit;font-size:.78rem;padding:7px 11px;cursor:pointer;transition:background .12s,color .12s}
+.mpr-bar .seg button:hover{background:#1b2540;color:#fff}
+.mpr-bar .seg button.on{background:#2f3e66;color:#fff}
+.mpr-spacer{flex:1 1 auto;min-width:8px}
+
+/* Stage MPR: rejilla de vistas montada sobre .v-stage */
+.mpr-stage{position:absolute;inset:0;display:grid;gap:6px;padding:6px;background:#05070d;z-index:4}
+.mpr-stage.lay-3{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.mpr-stage.lay-row{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr}
+/* cuando una vista está maximizada */
+.mpr-stage.maxed{grid-template-columns:1fr;grid-template-rows:1fr}
+.mpr-stage.maxed .mpr-view:not(.max){display:none}
+
+/* Cada vista */
+.mpr-view{position:relative;background:#000;border:1px solid #1c2438;border-radius:10px;overflow:hidden;min-width:0;min-height:0;display:flex;align-items:center;justify-content:center;cursor:crosshair}
+.mpr-view canvas{display:block;max-width:100%;max-height:100%;image-rendering:auto;touch-action:none}
+.mpr-view .lbl{position:absolute;left:9px;top:8px;font-size:.72rem;font-weight:700;letter-spacing:.04em;color:#fff;text-shadow:0 1px 3px #000;display:flex;align-items:center;gap:6px;pointer-events:none}
+.mpr-view .lbl .dot{width:9px;height:9px;border-radius:50%;box-shadow:0 0 5px rgba(0,0,0,.6)}
+.mpr-view .pos{position:absolute;right:9px;top:8px;font-size:.68rem;color:#aeb6cc;text-shadow:0 1px 2px #000;font-variant-numeric:tabular-nums;pointer-events:none}
+.mpr-view .hu{position:absolute;left:9px;bottom:8px;font-size:.68rem;color:#cfe0ff;text-shadow:0 1px 2px #000;font-variant-numeric:tabular-nums;pointer-events:none;min-height:1em}
+.mpr-view .vmax{position:absolute;right:7px;bottom:7px;appearance:none;border:1px solid #2b3550;background:rgba(17,23,38,.72);color:#cdd4e6;width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.8rem;line-height:1;display:grid;place-items:center;opacity:.42;transition:opacity .15s}
+.mpr-view:hover .vmax{opacity:1}
+.mpr-view .vmax:hover{background:#28324e;color:#fff}
+/* control de corte (móvil/táctil): slider lateral */
+.mpr-view .slc{position:absolute;right:6px;top:38px;bottom:38px;width:30px;display:none;align-items:center;justify-content:center}
+.mpr-view .slc input[type=range]{writing-mode:vertical-lr;direction:rtl;width:30px;height:100%;accent-color:#6d8bff;cursor:pointer}
+
+/* Borde coloreado por plano (estilo 3D Slicer) */
+.mpr-view.ax{--c:#ff5a5a}
+.mpr-view.co{--c:#5dd55d}
+.mpr-view.sa{--c:#ffd23f}
+.mpr-view .lbl .dot{background:var(--c)}
+.mpr-view::after{content:"";position:absolute;inset:0;border:2px solid var(--c);border-radius:10px;opacity:.5;pointer-events:none}
+
+/* Panel de carga / estado */
+.mpr-load{position:absolute;inset:0;z-index:6;background:#070a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:28px}
+.mpr-load.hide{display:none}
+.mpr-load .ic{font-size:2.4rem}
+.mpr-load .ttl{font-size:1rem;font-weight:700;color:#fff}
+.mpr-load .sub{font-size:.82rem;color:#8b93a9;max-width:340px;line-height:1.5}
+.mpr-load .bar{width:min(320px,72vw);height:8px;border-radius:999px;background:#1a2236;overflow:hidden}
+.mpr-load .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5a4aa0,#6d8bff);border-radius:999px;transition:width .15s ease}
+.mpr-load .pct{font-size:.78rem;color:#aeb6cc;font-variant-numeric:tabular-nums}
+.mpr-load .err{color:#fca5a5;font-size:.85rem;max-width:360px;line-height:1.5}
+.mpr-load .cancel{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;font:inherit;font-size:.82rem;border-radius:9px;padding:8px 16px;cursor:pointer}
+.mpr-load .cancel:hover{background:#28324e}
+
+/* W/L value chip en la barra */
+.mpr-wl{font-size:.74rem;color:#8b93a9;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mpr-wl b{color:#cdd4e6;font-weight:600}
+
+/* Responsive: en móvil/tablet vertical, apilar las 3 vistas y mostrar slider */
+@media (max-width:820px){
+  .mpr-stage.lay-3,.mpr-stage.lay-row{grid-template-columns:1fr;grid-template-rows:none;grid-auto-rows:46vh;overflow-y:auto}
+  .mpr-stage.maxed{grid-auto-rows:1fr}
+  .mpr-view .slc{display:flex}
+  .mpr-view .vmax{opacity:1}
+}
+@media (pointer:coarse){
+  .mpr-view .slc{display:flex}
+  .mpr-view .vmax{opacity:1;width:34px;height:34px}
+  .mpr-bar .seg button{padding:9px 13px}
+}
+
+/* ── Cuadrante 3D (volume rendering / MIP) ───────────────────────────────── */
+.mpr-view.v3d{--c:#8b7bff;cursor:grab;background:radial-gradient(120% 120% at 50% 0%,#0c1024,#05070d 70%)}
+.mpr-view.v3d.grabbing{cursor:grabbing}
+.mpr-view.v3d canvas.mpr-gl{display:block;width:100%;height:100%;max-width:100%;max-height:100%;touch-action:none}
+.mpr-stage.lay-row .mpr-view.v3d{display:none}
+.mpr-stage.maxed .mpr-view.v3d.max{display:flex}
+
+.mpr3d-ctl{position:absolute;left:8px;right:8px;bottom:8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;z-index:3;
+  background:rgba(10,14,26,.72);backdrop-filter:blur(7px);border:1px solid #232c42;border-radius:11px;padding:6px 7px}
+.mpr3d-ctl .seg{display:inline-flex;background:#0d1426;border:1px solid #2b3550;border-radius:8px;overflow:hidden;flex:none}
+.mpr3d-ctl .seg button{appearance:none;border:0;background:transparent;color:#aeb6cc;font:inherit;font-size:.72rem;padding:6px 9px;cursor:pointer;transition:background .12s,color .12s}
+.mpr3d-ctl .seg button:hover{background:#1b2540;color:#fff}
+.mpr3d-ctl .seg button.on{background:#5a4aa0;color:#fff}
+.mpr3d-ctl select{appearance:none;background:#0d1426;border:1px solid #2b3550;color:#cdd4e6;font:inherit;font-size:.72rem;border-radius:8px;padding:6px 8px;cursor:pointer;flex:none}
+.mpr3d-ctl .thr{flex:1 1 80px;min-width:64px;display:flex;align-items:center;gap:6px;color:#7c87a3;font-size:.66rem}
+.mpr3d-ctl .thr input[type=range]{flex:1;accent-color:#8b7bff;cursor:pointer;min-width:50px}
+.mpr3d-ctl .r3d{appearance:none;border:1px solid #2b3550;background:#1a2236;color:#cdd4e6;width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.85rem;line-height:1;display:grid;place-items:center;flex:none}
+.mpr3d-ctl .r3d:hover{background:#28324e;color:#fff}
+.mpr3d-spin{position:absolute;top:10px;right:10px;width:18px;height:18px;border:2px solid #2b3550;border-top-color:#8b7bff;border-radius:50%;animation:vspin 1s linear infinite;display:none;z-index:3}
+.mpr-view.v3d.busy .mpr3d-spin{display:block}
+.mpr3d-fallback{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;color:#5e6a85;font-size:.8rem;padding:24px;line-height:1.6}
+.mpr-view.v3d.nogl .mpr3d-fallback{display:flex}
+.mpr-view.v3d.nogl canvas.mpr-gl,.mpr-view.v3d.nogl .mpr3d-ctl{display:none}
+
+/* Chip de progreso NO bloqueante, ARRIBA-centro para que no lo tape nada y se note */
+.mpr-prog{position:absolute;left:50%;top:14px;transform:translateX(-50%);z-index:9;display:none;align-items:center;gap:10px;
+  background:rgba(13,18,32,.92);backdrop-filter:blur(8px);border:1px solid #34406a;border-radius:999px;padding:8px 16px;
+  font-size:.78rem;color:#cdd4e6;box-shadow:0 10px 30px rgba(0,0,0,.55)}
+.mpr-prog.show{display:flex}
+.mpr-prog .sp{width:14px;height:14px;border:2px solid #2b3550;border-top-color:#6d8bff;border-radius:50%;animation:vspin 1s linear infinite;flex:none}
+.mpr-prog b{color:#fff;font-weight:700}
+.mpr-prog-bar{width:84px;height:5px;border-radius:999px;background:#1a2236;overflow:hidden;flex:none}
+.mpr-prog-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5a4aa0,#6d8bff);border-radius:999px;transition:width .25s ease}
+
+/* En MPR, ocultar de forma robusta los overlays del visor 2D (nav "1/270", hud…) */
+.v-stage.mpr-active #v-overlay,
+.v-stage.mpr-active #v-hud,
+.v-stage.mpr-active #v-hud2,
+.v-stage.mpr-active #v-nav,
+.v-stage.mpr-active #v-msg{ display:none !important; }
+
+/* Botón ⛶ del cuadrante 3D: arriba-derecha (no choca con los controles de abajo) */
+.mpr-view.v3d .vmax{ top:8px; bottom:auto; right:8px; z-index:4; }
+
+/* Una vista (incluida la 3D) a PANTALLA COMPLETA real */
+.mpr-view:fullscreen{ width:100vw; height:100vh; border-radius:0; }
+.mpr-view:-webkit-full-screen{ width:100vw; height:100vh; border-radius:0; }
+.mpr-view:fullscreen .vmax{ opacity:1; }
+.mpr-view.v3d:fullscreen{ background:radial-gradient(120% 120% at 50% 0%,#0c1024,#05070d 70%); }

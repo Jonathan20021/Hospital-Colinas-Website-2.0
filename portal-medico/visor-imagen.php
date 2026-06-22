@@ -921,5 +921,7 @@ if (!headers_sent()) {
 </script>
 <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-visor-pro.css')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/css/portal-medico-visor-pro.css') ?: 1) ?>">
 <script src="<?= e(base_url('assets/js/portal-medico-visor-pro.js')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-visor-pro.js') ?: 1) ?>"></script>
+<link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-mpr.css')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/css/portal-medico-mpr.css') ?: 1) ?>">
+<script src="<?= e(base_url('assets/js/portal-medico-mpr.js')) ?>?v=<?= (string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-mpr.js') ?: 1) ?>"></script>
 </body>
 </html>
