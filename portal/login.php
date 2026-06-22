@@ -167,11 +167,11 @@ portal_layout_begin('Iniciar sesión', 'login');
                 <input type="hidden" name="step" value="password">
                 <div class="pa-field">
                     <label class="pa-label" for="identifier_pw">Cédula o correo electrónico</label>
-                    <input class="pa-input" type="text" name="identifier" id="identifier_pw" autocomplete="username" placeholder="001-1234567-8  o  nombre@correo.com">
+                    <input class="pa-input" type="text" name="identifier" id="identifier_pw" required value="<?= e($idInput) ?>" autocomplete="username" placeholder="001-1234567-8  o  nombre@correo.com">
                 </div>
                 <div class="pa-field portal-password-field">
                     <label class="pa-label" for="password">Contraseña</label>
-                    <input class="pa-input" type="password" name="password" id="password" autocomplete="current-password">
+                    <input class="pa-input" type="password" name="password" id="password" required autocomplete="current-password">
                     <button type="button" class="portal-password-toggle" data-target="password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
                 </div>
                 <button type="submit" class="pa-btn pa-btn-soft pa-btn-block">Iniciar sesión con contraseña</button>
