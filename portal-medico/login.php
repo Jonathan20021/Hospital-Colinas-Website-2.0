@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($res['ok'] && ($res['data']['step'] ?? '') === 'authenticated') {
         // Dispositivo ya confiable o 2FA desactivado → login directo
         doctor_portal_login_session($res['data']);
-        $next = $_GET['next'] ?? base_url('portal-medico/dashboard.php');
+        $next = safe_next($_GET['next'] ?? '', base_url('portal-medico/dashboard.php'));
         header('Location: ' . $next);
         exit;
     }
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'password'     => $password,        // se elimina al verificar o expira la sesion
             'email_masked' => $res['data']['email_masked'] ?? '',
             'expires_at'   => time() + (int)($res['data']['expires_in'] ?? 600),
-            'next'         => $_GET['next'] ?? '',
+            'next'         => safe_next($_GET['next'] ?? '', ''),
         ];
         header('Location: ' . base_url('portal-medico/verificar.php'));
         exit;

@@ -14,6 +14,21 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Anti-abuso: solo aceptar peticiones del propio sitio. Si llega un Origin o
+// Referer de OTRO host, se rechaza (evita que terceros consuman el asistente y
+// los créditos de IA). Las peticiones sin Origin/Referer pasan; las contiene el
+// rate-limit por IP de más abajo.
+$reqHost = strtok((string)($_SERVER['HTTP_HOST'] ?? ''), ':');   // host sin puerto
+$srcUrl  = $_SERVER['HTTP_ORIGIN'] ?? ($_SERVER['HTTP_REFERER'] ?? '');
+if ($reqHost !== '' && $srcUrl !== '') {
+    $srcHost = parse_url($srcUrl, PHP_URL_HOST);
+    if ($srcHost !== null && strcasecmp($srcHost, $reqHost) !== 0) {
+        http_response_code(403);
+        echo json_encode(['ok' => false, 'error' => 'Solicitud no permitida.']);
+        exit;
+    }
+}
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }

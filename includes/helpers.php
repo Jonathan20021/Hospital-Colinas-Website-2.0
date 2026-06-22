@@ -49,6 +49,23 @@ function absolute_url(string $path = ''): string
     return $scheme . '://' . $host . base_url($path);
 }
 
+/**
+ * Valida un destino de redirección (post-login). Devuelve $next solo si es una
+ * ruta INTERNA del propio sitio; si no, devuelve $fallback. Previene "open
+ * redirect" (https://malicioso, //malicioso.com, javascript:, data:, …) y la
+ * inyección de cabeceras por saltos de línea.
+ */
+function safe_next($next, string $fallback): string
+{
+    $next = trim((string)$next);
+    if ($next === '') return $fallback;
+    if (preg_match('/[\x00-\x1f\x7f]/', $next)) return $fallback;        // control / CR-LF (header injection)
+    if (strpos($next, '\\') !== false) return $fallback;                 // backslash (algunos navegadores lo tratan como "/")
+    if (preg_match('#^[a-z][a-z0-9+.\-]*:#i', $next)) return $fallback;  // esquema: javascript:, http:, data:, mailto:…
+    if (strncmp($next, '//', 2) === 0) return $fallback;                 // URL relativa al protocolo (//host)
+    return $next;
+}
+
 function canonical_url(): string
 {
     $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['SERVER_PORT'] ?? '') === '443') ? 'https' : 'http';

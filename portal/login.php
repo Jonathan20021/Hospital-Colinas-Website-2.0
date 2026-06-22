@@ -9,8 +9,8 @@ if (portal_is_logged_in()) {
 global $assets;
 portal_session_start();
 
-// Guarda a dónde volver tras entrar
-if (!empty($_GET['next'])) $_SESSION['otp_next'] = (string)$_GET['next'];
+// Guarda a dónde volver tras entrar (solo rutas internas — anti open redirect)
+if (!empty($_GET['next'])) { $sn = safe_next($_GET['next'], ''); if ($sn !== '') $_SESSION['otp_next'] = $sn; }
 
 $step = !empty($_SESSION['otp_id']) ? 'verify' : 'request';
 $msg = null; $msgType = 'error'; $idInput = '';

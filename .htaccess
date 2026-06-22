@@ -5,6 +5,13 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Forzar HTTPS en producción (no en local ni si un proxy ya terminó el TLS).
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{HTTP_HOST} !=localhost
+    RewriteCond %{HTTP_HOST} !^127\.0\.0\.1
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
     # Skip everything for admin/ and api/ — they keep using .php internally
     RewriteRule ^admin(/|$) - [L]
     RewriteRule ^api(/|$) - [L]
@@ -50,6 +57,8 @@ DirectoryIndex index.php
     Header set X-Content-Type-Options "nosniff"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header set Permissions-Policy "geolocation=(), microphone=(self), camera=(self)"
+    # HSTS — el navegador solo lo aplica sobre HTTPS (inocuo cuando se sirve por HTTP en local)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
 </IfModule>
 
 # Cache static assets aggressively
@@ -88,3 +97,16 @@ DirectoryIndex index.php
 <FilesMatch "^(helpers|data|doctors|db|auth|content|public-layout)\.php$">
     Require all denied
 </FilesMatch>
+
+# Block sensitive / development files (config, dumps, backups, dependency manifests)
+<FilesMatch "\.(sql|bak|log|ini|sh|lock|gitignore|gitattributes)$">
+    Require all denied
+</FilesMatch>
+<FilesMatch "^(composer\.json|composer\.lock|package\.json|package-lock\.json|tailwind\.config\.js)$">
+    Require all denied
+</FilesMatch>
+
+# Block access to the .git directory if it ever gets deployed to the docroot
+<IfModule mod_alias.c>
+    RedirectMatch 404 (?i)/\.git
+</IfModule>
