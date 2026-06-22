@@ -1,0 +1,60 @@
+/* =============================================================================
+   Escriba clínico — ayudas de escritura en la consulta (dictado por voz,
+   redactar/mejorar con IA, frases rápidas y atajos). Se monta sobre los
+   <textarea> del formulario de consulta. Encaja con el look del portal médico.
+   ============================================================================= */
+
+.scribe-bar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.scribe-btn{appearance:none;border:1px solid var(--hg-line-2,#e2e6ef);background:#fff;color:#3b4252;
+  font:inherit;font-size:.76rem;font-weight:600;border-radius:8px;padding:5px 10px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:5px;transition:background .12s,border-color .12s,color .12s;line-height:1.1}
+.scribe-btn:hover{background:#f3f5fb;border-color:#cdd5e6}
+.scribe-btn:disabled{opacity:.5;cursor:default}
+.scribe-btn .ic{font-size:.95rem;line-height:1}
+.scribe-btn.ai{color:#5a3ea8;border-color:#d9cdf5;background:#f7f3ff}
+.scribe-btn.ai:hover{background:#efe7ff}
+.scribe-btn.rec{color:#c0344a;border-color:#f2c0c9;background:#fff0f2}
+.scribe-btn.rec.on{background:#c0344a;border-color:#c0344a;color:#fff;animation:scribe-pulse 1.2s ease-in-out infinite}
+@keyframes scribe-pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,52,74,.45)}50%{box-shadow:0 0 0 5px rgba(192,52,74,0)}}
+.scribe-btn.busy{position:relative;color:transparent!important}
+.scribe-btn.busy::after{content:"";position:absolute;left:50%;top:50%;width:13px;height:13px;margin:-7px 0 0 -7px;
+  border:2px solid #b9a8e6;border-top-color:#5a3ea8;border-radius:50%;animation:scribe-spin .7s linear infinite}
+@keyframes scribe-spin{to{transform:rotate(360deg)}}
+
+/* Chips de frases rápidas (desplegable por campo) */
+.scribe-chips{display:none;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.scribe-chips.open{display:flex}
+.scribe-chip{appearance:none;border:1px solid var(--hg-line-2,#e2e6ef);background:#f8fafc;color:#475569;
+  font:inherit;font-size:.74rem;border-radius:999px;padding:4px 10px;cursor:pointer;transition:background .12s}
+.scribe-chip:hover{background:#eaf2ff;color:#1f3aa0;border-color:#bcd0ff}
+
+/* Indicador de dictado activo (texto provisional) */
+.scribe-interim{color:#94a3b8;font-style:italic}
+
+/* Aviso/deshacer flotante por campo */
+.scribe-undo{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;color:#5a3ea8;background:#f7f3ff;
+  border:1px solid #d9cdf5;border-radius:8px;padding:4px 9px;margin:0 0 8px;cursor:pointer}
+.scribe-undo:hover{background:#efe7ff}
+
+/* Barra global del escriba (resumen IA + privacidad) bajo el encabezado */
+.scribe-global{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:0 0 14px;padding:10px 14px;
+  border:1px solid #e6ddf7;background:linear-gradient(100deg,#f7f3ff,#fdfbff);border-radius:12px}
+.scribe-global .lbl{font-weight:700;color:#4a3a86;font-size:.86rem;display:flex;align-items:center;gap:7px}
+.scribe-global .hint{font-size:.74rem;color:#7a6aa6;flex:1;min-width:160px}
+.scribe-global .scribe-btn.ai{background:#5a3ea8;color:#fff;border-color:#5a3ea8}
+.scribe-global .scribe-btn.ai:hover{background:#4a3196}
+
+/* Toast del escriba */
+.scribe-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:1200;
+  background:#1f2937;color:#fff;font-size:.84rem;padding:10px 16px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.3);
+  display:none;max-width:90vw;text-align:center}
+.scribe-toast.show{display:block;animation:scribe-toast-in .2s ease}
+@keyframes scribe-toast-in{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1}}
+
+/* Banner de privacidad (primera vez que se usa IA) */
+.scribe-privacy{font-size:.72rem;color:#7a6aa6;display:flex;align-items:center;gap:6px;margin-top:6px}
+
+@media (max-width:640px){
+  .scribe-btn{font-size:.74rem;padding:6px 9px}
+  .scribe-global{flex-direction:column;align-items:stretch}
+}

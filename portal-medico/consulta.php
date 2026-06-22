@@ -471,4 +471,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('btn-save-complete-bottom')?.addEventListener('click', () => save(true));
 });
 </script>
+<?php if ($appt): ?>
+<link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-escriba.css')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/css/portal-medico-escriba.css') ?: time())) ?>">
+<script>
+window.DM_CSRF = <?= json_encode(doctor_csrf_token()) ?>;
+window.DM_SCRIBE_EP = <?= json_encode(base_url('api/ai-scribe.php'), JSON_UNESCAPED_SLASHES) ?>;
+window.DM_SCRIBE_CTX = { age: <?= (int)($age ?: 0) ?>, sex: <?= json_encode((string)($appt['patient_gender'] ?? ''), JSON_UNESCAPED_UNICODE) ?>, specialty: <?= json_encode((string)(doctor_current()['specialty'] ?? ''), JSON_UNESCAPED_UNICODE) ?> };
+</script>
+<script src="<?= e(base_url('assets/js/portal-medico-escriba.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-escriba.js') ?: time())) ?>"></script>
+<?php endif; ?>
 <?php $bare ? doctor_layout_end_bare() : doctor_layout_end();
