@@ -1491,31 +1491,12 @@
     }
 }
 
-/* Step 2 — doctor list responsive: stack on small screens */
-@media (max-width: 560px) {
-    .portal-doctor {
-        grid-template-columns: 48px 1fr;
-        grid-template-areas:
-            "photo info"
-            "cta cta";
-        row-gap: .75rem;
-    }
-
-    .portal-doctor>img {
-        grid-area: photo;
-    }
-
-    .portal-doctor>div {
-        grid-area: info;
-        min-width: 0;
-    }
-
-    .portal-doctor>a {
-        grid-area: cta;
-        width: 100%;
-        justify-content: center;
-    }
-}
+/* Step 2 — doctor list responsive: el apilado en móvil lo maneja portal-v3.css
+   (@media max-width:900px) con grid-template-columns + grid-column en el botón.
+   El bloque legacy de aquí usaba grid-template-areas con un <img> "photo" que ya
+   NO existe (el avatar ahora es .portal-doctor-icon, un <div>): la regla
+   `.portal-doctor>div` lo mandaba al mismo área que el texto y el avatar se
+   solapaba con la especialidad. Eliminado para evitar ese choque de diseño. */
 
 /* shell breathing room (with header CTA wrap) */
 @media (max-width: 900px) {
