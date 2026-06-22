@@ -87,20 +87,21 @@
   .pwa-toast-tx span,.pwa-install-tx span{ font-size:.8rem; }
 }
 
-/* ── Ajustes para la app instalada (standalone): respetar notch / safe areas ── */
-.pwa-standalone .portal-topbar{
+/* ── Safe areas (notch superior / barra de inicio). Aplican TANTO en Safari con
+   viewport-fit=cover como en la app instalada; valen 0 donde no hay recorte.
+   El topbar es sticky top:0 → sin esto, el logo queda bajo el notch en iPhone. ── */
+.portal-topbar{
   padding-top:env(safe-area-inset-top);
 }
-.pwa-standalone .portal-sidebar{
+.portal-shell-app .portal-sidebar{
   padding-bottom:env(safe-area-inset-bottom);
 }
-.pwa-standalone .portal-mobile-nav{
-  padding-bottom:env(safe-area-inset-bottom);
-}
-@supports (padding:max(0px)){
-  .pwa-standalone .portal-main{
-    padding-left:max(0px, env(safe-area-inset-left));
-    padding-right:max(0px, env(safe-area-inset-right));
+/* En horizontal, separa el contenido del recorte lateral sin tocar el padding
+   normal (solo suma lo del notch cuando existe). */
+@media (max-width: 900px) and (orientation: landscape){
+  .portal-main{
+    padding-left:max(16px, env(safe-area-inset-left));
+    padding-right:max(16px, env(safe-area-inset-right));
   }
 }
 
