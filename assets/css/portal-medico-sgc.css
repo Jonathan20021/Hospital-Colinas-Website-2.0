@@ -42,6 +42,11 @@
 .sgc-vt th { font-size: .68rem; text-transform: uppercase; letter-spacing: .03em; color: #7a8499; background: #f8fafc; }
 .sgc-vt td { color: #3b4566; font-variant-numeric: tabular-nums; }
 
+.sgc-med { margin: 8px 0; font-size: .82rem; color: #46506e; }
+.sgc-med > b { color: #5566aa; }
+.sgc-acc-b.sgc-clip { max-height: 460px; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 80%, transparent); mask-image: linear-gradient(180deg, #000 80%, transparent); }
+.sgc-morebtn { display: block; width: 100%; margin: 8px 0 2px; padding: 8px; border: 1px dashed #cdd5e6; border-radius: 8px; background: #f7f9fe; color: #3a4a86; font: inherit; font-size: .8rem; font-weight: 600; cursor: pointer; }
+.sgc-morebtn:hover { background: #eef2ff; }
 .sgc-ul { margin: 6px 0 2px; padding-left: 18px; }
 .sgc-ul li { font-size: .84rem; color: #33405e; line-height: 1.5; margin: 2px 0; }
 .sgc-ul li b { color: #28315a; font-weight: 600; }

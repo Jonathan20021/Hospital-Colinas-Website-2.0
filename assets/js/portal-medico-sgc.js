@@ -28,6 +28,8 @@
     var pid = card.getAttribute('data-pid');
     var body = document.getElementById('sgc-body');
     var head = document.getElementById('sgc-count');
+    // Al abrir un acordeón largo, colapsarlo con "Ver todo" (toggle no burbujea → captura).
+    body.addEventListener('toggle', function (e) { if (e.target.open) { clipIfLong(e.target.querySelector('.sgc-acc-b')); } }, true);
 
     (async function () {
       for (var i = 0; i < 100 && !window.doctorApi; i++) await new Promise(function (r) { setTimeout(r, 50); });
@@ -44,6 +46,7 @@
       }
       render(d, body, head);
       if (window.lucide) lucide.createIcons();
+      body.querySelectorAll('details[open] .sgc-acc-b').forEach(clipIfLong);
     })();
   }
 
@@ -59,6 +62,18 @@
   function item(title, meta, text) {
     return '<div class="sgc-item"><div class="sgc-item-h"><strong>' + title + '</strong>' + (meta ? '<span>' + meta + '</span>' : '') + '</div>'
       + (text ? '<div class="sgc-item-tx">' + text + '</div>' : '') + '</div>';
+  }
+  // Colapsa una sección larga con un botón "Ver todo" (basado en altura; solo si el acordeón está visible).
+  function clipIfLong(b) {
+    if (!b || b.getAttribute('data-clip') === '1' || b.offsetParent === null) return;
+    b.setAttribute('data-clip', '1');
+    if (b.scrollHeight > 460) {
+      b.classList.add('sgc-clip');
+      var btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'sgc-morebtn'; btn.textContent = 'Ver todo ▾';
+      btn.addEventListener('click', function () { b.classList.remove('sgc-clip'); btn.remove(); });
+      b.insertAdjacentElement('afterend', btn);
+    }
   }
 
   function render(d, body, head) {
@@ -82,7 +97,10 @@
     if (p.antecedentes_familiares) ant += '<div class="sgc-item"><div class="sgc-item-h"><strong>Antecedentes familiares</strong></div><div class="sgc-item-tx">' + nl(p.antecedentes_familiares) + '</div></div>';
     if (has(rec.alergias)) ant += '<div class="sgc-chips"><b>Alergias:</b> ' + rec.alergias.map(function (a) { return '<span class="sgc-chip sgc-chip-alert" title="' + esc((a.reaccion || '') + (a.nota ? ' · ' + a.nota : '')) + '">' + esc(a.nombre) + '</span>'; }).join(' ') + '</div>';
     if (has(rec.condiciones)) ant += '<div class="sgc-chips"><b>Condiciones:</b> ' + rec.condiciones.map(function (e) { return '<span class="sgc-chip" title="' + esc(e.nota || '') + '">' + esc(e.nombre) + (e.cie10 ? ' (' + esc(e.cie10) + ')' : '') + '</span>'; }).join(' ') + '</div>';
-    if (has(rec.medicacion)) ant += '<div class="sgc-chips"><b>Medicación habitual:</b> ' + rec.medicacion.map(function (m) { return '<span class="sgc-chip" title="' + esc((m.dosis ? 'Dosis ' + m.dosis + ' ' : '') + (m.momento || '') + (m.nota ? ' · ' + m.nota : '')) + '">' + esc(m.nota ? String(m.nota).slice(0, 40) : (m.momento || 'medicación')) + '</span>'; }).join(' ') + '</div>';
+    if (has(rec.medicacion)) ant += '<div class="sgc-med"><b>Medicación habitual</b><ul class="sgc-ul">' + rec.medicacion.map(function (m) {
+      var d2 = []; if (m.dosis && Number(m.dosis) > 0) d2.push('dosis ' + (+m.dosis)); if (m.momento) d2.push(esc(m.momento)); if (m.medico) d2.push('Dr/a. ' + esc(m.medico));
+      return '<li>' + (m.nota ? esc(String(m.nota)) : 'Medicación registrada') + (d2.length ? ' <span class="sgc-il">' + d2.join(' · ') + '</span>' : '') + '</li>';
+    }).join('') + '</ul></div>';
     html += acc('clipboard-list', 'Antecedentes', null, ant || soft('Sin antecedentes registrados en SGC.'), true);
 
     // Evoluciones (las notas) — lo más valioso
