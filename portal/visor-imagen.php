@@ -16,6 +16,13 @@ $study = preg_replace('/[^0-9.]/', '', (string)($_GET['study'] ?? ''));
 $scope = preg_replace('/[^A-Za-z0-9._-]/', '', (string)($_GET['scope'] ?? ''));
 $dwrBase = base_url('api/portal-imaging-dwr.php') . '/' . $scope;
 
+// Informe radiológico (PDF de Autana): visible solo si el estudio tiene informe
+// (la lista abre el visor con &report=1). El navegador no decide el unq; el servidor lo valida.
+$hasReport = !empty($_GET['report']);
+$reportUnq = preg_replace('/[^A-Za-z0-9_]/', '', (string)($_GET['runq'] ?? ''));
+$reportUrl = base_url('api/portal-imaging-report.php') . '/' . rawurlencode($scope) . '/' . rawurlencode($study);
+if ($reportUnq !== '') $reportUrl .= '?u=' . rawurlencode($reportUnq);
+
 if (!headers_sent()) {
     header('X-Robots-Tag: noindex, nofollow');
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
@@ -51,6 +58,8 @@ if (!headers_sent()) {
     .v-brand img{height:24px;width:auto;display:block}
     .v-pdf{background:#4b972d;border-color:#4b972d;color:#fff}
     .v-pdf:hover{background:#397b22;border-color:#397b22}
+    .v-report{background:#262161;border-color:#3a2f8f;color:#fff}
+    .v-report:hover{background:#1d1a4d;border-color:#1d1a4d}
     .v-disc{background:rgba(180,120,30,.14);color:#f5c884;font-size:.74rem;line-height:1.4;padding:7px calc(14px + env(safe-area-inset-right)) 7px calc(14px + env(safe-area-inset-left));border-bottom:1px solid #232c42;text-align:center}
     .v-disc b{color:#ffd9a0}
     .v-main{flex:1;display:flex;min-height:0;position:relative}
@@ -116,9 +125,10 @@ if (!headers_sent()) {
         <span class="v-sep"></span>
         <button class="v-tool" id="t-fs" title="Pantalla completa (F)">⛶</button>
         <button class="v-tool v-pdf" id="t-pdf" title="Descargar en PDF">⤓ PDF</button>
-    </div>
+<?php if ($hasReport): ?>        <button class="v-tool v-report" id="t-report" title="Ver el informe radiológico (PDF)" data-href="<?= e($reportUrl) ?>">📄 Informe</button>
+<?php endif; ?>    </div>
 </header>
-<div class="v-disc">⚠ Estas imágenes son de <b>referencia</b>. La interpretación corresponde a tu médico o radiólogo. Ante cualquier duda, consulta a tu especialista.</div>
+<div class="v-disc">⚠ Estas son <b>tus</b> imágenes médicas, pero <b>solo tu médico o radiólogo puede interpretarlas</b>. Evita sacar conclusiones por tu cuenta; ante cualquier duda, consulta con tu especialista.</div>
 <div class="v-notice" id="v-notice" role="alert" hidden></div>
 <div class="v-main">
     <aside class="v-series" id="v-series"></aside>
@@ -339,6 +349,15 @@ if (!headers_sent()) {
     document.getElementById('t-cine').addEventListener('click', toggleCine);
     document.getElementById('t-fs').addEventListener('click', toggleFs);
     document.getElementById('t-series').addEventListener('click', function () { document.getElementById('v-series').classList.toggle('open'); });
+    (function () {
+        var rb = document.getElementById('t-report');
+        if (!rb) return;
+        rb.addEventListener('click', function () {
+            var href = rb.getAttribute('data-href'); if (!href) return;
+            var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+            if (standalone) { window.location.href = href; } else { window.open(href, '_blank', 'noopener'); }
+        });
+    })();
     document.getElementById('v-prev').addEventListener('click', function () { showIndex(stack.currentImageIdIndex - 1); });
     document.getElementById('v-next').addEventListener('click', function () { showIndex(stack.currentImageIdIndex + 1); });
     document.getElementById('v-close').addEventListener('click', function (e) { e.preventDefault(); closeViewer(); });
