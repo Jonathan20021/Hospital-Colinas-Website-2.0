@@ -1,0 +1,53 @@
+{
+  "name": "Portal del Paciente — Hospital General Las Colinas",
+  "short_name": "Mi Hospital",
+  "description": "Tus citas, resultados de laboratorio, recetas, imágenes médicas y mensajes con tu médico del Hospital General Las Colinas, en un solo lugar seguro.",
+  "lang": "es-DO",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "id": "/portal/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "background_color": "#f8fafc",
+  "theme_color": "#262161",
+  "categories": ["medical", "health", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Agendar una cita",
+      "short_name": "Agendar",
+      "description": "Reserva una nueva cita médica",
+      "url": "agendar?source=pwa-shortcut",
+      "icons": [{ "src": "icons/shortcut.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Mis citas",
+      "short_name": "Mis citas",
+      "description": "Consulta tus próximas citas",
+      "url": "mis-citas?source=pwa-shortcut",
+      "icons": [{ "src": "icons/shortcut.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Resultados de laboratorio",
+      "short_name": "Resultados",
+      "description": "Revisa tus resultados de laboratorio",
+      "url": "laboratorio?source=pwa-shortcut",
+      "icons": [{ "src": "icons/shortcut.png", "sizes": "96x96", "type": "image/png" }]
+    },
+    {
+      "name": "Mensajes",
+      "short_name": "Mensajes",
+      "description": "Conversa con tu médico",
+      "url": "mensajes?source=pwa-shortcut",
+      "icons": [{ "src": "icons/shortcut.png", "sizes": "96x96", "type": "image/png" }]
+    }
+  ]
+}

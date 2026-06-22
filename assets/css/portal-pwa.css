@@ -1,0 +1,112 @@
+/* ==========================================================================
+   Portal del Paciente — capa PWA (instalación, actualización, conexión)
+   Marca HGLC: navy #262161 · verde #5da334. Scope visual: .pwa-*
+   ========================================================================== */
+
+/* Dock inferior que agrupa banners/toasts (instalar, actualizar). */
+.pwa-dock{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  z-index:2000; width:min(440px, calc(100vw - 24px));
+  display:flex; flex-direction:column; gap:10px;
+  pointer-events:none;
+}
+.pwa-dock > *{ pointer-events:auto; }
+
+/* Tarjetas (toast de actualización / banner de instalación). */
+.pwa-toast,.pwa-install{
+  display:flex; align-items:center; gap:13px;
+  background:#fff; border:1px solid #e7ebf3; border-radius:18px;
+  padding:13px 14px;
+  box-shadow:0 22px 48px -22px rgba(38,33,97,.4), 0 6px 18px -12px rgba(15,23,42,.16);
+  opacity:0; transform:translateY(14px) scale(.98);
+  transition:opacity .26s ease, transform .26s cubic-bezier(.16,.84,.44,1);
+}
+.pwa-toast.in,.pwa-install.in{ opacity:1; transform:translateY(0) scale(1); }
+
+.pwa-toast-ic{
+  flex:none; width:44px; height:44px; border-radius:14px; display:grid; place-items:center;
+  background:linear-gradient(135deg,#ecebf7,#e9f5e1); color:#262161;
+}
+.pwa-toast-ic svg{ width:22px; height:22px; }
+.pwa-install-ic{
+  flex:none; width:48px; height:48px; border-radius:14px; display:block; object-fit:cover;
+  border:1px solid #eef1f6; background:#fff;
+}
+.pwa-toast-tx,.pwa-install-tx{ display:flex; flex-direction:column; line-height:1.3; min-width:0; flex:1; }
+.pwa-toast-tx strong,.pwa-install-tx strong{
+  font-size:.95rem; font-weight:800; color:#1a1f30; letter-spacing:-.01em;
+}
+.pwa-toast-tx span,.pwa-install-tx span{
+  font-size:.82rem; color:#6b7689; margin-top:2px;
+}
+.pwa-install-tx span svg{ width:15px; height:15px; vertical-align:-3px; color:#5da334; }
+
+/* Botones */
+.pwa-btn{
+  appearance:none; border:0; cursor:pointer; font:inherit; font-weight:700; font-size:.9rem;
+  display:inline-flex; align-items:center; gap:7px; justify-content:center;
+  padding:.7rem 1rem; border-radius:13px; min-height:46px; white-space:nowrap;
+  transition:transform .14s ease, filter .16s ease, box-shadow .16s ease;
+}
+.pwa-btn svg{ width:18px; height:18px; }
+.pwa-btn:active{ transform:translateY(1px); }
+.pwa-btn-primary{
+  background:linear-gradient(120deg,#5da334,#4c8a2a); color:#fff;
+  box-shadow:0 14px 26px -14px rgba(93,163,52,.75);
+}
+.pwa-btn-primary:hover{ filter:brightness(1.05); }
+.pwa-btn-primary:disabled{ opacity:.7; cursor:default; }
+.pwa-btn-icon{
+  appearance:none; border:0; background:#f1f4f9; color:#64748b; cursor:pointer; flex:none;
+  width:40px; height:40px; border-radius:11px; display:grid; place-items:center;
+  transition:background .16s ease, color .16s ease;
+}
+.pwa-btn-icon svg{ width:18px; height:18px; }
+.pwa-btn-icon:hover{ background:#e6ebf3; color:#334155; }
+
+/* Barra de estado de conexión (parte superior). */
+.pwa-net{
+  position:fixed; top:0; left:50%; transform:translate(-50%,-120%);
+  z-index:2100; display:inline-flex; align-items:center; gap:8px;
+  padding:8px 16px; font-size:.85rem; font-weight:700;
+  border-radius:0 0 14px 14px;
+  padding-top:calc(8px + env(safe-area-inset-top));
+  transition:transform .3s cubic-bezier(.16,.84,.44,1);
+  box-shadow:0 10px 24px -16px rgba(15,23,42,.4);
+}
+.pwa-net.show{ transform:translate(-50%,0); }
+.pwa-net svg{ width:18px; height:18px; }
+.pwa-net.offline{ background:#fef3c7; color:#92400e; border:1px solid #fde68a; border-top:0; }
+.pwa-net.online{ background:#dcfce7; color:#166534; border:1px solid #bbf7d0; border-top:0; }
+
+/* En móvil el dock sube para no tapar la barra de navegación inferior. */
+@media (max-width:980px){
+  .pwa-dock{ bottom:calc(78px + env(safe-area-inset-bottom)); width:calc(100vw - 20px); }
+  .pwa-toast,.pwa-install{ border-radius:16px; }
+  .pwa-toast-tx span,.pwa-install-tx span{ font-size:.8rem; }
+}
+
+/* ── Ajustes para la app instalada (standalone): respetar notch / safe areas ── */
+.pwa-standalone .portal-topbar{
+  padding-top:env(safe-area-inset-top);
+}
+.pwa-standalone .portal-sidebar{
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.pwa-standalone .portal-mobile-nav{
+  padding-bottom:env(safe-area-inset-bottom);
+}
+@supports (padding:max(0px)){
+  .pwa-standalone .portal-main{
+    padding-left:max(0px, env(safe-area-inset-left));
+    padding-right:max(0px, env(safe-area-inset-right));
+  }
+}
+
+/* La app ya instalada (standalone) no necesita el acceso "Instalar app". */
+.pwa-standalone .pwa-install-entry{ display:none !important; }
+
+@media (prefers-reduced-motion: reduce){
+  .pwa-toast,.pwa-install,.pwa-net{ transition:none; }
+}

@@ -37,7 +37,9 @@ function portal_layout_begin(string $title, string $active = ''): void
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-accessible.css') ?: 0,
-        @filemtime(__DIR__ . '/../assets/css/portal-v3.css') ?: 0
+        @filemtime(__DIR__ . '/../assets/css/portal-v3.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-pwa.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal-pwa.js') ?: 0
     );
     ?>
     <!DOCTYPE html>
@@ -45,7 +47,7 @@ function portal_layout_begin(string $title, string $active = ''): void
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
         <title><?= e($title) ?> | Portal de Pacientes - Hospital Las Colinas</title>
         <meta name="robots" content="noindex, nofollow">
         <meta name="theme-color" content="#262161">
@@ -60,8 +62,10 @@ function portal_layout_begin(string $title, string $active = ''): void
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-accessible.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-v3.css')) ?>?v=<?= e($assetVersion) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-pwa.css')) ?>?v=<?= e($assetVersion) ?>">
         <meta name="csrf-token" content="<?= e(portal_csrf_token()) ?>">
         <meta name="portal-api-url" content="<?= e(base_url('api/portal-proxy.php')) ?>">
+        <?php portal_pwa_head(); ?>
         <script>
             try {
                 if (localStorage.getItem('hglc-portal-sidebar') === 'collapsed') {
@@ -190,7 +194,9 @@ function portal_layout_end(): void
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0,
         @filemtime(__DIR__ . '/../assets/css/portal-accessible.css') ?: 0,
-        @filemtime(__DIR__ . '/../assets/css/portal-v3.css') ?: 0
+        @filemtime(__DIR__ . '/../assets/css/portal-v3.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/css/portal-pwa.css') ?: 0,
+        @filemtime(__DIR__ . '/../assets/js/portal-pwa.js') ?: 0
     );
     ?>
                 <?php if (portal_is_logged_in()): ?>
@@ -238,6 +244,7 @@ function portal_layout_end(): void
                         <a href="<?= e(base_url('portal/recetas.php')) ?>"><i data-lucide="file-text"></i> Mis recetas</a>
                         <a href="<?= e(base_url('portal/estudios.php')) ?>"><i data-lucide="scan-line"></i> Mis imágenes</a>
                         <a href="<?= e(base_url('portal/perfil.php')) ?>"><i data-lucide="user-cog"></i> Mi perfil</a>
+                        <a href="#" class="pwa-install-entry" onclick="if(window.HGLCPwa){HGLCPwa.install();}return false;"><i data-lucide="download"></i> Instalar app</a>
                         <a href="<?= e(base_url('portal/logout.php')) ?>"><i data-lucide="log-out"></i> Cerrar sesión</a>
                     </nav>
                 </div>
@@ -268,6 +275,14 @@ function portal_layout_end(): void
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+        <script>
+            window.HGLC_PWA = {
+                sw: '<?= e(base_url('portal/sw.js')) ?>',
+                scope: '<?= e(base_url('portal/')) ?>',
+                icon: '<?= e(base_url('portal/icons/icon-192.png')) ?>'
+            };
+        </script>
+        <script src="<?= e(base_url('assets/js/portal-pwa.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     </body>
 
     </html>
@@ -307,4 +322,35 @@ function portal_auth_intro(): void
         </div>
     </aside>
     <?php
+}
+
+/**
+ * Metadatos PWA del Portal del Paciente (manifest, íconos Apple, splash de iOS).
+ * Rutas absolutas vía base_url(); el theme-color ya se define en el <head>.
+ */
+function portal_pwa_head(): void
+{
+    $icons = base_url('portal/icons/');
+    ?>
+        <link rel="manifest" href="<?= e(base_url('portal/manifest.webmanifest')) ?>">
+        <meta name="application-name" content="Mi Hospital">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Mi Hospital">
+        <link rel="apple-touch-icon" href="<?= e($icons . 'apple-touch-icon.png') ?>">
+        <link rel="icon" type="image/png" sizes="32x32" href="<?= e($icons . 'favicon-32.png') ?>">
+        <link rel="icon" type="image/png" sizes="16x16" href="<?= e($icons . 'favicon-16.png') ?>">
+    <?php
+    // Splash de iOS: [archivo, ancho CSS, alto CSS, DPR] (portrait).
+    $splashes = [
+        ['1290x2796', 430, 932, 3], ['1179x2556', 393, 852, 3], ['1170x2532', 390, 844, 3],
+        ['1125x2436', 375, 812, 3], ['1242x2688', 414, 896, 3], ['828x1792', 414, 896, 2],
+        ['750x1334', 375, 667, 2], ['1536x2048', 768, 1024, 2], ['1668x2388', 834, 1194, 2],
+        ['2048x2732', 1024, 1366, 2],
+    ];
+    foreach ($splashes as [$file, $w, $h, $dpr]) {
+        $media = "(device-width: {$w}px) and (device-height: {$h}px) and (-webkit-device-pixel-ratio: {$dpr}) and (orientation: portrait)";
+        echo '        <link rel="apple-touch-startup-image" media="' . e($media) . '" href="' . e($icons . 'splash-' . $file . '.png') . "\">\n";
+    }
 }
