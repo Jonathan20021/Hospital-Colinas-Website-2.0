@@ -30,6 +30,7 @@
     function toolBtn(id, label, title, cls) {
       var b = mk('button', 'v-tool ' + (cls || ''), label);
       b.id = id; b.title = title || ''; b.type = 'button';
+      if (title) b.setAttribute('aria-label', title);
       return b;
     }
     function addAfter(refId, node) { var r = document.getElementById(refId); if (r) r.insertAdjacentElement('afterend', node); else toolbar.appendChild(node); }
@@ -376,8 +377,10 @@
        5) COMPARAR ESTUDIOS lado a lado (1×2 / 2×2) con sincronización
        =================================================================== */
     var ROOT = HGV.ROOT;
-    var compareOn = false, vps = [], syncOn = false;   // sync opt-in: solo tiene sentido entre estudios equivalentes (p.ej. 2 TC)
+    var compareOn = false, vps = [], syncOn = false, activeVp = null;   // sync opt-in: solo entre estudios equivalentes
     var syncW = null, syncPZ = null, syncStack = null, studiesCache = null;
+    // Panel activo: recibe las acciones de la toolbar (invertir/rotar/reset/preset) en modo comparar.
+    function selectVp(vp) { activeVp = vp; vps.forEach(function (v) { if (v.wrap) v.wrap.classList.toggle('sel', v === vp); }); }
 
     var bCompare = toolBtn('t-compare', '⊞ Comparar', 'Comparar dos estudios lado a lado', 'hgv-pro');
     addAfter('t-key-view', bCompare);
@@ -484,7 +487,7 @@
             try { cstools.clearToolState(vp.elem, 'stack'); } catch (e) {}
             try { cstools.addToolState(vp.elem, 'stack', { currentImageIdIndex: 0, imageIds: ids }); } catch (e) {}
             vp.spin(false); vp.tagFromMeta();
-            if (syncOn) attachSync(vp.elem);
+            setSync(syncOn);   // re-evalúa el modo de sync con la modalidad de este panel
             setTimeout(function () { try { cs.resize(vp.elem, true); } catch (e) {} }, 30);
           });
         });
@@ -501,9 +504,9 @@
             spin = mk('div', 'hgv-vp-spin', '<div class="s"></div>');
         wrap.appendChild(elx); wrap.appendChild(tag); wrap.appendChild(pick); wrap.appendChild(spin);
         grid.appendChild(wrap);
-        (function (elx, tag, pick, spin, idx) {
+        (function (wrap, elx, tag, pick, spin, idx) {
           var vp = {
-            elem: elx, idx: idx, meta: null, uid: null,
+            wrap: wrap, elem: elx, idx: idx, meta: null, uid: null,
             spin: function (on) { spin.classList.toggle('on', !!on); },
             setTag: function (t) { tag.innerHTML = t; },
             tagFromMeta: function () { var m = vp.meta || {}; tag.innerHTML = '<b>' + esc(m.modality || '') + '</b> ' + esc(m.desc || '') + '<br>' + esc(HGV.fdate(m.studyDate) || ''); },
@@ -512,8 +515,9 @@
           };
           try { cs.enable(elx); } catch (e) {}
           pick.addEventListener('click', function (ev) { ev.stopPropagation(); openStudyPicker(vp); });
+          elx.addEventListener('mousedown', function () { selectVp(vp); });
           vps.push(vp);
-        })(elx, tag, pick, spin, i);
+        })(wrap, elx, tag, pick, spin, i);
       }
       return grid;
     }
@@ -544,13 +548,22 @@
         syncStack = new cstools.Synchronizer('cornerstonenewimage', cstools.stackImageIndexSynchronizer);
       } catch (e) { syncW = syncPZ = syncStack = null; }
     }
-    function attachSync(elem) { if (!syncOn) return; try { syncW.add(elem); syncPZ.add(elem); syncStack.add(elem); } catch (e) {} }
-    function detachSync(elem) { try { syncW.remove(elem); syncPZ.remove(elem); syncStack.remove(elem); } catch (e) {} }
+    function syncSameModality() {
+      var mods = vps.filter(function (v) { return v.uid && v.meta; }).map(function (v) { return (v.meta.modality || '').toUpperCase(); });
+      return mods.length < 2 || mods.every(function (m) { return m === mods[0]; });
+    }
+    function attachSync(elem, full) { try { if (syncStack) syncStack.add(elem); if (full) { if (syncW) syncW.add(elem); if (syncPZ) syncPZ.add(elem); } } catch (e) {} }
+    function detachSync(elem) { try { if (syncW) syncW.remove(elem); if (syncPZ) syncPZ.remove(elem); if (syncStack) syncStack.remove(elem); } catch (e) {} }
     function setSync(on) {
       syncOn = on;
-      document.getElementById('hgv-sync').classList.toggle('active', on);
-      document.getElementById('hgv-sync').innerHTML = on ? '🔗 Sincronizado' : '⛓️‍💥 Independiente';
-      vps.forEach(function (v) { if (v.uid) { if (on) attachSync(v.elem); else detachSync(v.elem); } });
+      var full = syncSameModality();   // ww/wc + zoom solo si las modalidades coinciden; si no, solo cortes (una RM no hereda la ventana de una RX)
+      vps.forEach(function (v) { if (v.uid) { detachSync(v.elem); if (on) attachSync(v.elem, full); } });
+      var btn = document.getElementById('hgv-sync');
+      if (btn) {
+        btn.classList.toggle('active', on);
+        btn.innerHTML = on ? (full ? '🔗 Sincronizado' : '🔗 Sincr. (cortes)') : '⛓️‍💥 Independiente';
+        btn.title = on ? (full ? 'Ventana, zoom y cortes sincronizados entre paneles' : 'Solo se sincronizan los cortes (las modalidades difieren)') : 'Cada panel es independiente';
+      }
     }
 
     function baseOverlays(hide) {
@@ -579,6 +592,7 @@
       setLayoutButtons(n);
       vpLoadStudy(vps[0], HGV.STUDY);
       for (var i = 1; i < vps.length; i++) vps[i].showPick();
+      selectVp(vps[0]);
       setSync(syncOn);
       setTimeout(resizeVps, 70);
     }
@@ -608,6 +622,46 @@
       var b = e.target.closest('button[data-n]'); if (!b) return; enterCompare(+b.getAttribute('data-n'));
     });
     window.addEventListener('resize', function () { if (compareOn) resizeVps(); });
+
+    // En modo comparar, las acciones de imagen del visor base operan sobre el panel
+    // SELECCIONADO (no sobre el #dicom oculto). Se interceptan en captura para correr
+    // antes que el listener del visor base y frenarlo.
+    function vpAction(id, elem) {
+      try {
+        if (id === 't-reset') { cs.reset(elem); return; }
+        var v = cs.getViewport(elem);
+        if (id === 't-invert') v.invert = !v.invert;
+        else if (id === 't-rotate') v.rotation = ((v.rotation || 0) + 90) % 360;
+        else if (id === 't-flip') v.hflip = !v.hflip;
+        cs.setViewport(elem, v);
+      } catch (e) {}
+    }
+    ['t-invert', 't-rotate', 't-flip', 't-reset'].forEach(function (id) {
+      var b = document.getElementById(id); if (!b) return;
+      b.addEventListener('click', function (ev) {
+        if (!compareOn) return;
+        ev.stopImmediatePropagation(); ev.preventDefault();
+        var vp = activeVp || vps[0]; if (vp && vp.uid) vpAction(id, vp.elem);
+      }, true);
+    });
+    // Presets de ventana (W/L) sobre el panel seleccionado en modo comparar.
+    (function () {
+      var menu = document.getElementById('preset-menu'); if (!menu) return;
+      menu.addEventListener('click', function (ev) {
+        if (!compareOn) return;
+        var b = ev.target.closest('button[data-ww]'); if (!b) return;
+        ev.stopImmediatePropagation(); ev.preventDefault();
+        var vp = activeVp || vps[0]; if (!vp || !vp.uid) return;
+        var ww = b.getAttribute('data-ww'), wc = b.getAttribute('data-wc');
+        try {
+          var v = cs.getViewport(vp.elem);
+          if (ww === '' || ww == null) { var img = cs.getImage(vp.elem); if (img) { v.voi.windowWidth = img.windowWidth; v.voi.windowCenter = img.windowCenter; } }
+          else { v.voi.windowWidth = parseFloat(ww); v.voi.windowCenter = parseFloat(wc); }
+          cs.setViewport(vp.elem, v);
+        } catch (e) {}
+        var dd = document.getElementById('dd-preset'); if (dd) dd.classList.remove('open');
+      }, true);
+    })();
 
     /* exponer para depuración / extensiones */
     HGV.pro = { toast: toast, makePanel: makePanel, mk: mk, toolBtn: toolBtn, addAfter: addAfter,
