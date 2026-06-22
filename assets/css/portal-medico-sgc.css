@@ -1,0 +1,46 @@
+/* =============================================================================
+   Expediente clínico (SGC) — panel read-only en la ficha del paciente.
+   Paleta clara del portal médico.
+   ============================================================================= */
+#sgc-card .doctor-form-pad { padding-top: 4px; }
+.sgc-head { display: flex; align-items: center; gap: 12px; padding: 10px 0 14px; border-bottom: 1px solid #eef0f6; margin-bottom: 12px; }
+.sgc-head strong { display: block; color: #1e2540; font-size: .98rem; }
+.sgc-head span { display: block; color: #64748b; font-size: .82rem; margin-top: 2px; }
+.sgc-badge { flex: none; display: inline-flex; align-items: center; gap: 5px; font-size: .68rem; font-weight: 800; letter-spacing: .04em;
+  padding: 5px 10px; border-radius: 999px; background: #e7edff; color: #2a3fa0; text-transform: uppercase; }
+
+.sgc-acc { border: 1px solid #e6e8f0; border-radius: 12px; margin-bottom: 10px; overflow: hidden; background: #fff; }
+.sgc-acc > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 12px 14px; font-weight: 700; color: #1e2540; font-size: .9rem; user-select: none; }
+.sgc-acc > summary::-webkit-details-marker { display: none; }
+.sgc-acc > summary:hover { background: #f7f9fe; }
+.sgc-acc-t { display: inline-flex; align-items: center; gap: 8px; }
+.sgc-acc-t i { color: #5566aa; }
+.sgc-acc-n { flex: none; min-width: 22px; text-align: center; font-size: .72rem; font-weight: 800; color: #2a3fa0; background: #eef2ff; border-radius: 999px; padding: 2px 8px; }
+.sgc-acc[open] > summary { border-bottom: 1px solid #eef0f6; }
+.sgc-acc-b { padding: 6px 14px 14px; }
+
+.sgc-item { padding: 11px 0; border-bottom: 1px dashed #eef0f4; }
+.sgc-item:last-child { border-bottom: 0; }
+.sgc-item-h { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.sgc-item-h strong { color: #28315a; font-size: .86rem; }
+.sgc-item-h span { color: #8590a8; font-size: .76rem; }
+.sgc-item-tx { color: #3b4566; font-size: .85rem; line-height: 1.55; margin-top: 4px; white-space: normal; }
+.sgc-dx { color: #1e2540; font-size: .84rem; margin: 2px 0 4px; }
+.sgc-dx b, .sgc-sub b { color: #5566aa; }
+.sgc-note { margin-top: 5px; padding: 7px 10px; background: #f8fafc; border-left: 3px solid #c9d2e8; border-radius: 6px; font-size: .82rem; color: #475069; }
+.sgc-sub { margin-top: 6px; font-size: .83rem; color: #46506e; }
+
+.sgc-chips { margin: 8px 0; font-size: .82rem; color: #46506e; }
+.sgc-chips b { color: #5566aa; margin-right: 4px; }
+.sgc-chip { display: inline-block; margin: 2px 3px; padding: 3px 9px; border-radius: 999px; background: #eef2ff; color: #36407a; font-size: .76rem; border: 1px solid #dfe5fb; }
+.sgc-chip-alert { background: #fdecec; color: #b42318; border-color: #f6cccc; }
+
+.sgc-vt-wrap { overflow-x: auto; }
+.sgc-vt { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.sgc-vt th, .sgc-vt td { padding: 6px 9px; text-align: left; border-bottom: 1px solid #eef0f4; white-space: nowrap; }
+.sgc-vt th { font-size: .68rem; text-transform: uppercase; letter-spacing: .03em; color: #7a8499; background: #f8fafc; }
+.sgc-vt td { color: #3b4566; font-variant-numeric: tabular-nums; }
+
+.sgc-foot { display: flex; align-items: center; gap: 6px; margin-top: 12px; font-size: .74rem; color: #94a3b8; }
+.sgc-foot i { color: #b4bdd0; }

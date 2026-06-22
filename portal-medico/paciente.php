@@ -313,6 +313,20 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
         <div id="lab-list" class="doctor-lab-list"></div>
     </div>
 </section>
+
+<!-- ── Expediente clínico (SGC) — solo lectura ───────────────────────── -->
+<section class="doctor-card mt-4" id="sgc-card" data-pid="<?= (int)$id ?>">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="database" class="h-5 w-5"></i> Expediente clínico (SGC)</h2>
+        <span class="doctor-text-soft" id="sgc-count"></span>
+    </header>
+    <div class="doctor-form-pad">
+        <div id="sgc-body"><p class="doctor-text-soft">Consultando el expediente en SGC…</p></div>
+    </div>
+</section>
+<link rel="stylesheet" href="<?= e(base_url('assets/css/portal-medico-sgc.css')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/css/portal-medico-sgc.css') ?: time())) ?>">
+<script src="<?= e(base_url('assets/js/portal-medico-sgc.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-sgc.js') ?: time())) ?>"></script>
+
 <style>
 .doctor-lab-list{display:flex;flex-direction:column;gap:10px}
 .doctor-lab-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid #e6e8f0;border-radius:12px;background:#fff}
