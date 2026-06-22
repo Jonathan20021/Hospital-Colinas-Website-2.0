@@ -107,6 +107,10 @@
 /* La app ya instalada (standalone) no necesita el acceso "Instalar app". */
 .pwa-standalone .pwa-install-entry{ display:none !important; }
 
+/* Tarjeta de notificaciones en el perfil. */
+.portal-notif-card .portal-notif-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+.portal-notif-status{ margin-top:12px; font-size:.92rem; color:#5b6678; }
+
 @media (prefers-reduced-motion: reduce){
   .pwa-toast,.pwa-install,.pwa-net{ transition:none; }
 }

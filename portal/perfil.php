@@ -206,4 +206,57 @@ portal_layout_begin('Mi perfil', 'perfil');
         <button type="submit" class="btn btn-green"><i data-lucide="shield-check"></i> Cambiar contraseña</button>
     </div>
 </form>
+
+<section class="portal-card portal-notif-card" id="pa-notif-card" hidden>
+    <div class="portal-password-card-head">
+        <span><i data-lucide="bell"></i></span>
+        <div>
+            <h3>Notificaciones</h3>
+            <p>Recibe un aviso cuando tu médico te escriba, aunque no tengas el portal abierto.</p>
+        </div>
+    </div>
+    <div class="portal-notif-actions">
+        <button type="button" class="btn btn-green" id="pa-notif-enable"><i data-lucide="bell-ring"></i> Activar notificaciones</button>
+        <button type="button" class="btn btn-outline" id="pa-notif-disable" hidden><i data-lucide="bell-off"></i> Desactivar</button>
+        <button type="button" class="btn btn-outline" id="pa-notif-test" hidden><i data-lucide="send"></i> Probar</button>
+    </div>
+    <p class="portal-notif-status" id="pa-notif-status" aria-live="polite"></p>
+</section>
+<script>
+window.addEventListener('load', function () {
+    var card = document.getElementById('pa-notif-card');
+    if (!card || !window.HGLCPush || !HGLCPush.supported) return;
+    card.hidden = false;
+    var bEn = document.getElementById('pa-notif-enable');
+    var bDis = document.getElementById('pa-notif-disable');
+    var bTest = document.getElementById('pa-notif-test');
+    var st = document.getElementById('pa-notif-status');
+    function render(s) {
+        var on = !!(s && s.subscribed);
+        bEn.hidden = on; bDis.hidden = !on; bTest.hidden = !on;
+        if (s && s.permission === 'denied') {
+            st.textContent = 'Las notificaciones están bloqueadas en tu navegador. Habilítalas desde los ajustes del sitio.';
+            bEn.disabled = true;
+        } else {
+            st.textContent = on ? 'Activadas en este dispositivo.' : 'Están desactivadas en este dispositivo.';
+        }
+    }
+    HGLCPush.status().then(render).catch(function () {});
+    bEn.addEventListener('click', function () {
+        bEn.disabled = true; st.textContent = 'Activando…';
+        HGLCPush.enable().then(function () { return HGLCPush.status(); }).then(render)
+            .catch(function (e) { st.textContent = (e && e.message === 'denied') ? 'Permiso denegado.' : 'No se pudo activar.'; })
+            .finally(function () { bEn.disabled = false; });
+    });
+    bDis.addEventListener('click', function () {
+        HGLCPush.disable().then(function () { return HGLCPush.status(); }).then(render).catch(function () {});
+    });
+    bTest.addEventListener('click', function () {
+        st.textContent = 'Enviando prueba…';
+        HGLCPush.test().then(function () { st.textContent = 'Prueba enviada. Debería llegarte una notificación.'; })
+            .catch(function () { st.textContent = 'No se pudo enviar la prueba.'; });
+    });
+    if (window.lucide) lucide.createIcons();
+});
+</script>
 <?php portal_layout_end();

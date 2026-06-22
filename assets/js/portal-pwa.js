@@ -232,6 +232,68 @@
   window.addEventListener('online', onNet);
   window.addEventListener('offline', onNet);
 
+  // ── Notificaciones push ──────────────────────────────────────────
+  function urlB64ToU8(base64String) {
+    var padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    var base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+    var raw = atob(base64);
+    var arr = new Uint8Array(raw.length);
+    for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+    return arr;
+  }
+  function pushSupported() {
+    return ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+  }
+  // Habla con la API interna a través del proxy seguro del paciente.
+  function pushApi(method, path, body) {
+    var proxy = (document.querySelector('meta[name="portal-api-url"]') || {}).content || '';
+    var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+    return fetch(proxy, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+      credentials: 'same-origin',
+      body: JSON.stringify({ method: method, path: path, body: body || {} })
+    }).then(function (r) { return r.json().catch(function () { return { success: false }; }); });
+  }
+  async function enablePush() {
+    if (!pushSupported()) throw new Error('unsupported');
+    var perm = await Notification.requestPermission();
+    if (perm !== 'granted') throw new Error('denied');
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      var keyRes = await pushApi('GET', '/portal/me/push/key');
+      var key = keyRes && keyRes.data && keyRes.data.publicKey;
+      if (!key) throw new Error('no_key');
+      sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlB64ToU8(key) });
+    }
+    var j = sub.toJSON();
+    var res = await pushApi('POST', '/portal/me/push/subscribe', {
+      endpoint: sub.endpoint, p256dh: j.keys && j.keys.p256dh, auth: j.keys && j.keys.auth, ua: navigator.userAgent
+    });
+    if (!res || !res.success) throw new Error('save_failed');
+    return true;
+  }
+  async function disablePush() {
+    if (!pushSupported()) return false;
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      try { await pushApi('POST', '/portal/me/push/unsubscribe', { endpoint: sub.endpoint }); } catch (e) {}
+      try { await sub.unsubscribe(); } catch (e) {}
+    }
+    return true;
+  }
+  async function pushStatus() {
+    if (!pushSupported()) return { supported: false };
+    var reg = await navigator.serviceWorker.ready;
+    var sub = await reg.pushManager.getSubscription();
+    return { supported: true, permission: Notification.permission, subscribed: !!sub };
+  }
+  function pushTest() { return pushApi('POST', '/portal/me/push/test'); }
+
+  window.HGLCPush = { supported: pushSupported(), enable: enablePush, disable: disablePush, status: pushStatus, test: pushTest };
+
   // ── Arranque ─────────────────────────────────────────────────────
   function boot() {
     registerSW();
