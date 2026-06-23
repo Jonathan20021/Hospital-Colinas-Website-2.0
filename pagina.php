@@ -119,6 +119,33 @@ $serviceCatalog = service_pages_catalog($services, $assets);
                 <?php endforeach; ?>
             </div>
 
+            <?php if ($slug === 'seguros-aceptados' && !empty($insurers)): ?>
+                <section class="content-insurers" aria-labelledby="insurersListTitle">
+                    <div class="content-insurers-head">
+                        <p class="section-label"><i data-lucide="shield-check" class="h-4 w-4"></i> Convenios y aseguradoras</p>
+                        <h2 id="insurersListTitle">Seguros que aceptamos</h2>
+                        <p>Trabajamos con las principales ARS del país. Si no ves la tuya, escríbenos y te orientamos sobre cobertura y autorizaciones.</p>
+                    </div>
+                    <div class="content-insurers-grid" role="list">
+                        <?php foreach ($insurers as $insurer): ?>
+                            <article class="content-insurer-card" role="listitem">
+                                <div class="content-insurer-logo">
+                                    <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>" alt="<?= e($insurer['name']) ?>" loading="lazy">
+                                </div>
+                                <span><?= e($insurer['name']) ?></span>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="content-insurers-cta">
+                        <span><i data-lucide="badge-check" class="h-4 w-4"></i> Cobertura ambulatoria y hospitalaria</span>
+                        <a href="<?= e($contact['whatsapp']) ?>" target="_blank" rel="noopener" class="btn btn-green">
+                            <i data-lucide="message-circle" class="h-4 w-4"></i>
+                            ¿No ves tu ARS? Escríbenos
+                        </a>
+                    </div>
+                </section>
+            <?php endif; ?>
+
             <?php if ($type === 'services-index'): ?>
                 <div class="content-service-directory">
                     <?php foreach ($services as $group): ?>

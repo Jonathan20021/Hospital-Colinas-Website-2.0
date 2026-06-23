@@ -4310,6 +4310,131 @@ body {
     gap: 1rem;
 }
 
+/* Aseguradoras aceptadas — página "Seguros aceptados" (mismo lenguaje visual que la home) */
+.content-insurers {
+    margin-top: 3.25rem;
+}
+
+.content-insurers-head {
+    max-width: 660px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+.content-insurers-head h2 {
+    margin-top: .55rem;
+    color: var(--navy);
+    font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 900;
+    letter-spacing: -.018em;
+}
+
+.content-insurers-head p {
+    margin-top: .8rem;
+    color: #6f6d68;
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+.content-insurers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.1rem;
+}
+
+.content-insurer-card {
+    display: grid;
+    gap: .9rem;
+    place-items: center;
+    text-align: center;
+    padding: 1.7rem 1.25rem 1.3rem;
+    border-radius: 18px;
+    background: var(--paper);
+    border: 1px solid var(--warm-line);
+    box-shadow: 0 12px 30px rgba(38, 33, 97, .07);
+    transition: transform .35s cubic-bezier(.22, 1, .36, 1), box-shadow .35s ease, border-color .35s ease;
+}
+
+.content-insurer-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(111, 180, 63, .5);
+    box-shadow: 0 22px 48px rgba(38, 33, 97, .14);
+}
+
+.content-insurer-logo {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 84px;
+}
+
+.content-insurer-card img {
+    max-width: 100%;
+    max-height: 72px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform .35s ease;
+}
+
+.content-insurer-card:hover img {
+    transform: scale(1.05);
+}
+
+.content-insurer-card span {
+    color: var(--navy);
+    font-weight: 800;
+    font-size: .95rem;
+    line-height: 1.3;
+}
+
+.content-insurers-cta {
+    margin-top: 2.1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .85rem 1.4rem;
+    color: #6f6d68;
+    font-weight: 650;
+    font-size: .92rem;
+}
+
+.content-insurers-cta span {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+@media (max-width: 640px) {
+    .content-insurers-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .8rem;
+    }
+
+    .content-insurer-card {
+        padding: 1.25rem .85rem 1rem;
+    }
+
+    .content-insurer-logo {
+        height: 62px;
+    }
+
+    .content-insurer-card img {
+        max-height: 54px;
+    }
+
+    .content-insurers-cta {
+        flex-direction: column;
+    }
+
+    .content-insurers-cta .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
 .content-service-group {
     display: grid;
     gap: 1rem;
