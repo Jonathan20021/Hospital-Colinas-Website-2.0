@@ -15,7 +15,10 @@ if (!$doctor) {
 }
 
 $associationLines = $doctor ? array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $doctor['associations'] ?? ''))) : [];
-$doctorPhone = $doctor['phone'] ?? '';
+// El teléfono DIRECTO del médico no se publica en el directorio (privacidad):
+// se muestra siempre el del hospital. Al dejarlo vacío, el botón "Llamar", la tira
+// de datos, la tarjeta de Información clínica y el schema caen a $contact['phone'].
+$doctorPhone = '';
 $doctorEmail = $doctor['email'] ?? '';
 ?>
 <!DOCTYPE html>
