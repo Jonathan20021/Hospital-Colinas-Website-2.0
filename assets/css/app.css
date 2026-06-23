@@ -4893,13 +4893,14 @@ body {
     }
 
     .hero-shell {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
         padding-bottom: 3.75rem;
     }
 
     .hero-copy {
         min-height: auto;
         padding-top: 1rem;
+        min-width: 0;
     }
 
     .hero-assist-panel {
@@ -5303,7 +5304,8 @@ body {
     }
 
     .hero-copy h1 {
-        font-size: clamp(2.45rem, 12vw, 3.55rem);
+        font-size: clamp(1.8rem, 8.4vw, 3rem);
+        overflow-wrap: break-word;
     }
 
     .hero-copy p {
@@ -5361,17 +5363,27 @@ body {
         min-height: auto;
     }
 
+    /* En móvil la foto NO se tapa: imagen completa arriba, stats en tarjeta debajo. */
     .hero-feature {
-        min-height: 390px;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: .9rem;
+    }
+
+    .hero-feature-image {
+        position: relative;
+        inset: auto;
+        height: clamp(200px, 52vw, 280px);
     }
 
     .hero-feature-panel {
+        position: static;
+        inset: auto;
         grid-template-columns: 1fr;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 16px 36px rgba(38, 33, 97, 0.12);
+        background: #fff;
+        border: 1px solid var(--warm-line);
+        box-shadow: 0 16px 36px rgba(38, 33, 97, 0.1);
         border-radius: 16px;
     }
 
@@ -5507,6 +5519,12 @@ body {
 
     .mobile-actionbar {
         display: grid;
+    }
+
+    /* Sube el botón de IA por encima de la barra inferior (Llamar/Cita/Buscar)
+       para que no se encimen en móvil. */
+    .cai-root {
+        bottom: calc(6.5rem + env(safe-area-inset-bottom));
     }
 
     .whatsapp-float {
