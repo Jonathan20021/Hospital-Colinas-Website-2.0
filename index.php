@@ -333,6 +333,10 @@ $leadershipGerencias = [
                     <button type="button" class="nav-search js-open-command" aria-label="Buscar">
                         <i data-lucide="search" class="h-4 w-4"></i>
                     </button>
+                    <a href="<?= e(base_url('ver-resultados')) ?>" class="btn btn-navy nav-cta">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        Ver resultados
+                    </a>
                     <button type="button" class="js-open-appointment btn btn-green nav-cta">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
@@ -365,7 +369,11 @@ $leadershipGerencias = [
                     <button type="button" class="mobile-link js-open-command text-left">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
                     </button>
-                    <button type="button" class="js-open-appointment mt-3 btn btn-green w-full justify-center">
+                    <a href="<?= e(base_url('ver-resultados')) ?>" class="mt-3 btn btn-navy w-full justify-center">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        Ver resultados
+                    </a>
+                    <button type="button" class="js-open-appointment mt-2 btn btn-green w-full justify-center">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
                     </button>

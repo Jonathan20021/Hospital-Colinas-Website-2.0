@@ -71,6 +71,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="nav-search" aria-label="Buscar">
                         <i data-lucide="search" class="h-4 w-4"></i>
                     </a>
+                    <a href="<?= e(base_url('ver-resultados')) ?>" class="btn btn-navy nav-cta">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        Ver resultados
+                    </a>
                     <a href="<?= e(base_url('agendar')) ?>" class="btn btn-green nav-cta">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
@@ -104,7 +108,11 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="mobile-link">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
                     </a>
-                    <a href="<?= e(base_url('agendar')) ?>" class="mt-3 btn btn-green w-full justify-center">
+                    <a href="<?= e(base_url('ver-resultados')) ?>" class="mt-3 btn btn-navy w-full justify-center">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        Ver resultados
+                    </a>
+                    <a href="<?= e(base_url('agendar')) ?>" class="mt-2 btn btn-green w-full justify-center">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita en línea
                     </a>

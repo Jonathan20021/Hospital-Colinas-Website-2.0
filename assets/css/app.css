@@ -329,7 +329,25 @@ body {
     }
 }
 
-@media (min-width: 1440px) {
+/* Franja apretada (laptops): el header lleva dos CTAs (Ver resultados + Agendar
+   cita), así que se compacta el nav para que el menú no se amontone. */
+@media (min-width: 1180px) and (max-width: 1539px) {
+    .nav-primary {
+        gap: .95rem;
+    }
+
+    .nav-actions {
+        gap: .5rem;
+        margin-left: 1rem;
+    }
+
+    .nav-cta {
+        padding: .72rem .9rem;
+        font-size: .84rem;
+    }
+}
+
+@media (min-width: 1540px) {
     .nav-primary {
         gap: 1.6rem;
         margin-left: 2rem;
@@ -521,6 +539,16 @@ body {
 
 .btn-green:hover {
     background: var(--green-2);
+}
+
+.btn-navy {
+    background: var(--navy);
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(38, 33, 97, .22);
+}
+
+.btn-navy:hover {
+    background: var(--navy-2);
 }
 
 .btn-outline {

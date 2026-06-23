@@ -132,6 +132,10 @@ $categories = news_distinct_categories();
                     <a href="<?= e(base_url('noticias')) ?>" class="nav-link is-active">Noticias</a>
                 </nav>
                 <div class="nav-actions">
+                    <a href="<?= e(base_url('ver-resultados')) ?>" class="btn btn-navy nav-cta">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        Ver resultados
+                    </a>
                     <button type="button" class="js-open-appointment btn btn-green nav-cta">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
@@ -160,7 +164,11 @@ $categories = news_distinct_categories();
                     <a href="<?= e(base_url('#servicios')) ?>" class="mobile-link">Servicios</a>
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="mobile-link">Directorio médico</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="mobile-link is-active">Noticias</a>
-                    <button type="button" class="js-open-appointment mt-3 btn btn-green w-full justify-center">
+                    <a href="<?= e(base_url('ver-resultados')) ?>" class="mt-3 btn btn-navy w-full justify-center">
+                        <i data-lucide="file-text" class="h-4 w-4"></i>
+                        Ver resultados
+                    </a>
+                    <button type="button" class="js-open-appointment mt-2 btn btn-green w-full justify-center">
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita
                     </button>
