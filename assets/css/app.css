@@ -303,21 +303,30 @@ body {
     color: var(--navy);
 }
 
-/* ============ DESKTOP NAV — appears at ≥1180px ============ */
-@media (min-width: 1180px) {
+/* ============ DESKTOP NAV — aparece a ≥1280px ============
+   El header lleva dos CTAs (Ver resultados + Agendar cita) dentro de un
+   contenedor capado a max-w-7xl (~1216px útiles a cualquier ancho de pantalla),
+   así que el menú se mantiene compacto en una sola línea y la búsqueda queda
+   como ícono. Debajo de 1280px se usa el menú hamburguesa. */
+@media (min-width: 1280px) {
     .nav-primary {
         display: flex !important;
         align-items: center;
-        gap: 1.2rem;
+        gap: .95rem;
         margin-left: auto;
     }
 
     .nav-actions {
         display: flex !important;
         align-items: center;
-        gap: .65rem;
-        margin-left: 1.25rem;
+        gap: .5rem;
+        margin-left: 1rem;
         flex-shrink: 0;
+    }
+
+    .nav-cta {
+        padding: .72rem .95rem;
+        font-size: .85rem;
     }
 
     .mobile-toggle {
@@ -326,35 +335,6 @@ body {
 
     .mobile-menu {
         display: none !important;
-    }
-}
-
-/* Franja apretada (laptops): el header lleva dos CTAs (Ver resultados + Agendar
-   cita), así que se compacta el nav para que el menú no se amontone. */
-@media (min-width: 1180px) and (max-width: 1539px) {
-    .nav-primary {
-        gap: .95rem;
-    }
-
-    .nav-actions {
-        gap: .5rem;
-        margin-left: 1rem;
-    }
-
-    .nav-cta {
-        padding: .72rem .9rem;
-        font-size: .84rem;
-    }
-}
-
-@media (min-width: 1540px) {
-    .nav-primary {
-        gap: 1.6rem;
-        margin-left: 2rem;
-    }
-
-    .nav-actions {
-        margin-left: 1.75rem;
     }
 }
 
@@ -486,27 +466,6 @@ body {
     padding: .85rem 1.15rem;
     font-size: .9rem;
     white-space: nowrap;
-}
-
-@media (min-width: 1440px) {
-    .nav-search {
-        width: auto;
-        padding: 0 1rem;
-        border-radius: 10px;
-        gap: .5rem;
-        font-size: .9rem;
-        font-weight: 900;
-    }
-
-    .nav-search::after {
-        content: "Buscar";
-    }
-}
-
-@media (min-width: 1024px) {
-    .mobile-toggle {
-        display: none;
-    }
 }
 
 .btn {
