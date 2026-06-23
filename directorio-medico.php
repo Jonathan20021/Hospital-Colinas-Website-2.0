@@ -285,14 +285,14 @@ $directoryValues = [
                     </div>
                     <div id="doctorLiveResults" class="dir-live-grid">
                         <?php foreach ($medicalProfiles as $profile): ?>
-                            <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
+                            <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['subspecialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
                             <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-live-result"
                                 data-live-result data-search="<?= e($search) ?>">
                                 <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
                                     loading="lazy">
                                 <span>
                                     <strong><?= e($profile['name']) ?></strong>
-                                    <small><?= e($profile['specialty']) ?></small>
+                                    <small><?= e($profile['specialty']) ?><?php if (!empty($profile['subspecialty'])): ?> · <?= e($profile['subspecialty']) ?><?php endif; ?></small>
                                 </span>
                                 <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
                             </a>
@@ -325,7 +325,7 @@ $directoryValues = [
 
                 <div id="doctorGrid" class="dir-doctor-grid">
                     <?php foreach ($medicalProfiles as $profile): ?>
-                        <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
+                        <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['subspecialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
                         <article class="dir-doctor-card" data-doctor-card data-search="<?= e($search) ?>">
                             <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-doctor-photo">
                                 <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
@@ -336,6 +336,9 @@ $directoryValues = [
                                 <h3><a
                                         href="<?= e(base_url('medico/' . $profile['slug'])) ?>"><?= e($profile['name']) ?></a>
                                 </h3>
+                                <?php if (!empty($profile['subspecialty'])): ?>
+                                    <p class="dir-doctor-sub"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i><?= e($profile['subspecialty']) ?></p>
+                                <?php endif; ?>
                                 <p class="dir-doctor-office"><i data-lucide="map-pin"
                                         class="h-3.5 w-3.5"></i><?= e($profile['office']) ?></p>
                                 <p class="dir-doctor-schedule"><i data-lucide="clock-3"

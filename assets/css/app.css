@@ -8817,8 +8817,20 @@ body.cai-locked .mobile-actionbar {
     line-height: 1.3;
 }
 
+.dir-doctor-sub {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: .4rem;
+    color: var(--navy);
+    font-size: .82rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
 .dir-doctor-office svg,
-.dir-doctor-schedule svg {
+.dir-doctor-schedule svg,
+.dir-doctor-sub svg {
     color: var(--green);
     flex-shrink: 0;
 }
@@ -9252,6 +9264,13 @@ body.cai-locked .mobile-actionbar {
     flex-direction: column;
 }
 
+.profile-pills {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+
 .profile-specialty-pill {
     display: inline-flex;
     align-self: flex-start;
@@ -9265,6 +9284,17 @@ body.cai-locked .mobile-actionbar {
     font-weight: 950;
     letter-spacing: .04em;
     text-transform: uppercase;
+}
+
+.profile-subspecialty-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: var(--navy-soft, #efeff8);
+    padding: .35rem .8rem;
+    color: var(--navy);
+    font-size: .76rem;
+    font-weight: 800;
 }
 
 .profile-identity h1 {

@@ -163,9 +163,14 @@ $doctorEmail = $doctor['email'] ?? '';
                         </span>
                     </div>
                     <div class="profile-identity">
-                        <span class="profile-specialty-pill">
-                            <i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>
-                            <?= e($doctor['specialty']) ?>
+                        <span class="profile-pills">
+                            <span class="profile-specialty-pill">
+                                <i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>
+                                <?= e($doctor['specialty']) ?>
+                            </span>
+                            <?php if (!empty($doctor['subspecialty'])): ?>
+                                <span class="profile-subspecialty-pill"><?= e($doctor['subspecialty']) ?></span>
+                            <?php endif; ?>
                         </span>
                         <h1><?= e($doctor['name']) ?></h1>
                         <p><?= e($doctor['biography'] ?: 'Atención especializada en ' . $doctor['specialty'] . ' del Hospital General Las Colinas.') ?>
