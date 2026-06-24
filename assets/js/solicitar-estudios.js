@@ -150,7 +150,11 @@
     function collectItems() {
         var items = [];
         form.querySelectorAll('input[name="study"]:checked').forEach(function (c) {
-            if (c.closest('[hidden]')) return;
+            // Ignorar solo los de un GRUPO oculto (imágenes vs laboratorio según el
+            // tipo elegido), NO los de la sección completa cuando se oculta al
+            // navegar entre pasos (si no, al "Enviar" se perdían todos).
+            var grp = c.closest('[data-se-group]');
+            if (grp && grp.hidden) return;
             items.push({ category: c.getAttribute('data-cat') || 'imaging', name: c.value });
         });
         var other = (form.querySelector('#se-other') || {}).value || '';
