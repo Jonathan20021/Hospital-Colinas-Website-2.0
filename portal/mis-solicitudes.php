@@ -24,6 +24,10 @@ $STATUS = [
     'cancelled'   => ['Cancelada',           'muted'],
 ];
 $TYPE = ['imaging' => 'Imágenes', 'lab' => 'Laboratorio', 'both' => 'Imágenes y laboratorio'];
+$DOC_LABELS = [
+    'order' => 'Orden médica', 'insurance_front' => 'Carnet (frente)',
+    'insurance_back' => 'Carnet (dorso)', 'cedula' => 'Cédula', 'other' => 'Documento',
+];
 
 if (!function_exists('se_money')) {
     function se_money($v, string $cur = 'DOP'): string {
@@ -83,9 +87,29 @@ portal_layout_begin('Mis solicitudes', 'mis-solicitudes');
                     <p class="se-req-meta">
                         <?php if (!empty($r['insurer'])): ?><span><i data-lucide="shield"></i> <?= e($r['insurer']) ?></span><?php endif; ?>
                         <?php if (!empty($r['created_at'])): ?><span><i data-lucide="calendar"></i> <?= e(date('d/m/Y', strtotime((string)$r['created_at']))) ?></span><?php endif; ?>
-                        <?php if (!empty($r['documents_count'])): ?><span><i data-lucide="paperclip"></i> <?= (int)$r['documents_count'] ?> documento(s)</span><?php endif; ?>
                     </p>
                 </div>
+
+                <?php if (!empty($r['documents'])): ?>
+                    <div class="se-req-docs">
+                        <span class="se-req-docs-label"><i data-lucide="paperclip"></i> Documentos adjuntos</span>
+                        <div class="se-docs">
+                            <?php foreach ($r['documents'] as $d):
+                                $durl   = base_url('api/study-doc.php?req=' . (int)$r['id'] . '&doc=' . (int)$d['id']);
+                                $dlabel = $DOC_LABELS[$d['doc_type'] ?? 'other'] ?? 'Documento';
+                            ?>
+                                <a class="se-doc" href="<?= e($durl) ?>" target="_blank" rel="noopener" title="<?= e($dlabel) ?>">
+                                    <?php if (!empty($d['is_image'])): ?>
+                                        <img src="<?= e($durl) ?>" alt="<?= e($dlabel) ?>" loading="lazy">
+                                    <?php else: ?>
+                                        <span class="se-doc-pdf"><i data-lucide="file-text"></i></span>
+                                    <?php endif; ?>
+                                    <span class="se-doc-label"><?= e($dlabel) ?></span>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                 <?php if ($q && ($balance !== null || !empty($q['authorization_number']))): ?>
                     <div class="se-quote">
@@ -164,7 +188,7 @@ portal_layout_begin('Mis solicitudes', 'mis-solicitudes');
                     return r.text().then(function (t) { var j; try { j = JSON.parse(t); } catch (e) { j = {}; } return { ok: r.ok && j.success, j: j }; });
                 }).then(function (o) {
                     btn.disabled = false;
-                    if (o.ok) { msg.className = 'se-upload-msg is-ok'; msg.textContent = '✓ Documento subido.'; }
+                    if (o.ok) { msg.className = 'se-upload-msg is-ok'; msg.textContent = '✓ Documento subido.'; setTimeout(function () { location.reload(); }, 700); }
                     else { msg.className = 'se-upload-msg is-err'; msg.textContent = (o.j && o.j.message) || 'No se pudo subir.'; }
                 }).catch(function () { btn.disabled = false; msg.className = 'se-upload-msg is-err'; msg.textContent = 'Error de conexión.'; });
             };
