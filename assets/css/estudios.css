@@ -343,3 +343,23 @@
 .se-upload-msg { font-size: .83rem; }
 .se-upload-msg.is-ok { color: var(--se-green-dark); font-weight: 700; }
 .se-upload-msg.is-err { color: #b91c1c; }
+
+/* =========================================================================
+   Robustez móvil / PWA / cross-browser
+   ========================================================================= */
+/* iOS Safari hace auto-zoom al enfocar inputs con font-size < 16px. */
+@media (max-width: 640px) {
+    .se-form .form-input,
+    .se-form textarea.form-input,
+    .se-form select.form-input,
+    .se-search .form-input,
+    .se-upload-type { font-size: 16px; }
+    /* La lista de estudios ocupa una porción proporcional de la pantalla. */
+    .se-catalog { max-height: 55vh; }
+    /* Botones de navegación cómodos al tacto. */
+    .se-nav .btn, .se-submit { min-height: 44px; }
+}
+/* Señal de "marcado" sin depender de :has() (navegadores antiguos). */
+.se-pick input:checked + span { color: var(--se-navy); font-weight: 600; }
+/* Evita desbordes horizontales por nombres largos de estudios. */
+.se-pick span, .se-summary-row strong { overflow-wrap: anywhere; }
