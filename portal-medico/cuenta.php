@@ -102,8 +102,19 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
         <h2><i data-lucide="pen-tool" class="h-4 w-4"></i> Mi firma</h2>
     </header>
     <div class="doctor-form-pad">
-        <p class="doctor-subtitle" style="margin-top:0">Tu firma aparece en las recetas y documentos clínicos que emites, junto a tu exequátur y colegiatura CMD. Dibújala con el mouse o el dedo, o sube una imagen (PNG/JPEG).</p>
+        <p class="doctor-subtitle" style="margin-top:0">Tu firma aparece en las recetas y documentos clínicos que emites, junto a tu exequátur y colegiatura CMD.</p>
         <p id="sig-current" class="doctor-save-status" style="margin:0 0 10px">Comprobando…</p>
+
+        <div id="sig-preview-wrap" hidden style="margin:0 0 18px">
+            <p class="doctor-label" style="margin:0 0 6px">Firma actual</p>
+            <div style="display:inline-block;border:1px solid #e5e7eb;border-radius:12px;background:#fff;padding:12px 16px;max-width:100%">
+                <img id="sig-preview" alt="Firma actual" style="display:block;max-width:340px;max-height:130px;width:auto;height:auto">
+            </div>
+            <p class="doctor-subtitle" style="margin:8px 0 0;font-size:.85rem">Así se ve la firma que el hospital cargó por ti. Para cambiarla, dibuja o sube una nueva abajo y pulsa «Guardar firma».</p>
+        </div>
+
+        <p class="doctor-label" style="margin:0 0 6px">Dibujar o subir una firma nueva</p>
+        <p class="doctor-subtitle" style="margin-top:0;font-size:.85rem">Dibújala con el mouse o el dedo, o sube una imagen (PNG/JPEG).</p>
         <canvas id="sig-pad" width="600" height="180" style="display:block;width:100%;max-width:600px;height:180px;border:1px dashed #cbd5e1;border-radius:12px;background:#fff;touch-action:none;cursor:crosshair"></canvas>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center">
             <button type="button" class="doctor-btn doctor-btn-ghost" id="sig-clear"><i data-lucide="eraser" class="h-4 w-4"></i> Limpiar</button>
@@ -166,11 +177,22 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
         rd.readAsDataURL(f);
     });
 
+    const previewWrap = document.getElementById('sig-preview-wrap');
+    const previewImg  = document.getElementById('sig-preview');
+
     async function refresh() {
         try {
-            const r = await window.doctorApi('GET', '/portal-doctor/me');
-            const has = !!(r.ok && r.data && r.data.has_signature);
-            curEl.textContent = has ? '✓ Tienes una firma registrada.' : 'Aún no has registrado tu firma (las recetas saldrán con una línea para firmar a mano).';
+            const r = await window.doctorApi('GET', '/portal-doctor/me/signature');
+            const has = !!(r.ok && r.data && r.data.has_signature && r.data.image);
+            if (has) {
+                previewImg.src = r.data.image;
+                previewWrap.hidden = false;
+                curEl.textContent = '✓ Tienes una firma registrada.';
+            } else {
+                previewImg.removeAttribute('src');
+                previewWrap.hidden = true;
+                curEl.textContent = 'Aún no has registrado tu firma (las recetas saldrán con una línea para firmar a mano).';
+            }
             delBtn.hidden = !has;
         } catch (e) {}
     }
