@@ -753,6 +753,13 @@ $leadershipGerencias = [
                         <i data-lucide="arrow-right" class="h-4 w-4"></i>
                     </a>
                 </div>
+
+                <div class="insurers-cta" style="display:flex;justify-content:center;margin-top:2rem">
+                    <a href="<?= e(base_url('solicitar-estudios')) ?>" class="btn btn-green">
+                        <i data-lucide="clipboard-plus" class="h-4 w-4"></i>
+                        Solicita la autorización de tus estudios en línea
+                    </a>
+                </div>
             </div>
         </section>
 

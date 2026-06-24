@@ -143,6 +143,9 @@ function portal_layout_begin(string $title, string $active = ''): void
                         <a href="<?= e(base_url('portal/mis-citas.php')) ?>" title="Mis citas"
                             class="portal-nav-link <?= $active === 'mis-citas' ? 'is-active' : '' ?>"><i
                                 data-lucide="calendar-check" class="h-4 w-4"></i><span class="portal-nav-label">Mis citas</span></a>
+                        <a href="<?= e(base_url('portal/solicitar-estudios.php')) ?>" title="Solicitar estudios"
+                            class="portal-nav-link <?= $active === 'solicitar-estudios' ? 'is-active' : '' ?>"><i
+                                data-lucide="clipboard-plus" class="h-4 w-4"></i><span class="portal-nav-label">Solicitar estudios</span></a>
                         <a href="<?= e(base_url('portal/mensajes.php')) ?>" title="Mensajes"
                             class="portal-nav-link <?= $active === 'mensajes' ? 'is-active' : '' ?>"><i
                                 data-lucide="messages-square" class="h-4 w-4"></i><span class="portal-nav-label">Mensajes</span></a>
@@ -158,6 +161,9 @@ function portal_layout_begin(string $title, string $active = ''): void
                         <a href="<?= e(base_url('portal/estudios.php')) ?>" title="Mis imágenes"
                             class="portal-nav-link <?= $active === 'estudios' ? 'is-active' : '' ?>"><i
                                 data-lucide="scan" class="h-4 w-4"></i><span class="portal-nav-label">Mis imágenes</span></a>
+                        <a href="<?= e(base_url('portal/mis-solicitudes.php')) ?>" title="Mis solicitudes"
+                            class="portal-nav-link <?= $active === 'mis-solicitudes' ? 'is-active' : '' ?>"><i
+                                data-lucide="clipboard-list" class="h-4 w-4"></i><span class="portal-nav-label">Mis solicitudes</span></a>
                         <a href="<?= e(base_url('portal/perfil.php')) ?>" title="Mi perfil"
                             class="portal-nav-link <?= $active === 'perfil' ? 'is-active' : '' ?>"><i data-lucide="user-cog"
                                 class="h-4 w-4"></i><span class="portal-nav-label">Mi perfil</span></a>
@@ -243,6 +249,8 @@ function portal_layout_end(): void
                         <a href="<?= e(base_url('portal/consultas.php')) ?>"><i data-lucide="stethoscope"></i> Mis consultas</a>
                         <a href="<?= e(base_url('portal/recetas.php')) ?>"><i data-lucide="file-text"></i> Mis recetas</a>
                         <a href="<?= e(base_url('portal/estudios.php')) ?>"><i data-lucide="scan-line"></i> Mis imágenes</a>
+                        <a href="<?= e(base_url('portal/solicitar-estudios.php')) ?>"><i data-lucide="clipboard-plus"></i> Solicitar estudios</a>
+                        <a href="<?= e(base_url('portal/mis-solicitudes.php')) ?>"><i data-lucide="clipboard-list"></i> Mis solicitudes</a>
                         <a href="<?= e(base_url('portal/perfil.php')) ?>"><i data-lucide="user-cog"></i> Mi perfil</a>
                         <a href="#" class="pwa-install-entry" onclick="if(window.HGLCPwa){HGLCPwa.install();}return false;"><i data-lucide="download"></i> Instalar app</a>
                         <a href="<?= e(base_url('portal/logout.php')) ?>"><i data-lucide="log-out"></i> Cerrar sesión</a>

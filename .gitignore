@@ -37,3 +37,7 @@ node_modules/
 # cada request y cPanel bloquea el Deploy HEAD Commit.
 /storage/ai-rate/
 /storage/cache/
+
+# Código desplegado DIRECTO en JENOFONTE (servidor interno) + scripts de prueba.
+# No va a GitHub/cPanel; se conserva solo la documentación de despliegue.
+/deploy/estudios/jenofonte/

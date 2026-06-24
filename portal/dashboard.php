@@ -182,6 +182,8 @@ portal_layout_begin('Inicio', 'dashboard');
                 <a class="portal-link-row" href="<?= e(base_url('portal/recetas.php')) ?>"><span class="portal-link-icon"><i data-lucide="file-text"></i></span><span>Mis recetas</span><i data-lucide="chevron-right"></i></a>
                 <a class="portal-link-row" href="<?= e(base_url('portal/laboratorio.php')) ?>"><span class="portal-link-icon"><i data-lucide="flask-conical"></i></span><span>Resultados</span><i data-lucide="chevron-right"></i></a>
                 <a class="portal-link-row" href="<?= e(base_url('portal/estudios.php')) ?>"><span class="portal-link-icon"><i data-lucide="scan-line"></i></span><span>Mis imágenes</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/solicitar-estudios.php')) ?>"><span class="portal-link-icon"><i data-lucide="clipboard-plus"></i></span><span>Solicitar estudios</span><i data-lucide="chevron-right"></i></a>
+                <a class="portal-link-row" href="<?= e(base_url('portal/mis-solicitudes.php')) ?>"><span class="portal-link-icon"><i data-lucide="clipboard-list"></i></span><span>Mis solicitudes</span><i data-lucide="chevron-right"></i></a>
             </nav>
         </section>
     </aside>

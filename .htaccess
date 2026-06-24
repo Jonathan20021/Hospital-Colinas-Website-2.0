@@ -33,6 +33,7 @@ DirectoryIndex index.php
     RewriteRule ^portal-medico/?$ portal-medico/index.php [L,QSA]
     RewriteRule ^portal-medico/([a-zA-Z0-9_\-]+)/?$ portal-medico/$1.php [L,QSA]
     RewriteRule ^agendar/?$ agendar.php [L,QSA]
+    RewriteRule ^solicitar-estudios/?$ solicitar-estudios.php [L,QSA]
     RewriteRule ^verificar-receta/?$ verificar-receta.php [L,QSA]
     RewriteRule ^verificar-certificado/?$ verificar-certificado.php [L,QSA]
     RewriteRule ^teleconsulta/?$ teleconsulta.php [L,QSA]

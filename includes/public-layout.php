@@ -116,6 +116,10 @@ function render_public_header(array $assets, array $contact, string $active = ''
                         <i data-lucide="calendar-days" class="h-4 w-4"></i>
                         Agendar cita en línea
                     </a>
+                    <a href="<?= e(base_url('solicitar-estudios')) ?>" class="mt-2 btn btn-outline w-full justify-center">
+                        <i data-lucide="clipboard-plus" class="h-4 w-4"></i>
+                        Autorizar estudios (imágenes/lab)
+                    </a>
                     <a href="<?= e(base_url('portal/login.php')) ?>" class="mt-2 btn btn-outline w-full justify-center">
                         <i data-lucide="user-round" class="h-4 w-4"></i>
                         Portal de paciente
