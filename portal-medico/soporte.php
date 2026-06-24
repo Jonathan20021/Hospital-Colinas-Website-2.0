@@ -71,11 +71,11 @@ doctor_layout_begin('Soporte TI', 'soporte');
                 <div class="tool-fields tool-cols-2">
                     <label class="tool-f">Edificio / Torre / Área
                         <input type="text" class="doctor-input" id="sop-building" maxlength="120" autocomplete="off"
-                               placeholder="Ej.: Torre médica, Edificio A">
+                               value="Torre Médica" placeholder="Ej.: Torre médica, Edificio A">
                     </label>
                     <label class="tool-f">Piso / Nivel
                         <input type="text" class="doctor-input" id="sop-floor" maxlength="60" autocomplete="off"
-                               placeholder="Ej.: 3er piso">
+                               value="3er piso" placeholder="Ej.: 3er piso">
                     </label>
                     <label class="tool-f">Consultorio / Oficina N.º
                         <input type="text" class="doctor-input" id="sop-office" maxlength="80" autocomplete="off"
@@ -133,7 +133,36 @@ doctor_layout_begin('Soporte TI', 'soporte');
                 <ul class="doctor-tips" style="margin:0">
                     <li><i data-lucide="check"></i> Tu ticket llega de inmediato a <strong>Soporte TI</strong> por correo, con tu nombre y ubicación.</li>
                     <li><i data-lucide="check"></i> Recibes un <strong>folio</strong> (SOP-#####) para dar seguimiento.</li>
-                    <li><i data-lucide="check"></i> Si es <strong>crítico</strong>, llama además a la extensión de soporte para acelerar.</li>
+                    <li><i data-lucide="check"></i> Si es <strong>crítico</strong>, llama además a la extensión del directorio de abajo para acelerar.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="dm-panel dm-card sop-dir">
+            <header class="dm-card-h"><h2><i data-lucide="phone-call"></i> Directorio · Tecnología</h2></header>
+            <div class="sop-pad">
+                <p class="doctor-subtitle" style="margin:0 0 12px;font-size:.85rem">Para casos urgentes o críticos, llama directo a la extensión correspondiente.</p>
+                <ul class="sop-ext-list">
+                    <li>
+                        <div class="sop-ext-info"><span class="sop-ext-name">Eddy Alvarado</span><span class="sop-ext-role">Coordinador de Tecnología</span></div>
+                        <span class="sop-ext-num"><i data-lucide="phone"></i> ext. 6126</span>
+                    </li>
+                    <li>
+                        <div class="sop-ext-info"><span class="sop-ext-name">Davinosky Tavárez</span><span class="sop-ext-role">Encargado de Tecnología</span></div>
+                        <span class="sop-ext-num"><i data-lucide="phone"></i> ext. 6130</span>
+                    </li>
+                    <li>
+                        <div class="sop-ext-info"><span class="sop-ext-name">Jonathan Sandoval</span><span class="sop-ext-role">Encargado de Redes y Bases de Datos</span></div>
+                        <span class="sop-ext-num"><i data-lucide="phone"></i> ext. 6128</span>
+                    </li>
+                    <li>
+                        <div class="sop-ext-info"><span class="sop-ext-name">Nicol Villar</span><span class="sop-ext-role">Soporte a Usuarios</span></div>
+                        <span class="sop-ext-num"><i data-lucide="phone"></i> ext. 6129</span>
+                    </li>
+                    <li>
+                        <div class="sop-ext-info"><span class="sop-ext-name">Robert Frías</span><span class="sop-ext-role">Soporte Técnico</span></div>
+                        <span class="sop-ext-num"><i data-lucide="phone"></i> ext. 6131</span>
+                    </li>
                 </ul>
             </div>
         </section>
@@ -191,6 +220,14 @@ doctor_layout_begin('Soporte TI', 'soporte');
 .sop-md-row .k{flex:0 0 130px;color:#64748b;font-weight:600}
 .sop-md-row .v{flex:1;color:#0f172a;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}
 .sop-help .doctor-tips li{align-items:flex-start}
+.sop-ext-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.sop-ext-list li{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:11px 0;border-top:1px solid #f1f5f9}
+.sop-ext-list li:first-child{border-top:0;padding-top:0}
+.sop-ext-info{min-width:0;display:flex;flex-direction:column}
+.sop-ext-name{font-weight:700;color:#0f172a;font-size:.92rem;line-height:1.2}
+.sop-ext-role{font-size:.78rem;color:#64748b;line-height:1.3}
+.sop-ext-num{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:.86rem;color:#262161;background:#eef2ff;border-radius:999px;padding:5px 11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sop-ext-num i{width:14px;height:14px}
 @media (max-width:900px){
     .sop-grid{grid-template-columns:1fr}
     .sop-types{grid-template-columns:1fr}
