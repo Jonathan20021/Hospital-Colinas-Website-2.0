@@ -1,5 +1,8 @@
 <?php
 
+// Zona horaria de toda la app pública y los portales: RD = GMT-4 (sin horario de verano).
+date_default_timezone_set('America/Santo_Domingo');
+
 function e(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
