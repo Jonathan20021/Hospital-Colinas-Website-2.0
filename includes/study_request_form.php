@@ -128,7 +128,7 @@ if (!function_exists('render_study_request_form')) {
                     <div>
                         <label class="form-label" for="se-center">¿De dónde te refieren? (opcional)</label>
                         <input type="text" id="se-center" name="referring_center" class="form-input"
-                            placeholder="Ej.: HOMS, otro centro, mi médico privado">
+                            placeholder="Ej.: otro centro de salud o tu médico privado">
                     </div>
                     <div>
                         <label class="form-label" for="se-rdoctor">Médico que indicó (opcional)</label>

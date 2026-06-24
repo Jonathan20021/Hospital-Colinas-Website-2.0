@@ -1,7 +1,7 @@
 <?php
 /**
  * Página pública: "Solicitar autorización de estudios" (Imágenes / Laboratorio).
- * Pensada para pacientes externos (p. ej. referidos del HOMS) que llegan con su
+ * Pensada para pacientes externos (referidos de otro centro) que llegan con su
  * orden médica y su seguro. Si ya hay sesión del portal, redirige a la versión
  * autenticada (datos precargados). Si no, muestra el formulario de invitado:
  * al enviar se crea una cuenta ligera y el paciente queda dentro del portal.
