@@ -100,6 +100,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
     <script>
         window.SE_CONFIG = {
             mode: 'guest',
+            catalogUrl: <?= json_encode(base_url('api/study-catalog.php'), JSON_UNESCAPED_SLASHES) ?>,
             guestSubmitUrl: <?= json_encode(base_url('api/guest-study-request.php'), JSON_UNESCAPED_SLASHES) ?>,
             proxyUrl: <?= json_encode(base_url('api/portal-proxy.php'), JSON_UNESCAPED_SLASHES) ?>,
             portalHome: <?= json_encode(base_url('portal/mis-solicitudes.php'), JSON_UNESCAPED_SLASHES) ?>,

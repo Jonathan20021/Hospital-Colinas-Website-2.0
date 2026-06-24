@@ -51,6 +51,7 @@ render_study_request_form([
 <script>
     window.SE_CONFIG = {
         mode: 'portal',
+        catalogUrl: <?= json_encode(base_url('api/study-catalog.php'), JSON_UNESCAPED_SLASHES) ?>,
         guestSubmitUrl: '',
         proxyUrl: <?= json_encode(base_url('api/portal-proxy.php'), JSON_UNESCAPED_SLASHES) ?>,
         portalHome: <?= json_encode(base_url('portal/mis-solicitudes.php'), JSON_UNESCAPED_SLASHES) ?>,

@@ -64,30 +64,16 @@ if (!function_exists('render_study_request_form')) {
             <!-- Paso 2: estudios -->
             <section class="portal-card se-section" data-se-step="estudios" hidden>
                 <h2 class="portal-section-title"><span class="se-step-num">2</span> ¿Cuáles estudios?</h2>
-                <p class="se-help">Marca lo que aparece en tu orden médica. Si no lo ves en la lista, escríbelo abajo.</p>
+                <p class="se-help">Marca lo que aparece en tu orden médica. Usa el buscador; si no lo encuentras, escríbelo abajo.</p>
 
-                <div class="se-group" data-se-group="imaging" hidden>
-                    <h3 class="se-group-title"><i data-lucide="scan"></i> Imágenes y estudios</h3>
-                    <div class="se-picks">
-                        <?php foreach ($imaging as $name): ?>
-                            <label class="se-pick">
-                                <input type="checkbox" name="study" value="<?= e($name) ?>" data-cat="imaging">
-                                <span><?= e($name) ?></span>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
+                <div class="se-search">
+                    <i data-lucide="search"></i>
+                    <input type="search" class="form-input" data-se-search autocomplete="off"
+                        placeholder="Busca tu estudio (ej. sonografía abdominal, hemograma, tomografía…)">
                 </div>
 
-                <div class="se-group" data-se-group="lab" hidden>
-                    <h3 class="se-group-title"><i data-lucide="flask-conical"></i> Laboratorio</h3>
-                    <div class="se-picks">
-                        <?php foreach ($lab as $name): ?>
-                            <label class="se-pick">
-                                <input type="checkbox" name="study" value="<?= e($name) ?>" data-cat="lab">
-                                <span><?= e($name) ?></span>
-                            </label>
-                        <?php endforeach; ?>
-                    </div>
+                <div class="se-catalog" data-se-catalog>
+                    <div class="se-cat-loading" data-se-cat-loading><span class="se-spin"></span> Cargando estudios…</div>
                 </div>
 
                 <label class="form-label se-mt" for="se-other">Otros estudios (según tu orden)</label>

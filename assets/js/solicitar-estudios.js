@@ -63,7 +63,7 @@
         nextBtn.hidden = cur === 'confirm';
         nextBtn.innerHTML = 'Continuar <i data-lucide="arrow-right"></i>';
 
-        if (cur === 'estudios') syncGroups();
+        if (cur === 'estudios' && catalogRendered) syncGroups();
         if (cur === 'confirm') buildSummary();
         renderProgress();
         relucide();
@@ -75,16 +75,68 @@
         var r = form.querySelector('input[name="study_type"]:checked');
         return r ? r.value : '';
     }
+    /* ---------- catálogo de estudios (dinámico) ---------- */
+    var catalog = null, catalogErr = false, catalogRendered = false;
+    var catBox = form.querySelector('[data-se-catalog]');
+    var searchInput = form.querySelector('[data-se-search]');
+
+    function fold(s) { return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+    function loadCatalog() {
+        if (!CFG.catalogUrl) { catalogErr = true; renderCatalog(); return; }
+        fetch(CFG.catalogUrl, { credentials: 'same-origin' })
+            .then(function (r) { return r.json(); })
+            .then(function (j) { catalog = (j && j.data && j.data.groups) || []; })
+            .catch(function () { catalogErr = true; })
+            .then(function () { renderCatalog(); });
+    }
+
+    function renderCatalog() {
+        if (!catBox) return;
+        if (catalogErr || (catalog && !catalog.length)) {
+            catBox.innerHTML = '<p class="se-cat-note"><i data-lucide="info"></i> No pudimos cargar la lista de estudios. Escribe los que necesitas en “Otros estudios”.</p>';
+            catalogRendered = true; relucide(); syncGroups(); return;
+        }
+        if (!catalog) return; // aún cargando
+        catBox.innerHTML = catalog.map(function (g) {
+            var ic = g.side === 'lab' ? 'flask-conical' : (g.category === 'cardio' ? 'heart-pulse' : (g.category === 'endoscopy' ? 'scan-search' : 'scan'));
+            var picks = (g.items || []).map(function (it) {
+                return '<label class="se-pick"><input type="checkbox" name="study" value="' + esc(it.name) +
+                    '" data-cat="' + esc(g.side) + '" data-code="' + esc(it.code || '') + '"><span>' + esc(it.name) + '</span></label>';
+            }).join('');
+            return '<div class="se-group" data-se-group="' + esc(g.side) + '" hidden>' +
+                '<h3 class="se-group-title"><i data-lucide="' + ic + '"></i> ' + esc(g.label) + '</h3>' +
+                '<div class="se-picks">' + picks + '</div></div>';
+        }).join('');
+        catalogRendered = true;
+        relucide();
+        syncGroups();
+    }
+
     function syncGroups() {
         var t = studyType();
-        var gImg = form.querySelector('[data-se-group="imaging"]');
-        var gLab = form.querySelector('[data-se-group="lab"]');
-        var showImg = (t === 'imaging' || t === 'both');
-        var showLab = (t === 'lab' || t === 'both');
-        if (gImg) { gImg.hidden = !showImg; if (!showImg) uncheck(gImg); }
-        if (gLab) { gLab.hidden = !showLab; if (!showLab) uncheck(gLab); }
+        form.querySelectorAll('[data-se-group]').forEach(function (g) {
+            var side = g.getAttribute('data-se-group');
+            var show = (t === 'both') || (t === side);
+            g.hidden = !show;
+            if (!show) g.querySelectorAll('input[type="checkbox"]').forEach(function (c) { c.checked = false; });
+        });
+        applySearch();
     }
-    function uncheck(group) { group.querySelectorAll('input[type="checkbox"]').forEach(function (c) { c.checked = false; }); }
+
+    function applySearch() {
+        var q = fold(searchInput && searchInput.value || '').trim();
+        form.querySelectorAll('[data-se-group]').forEach(function (g) {
+            if (g.hidden) return;
+            var visible = 0;
+            g.querySelectorAll('.se-pick').forEach(function (p) {
+                var match = !q || fold(p.textContent).indexOf(q) !== -1;
+                p.style.display = match ? '' : 'none';
+                if (match) visible++;
+            });
+            g.style.display = (q && visible === 0) ? 'none' : '';
+        });
+    }
 
     /* ---------- seguro: "otra" aseguradora ---------- */
     var insurerSel = form.querySelector('#se-insurer');
@@ -155,7 +207,10 @@
             // navegar entre pasos (si no, al "Enviar" se perdían todos).
             var grp = c.closest('[data-se-group]');
             if (grp && grp.hidden) return;
-            items.push({ category: c.getAttribute('data-cat') || 'imaging', name: c.value });
+            var it = { category: c.getAttribute('data-cat') || 'imaging', name: c.value };
+            var code = c.getAttribute('data-code');
+            if (code) it.code = code;
+            items.push(it);
         });
         var other = (form.querySelector('#se-other') || {}).value || '';
         other.split(/[\n,;]+/).forEach(function (s) {
@@ -376,6 +431,8 @@
     });
     if (submitBtn) submitBtn.addEventListener('click', function (e) { e.preventDefault(); doSubmit(); });
     form.addEventListener('submit', function (e) { e.preventDefault(); if (STEPS[idx] === 'confirm') doSubmit(); });
+    if (searchInput) searchInput.addEventListener('input', applySearch);
 
+    loadCatalog();
     showStep(0);
 })();
