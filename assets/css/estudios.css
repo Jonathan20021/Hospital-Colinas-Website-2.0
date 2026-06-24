@@ -325,3 +325,12 @@
     background: var(--se-soft); border-radius: .6rem; color: var(--se-ink); font-size: .86rem; line-height: 1.45;
 }
 .se-quote-note i { width: 1.05rem; height: 1.05rem; color: var(--se-navy); flex: none; margin-top: .1rem; }
+
+/* adjuntar documentos desde "Mis solicitudes" */
+.se-upload { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; border-top: 1px solid var(--se-line); padding: .7rem 1rem; }
+.se-upload-label { display: inline-flex; align-items: center; gap: .35rem; font-size: .85rem; color: var(--se-muted); font-weight: 600; }
+.se-upload-label i { width: 1rem; height: 1rem; }
+.se-upload-type { border: 1px solid var(--se-line); border-radius: .5rem; padding: .4rem .55rem; font-size: .85rem; max-width: 230px; background: #fff; }
+.se-upload-msg { font-size: .83rem; }
+.se-upload-msg.is-ok { color: var(--se-green-dark); font-weight: 700; }
+.se-upload-msg.is-err { color: #b91c1c; }

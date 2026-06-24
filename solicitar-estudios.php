@@ -75,7 +75,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
                     <p class="portal-subtitle">¿Vienes referido de otro centro con tu orden médica? Súbela aquí con tu seguro y
                         nuestro equipo gestiona la autorización y te dice tu copago. Sin filas.</p>
                 </div>
-                <a href="<?= e(base_url('portal/login.php?next=' . urlencode('portal/solicitar-estudios.php'))) ?>" class="btn btn-outline">
+                <a href="<?= e(base_url('portal/login.php?next=' . urlencode(base_url('portal/solicitar-estudios.php')))) ?>" class="btn btn-outline">
                     <i data-lucide="user-round" class="h-4 w-4"></i> Ya tengo cuenta
                 </a>
             </header>
@@ -103,7 +103,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
             guestSubmitUrl: <?= json_encode(base_url('api/guest-study-request.php'), JSON_UNESCAPED_SLASHES) ?>,
             proxyUrl: <?= json_encode(base_url('api/portal-proxy.php'), JSON_UNESCAPED_SLASHES) ?>,
             portalHome: <?= json_encode(base_url('portal/mis-solicitudes.php'), JSON_UNESCAPED_SLASHES) ?>,
-            loginUrl: <?= json_encode(base_url('portal/login.php?next=' . urlencode('portal/mis-solicitudes.php')), JSON_UNESCAPED_SLASHES) ?>,
+            loginUrl: <?= json_encode(base_url('portal/login.php?next=' . urlencode(base_url('portal/mis-solicitudes.php'))), JSON_UNESCAPED_SLASHES) ?>,
             csrfToken: ''
         };
     </script>

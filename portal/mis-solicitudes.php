@@ -112,9 +112,66 @@ portal_layout_begin('Mis solicitudes', 'mis-solicitudes');
                 <?php else: ?>
                     <p class="se-req-hint"><i data-lucide="clock"></i> Estamos gestionando tu autorización. Aquí verás tu copago cuando esté listo.</p>
                 <?php endif; ?>
+
+                <?php if (!in_array($r['status'] ?? '', ['closed', 'cancelled', 'rejected'], true)): ?>
+                <div class="se-upload" data-req="<?= (int)$r['id'] ?>">
+                    <span class="se-upload-label"><i data-lucide="paperclip"></i> Adjuntar:</span>
+                    <select class="se-upload-type" aria-label="Tipo de documento">
+                        <option value="order">Orden médica</option>
+                        <option value="insurance_front">Carnet del seguro (frente)</option>
+                        <option value="insurance_back">Carnet del seguro (dorso)</option>
+                        <option value="cedula">Cédula</option>
+                        <option value="other">Otro</option>
+                    </select>
+                    <button type="button" class="btn btn-outline se-upload-btn"><i data-lucide="upload"></i> Subir documento</button>
+                    <input type="file" hidden accept="image/jpeg,image/png,image/webp,image/gif,application/pdf">
+                    <span class="se-upload-msg" aria-live="polite"></span>
+                </div>
+                <?php endif; ?>
             </article>
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
+
+<script>
+(function () {
+    var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
+    var proxy = <?= json_encode(base_url('api/portal-proxy.php'), JSON_UNESCAPED_SLASHES) ?>;
+    var ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'application/pdf'];
+    document.querySelectorAll('.se-upload').forEach(function (box) {
+        var req = box.getAttribute('data-req');
+        var btn = box.querySelector('.se-upload-btn');
+        var input = box.querySelector('input[type=file]');
+        var typeSel = box.querySelector('.se-upload-type');
+        var msg = box.querySelector('.se-upload-msg');
+        btn.addEventListener('click', function () { input.click(); });
+        input.addEventListener('change', function () {
+            var f = input.files && input.files[0];
+            input.value = '';
+            if (!f) return;
+            if (ALLOWED.indexOf(f.type) === -1) { msg.className = 'se-upload-msg is-err'; msg.textContent = 'Tipo no permitido (imagen o PDF).'; return; }
+            if (f.size > 5 * 1024 * 1024) { msg.className = 'se-upload-msg is-err'; msg.textContent = 'El archivo supera los 5 MB.'; return; }
+            msg.className = 'se-upload-msg'; msg.textContent = 'Subiendo…'; btn.disabled = true;
+            var rd = new FileReader();
+            rd.onload = function () {
+                var res = String(rd.result || '');
+                var b64 = res.indexOf(',') !== -1 ? res.slice(res.indexOf(',') + 1) : res;
+                fetch(proxy, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrf },
+                    body: JSON.stringify({ method: 'POST', path: '/portal/me/study-requests/' + req + '/documents', body: { doc_type: typeSel.value, filename: f.name, mime: f.type, data: b64 } })
+                }).then(function (r) {
+                    return r.text().then(function (t) { var j; try { j = JSON.parse(t); } catch (e) { j = {}; } return { ok: r.ok && j.success, j: j }; });
+                }).then(function (o) {
+                    btn.disabled = false;
+                    if (o.ok) { msg.className = 'se-upload-msg is-ok'; msg.textContent = '✓ Documento subido.'; }
+                    else { msg.className = 'se-upload-msg is-err'; msg.textContent = (o.j && o.j.message) || 'No se pudo subir.'; }
+                }).catch(function () { btn.disabled = false; msg.className = 'se-upload-msg is-err'; msg.textContent = 'Error de conexión.'; });
+            };
+            rd.readAsDataURL(f);
+        });
+    });
+})();
+</script>
 
 <?php portal_layout_end();
