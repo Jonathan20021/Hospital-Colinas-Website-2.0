@@ -51,9 +51,18 @@ $bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta mé
         </div>
         <?php if (!$bare): ?>
         <div class="doctor-consult-actions">
+            <?php if (DOCTOR_TELECONSULT_ENABLED): ?>
             <a href="<?= e(base_url('portal-medico/teleconsulta.php?appt=' . (int)$appt['id'])) ?>" class="doctor-btn doctor-btn-outline" target="_blank" rel="noopener">
                 <i data-lucide="video" class="h-4 w-4"></i> Teleconsulta
             </a>
+            <?php else: ?>
+            <button type="button" class="doctor-btn doctor-btn-outline" disabled aria-disabled="true"
+                    title="La teleconsulta estará disponible próximamente"
+                    style="opacity:.55;cursor:not-allowed">
+                <i data-lucide="video" class="h-4 w-4"></i> Teleconsulta
+                <span style="margin-left:6px;font-size:.62rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;background:#e2e8f0;color:#64748b;border-radius:999px;padding:2px 7px">Próximamente</span>
+            </button>
+            <?php endif; ?>
             <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$appt['patient_id'])) ?>" class="doctor-btn doctor-btn-outline">
                 <i data-lucide="user" class="h-4 w-4"></i> Ver historial
             </a>

@@ -25,6 +25,11 @@ require_once __DIR__ . '/../includes/portal_client.php';
 require_once __DIR__ . '/../includes/doctor_portal_session.php';
 require_once __DIR__ . '/../includes/doctor_portal_avatars.php';
 
+// Teleconsulta: deshabilitada por ahora (el backend de LiveKit ya existe).
+// Para reactivarla en el futuro, cambiar este flag a true: vuelve a habilitar
+// el botón en consulta.php y el acceso a teleconsulta.php.
+if (!defined('DOCTOR_TELECONSULT_ENABLED')) define('DOCTOR_TELECONSULT_ENABLED', false);
+
 function doctor_layout_begin(string $title, string $active = ''): void
 {
     doctor_portal_session_start();

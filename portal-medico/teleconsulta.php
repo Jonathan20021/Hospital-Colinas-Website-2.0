@@ -4,7 +4,10 @@ doctor_require_login();
 
 $apptId = (int)($_GET['appt'] ?? 0);
 $tele = null; $err = null;
-if ($apptId) {
+if (!DOCTOR_TELECONSULT_ENABLED) {
+    // Función deshabilitada por ahora (ver flag en _layout.php).
+    $err = 'La teleconsulta estará disponible próximamente.';
+} elseif ($apptId) {
     $r = portal_api_call('POST', '/portal-doctor/me/teleconsult/' . $apptId, [], doctor_token());
     if ($r['ok']) $tele = $r['data'];
     else $err = $r['message'] ?? 'No se pudo iniciar la teleconsulta.';
