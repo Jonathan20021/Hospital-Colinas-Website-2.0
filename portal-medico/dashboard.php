@@ -259,6 +259,10 @@ doctor_layout_begin('Inicio', 'dashboard');
     <section class="dm-panel" data-reveal data-reveal-d="1" style="padding:18px 18px 20px">
         <h2 class="ttl" style="font-family:'Outfit',sans-serif;font-size:1.06rem;font-weight:700;color:var(--hg-ink);margin:0 0 14px">Accesos rápidos</h2>
         <div class="dm-quick" style="grid-template-columns:1fr">
+            <a href="<?= e(base_url('portal-medico/agenda.php?nueva=1')) ?>">
+                <span class="qic"><i data-lucide="calendar-plus"></i></span>
+                <div><h3>Nueva cita</h3><p>Agendar paciente en tu agenda</p></div>
+            </a>
             <a href="<?= e(base_url('portal-medico/consulta.php')) ?>">
                 <span class="qic"><i data-lucide="file-edit"></i></span>
                 <div><h3>Nueva consulta</h3><p>Registrar nota médica y receta</p></div>
