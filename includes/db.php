@@ -33,8 +33,6 @@ function db_connect(?string $database = null): ?PDO
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
-            // RD = GMT-4 (fijo, sin horario de verano) en cada conexión.
-            PDO::MYSQL_ATTR_INIT_COMMAND => "SET time_zone = '-04:00'",
         ]);
     } catch (Throwable) {
         return null;
