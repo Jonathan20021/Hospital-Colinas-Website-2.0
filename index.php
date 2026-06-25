@@ -724,9 +724,9 @@ $leadershipGerencias = [
                     </span>
                     <h2 id="insurersTitle">Aceptamos tus seguros médicos</h2>
                     <p>
-                        En el Hospital General Las Colinas trabajamos con las principales ARS del país. Agiliza la
-                        autorización de tus consultas y estudios escribiéndonos por
-                        <a href="<?= e($contact['whatsapp']) ?>" target="_blank" rel="noopener">WhatsApp: <?= e($contact['whatsapp_phone']) ?></a>.
+                        En el Hospital General Las Colinas trabajamos con las principales ARS del país. ¿Tienes dudas
+                        sobre tu cobertura? Escríbenos por WhatsApp a nuestro
+                        <a href="<?= e($contact['whatsapp']) ?>" target="_blank" rel="noopener">call center: <?= e($contact['whatsapp_phone']) ?></a>.
                     </p>
                 </div>
 
