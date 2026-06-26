@@ -59,7 +59,7 @@ $svcRange = function (string $start, string $end) use ($mesCorto): string {
     return $left . ' – ' . $right;
 };
 
-$linkTo = static fn (int $id): string => base_url('portal-medico/listas-servicio.php') . '?id=' . $id;
+$linkTo = static fn (int $id): string => base_url('portal-medico/listas.php') . '?id=' . $id;
 
 // Totales del detalle (para la barra de cobertura del documento)
 $detDays = $detail['days'] ?? [];
