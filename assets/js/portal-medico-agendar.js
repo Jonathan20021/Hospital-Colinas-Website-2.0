@@ -32,8 +32,8 @@
     function timeLabel(sql) { var m = String(sql).match(/(\d{2}):(\d{2})/); if (!m) return sql; var h = +m[1], ap = h < 12 ? 'a.m.' : 'p.m.', h12 = (h % 12) || 12; return h12 + ':' + m[2] + ' ' + ap; }
 
     // ── Apertura / cierre ─────────────────────────────────────────────────────
-    function open() { reset(); var m = $('#nv-modal'); m.hidden = false; document.body.style.overflow = 'hidden'; render(); }
-    function close() { var m = $('#nv-modal'); if (m) { m.hidden = true; document.body.style.overflow = ''; } }
+    function open() { reset(); var m = $('#nv-modal'); m.hidden = false; document.documentElement.classList.add('nv-locked'); document.body.style.overflow = 'hidden'; render(); }
+    function close() { var m = $('#nv-modal'); if (m) { m.hidden = true; document.documentElement.classList.remove('nv-locked'); document.body.style.overflow = ''; } }
 
     // ── Render maestro ────────────────────────────────────────────────────────
     function setSteps() {

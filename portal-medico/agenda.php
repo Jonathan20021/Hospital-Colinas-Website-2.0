@@ -158,9 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
 <style>
 /* Nueva cita — wizard (prefijo nv-), marca navy #262161 / verde #5da334 */
 #nv-modal *{box-sizing:border-box}
-.nv-modal{position:fixed;inset:0;z-index:1000}
+.nv-modal{position:fixed;inset:0;z-index:1000;overflow:hidden}
+/* Al abrir el wizard se bloquea el scroll del documento: evita el quirk de iOS
+   en el que un fondo más ancho que el viewport ensancha el bloque contenedor
+   del position:fixed y empuja el drawer fuera de la pantalla. */
+html.nv-locked{overflow:hidden}
+html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.5);backdrop-filter:blur(2px);animation:nvFade .25s ease}
-.nv-drawer{position:absolute;top:0;right:0;height:100%;width:min(480px,100%);background:#fff;display:flex;flex-direction:column;box-shadow:-18px 0 50px rgba(15,23,42,.22);animation:nvIn .3s cubic-bezier(.32,.72,0,1)}
+.nv-drawer{position:absolute;top:0;right:0;height:100%;width:min(480px,100%);max-width:100vw;background:#fff;display:flex;flex-direction:column;box-shadow:-18px 0 50px rgba(15,23,42,.22);animation:nvIn .3s cubic-bezier(.32,.72,0,1)}
 @keyframes nvFade{from{opacity:0}to{opacity:1}}
 @keyframes nvIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
 .nv-head{display:flex;align-items:flex-start;gap:10px;padding:18px 20px 14px;border-bottom:1px solid #eef2f7;background:linear-gradient(180deg,#fafbff,#fff)}
@@ -173,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
 .nv-stp.done{color:#3f7d23;background:#eaf6e1}
 .nv-x{flex:0 0 auto;width:34px;height:34px;border:0;border-radius:10px;background:#f1f5f9;color:#334155;cursor:pointer;display:grid;place-items:center}
 .nv-x:hover{background:#e2e8f0}
-.nv-body{flex:1;overflow-y:auto;padding:18px 20px;-webkit-overflow-scrolling:touch}
+.nv-body{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:18px 20px;-webkit-overflow-scrolling:touch}
 .nv-foot{display:flex;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid #eef2f7;background:#fff}
 .nv-foot .doctor-btn{flex:1;justify-content:center}
 .nv-foot .doctor-btn-ghost{flex:0 0 auto}
@@ -258,9 +263,12 @@ document.addEventListener('DOMContentLoaded', () => {
 .nv-done p{margin:2px 0;color:#475569}
 .nv-done-when{font-weight:700;color:#262161}
 @media (max-width:640px){
-    .nv-drawer{width:100%}
+    /* Anclar el drawer por AMBOS lados: el ancho deja de depender de width:100%
+       (que en iOS puede resolver a un contenedor más ancho que la pantalla). */
+    .nv-drawer{left:0;right:0;width:auto;max-width:none;animation:nvUp .3s cubic-bezier(.32,.72,0,1)}
     .nv-form{grid-template-columns:1fr}
 }
+@keyframes nvUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
 <script src="<?= e(base_url('assets/js/portal-medico-agendar.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-medico-agendar.js') ?: time())) ?>"></script>
 <?php if (isset($_GET['nueva'])): ?>
