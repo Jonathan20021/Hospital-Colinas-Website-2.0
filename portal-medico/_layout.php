@@ -75,7 +75,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
 
     <?php
     $dmLogged = doctor_is_logged_in();
-    $dmTitles = ['dashboard'=>'Inicio','agenda'=>'Mi agenda','pacientes'=>'Pacientes','mensajes'=>'Mensajes','consulta'=>'Consulta','disponibilidad'=>'Disponibilidad','analytics'=>'Analytics','herramientas'=>'Herramientas','soporte'=>'Soporte TI','cuenta'=>'Mi cuenta','perfil'=>'Mi perfil'];
+    $dmTitles = ['dashboard'=>'Inicio','agenda'=>'Mi agenda','pacientes'=>'Pacientes','mensajes'=>'Mensajes','consulta'=>'Consulta','disponibilidad'=>'Disponibilidad','listas'=>'Listas de servicio','analytics'=>'Analytics','herramientas'=>'Herramientas','soporte'=>'Soporte TI','cuenta'=>'Mi cuenta','perfil'=>'Mi perfil'];
     $dmPg = $dmTitles[$active] ?? $title;
     if ($dmLogged) {
         $doctor = doctor_current() ?? [];
@@ -91,6 +91,7 @@ function doctor_layout_begin(string $title, string $active = ''): void
             ['mensajes','messages-square','Mensajes'],
             ['consulta','stethoscope','Consulta'],
             ['disponibilidad','calendar-clock','Disponibilidad'],
+            ['listas','calendar-range','Listas de servicio'],
             ['analytics','bar-chart-3','Analytics'],
             ['herramientas','calculator','Herramientas'],
             ['soporte','life-buoy','Soporte TI'],
