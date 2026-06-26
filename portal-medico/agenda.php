@@ -180,7 +180,7 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-x:hover{background:#e2e8f0}
 .nv-body{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:18px 20px;-webkit-overflow-scrolling:touch}
 .nv-foot{display:flex;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid #eef2f7;background:#fff}
-.nv-foot .doctor-btn{flex:1;justify-content:center}
+.nv-foot .doctor-btn{flex:1;min-width:0;justify-content:center;white-space:nowrap}
 .nv-foot .doctor-btn-ghost{flex:0 0 auto}
 .nv-foot .doctor-btn:disabled{opacity:.5;cursor:not-allowed}
 .nv-foot-msg{flex-basis:100%;order:-1;margin:0 0 2px;font-size:.84rem;color:#64748b}
@@ -205,8 +205,10 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-res i{width:16px;height:16px;color:#cbd5e1}
 /* Formulario nuevo paciente */
 .nv-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.nv-f{display:flex;flex-direction:column;gap:5px;font-size:.82rem;font-weight:600;color:#334155}
-.nv-f .doctor-input{font-weight:500}
+.nv-f{display:flex;flex-direction:column;gap:5px;font-size:.82rem;font-weight:600;color:#334155;min-width:0}
+/* Los inputs nativos (date/datetime-local/select) en iOS no se encogen por
+   defecto y desbordan el grid: min-width:0 + max-width:100% lo evita. */
+.nv-f .doctor-input{font-weight:500;min-width:0;max-width:100%}
 .nv-col2{grid-column:1/-1}
 .nv-note{display:flex;align-items:center;gap:7px;font-size:.8rem;font-weight:500;color:#3f7d23;background:#eaf6e1;border-radius:10px;padding:8px 11px;margin:2px 0 0}
 .nv-note i{width:15px;height:15px;flex:0 0 auto}
@@ -240,13 +242,14 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-dot{position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;background:#5da334}
 .nv-cell.on .nv-dot{background:#fff}
 .nv-times-h{margin:14px 0 8px;font-weight:700;color:#334155;font-size:.86rem}
-.nv-times{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:7px}
+.nv-times{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:7px}
 .nv-time{border:1px solid #e2e8f0;background:#fff;border-radius:10px;padding:9px 6px;font-weight:700;font-size:.82rem;color:#262161;cursor:pointer;text-align:center}
 .nv-time:hover{border-color:#5da334}
 .nv-time.on{background:#5da334;border-color:#5da334;color:#fff}
 .nv-manual{margin-top:16px;border-top:1px dashed #e2e8f0;padding-top:14px}
 .nv-manual-tog{display:flex;align-items:center;gap:8px;font-size:.86rem;font-weight:600;color:#334155;cursor:pointer}
-.nv-manual-inp,#nv-manual-inp{margin-top:10px}
+.nv-manual-tog input{flex:0 0 auto}
+.nv-manual-inp,#nv-manual-inp{margin-top:10px;width:100%;max-width:100%;min-width:0}
 .nv-empty{text-align:center;color:#64748b;padding:26px 10px}
 .nv-empty i{width:34px;height:34px;color:#cbd5e1;margin-bottom:8px}
 /* Paso 3 */
@@ -264,9 +267,25 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-done-when{font-weight:700;color:#262161}
 @media (max-width:640px){
     /* Anclar el drawer por AMBOS lados: el ancho deja de depender de width:100%
-       (que en iOS puede resolver a un contenedor más ancho que la pantalla). */
-    .nv-drawer{left:0;right:0;width:auto;max-width:none;animation:nvUp .3s cubic-bezier(.32,.72,0,1)}
+       (que en iOS puede resolver a un contenedor más ancho que la pantalla).
+       Hoja a pantalla completa con alto dinámico (100dvh evita que la barra del
+       navegador / teclado tape el pie) y entrada deslizando desde abajo. */
+    .nv-drawer{left:0;right:0;width:auto;max-width:none;height:100dvh;animation:nvUp .3s cubic-bezier(.32,.72,0,1)}
     .nv-form{grid-template-columns:1fr}
+    /* Áreas seguras (notch / home indicator) en modo PWA a pantalla completa. */
+    .nv-head{padding-top:calc(16px + env(safe-area-inset-top));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right))}
+    .nv-body{padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right))}
+    .nv-foot{padding-bottom:calc(14px + env(safe-area-inset-bottom));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right))}
+}
+/* Pantallas muy estrechas (≤360px): apretar un poco sin romper nada. */
+@media (max-width:360px){
+    .nv-head{padding-left:calc(15px + env(safe-area-inset-left));padding-right:calc(15px + env(safe-area-inset-right))}
+    .nv-body{padding-left:calc(15px + env(safe-area-inset-left));padding-right:calc(15px + env(safe-area-inset-right))}
+    .nv-foot{gap:8px;padding-left:calc(15px + env(safe-area-inset-left));padding-right:calc(15px + env(safe-area-inset-right))}
+    .nv-foot .doctor-btn{padding-left:.7rem;padding-right:.7rem}
+    .nv-seg-b{font-size:.82rem;padding:8px 5px;gap:4px}
+    .nv-stp{font-size:.68rem;padding:4px 8px}
+    .nv-sum-row .k{flex-basis:40%}
 }
 @keyframes nvUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
