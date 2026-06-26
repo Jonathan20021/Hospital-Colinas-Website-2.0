@@ -178,12 +178,15 @@ doctor_layout_begin('Listas de servicio', 'listas');
 .svc-btn i{ width:15px; height:15px; }
 
 .svc-gridwrap{ overflow:auto; -webkit-overflow-scrolling:touch; max-height:74vh; }
-table.svc-grid{ width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+/* min-width (var --gmin, fijado inline según nº de días) fuerza columnas legibles
+   + scroll horizontal del .svc-gridwrap en pantallas estrechas (PWA/móvil). */
+table.svc-grid{ width:100%; min-width:var(--gmin,900px); border-collapse:separate; border-spacing:0; table-layout:fixed; }
+table.svc-grid td.cell-doc{ overflow-wrap:break-word; word-break:normal; hyphens:none; }
 table.svc-grid th, table.svc-grid td{ border-right:1px solid var(--line); border-bottom:1px solid var(--line); }
 table.svc-grid thead th{ position:sticky; top:0; z-index:20; background:var(--nv); color:#fff;
     font-size:.74rem; font-weight:700; letter-spacing:.03em; padding:9px 6px; text-align:center; vertical-align:middle; }
 table.svc-grid thead th.col-spec{ left:0; z-index:30; background:var(--nv-deep); text-align:left; padding-left:16px;
-    text-transform:uppercase; font-size:.72rem; letter-spacing:.1em; min-width:178px; width:178px; }
+    text-transform:uppercase; font-size:.72rem; letter-spacing:.1em; min-width:150px; width:150px; }
 table.svc-grid thead th.wknd{ background:#322c7a; }
 table.svc-grid thead th .wd{ display:block; font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
 table.svc-grid thead th .dt{ display:block; font-size:.68rem; font-weight:600; color:#bcbde4; margin-top:2px; font-variant-numeric:tabular-nums; }
@@ -241,6 +244,27 @@ table.svc-grid.only-me td:not(.is-me):not(.cell-spec){ opacity:.3; }
     .svc-toolbar-r{ width:100%; }
     .svc-search{ flex:1; }
 }
+
+/* Móvil / PWA: columnas más compactas; el grid se desplaza horizontalmente. */
+@media (max-width:640px){
+    .svc{ max-width:100%; }
+    .svc-gridwrap{ max-height:none; border-radius:0; }
+    .svc-gridhint{ display:flex; }
+    table.svc-grid thead th{ font-size:.68rem; padding:8px 4px; }
+    table.svc-grid thead th.col-spec{ min-width:128px; width:128px; padding-left:11px; font-size:.64rem; }
+    table.svc-grid thead th .wd{ font-size:.72rem; }
+    table.svc-grid thead th .dt{ font-size:.62rem; }
+    table.svc-grid td{ padding:8px 5px; }
+    table.svc-grid td.cell-spec{ padding:9px 11px; font-size:.7rem; }
+    table.svc-grid .dn{ font-size:.76rem; line-height:1.18; }
+    table.svc-grid .dp{ font-size:.68rem; }
+    .svc-metag{ font-size:.54rem; padding:1px 6px; }
+}
+/* pista de scroll horizontal (solo móvil, se oculta al desplazar) */
+.svc-gridhint{ display:none; align-items:center; gap:6px; justify-content:center;
+    font-size:.7rem; font-weight:700; color:var(--nv2); background:#eef0f8;
+    border-bottom:1px solid var(--line); padding:7px 12px; }
+.svc-gridhint i{ width:14px; height:14px; }
 
 /* ===== Impresión: ocultar shell del portal y dejar solo el documento ===== */
 @media print{
@@ -390,8 +414,9 @@ table.svc-grid.only-me td:not(.is-me):not(.cell-spec){ opacity:.3; }
                     </div>
                 <?php endif; ?>
 
-                <div class="svc-gridwrap">
-                    <table class="svc-grid" id="svcGrid">
+                <div class="svc-gridhint" id="svcHint"><i data-lucide="move-horizontal"></i> Desliza para ver toda la semana</div>
+                <div class="svc-gridwrap" id="svcGridwrap">
+                    <table class="svc-grid" id="svcGrid" style="--gmin: <?= 150 + count($detDays) * 124 ?>px">
                         <thead>
                             <tr>
                                 <th class="col-spec">Especialidad</th>
@@ -487,6 +512,15 @@ table.svc-grid.only-me td:not(.is-me):not(.cell-spec){ opacity:.3; }
             grid.classList.toggle('only-me', this.checked);
             if (mineLbl) mineLbl.classList.toggle('on', this.checked);
         });
+    }
+
+    // Ocultar la pista de scroll en cuanto el usuario desplaza el grid
+    var wrap = document.getElementById('svcGridwrap');
+    var hint = document.getElementById('svcHint');
+    if (wrap && hint) {
+        wrap.addEventListener('scroll', function () {
+            if (wrap.scrollLeft > 8) { hint.style.display = 'none'; }
+        }, { passive: true });
     }
 
     // Imprimir
