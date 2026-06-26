@@ -201,9 +201,15 @@ function doctor_layout_end(): void
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+        <?php
+        // Build del SW: cambia cuando cambia CUALQUIER asset versionado o el
+        // propio sw.js → registrar sw.js?v=<build> hace que el navegador instale
+        // un worker nuevo en cada deploy y SIEMPRE muestre el aviso "Actualizar".
+        $swBuild = max((int) $assetVersion, (int) (@filemtime(__DIR__ . '/sw.js') ?: 0));
+        ?>
         <script>
             window.DM_PWA = {
-                sw: <?= json_encode(base_url('portal-medico/sw.js'), JSON_UNESCAPED_SLASHES) ?>,
+                sw: <?= json_encode(base_url('portal-medico/sw.js') . '?v=' . $swBuild, JSON_UNESCAPED_SLASHES) ?>,
                 scope: <?= json_encode(base_url('portal-medico/'), JSON_UNESCAPED_SLASHES) ?>,
                 icon: <?= json_encode(base_url('portal-medico/icons/icon-192.png'), JSON_UNESCAPED_SLASHES) ?>
             };

@@ -98,7 +98,11 @@
       window.location.reload();
     });
 
-    navigator.serviceWorker.register(CFG.sw, CFG.scope ? { scope: CFG.scope } : undefined)
+    // updateViaCache:'none' → el script del SW se pide SIEMPRE a la red en cada
+    // comprobación, nunca del HTTP cache: jamás se queda con un SW viejo.
+    var regOpts = { updateViaCache: 'none' };
+    if (CFG.scope) regOpts.scope = CFG.scope;
+    navigator.serviceWorker.register(CFG.sw, regOpts)
       .then(function (reg) {
         swReg = reg;
         if (reg.waiting && navigator.serviceWorker.controller) showUpdate(reg.waiting);

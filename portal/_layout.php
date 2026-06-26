@@ -346,9 +346,15 @@ function portal_layout_end(): void
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+        <?php
+        // Build del SW: cambia cuando cambia cualquier asset versionado o el
+        // propio sw.js → registrar sw.js?v=<build> instala un worker nuevo en
+        // cada deploy y SIEMPRE muestra el aviso "Actualizar".
+        $swBuild = max((int) $assetVersion, (int) (@filemtime(__DIR__ . '/sw.js') ?: 0));
+        ?>
         <script>
             window.HGLC_PWA = {
-                sw: '<?= e(base_url('portal/sw.js')) ?>',
+                sw: '<?= e(base_url('portal/sw.js')) ?>?v=<?= e((string) $swBuild) ?>',
                 scope: '<?= e(base_url('portal/')) ?>',
                 icon: '<?= e(base_url('portal/icons/icon-192.png')) ?>'
             };
