@@ -31,9 +31,37 @@
     }
     function timeLabel(sql) { var m = String(sql).match(/(\d{2}):(\d{2})/); if (!m) return sql; var h = +m[1], ap = h < 12 ? 'a.m.' : 'p.m.', h12 = (h % 12) || 12; return h12 + ':' + m[2] + ' ' + ap; }
 
+    // ── Ajuste al teclado (iOS/móvil) ─────────────────────────────────────────
+    // En móvil el modal es position:fixed a pantalla completa; al abrir el teclado
+    // iOS empuja el contenido fuera de la vista. Con la VisualViewport API ajustamos
+    // el modal EXACTAMENTE al área visible (encima del teclado) para que el
+    // encabezado, el cuerpo y el pie sigan siempre visibles.
+    function isMobile() { return window.matchMedia && window.matchMedia('(max-width:640px)').matches; }
+    function syncViewport() {
+        var vv = window.visualViewport, m = $('#nv-modal');
+        if (!m || m.hidden) return;
+        if (!vv || !isMobile()) { m.style.height = ''; m.style.top = ''; m.style.bottom = ''; return; }
+        m.style.height = vv.height + 'px';
+        m.style.top = vv.offsetTop + 'px';
+        m.style.bottom = 'auto';
+    }
+    function bindViewport() {
+        if (!window.visualViewport) return;
+        window.visualViewport.addEventListener('resize', syncViewport);
+        window.visualViewport.addEventListener('scroll', syncViewport);
+    }
+    function unbindViewport() {
+        var m = $('#nv-modal');
+        if (m) { m.style.height = ''; m.style.top = ''; m.style.bottom = ''; }
+        if (window.visualViewport) {
+            window.visualViewport.removeEventListener('resize', syncViewport);
+            window.visualViewport.removeEventListener('scroll', syncViewport);
+        }
+    }
+
     // ── Apertura / cierre ─────────────────────────────────────────────────────
-    function open() { reset(); var m = $('#nv-modal'); m.hidden = false; document.documentElement.classList.add('nv-locked'); document.body.style.overflow = 'hidden'; render(); }
-    function close() { var m = $('#nv-modal'); if (m) { m.hidden = true; document.documentElement.classList.remove('nv-locked'); document.body.style.overflow = ''; } }
+    function open() { reset(); var m = $('#nv-modal'); m.hidden = false; document.documentElement.classList.add('nv-locked'); document.body.style.overflow = 'hidden'; bindViewport(); syncViewport(); render(); }
+    function close() { var m = $('#nv-modal'); if (m) { m.hidden = true; document.documentElement.classList.remove('nv-locked'); document.body.style.overflow = ''; } unbindViewport(); }
 
     // ── Render maestro ────────────────────────────────────────────────────────
     function setSteps() {
@@ -91,7 +119,9 @@
         if (st.mode === 'buscar') {
             var q = $('#nv-q'); var t = null;
             q.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { searchPatients(q.value.trim()); }, 280); });
-            q.focus();
+            // Auto-foco SOLO en escritorio (puntero fino). En móvil/táctil NO:
+            // el teclado emergente desplazaría el modal fixed al abrir.
+            if (!(window.matchMedia && window.matchMedia('(pointer:coarse)').matches)) q.focus();
         }
         $('#nv-next1').addEventListener('click', onNext1);
     }

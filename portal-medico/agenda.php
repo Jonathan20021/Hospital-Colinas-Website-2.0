@@ -178,7 +178,7 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-stp.done{color:#3f7d23;background:#eaf6e1}
 .nv-x{flex:0 0 auto;width:34px;height:34px;border:0;border-radius:10px;background:#f1f5f9;color:#334155;cursor:pointer;display:grid;place-items:center}
 .nv-x:hover{background:#e2e8f0}
-.nv-body{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:18px 20px;-webkit-overflow-scrolling:touch}
+.nv-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:18px 20px;-webkit-overflow-scrolling:touch}
 .nv-foot{display:flex;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid #eef2f7;background:#fff}
 .nv-foot .doctor-btn{flex:1;min-width:0;justify-content:center;white-space:nowrap}
 .nv-foot .doctor-btn-ghost{flex:0 0 auto}
@@ -270,7 +270,7 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
        (que en iOS puede resolver a un contenedor más ancho que la pantalla).
        Hoja a pantalla completa con alto dinámico (100dvh evita que la barra del
        navegador / teclado tape el pie) y entrada deslizando desde abajo. */
-    .nv-drawer{left:0;right:0;width:auto;max-width:none;height:100dvh;animation:nvUp .3s cubic-bezier(.32,.72,0,1)}
+    .nv-drawer{left:0;right:0;width:auto;max-width:none;height:100%;animation:nvUp .3s cubic-bezier(.32,.72,0,1)}
     .nv-form{grid-template-columns:1fr}
     /* Áreas seguras (notch / home indicator) en modo PWA a pantalla completa. */
     .nv-head{padding-top:calc(16px + env(safe-area-inset-top));padding-left:calc(20px + env(safe-area-inset-left));padding-right:calc(20px + env(safe-area-inset-right))}
