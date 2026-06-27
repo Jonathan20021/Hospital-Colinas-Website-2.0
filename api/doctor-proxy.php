@@ -76,6 +76,16 @@ if ($res['status'] === 401) {
     doctor_portal_logout();
 }
 
+// Si el médico editó su perfil con éxito, invalidar el caché del directorio del
+// sitio público para que el cambio se vea de inmediato (sin esperar el TTL de 1h).
+if ($path === '/portal-doctor/me/profile' && $method === 'PUT'
+    && (int) ($res['status'] ?? 0) >= 200 && (int) ($res['status'] ?? 0) < 300) {
+    $cacheDir = __DIR__ . '/../storage/cache/directory';
+    if (is_dir($cacheDir)) {
+        foreach (glob($cacheDir . '/*.json') as $f) { @unlink($f); }
+    }
+}
+
 http_response_code($res['status'] ?: 502);
 echo $res['raw'] !== '' ? $res['raw'] : json_encode([
     'success' => false,

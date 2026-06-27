@@ -244,7 +244,7 @@ $agendarUrl = $doctorId > 0
                         <h2><i data-lucide="briefcase-medical" class="h-5 w-5"></i> Trayectoria profesional</h2>
                         <span
                             class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
-                        <?php $profileNarrative = trim((string) ($doctor['education'] ?: $doctor['biography'])); ?>
+                        <?php $profileNarrative = trim((string) ($doctor['biography'] ?: $doctor['education'])); ?>
                         <?php if ($profileNarrative !== ''): ?>
                             <p><?= nl2br(e($profileNarrative)) ?></p>
                         <?php elseif (empty($doctor['services'])): ?>

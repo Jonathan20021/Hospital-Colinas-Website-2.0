@@ -12,6 +12,16 @@ $actRes = portal_api_call('GET', '/portal-doctor/me/login-activity', [], doctor_
 $recentLogins   = $actRes['data']['recent'] ?? [];
 $trustedDevices = $actRes['data']['trusted_devices'] ?? [];
 
+// Perfil del médico: precargar su "Trayectoria profesional" editable (campo biography).
+// Si está vacío, caemos a education para no perder lo que el hospital haya cargado.
+$meRes      = portal_api_call('GET', '/portal-doctor/me', [], doctor_token());
+$meData     = $meRes['data'] ?? [];
+$currentBio = trim((string)($meData['biography'] ?? ''));
+if ($currentBio === '') {
+    $currentBio = trim((string)($meData['education'] ?? ''));
+}
+$mySlug = trim((string)($meData['slug'] ?? ''));
+
 function activity_label(string $reason, bool $success): string {
     if ($success) {
         return match ($reason) {
@@ -38,7 +48,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
     <div>
         <p class="doctor-eyebrow">Mi cuenta</p>
         <h1>Seguridad de tu cuenta</h1>
-        <p class="doctor-subtitle">Tu información profesional es administrada por el hospital. Aquí solo puedes gestionar tu contraseña de acceso.</p>
+        <p class="doctor-subtitle">Edita tu trayectoria profesional —la que aparece en tu perfil del directorio médico— y gestiona la seguridad de tu cuenta. Tu nombre, especialidad y correo los administra el hospital.</p>
     </div>
 </header>
 
@@ -59,7 +69,7 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
         </div>
         <div class="doctor-account-note">
             <i data-lucide="info" class="h-4 w-4"></i>
-            <p>Para cambiar tu nombre, especialidad o cualquier otro dato profesional, contacta al administrador del hospital.</p>
+            <p>Tu nombre, especialidad y correo los administra el hospital. Tu <strong>trayectoria profesional</strong> la editas tú mismo más abajo.</p>
         </div>
     </div>
 
@@ -98,6 +108,68 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
 </div>
 
 <div class="doctor-card mt-6" data-reveal data-reveal-d="2">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="briefcase-medical" class="h-4 w-4"></i> Mi perfil profesional</h2>
+    </header>
+    <div class="doctor-form-pad">
+        <p class="doctor-subtitle" style="margin-top:0">Esta es tu <strong>Trayectoria profesional</strong>, tal como aparece en tu perfil del directorio médico público. Incluye tu formación, experiencia y áreas de interés. Se publica de inmediato.</p>
+        <form id="bio-form">
+            <label class="doctor-label" for="bio">Trayectoria profesional</label>
+            <textarea id="bio" name="biography" class="doctor-input" rows="7" maxlength="4000"
+                placeholder="Ej.: Médico especialista en [especialidad], egresado de [universidad], con formación en [subespecialidad] y X años de experiencia en…"><?= e($currentBio) ?></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-top:6px;flex-wrap:wrap">
+                <span class="doctor-subtitle" style="font-size:.82rem;margin:0"><span id="bio-count">0</span>/4000 caracteres</span>
+                <?php if ($mySlug !== ''): ?>
+                    <a href="<?= e(base_url('medico/' . $mySlug)) ?>" target="_blank" rel="noopener" style="font-size:.85rem;font-weight:600;color:#047857">Ver mi perfil público ↗</a>
+                <?php endif; ?>
+            </div>
+            <p id="bio-status" class="doctor-save-status mt-4"></p>
+            <button type="submit" class="doctor-btn doctor-btn-primary mt-2">
+                <i data-lucide="save" class="h-4 w-4"></i> Guardar trayectoria
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+(function () {
+    const form = document.getElementById('bio-form');
+    if (!form) return;
+    const ta = document.getElementById('bio');
+    const count = document.getElementById('bio-count');
+    const statusEl = document.getElementById('bio-status');
+    const btn = form.querySelector('button[type=submit]');
+    function whenApi(cb) { var n = 0; (function w() { if (window.doctorApi) return cb(); if (n++ < 200) setTimeout(w, 50); })(); }
+    function upd() { count.textContent = ta.value.length; }
+    ta.addEventListener('input', upd); upd();
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        btn.disabled = true;
+        if (window.doctorAutoSaveHint) window.doctorAutoSaveHint(statusEl, 'saving');
+        else { statusEl.textContent = '· Guardando...'; statusEl.className = 'doctor-save-status doctor-save-saving'; }
+        whenApi(async function () {
+            try {
+                const r = await window.doctorApi('PUT', '/portal-doctor/me/profile', { biography: ta.value });
+                if (r && r.ok) {
+                    statusEl.textContent = '✓ Trayectoria actualizada. Aparecerá en tu perfil público en breve.';
+                    statusEl.className = 'doctor-save-status doctor-save-saved';
+                } else {
+                    statusEl.textContent = '⚠ ' + ((r && r.message) || 'No se pudo guardar.');
+                    statusEl.className = 'doctor-save-status doctor-save-error';
+                }
+            } catch (err) {
+                statusEl.textContent = '⚠ Error de conexión. Intenta de nuevo.';
+                statusEl.className = 'doctor-save-status doctor-save-error';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    });
+})();
+</script>
+
+<div class="doctor-card mt-6" data-reveal data-reveal-d="3">
     <header class="doctor-card-header">
         <h2><i data-lucide="pen-tool" class="h-4 w-4"></i> Mi firma</h2>
     </header>
