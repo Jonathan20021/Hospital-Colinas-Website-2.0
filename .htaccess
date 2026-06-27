@@ -41,6 +41,7 @@ DirectoryIndex index.php
     RewriteRule ^directorio-medico/?$ directorio-medico.php [L,QSA]
     RewriteRule ^directorio/?$ directorio-medico.php [L,QSA,R=301]
     RewriteRule ^ver-resultados/?$ ver-resultados.php [L,QSA]
+    RewriteRule ^guardias/?$ guardias.php [L,QSA]
     RewriteRule ^repositorio/?$ repositorio.php [L,QSA]
     RewriteRule ^repositorio-digital/?$ /repositorio [L,R=301]
     RewriteRule ^noticias/?$ noticias.php [L,QSA]
