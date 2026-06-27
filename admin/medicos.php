@@ -74,6 +74,9 @@ admin_header('Médicos', 'medicos');
 .med-btn:hover { background:#ecfdf5; }
 .med-btn-danger { border-color:#dc2626; color:#dc2626; }
 .med-btn-danger:hover { background:#fef2f2; }
+.med-btn-feature { border-color:#d97706; color:#b45309; }
+.med-btn-feature:hover { background:#fffbeb; }
+.med-btn-feature.is-on { background:#fef3c7; border-color:#d97706; color:#854d0e; font-weight:700; }
 
 .med-edit-form { display:none; grid-column:1/-1; padding-top:1rem; margin-top:1rem; border-top:1px dashed #e2e8f0; }
 .med-edit-form.is-open { display:block; }
@@ -129,8 +132,20 @@ admin_header('Médicos', 'medicos');
         <div class="med-stat"><span>Total médicos</span><strong><?= $stats['total'] ?></strong></div>
         <div class="med-stat"><span>Con foto</span><strong style="color:#1e40af"><?= $stats['with_photo'] ?></strong></div>
         <div class="med-stat"><span>Sin foto</span><strong style="color:#b91c1c"><?= $stats['total'] - $stats['with_photo'] ?></strong></div>
-        <div class="med-stat"><span>Destacados</span><strong style="color:#b45309"><?= $stats['featured'] ?></strong></div>
+        <div class="med-stat"><span>Destacados (portada)</span><strong style="color:#b45309"><?= $stats['featured'] ?></strong></div>
     </div>
+
+    <?php if ($stats['featured'] > 4): ?>
+        <div class="med-warn" style="background:#fff7ed;border-color:#fed7aa;color:#9a3412">
+            Tienes <strong><?= $stats['featured'] ?></strong> médicos destacados, pero en la portada solo
+            caben <strong>4</strong>. Se mostrarán los primeros 4 (orden alfabético). Quita algunos para elegir cuáles aparecen.
+        </div>
+    <?php elseif ($stats['featured'] === 0): ?>
+        <div class="med-warn" style="background:#eff6ff;border-color:#bfdbfe;color:#1e40af">
+            No hay médicos destacados. La portada mostrará los primeros 4 del directorio (orden alfabético)
+            hasta que destaques a alguno con el botón <strong>☆ Destacar en portada</strong>.
+        </div>
+    <?php endif; ?>
 
     <form method="GET" class="med-filters">
         <div class="field">
@@ -213,6 +228,15 @@ admin_header('Médicos', 'medicos');
                 <div class="med-actions">
                     <a href="<?= e(base_url('medico/' . $d['slug'])) ?>" target="_blank" class="med-btn">Ver perfil</a>
                     <?php if (!$apiKeyMissing): ?>
+                        <form method="POST" action="api-medico-action.php" style="margin:0">
+                            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                            <input type="hidden" name="action" value="toggle_featured">
+                            <input type="hidden" name="id" value="<?= $id ?>">
+                            <input type="hidden" name="featured" value="<?= !empty($d['is_featured']) ? 0 : 1 ?>">
+                            <button type="submit" class="med-btn med-btn-feature <?= !empty($d['is_featured']) ? 'is-on' : '' ?>" style="width:100%">
+                                <?= !empty($d['is_featured']) ? '★ Quitar de portada' : '☆ Destacar en portada' ?>
+                            </button>
+                        </form>
                         <button type="button" class="med-btn" onclick="document.getElementById('form-<?= $id ?>').classList.toggle('is-open')">Editar</button>
                         <?php if ($hasPhoto): ?>
                             <form method="POST" action="api-medico-action.php" onsubmit="return confirm('¿Eliminar foto?')" style="margin:0">
@@ -273,7 +297,7 @@ admin_header('Médicos', 'medicos');
                         <div class="med-row" style="grid-template-columns: 1fr 1fr 1fr">
                             <label style="font-size:.85rem;display:flex;align-items:center;gap:.4rem">
                                 <input type="checkbox" name="is_featured" value="1" <?= !empty($d['is_featured']) ? 'checked' : '' ?>>
-                                Destacado en directorio
+                                Destacado en portada
                             </label>
                             <label style="font-size:.85rem;display:flex;align-items:center;gap:.4rem">
                                 <input type="checkbox" name="show_in_directory" value="1" checked>

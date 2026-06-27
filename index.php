@@ -8,7 +8,14 @@ require __DIR__ . '/includes/public-layout.php';
 news_ensure_schema();
 
 $year = date('Y');
-$featuredDoctors = array_slice(public_doctors($services, $assets), 0, 4);
+// Médicos marcados como "Destacado en portada" desde admin/medicos.php (flag is_featured).
+// Si no hay ninguno marcado, caemos a los primeros para que la sección nunca quede vacía.
+$allDoctors = public_doctors($services, $assets);
+$featuredDoctors = array_values(array_filter($allDoctors, static fn (array $d): bool => !empty($d['is_featured'])));
+if (!$featuredDoctors) {
+    $featuredDoctors = $allDoctors;
+}
+$featuredDoctors = array_slice($featuredDoctors, 0, 4);
 $latestNews = news_query_published(3, 0);
 $totalServices = service_count($services);
 $assetVersion = (string) max(

@@ -115,6 +115,18 @@ if ($action === 'delete_photo') {
     }
 }
 
+if ($action === 'toggle_featured') {
+    // Marca/quita "Destacado en portada" con un solo clic (PUT parcial, igual contrato que update_directory).
+    $featured = !empty($_POST['featured']) ? 1 : 0;
+    $r = hospital_api_call_admin('PUT', '/doctors/' . $id, ['is_featured' => $featured]);
+    bust_directory_cache();
+    if ($r['ok']) {
+        flash_and_redirect('success', $featured ? 'Médico destacado en la portada.' : 'Médico quitado de la portada.');
+    } else {
+        flash_and_redirect('danger', 'No se pudo actualizar: ' . ($r['message'] ?? 'error'));
+    }
+}
+
 if ($action === 'update_directory') {
     $payload = [];
     foreach (['biography', 'education', 'languages', 'services', 'insurances', 'associations'] as $f) {
