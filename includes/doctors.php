@@ -63,6 +63,7 @@ function map_api_doctor_to_landing(array $r, array $assets): array {
         'slug'           => $r['slug'] ?: ('doctor-' . (int)$r['id']),
         'title'          => '',
         'specialty'      => $r['specialty'] ?? 'Especialidad médica',
+        'specialty_id'   => (int)($r['specialty_id'] ?? 0),
         'specialty_slug' => slugify($r['specialty'] ?? 'especialidad'),
         'subspecialty'   => $r['subspecialty'] ?? '',
         'exequatur'      => $r['exequatur'] ?? '',

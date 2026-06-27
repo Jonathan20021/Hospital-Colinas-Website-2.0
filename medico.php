@@ -15,11 +15,21 @@ if (!$doctor) {
 }
 
 $associationLines = $doctor ? array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $doctor['associations'] ?? ''))) : [];
-// El teléfono DIRECTO del médico no se publica en el directorio (privacidad):
-// se muestra siempre el del hospital. Al dejarlo vacío, el botón "Llamar", la tira
-// de datos, la tarjeta de Información clínica y el schema caen a $contact['phone'].
-$doctorPhone = '';
+
+// En los perfiles SIEMPRE se muestra el número del CALL CENTER del hospital
+// (no el teléfono directo del médico, por privacidad). El call center coincide
+// con el WhatsApp institucional: (809) 501-2002.
+$callCenterDisplay = $contact['whatsapp_phone'];                                 // (809) 501-2002
+$callCenterTel     = '1' . preg_replace('/\D/', '', $contact['whatsapp_phone']); // 18095012002
 $doctorEmail = $doctor['email'] ?? '';
+
+// "Agendar cita" desde el perfil lleva DIRECTO al asistente con este médico
+// preseleccionado (paso 3). Si no hay id (fallback sin API), va al asistente general.
+$doctorId   = $doctor ? (int) ($doctor['id'] ?? 0) : 0;
+$doctorSpec = $doctor ? (int) ($doctor['specialty_id'] ?? 0) : 0;
+$agendarUrl = $doctorId > 0
+    ? base_url('agendar') . '?specialty_id=' . $doctorSpec . '&doctor_id=' . $doctorId
+    : base_url('agendar');
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
@@ -83,7 +93,7 @@ $doctorEmail = $doctor['email'] ?? '';
             "url": "<?= e(canonical_url()) ?>",
             "image": "<?= e(absolute_url($doctor['photo'])) ?>",
             "medicalSpecialty": <?= json_encode($doctor['specialty'], JSON_UNESCAPED_UNICODE) ?>,
-            "telephone": "<?= e($doctorPhone ?: $contact['phone']) ?>",
+            "telephone": "<?= e($callCenterDisplay) ?>",
             <?php if ($doctorEmail): ?>"email": <?= json_encode($doctorEmail, JSON_UNESCAPED_UNICODE) ?>,<?php endif; ?>
             "hospitalAffiliation": {
                 "@type": "Hospital",
@@ -126,10 +136,10 @@ $doctorEmail = $doctor['email'] ?? '';
                     <i data-lucide="map-pin" class="h-4 w-4"></i>
                     Contacto
                 </a>
-                <button type="button" class="js-open-appointment profile-cta">
+                <a href="<?= e($agendarUrl) ?>" class="profile-cta">
                     <i data-lucide="calendar-days" class="h-4 w-4"></i>
                     Agendar cita
-                </button>
+                </a>
             </nav>
         </div>
     </header>
@@ -177,11 +187,11 @@ $doctorEmail = $doctor['email'] ?? '';
                         </p>
 
                         <div class="profile-quick-actions">
-                            <button type="button" class="btn btn-green js-open-appointment">
+                            <a href="<?= e($agendarUrl) ?>" class="btn btn-green">
                                 <i data-lucide="calendar-days" class="h-4 w-4"></i>
                                 Agendar cita
-                            </button>
-                            <a href="tel:<?= e($doctorPhone ?: '18098060444') ?>" class="btn btn-ghost">
+                            </a>
+                            <a href="tel:<?= e($callCenterTel) ?>" class="btn btn-ghost">
                                 <i data-lucide="phone" class="h-4 w-4"></i>
                                 Llamar
                             </a>
@@ -213,9 +223,9 @@ $doctorEmail = $doctor['email'] ?? '';
                     <div>
                         <span><i data-lucide="phone" class="h-4 w-4"></i></span>
                         <div>
-                            <small>Teléfono</small>
+                            <small>Call center</small>
                             <strong><a
-                                    href="tel:<?= e($doctorPhone ?: '18098060444') ?>"><?= e($doctorPhone ?: $contact['phone']) ?></a></strong>
+                                    href="tel:<?= e($callCenterTel) ?>"><?= e($callCenterDisplay) ?></a></strong>
                         </div>
                     </div>
                     <div>
@@ -272,9 +282,9 @@ $doctorEmail = $doctor['email'] ?? '';
                                 <dd><?= nl2br(e($doctor['schedule'])) ?></dd>
                             </div>
                             <div>
-                                <dt><i data-lucide="phone" class="h-4 w-4"></i> Teléfono</dt>
+                                <dt><i data-lucide="phone" class="h-4 w-4"></i> Call center</dt>
                                 <dd><a
-                                        href="tel:<?= e($doctorPhone ?: '18098060444') ?>"><?= e($doctorPhone ?: $contact['phone']) ?></a>
+                                        href="tel:<?= e($callCenterTel) ?>"><?= e($callCenterDisplay) ?></a>
                                 </dd>
                             </div>
                             <?php if ($doctorEmail): ?>
@@ -284,8 +294,11 @@ $doctorEmail = $doctor['email'] ?? '';
                                 </div>
                             <?php endif; ?>
                             <div>
-                                <dt><i data-lucide="shield-check" class="h-4 w-4"></i> Seguros</dt>
-                                <dd><?= e($doctor['insurances'] ?: 'Información en proceso de actualización.') ?></dd>
+                                <dt><i data-lucide="shield-check" class="h-4 w-4"></i> Seguros aceptados</dt>
+                                <dd>
+                                    <?= e(implode(', ', array_column($insurers, 'name'))) ?>.
+                                    <a href="<?= e(base_url('seguros-aceptados')) ?>">Ver todos los seguros</a>
+                                </dd>
                             </div>
                         </dl>
                     </div>
@@ -295,10 +308,10 @@ $doctorEmail = $doctor['email'] ?? '';
                         <h3>¿Necesitas atención con este especialista?</h3>
                         <p>Coordina tu consulta con el equipo del hospital. Te confirmaremos disponibilidad y orientaremos
                             sobre seguros.</p>
-                        <button type="button" class="btn btn-green js-open-appointment">
+                        <a href="<?= e($agendarUrl) ?>" class="btn btn-green">
                             <i data-lucide="calendar-days" class="h-4 w-4"></i>
                             Agendar ahora
-                        </button>
+                        </a>
                     </div>
                 </aside>
 
@@ -309,42 +322,6 @@ $doctorEmail = $doctor['email'] ?? '';
             </section>
         </main>
     <?php endif; ?>
-
-    <div id="appointmentModal" class="modal-shell hidden" role="dialog" aria-modal="true"
-        aria-labelledby="appointmentTitle">
-        <div class="modal-panel">
-            <div class="modal-header">
-                <div>
-                    <h2 id="appointmentTitle">Agendar cita</h2>
-                    <p>Completa tus datos y nuestro equipo te contactará.</p>
-                </div>
-                <button type="button" class="js-close-appointment modal-close" aria-label="Cerrar">
-                    <i data-lucide="x" class="h-5 w-5"></i>
-                </button>
-            </div>
-            <form id="appointmentForm" class="space-y-4 p-6" action="<?= e(base_url('api/appointment.php')) ?>"
-                method="post">
-                <input type="text" name="website" class="hidden" tabindex="-1" autocomplete="off">
-                <div>
-                    <label for="name" class="form-label">Nombre completo</label>
-                    <input id="name" name="name" type="text" required class="form-input">
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="phone" class="form-label">Teléfono</label>
-                        <input id="phone" name="phone" type="tel" required class="form-input">
-                    </div>
-                    <div>
-                        <label for="date" class="form-label">Fecha preferida</label>
-                        <input id="date" name="date" type="date" required class="form-input">
-                    </div>
-                </div>
-                <input type="hidden" name="specialty" value="<?= $doctor ? e($doctor['specialty']) : '' ?>">
-                <div id="appointmentStatus" class="hidden rounded-md px-4 py-3 text-sm font-bold"></div>
-                <button type="submit" class="btn btn-green w-full justify-center">Enviar solicitud</button>
-            </form>
-        </div>
-    </div>
 
     <?php require __DIR__ . '/includes/widget-colinas-ai.php'; ?>
 
