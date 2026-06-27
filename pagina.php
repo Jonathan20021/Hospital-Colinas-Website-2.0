@@ -109,15 +109,70 @@ $serviceCatalog = service_pages_catalog($services, $assets);
         </section>
 
         <section class="content-body">
-            <div class="content-section-grid">
-                <?php foreach ($page['sections'] as $section): ?>
-                    <article class="content-info-card">
-                        <span><i data-lucide="<?= e($section['icon']) ?>" class="h-5 w-5"></i></span>
-                        <h2><?= e($section['title']) ?></h2>
-                        <p><?= e($section['text']) ?></p>
-                    </article>
-                <?php endforeach; ?>
-            </div>
+            <?php if (!empty($page['sections'])): ?>
+                <div class="content-section-grid">
+                    <?php foreach ($page['sections'] as $section): ?>
+                        <article class="content-info-card">
+                            <span><i data-lucide="<?= e($section['icon']) ?>" class="h-5 w-5"></i></span>
+                            <h2><?= e($section['title']) ?></h2>
+                            <p><?= e($section['text']) ?></p>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($type === 'legal' && !empty($page['articles'])): ?>
+                <div class="legal-doc">
+                    <aside class="legal-toc">
+                        <p class="legal-toc-title">Contenido</p>
+                        <nav aria-label="Índice del documento">
+                            <ol>
+                                <?php foreach ($page['articles'] as $article): ?>
+                                    <li><a href="#<?= e($article['id']) ?>"><?= e($article['num']) ?>. <?= e($article['title']) ?></a></li>
+                                <?php endforeach; ?>
+                            </ol>
+                        </nav>
+                        <?php if (!empty($page['updated'])): ?>
+                            <p class="legal-toc-meta">
+                                Última actualización: <strong><?= e($page['updated']) ?></strong>
+                                <?php if (!empty($page['version'])): ?><br>Versión <?= e($page['version']) ?><?php endif; ?>
+                            </p>
+                        <?php endif; ?>
+                    </aside>
+
+                    <div class="legal-content">
+                        <?php if (!empty($page['legal_intro'])): ?>
+                            <p class="legal-intro"><?= e($page['legal_intro']) ?></p>
+                        <?php endif; ?>
+
+                        <?php foreach ($page['articles'] as $article): ?>
+                            <article class="legal-article" id="<?= e($article['id']) ?>">
+                                <h2><span class="legal-num"><?= e($article['num']) ?>.</span> <?= e($article['title']) ?></h2>
+                                <?php foreach ($article['blocks'] as $block): ?>
+                                    <?php if (isset($block['sub'])): ?>
+                                        <h3><?= e($block['sub']) ?></h3>
+                                    <?php elseif (isset($block['p'])): ?>
+                                        <p><?= e($block['p']) ?></p>
+                                    <?php elseif (isset($block['note'])): ?>
+                                        <div class="legal-note"><i data-lucide="alert-triangle" class="h-4 w-4"></i><span><?= e($block['note']) ?></span></div>
+                                    <?php elseif (isset($block['list'])): ?>
+                                        <ul><?php foreach ($block['list'] as $li): ?><li><?= e($li) ?></li><?php endforeach; ?></ul>
+                                    <?php elseif (isset($block['olist'])): ?>
+                                        <ol class="legal-olist"><?php foreach ($block['olist'] as $li): ?><li><?= e($li) ?></li><?php endforeach; ?></ol>
+                                    <?php elseif (isset($block['deflist'])): ?>
+                                        <dl class="legal-deflist"><?php foreach ($block['deflist'] as $term => $def): ?><dt><?= e($term) ?></dt><dd><?= e($def) ?></dd><?php endforeach; ?></dl>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </article>
+                        <?php endforeach; ?>
+
+                        <p class="legal-disclaimer">
+                            Este documento es de carácter informativo. Para consultas relacionadas, escríbenos a
+                            <a href="mailto:<?= e($contact['email']) ?>"><?= e($contact['email']) ?></a>.
+                        </p>
+                    </div>
+                </div>
+            <?php endif; ?>
 
             <?php if ($slug === 'seguros-aceptados' && !empty($insurers)): ?>
                 <section class="content-insurers" aria-labelledby="insurersListTitle">
@@ -173,7 +228,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
             <?php if ($type === 'sitemap'): ?>
                 <div class="content-sitemap">
                     <article>
-                        <h2>Hospital</h2>
+                        <h2>El Hospital</h2>
                         <a href="<?= e(base_url('nosotros')) ?>">Nosotros</a>
                         <a href="<?= e(base_url('liderazgo-institucional')) ?>">Liderazgo institucional</a>
                         <a href="<?= e(base_url('instalaciones')) ?>">Instalaciones</a>
@@ -181,7 +236,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
                         <a href="<?= e(base_url('contacto')) ?>">Contacto</a>
                     </article>
                     <article>
-                        <h2>Pacientes</h2>
+                        <h2>Pacientes y visitantes</h2>
                         <a href="<?= e(base_url('tu-visita')) ?>">Tu visita</a>
                         <a href="<?= e(base_url('preparacion-para-tu-cita')) ?>">Preparación para tu cita</a>
                         <a href="<?= e(base_url('seguros-aceptados')) ?>">Seguros aceptados</a>
@@ -193,8 +248,27 @@ $serviceCatalog = service_pages_catalog($services, $assets);
                         <a href="<?= e(base_url('servicios')) ?>">Servicios</a>
                         <a href="<?= e(base_url('directorio-medico')) ?>">Directorio médico</a>
                         <a href="<?= e(base_url('noticias')) ?>">Noticias</a>
+                        <a href="<?= e(base_url('repositorio')) ?>">Repositorio digital</a>
+                    </article>
+                    <article>
+                        <h2>Servicios en línea</h2>
+                        <a href="<?= e(base_url('agendar')) ?>">Agendar cita</a>
+                        <a href="<?= e(base_url('teleconsulta')) ?>">Teleconsulta</a>
+                        <a href="<?= e(base_url('solicitar-estudios')) ?>">Solicitar estudios</a>
+                        <a href="<?= e(base_url('ver-resultados')) ?>">Ver resultados</a>
+                        <a href="<?= e(base_url('verificar-certificado')) ?>">Verificar certificado</a>
+                        <a href="<?= e(base_url('verificar-receta')) ?>">Verificar receta</a>
+                    </article>
+                    <article>
+                        <h2>Portales</h2>
+                        <a href="<?= e(base_url('portal/')) ?>">Portal del Paciente</a>
+                        <a href="<?= e(base_url('portal-medico/')) ?>">Portal Médico</a>
+                    </article>
+                    <article>
+                        <h2>Legal</h2>
                         <a href="<?= e(base_url('politica-de-privacidad')) ?>">Política de privacidad</a>
                         <a href="<?= e(base_url('terminos-de-uso')) ?>">Términos de uso</a>
+                        <a href="<?= e(base_url('mapa-del-sitio')) ?>">Mapa del sitio</a>
                     </article>
                     <article class="content-sitemap-wide">
                         <h2>Servicios individuales</h2>
