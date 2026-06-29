@@ -1,0 +1,368 @@
+/* Mi Salud — hub de herramientas del Portal del Paciente.
+ * Marca HGLC: navy #262161 · verde #5da334. Scope: .salud-*
+ * Acentos rosados/coral SOLO decorativos en la herramienta de ciclo;
+ * la identidad de marca (logo navy+verde) no se altera.
+ */
+
+.salud-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    max-width: 1040px;
+}
+
+/* ---------- Herramienta estrella ---------- */
+.salud-feature {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 30px 32px;
+    color: #fff;
+    background:
+        radial-gradient(120% 140% at 100% 0, rgba(255, 107, 139, .42), transparent 55%),
+        linear-gradient(135deg, #2c2670 0%, #262161 52%, #1d194d 100%);
+    box-shadow: 0 26px 50px -32px rgba(38, 33, 97, .85);
+    text-decoration: none;
+    transition: transform .25s cubic-bezier(.22, .61, .36, 1), box-shadow .25s ease;
+    isolation: isolate;
+}
+
+.salud-feature:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 34px 60px -34px rgba(38, 33, 97, .92);
+}
+
+.salud-feature:focus-visible {
+    outline: 3px solid #7fce53;
+    outline-offset: 3px;
+}
+
+.salud-feature-glow {
+    position: absolute;
+    inset: -40% 30% auto -20%;
+    height: 320px;
+    background: radial-gradient(circle, rgba(127, 206, 83, .28), transparent 60%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.salud-feature-body {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    max-width: 70%;
+}
+
+.salud-feature-icon {
+    flex: none;
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, .14);
+    backdrop-filter: blur(6px);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+}
+
+.salud-feature-icon svg {
+    width: 28px;
+    height: 28px;
+    color: #ffd2dd;
+}
+
+.salud-chip {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #1d194d;
+    background: linear-gradient(135deg, #b8f08f, #7fce53);
+}
+
+.salud-feature h2 {
+    margin: 0 0 6px;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+}
+
+.salud-feature-copy > p {
+    margin: 0 0 14px;
+    max-width: 46ch;
+    color: rgba(255, 255, 255, .82);
+    line-height: 1.5;
+}
+
+.salud-feature-points {
+    list-style: none;
+    margin: 0 0 18px;
+    padding: 0;
+    display: grid;
+    gap: 7px;
+}
+
+.salud-feature-points li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: .9rem;
+    color: rgba(255, 255, 255, .9);
+}
+
+.salud-feature-points svg {
+    width: 17px;
+    height: 17px;
+    color: #9fe06f;
+    flex: none;
+}
+
+.salud-feature-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .95rem;
+    color: #1d194d;
+    background: #fff;
+    transition: gap .2s ease, transform .2s ease;
+}
+
+.salud-feature:hover .salud-feature-cta {
+    gap: 13px;
+}
+
+.salud-feature-cta svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* anillo decorativo a la derecha */
+.salud-feature-ring {
+    position: absolute;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 168px;
+    height: 168px;
+    display: grid;
+    place-items: center;
+    opacity: .92;
+}
+
+.salud-feature-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    fill: none;
+}
+
+.salud-feature-ring .ring-track {
+    stroke: rgba(255, 255, 255, .14);
+    stroke-width: 10;
+}
+
+.salud-feature-ring .ring-period {
+    stroke: #ff6b8b;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 327;
+    stroke-dashoffset: 250;
+}
+
+.salud-feature-ring .ring-fertile {
+    stroke: #7fce53;
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 327;
+    stroke-dashoffset: 110;
+    opacity: .9;
+    transform-origin: center;
+    transform: rotate(135deg);
+}
+
+.salud-feature-ring-center {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, .12);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2);
+}
+
+.salud-feature-ring-center svg {
+    width: 30px;
+    height: 30px;
+    color: #ffd2dd;
+    transform: none;
+}
+
+/* ---------- Sección "Próximamente" ---------- */
+.salud-section-head {
+    margin-bottom: 14px;
+}
+
+.salud-section-head h2 {
+    margin: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--portal-ink);
+}
+
+.salud-section-head p {
+    margin: 2px 0 0;
+    color: var(--portal-muted);
+    font-size: .9rem;
+}
+
+.salud-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: 14px;
+}
+
+.salud-card {
+    position: relative;
+    padding: 20px;
+    border-radius: 16px;
+    background: var(--portal-surface);
+    border: 1px solid var(--portal-line);
+    box-shadow: var(--portal-shadow);
+}
+
+.salud-card.is-soon {
+    opacity: .82;
+}
+
+/* tarjeta-herramienta disponible (link) */
+a.salud-card.is-tool {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+a.salud-card.is-tool:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--portal-shadow-raised);
+    border-color: var(--portal-navy-soft);
+}
+
+a.salud-card.is-tool:focus-visible {
+    outline: 3px solid var(--portal-green);
+    outline-offset: 2px;
+}
+
+.salud-card-cta {
+    margin-top: auto;
+    padding-top: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    font-size: .88rem;
+    color: var(--portal-green-strong);
+}
+
+.salud-card-cta svg {
+    width: 16px;
+    height: 16px;
+    transition: transform .2s ease;
+}
+
+a.salud-card.is-tool:hover .salud-card-cta svg {
+    transform: translateX(3px);
+}
+
+.salud-card-soon {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: .64rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--portal-muted);
+    background: var(--portal-surface-muted);
+    border: 1px solid var(--portal-line);
+}
+
+.salud-card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 13px;
+    background: var(--portal-navy-soft);
+}
+
+.salud-card-icon svg {
+    width: 23px;
+    height: 23px;
+    color: var(--portal-navy);
+}
+
+.salud-card h3 {
+    margin: 0 0 5px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--portal-ink);
+}
+
+.salud-card p {
+    margin: 0;
+    font-size: .86rem;
+    line-height: 1.45;
+    color: var(--portal-muted);
+}
+
+/* ---------- Privacidad ---------- */
+.salud-privacy {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 0 0;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: .85rem;
+    color: var(--portal-text);
+    background: var(--portal-green-soft);
+    border: 1px solid #d9ecc9;
+}
+
+.salud-privacy svg {
+    width: 19px;
+    height: 19px;
+    color: var(--portal-green-strong);
+    flex: none;
+}
+
+@media (max-width: 720px) {
+    .salud-feature {
+        padding: 24px 22px;
+    }
+    .salud-feature-body {
+        max-width: 100%;
+    }
+    .salud-feature-ring {
+        display: none;
+    }
+    .salud-feature h2 {
+        font-size: 1.45rem;
+    }
+}

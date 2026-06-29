@@ -1,0 +1,242 @@
+/* Mis Signos Vitales — hub "Mi Salud". Marca HGLC navy/verde. Scope: .vit-*
+ * Variables en :root para que también las hereden los <dialog> (fuera de .vit). */
+:root {
+    --vit-ok: #2f7d18;
+    --vit-ok-soft: #eaf7e0;
+    --vit-warn: #b06d0a;
+    --vit-warn-soft: #fff4e2;
+    --vit-high: #c0264a;
+    --vit-high-soft: #ffe9ee;
+    --vit-low: #1f6fb2;
+    --vit-low-soft: #e9f3fb;
+    --vit-card: #fff;
+    --vit-ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+.vit {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.vit-preview {
+    display: flex;
+    gap: 11px;
+    align-items: flex-start;
+    padding: 12px 15px;
+    border-radius: 14px;
+    background: var(--portal-warning-soft);
+    border: 1px solid #f3e2bf;
+    color: #6b4d12;
+}
+.vit-preview svg { width: 20px; height: 20px; flex: none; margin-top: 1px; color: var(--portal-warning); }
+.vit-preview strong { display: block; font-size: .9rem; }
+.vit-preview span { font-size: .83rem; line-height: 1.4; }
+
+/* ---------- Encabezado ---------- */
+.vit-head { display: flex; align-items: center; gap: 12px; }
+.vit-back {
+    flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+    color: var(--portal-navy); background: var(--portal-surface); border: 1px solid var(--portal-line);
+    transition: background .15s ease;
+}
+.vit-back:hover { background: var(--portal-navy-soft); }
+.vit-back svg { width: 19px; height: 19px; }
+.vit-head-titles { flex: 1; min-width: 0; }
+.vit-head-titles h1 {
+    margin: 0; font-family: 'Outfit', 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800;
+    letter-spacing: -.02em; color: var(--portal-ink);
+}
+.vit-head-titles p { margin: 2px 0 0; font-size: .9rem; color: var(--portal-muted); }
+.vit-add-btn { flex: none; }
+
+/* ---------- Grid de signos ---------- */
+.vit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+    gap: 14px;
+}
+
+.vit-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 18px;
+    background: var(--vit-card);
+    border: 1px solid var(--portal-line);
+    box-shadow: var(--portal-shadow);
+    cursor: pointer;
+    transition: transform .15s var(--vit-ease), box-shadow .2s ease;
+}
+.vit-card:hover { transform: translateY(-2px); box-shadow: var(--portal-shadow-raised); }
+
+.vit-card-top { display: flex; align-items: center; gap: 10px; }
+.vit-card-ic {
+    flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--portal-navy-soft);
+}
+.vit-card-ic svg { width: 21px; height: 21px; color: var(--portal-navy); }
+.vit-card-name { font-size: .95rem; font-weight: 700; color: var(--portal-ink); }
+.vit-card-unit { font-size: .76rem; color: var(--portal-muted); }
+
+.vit-card-value {
+    display: flex; align-items: baseline; gap: 6px;
+    font-family: 'Outfit', 'Inter', sans-serif; font-weight: 800; line-height: 1;
+    color: var(--portal-ink);
+}
+.vit-card-value .num { font-size: 2.1rem; }
+.vit-card-value .num.empty { font-size: 1.2rem; color: var(--portal-muted); font-weight: 700; }
+.vit-card-value .sub { font-size: 1rem; color: var(--portal-muted); font-weight: 700; }
+
+.vit-badge {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 999px; font-size: .76rem; font-weight: 700;
+}
+.vit-badge svg { width: 13px; height: 13px; }
+.vit-badge.ok   { color: var(--vit-ok);   background: var(--vit-ok-soft); }
+.vit-badge.warn { color: var(--vit-warn); background: var(--vit-warn-soft); }
+.vit-badge.high { color: var(--vit-high); background: var(--vit-high-soft); }
+.vit-badge.low  { color: var(--vit-low);  background: var(--vit-low-soft); }
+.vit-badge.none { color: var(--portal-muted); background: var(--portal-surface-muted); }
+
+/* sparkline */
+.vit-spark { height: 46px; width: 100%; }
+.vit-spark svg { width: 100%; height: 100%; overflow: visible; }
+.vit-spark .ln { fill: none; stroke: var(--portal-navy); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.vit-spark .ln2 { stroke: #9aa0d8; }
+.vit-spark .dot { fill: var(--portal-navy); }
+.vit-spark .area { fill: rgba(38, 33, 97, .07); stroke: none; }
+.vit-spark-empty { display: flex; align-items: center; justify-content: center; height: 46px; color: var(--portal-line); font-size: .8rem; }
+
+.vit-card-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: .74rem; color: var(--portal-muted);
+}
+.vit-src { display: inline-flex; align-items: center; gap: 4px; }
+.vit-src svg { width: 12px; height: 12px; }
+
+/* ---------- Disclaimer ---------- */
+.vit-disclaimer {
+    display: flex; align-items: center; gap: 10px; margin: 2px 0 0; padding: 13px 15px;
+    border-radius: 13px; font-size: .83rem; color: var(--portal-text);
+    background: var(--portal-info-soft); border: 1px solid #d6e6f8;
+}
+.vit-disclaimer svg { width: 18px; height: 18px; color: var(--portal-info); flex: none; }
+
+/* ---------- Diálogos ---------- */
+.vit-sheet, .vit-detail-dialog {
+    border: 0; padding: 0; background: var(--vit-card); color: var(--portal-text);
+    box-shadow: 0 -10px 50px -20px rgba(20, 25, 54, .5);
+}
+.vit-sheet::backdrop, .vit-detail-dialog::backdrop {
+    background: rgba(15, 18, 40, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+}
+.vit-sheet {
+    width: 100%; max-width: 540px; margin: auto auto 0; border-radius: 24px 24px 0 0;
+    animation: vit-up .3s var(--vit-ease);
+}
+@keyframes vit-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@media (min-width: 640px) {
+    .vit-sheet { margin: auto; border-radius: 22px; animation: vit-pop .26s var(--vit-ease); }
+}
+@keyframes vit-pop { from { transform: scale(.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.vit-sheet-grip { width: 42px; height: 5px; border-radius: 999px; background: var(--portal-line); margin: 10px auto 2px; }
+@media (min-width: 640px) { .vit-sheet-grip { display: none; } }
+
+.vit-sheet-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; border-bottom: 1px solid var(--portal-line-soft);
+}
+.vit-sheet-head h2 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--portal-ink); }
+.vit-sheet-head p { margin: 2px 0 0; font-size: .82rem; color: var(--portal-muted); }
+.vit-sheet-close {
+    width: 36px; height: 36px; border-radius: 10px; border: 0; display: grid; place-items: center;
+    background: var(--portal-surface-muted); color: var(--portal-text); cursor: pointer;
+}
+.vit-sheet-close svg { width: 18px; height: 18px; }
+
+.vit-sheet-body { padding: 16px 20px; max-height: 64vh; overflow-y: auto; }
+.vit-sheet-foot {
+    display: flex; padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--portal-line-soft);
+}
+.vit-sheet-foot .btn { flex: 1; justify-content: center; }
+
+/* campos del formulario */
+.vit-field { margin-bottom: 14px; }
+.vit-field > label { display: block; margin-bottom: 6px; font-size: .82rem; font-weight: 700; color: var(--portal-text); }
+.vit-field .hint { font-weight: 500; color: var(--portal-muted); }
+.vit-input {
+    width: 100%; padding: 11px 13px; border-radius: 12px; border: 1.5px solid var(--portal-line);
+    font: inherit; font-size: 1rem; color: var(--portal-ink); background: #fff;
+}
+.vit-input:focus { outline: none; border-color: var(--portal-navy); box-shadow: var(--portal-focus); }
+.vit-duo { display: flex; align-items: center; gap: 8px; }
+.vit-duo .vit-input { text-align: center; }
+.vit-duo .sep { color: var(--portal-muted); font-weight: 700; }
+.vit-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.vit-field-ic {
+    display: inline-flex; align-items: center; gap: 7px; margin-bottom: 6px;
+    font-size: .82rem; font-weight: 700; color: var(--portal-text);
+}
+.vit-field-ic svg { width: 16px; height: 16px; color: var(--portal-navy); }
+
+/* ---------- Detalle ---------- */
+.vit-detail-dialog {
+    width: 100%; max-width: 560px; margin: auto; border-radius: 22px; max-height: 88vh;
+    display: none; flex-direction: column; animation: vit-pop .26s var(--vit-ease);
+}
+.vit-detail-dialog[open] { display: flex; }
+.vit-detail-body { padding: 18px 20px; overflow-y: auto; }
+
+.vit-chart { height: 180px; margin: 6px 0 14px; }
+.vit-chart svg { width: 100%; height: 100%; overflow: visible; }
+.vit-chart .grid { stroke: var(--portal-line-soft); stroke-width: 1; }
+.vit-chart .lbl { fill: var(--portal-muted); font-size: 9px; }
+.vit-chart .ln { fill: none; stroke: var(--portal-navy); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+.vit-chart .ln2 { stroke: #9aa0d8; }
+.vit-chart .dot { fill: #fff; stroke: var(--portal-navy); stroke-width: 2; }
+
+.vit-hist { display: flex; flex-direction: column; gap: 0; }
+.vit-hist-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 10px 2px; border-bottom: 1px solid var(--portal-line-soft);
+}
+.vit-hist-row .v { font-weight: 700; color: var(--portal-ink); }
+.vit-hist-row .d { font-size: .8rem; color: var(--portal-muted); }
+.vit-hist-row .src-tag {
+    font-size: .68rem; font-weight: 700; padding: 2px 7px; border-radius: 999px;
+    background: var(--portal-navy-soft); color: var(--portal-navy);
+}
+.vit-hist-row .src-tag.self { background: var(--vit-ok-soft); color: var(--vit-ok); }
+.vit-hist-del {
+    border: 0; background: transparent; color: var(--portal-danger); cursor: pointer;
+    width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center;
+}
+.vit-hist-del:hover { background: var(--portal-danger-soft); }
+.vit-hist-del svg { width: 15px; height: 15px; }
+
+/* skeleton */
+.vit-skel {
+    height: 168px; border-radius: 18px;
+    background: linear-gradient(100deg, #eef0f6 30%, #f6f7fb 50%, #eef0f6 70%);
+    background-size: 200% 100%; animation: vit-shimmer 1.3s infinite;
+}
+@keyframes vit-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+@media (max-width: 560px) {
+    .vit-head-titles h1 { font-size: 1.3rem; }
+    .vit-add-btn span { display: none; }
+    .vit-add-btn { width: 44px; padding: 0; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vit-card, .vit-sheet, .vit-detail-dialog, .vit-skel { animation: none !important; transition: none !important; }
+}

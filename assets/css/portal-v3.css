@@ -301,6 +301,29 @@
     transition: opacity .12s var(--portal-ease);
 }
 
+.portal-nav-badge {
+    margin-left: auto;
+    flex: none;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: .64rem;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #fff;
+    background: linear-gradient(135deg, #5da334, #4c8a2a);
+    box-shadow: 0 4px 10px -6px rgba(76, 138, 42, .9);
+}
+
+.portal-nav-link.is-active .portal-nav-badge {
+    background: rgba(255, 255, 255, .22);
+    box-shadow: none;
+}
+
+html.portal-sidebar-collapsed .portal-nav-badge {
+    display: none;
+}
+
 .portal-nav-link svg {
     width: 19px;
     height: 19px;

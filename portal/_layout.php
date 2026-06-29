@@ -63,6 +63,15 @@ function portal_layout_begin(string $title, string $active = ''): void
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-accessible.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-v3.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-pwa.css')) ?>?v=<?= e($assetVersion) ?>">
+        <?php
+        // CSS extra por página: la página setea $GLOBALS['portal_extra_css']
+        // (lista de archivos relativos a assets/css/) ANTES de portal_layout_begin().
+        foreach ((array) ($GLOBALS['portal_extra_css'] ?? []) as $cssRel) {
+            $cssAbs = __DIR__ . '/../assets/css/' . $cssRel;
+            $cssV = (string) (@filemtime($cssAbs) ?: $assetVersion);
+            echo '        <link rel="stylesheet" href="' . e(base_url('assets/css/' . $cssRel)) . '?v=' . e($cssV) . "\">\n";
+        }
+        ?>
         <meta name="csrf-token" content="<?= e(portal_csrf_token()) ?>">
         <meta name="portal-api-url" content="<?= e(base_url('api/portal-proxy.php')) ?>">
         <?php portal_pwa_head(); ?>
@@ -137,6 +146,9 @@ function portal_layout_begin(string $title, string $active = ''): void
                         <a href="<?= e(base_url('portal/dashboard.php')) ?>" title="Inicio"
                             class="portal-nav-link <?= $active === 'dashboard' ? 'is-active' : '' ?>"><i
                                 data-lucide="layout-dashboard" class="h-4 w-4"></i><span class="portal-nav-label">Inicio</span></a>
+                        <a href="<?= e(base_url('portal/salud.php')) ?>" title="Mi Salud"
+                            class="portal-nav-link <?= in_array($active, ['salud', 'ciclo', 'vitales', 'sintomas', 'medicamentos', 'prevencion', 'embarazo'], true) ? 'is-active' : '' ?>"><i
+                                data-lucide="heart-pulse" class="h-4 w-4"></i><span class="portal-nav-label">Mi Salud</span><span class="portal-nav-badge">Nuevo</span></a>
                         <a href="<?= e(base_url('portal/agendar.php')) ?>" title="Agendar cita"
                             class="portal-nav-link <?= $active === 'agendar' ? 'is-active' : '' ?>"><i
                                 data-lucide="calendar-plus" class="h-4 w-4"></i><span class="portal-nav-label">Agendar cita</span></a>
@@ -245,6 +257,7 @@ function portal_layout_end(): void
                 </div>
                 <div class="portal-dialog-body">
                     <nav class="portal-more-nav" aria-label="Opciones adicionales">
+                        <a href="<?= e(base_url('portal/salud.php')) ?>"><i data-lucide="heart-pulse"></i> Mi Salud</a>
                         <a href="<?= e(base_url('portal/mensajes.php')) ?>"><i data-lucide="messages-square"></i> Mensajes</a>
                         <a href="<?= e(base_url('portal/consultas.php')) ?>"><i data-lucide="stethoscope"></i> Mis consultas</a>
                         <a href="<?= e(base_url('portal/recetas.php')) ?>"><i data-lucide="file-text"></i> Mis recetas</a>
@@ -366,6 +379,15 @@ function portal_layout_end(): void
         </script>
         <script src="<?= e(base_url('assets/js/portal-email-onboarding.js')) ?>?v=<?= e((string)(@filemtime(__DIR__ . '/../assets/js/portal-email-onboarding.js') ?: 1)) ?>"></script>
         <?php endif; ?>
+        <?php
+        // JS extra por página: la página setea $GLOBALS['portal_extra_js']
+        // (lista de archivos relativos a assets/js/) ANTES de portal_layout_begin().
+        foreach ((array) ($GLOBALS['portal_extra_js'] ?? []) as $jsRel) {
+            $jsAbs = __DIR__ . '/../assets/js/' . $jsRel;
+            $jsV = (string) (@filemtime($jsAbs) ?: 1);
+            echo '        <script src="' . e(base_url('assets/js/' . $jsRel)) . '?v=' . e($jsV) . "\"></script>\n";
+        }
+        ?>
     </body>
 
     </html>

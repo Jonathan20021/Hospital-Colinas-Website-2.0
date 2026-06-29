@@ -1,0 +1,125 @@
+/* Embarazo semana a semana — hub "Mi Salud". Marca HGLC navy/verde + acentos
+ * cálidos decorativos. Scope: .preg-*  Variables en :root (también para <dialog>). */
+:root {
+    --preg-accent: #e0789a;
+    --preg-accent-soft: #fdeef3;
+    --preg-card: #fff;
+    --preg-ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+.preg { display: flex; flex-direction: column; gap: 16px; max-width: 760px; margin: 0 auto; }
+
+.preg-preview {
+    display: flex; gap: 11px; align-items: flex-start; padding: 12px 15px; border-radius: 14px;
+    background: var(--portal-warning-soft); border: 1px solid #f3e2bf; color: #6b4d12;
+}
+.preg-preview svg { width: 20px; height: 20px; flex: none; margin-top: 1px; color: var(--portal-warning); }
+.preg-preview strong { display: block; font-size: .9rem; }
+.preg-preview span { font-size: .83rem; line-height: 1.4; }
+
+.preg-head { display: flex; align-items: center; gap: 12px; }
+.preg-back, .preg-settings {
+    flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+    color: var(--portal-navy); background: var(--portal-surface); border: 1px solid var(--portal-line); transition: background .15s ease; cursor: pointer;
+}
+.preg-back:hover, .preg-settings:hover { background: var(--portal-navy-soft); }
+.preg-back svg, .preg-settings svg { width: 19px; height: 19px; }
+.preg-head-titles { flex: 1; min-width: 0; }
+.preg-head-titles h1 { margin: 0; font-family: 'Outfit','Inter',sans-serif; font-size: 1.4rem; font-weight: 800; letter-spacing: -.02em; color: var(--portal-ink); }
+.preg-head-titles p { margin: 2px 0 0; font-size: .9rem; color: var(--portal-muted); }
+
+/* ---------- Onboarding ---------- */
+.preg-onboard {
+    text-align: center; padding: 36px 26px; border-radius: 22px; color: #fff;
+    background: radial-gradient(120% 120% at 100% 0, rgba(224,120,154,.5), transparent 55%), linear-gradient(135deg, #2c2670, #262161);
+    box-shadow: var(--portal-shadow-raised);
+}
+.preg-onboard .badge { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 20px; display: grid; place-items: center; background: rgba(255,255,255,.15); font-size: 2rem; }
+.preg-onboard h2 { margin: 0 0 8px; font-family: 'Outfit','Inter',sans-serif; font-size: 1.5rem; font-weight: 800; }
+.preg-onboard p { margin: 0 auto 18px; max-width: 40ch; font-size: .94rem; color: rgba(255,255,255,.85); line-height: 1.5; }
+.preg-onboard .btn { background: #fff; color: #1d194d; }
+
+/* ---------- Hero de la semana ---------- */
+.preg-hero {
+    position: relative; overflow: hidden; border-radius: 24px; padding: 24px; color: #fff;
+    background: radial-gradient(130% 120% at 0 0, rgba(224,120,154,.55), transparent 55%), linear-gradient(135deg, #322c7a, #262161);
+    box-shadow: var(--portal-shadow-raised);
+}
+.preg-hero-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.preg-trimester { font-size: .76rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; color: #ffd2dd; }
+.preg-hero-week { font-size: .9rem; font-weight: 700; color: rgba(255,255,255,.8); }
+.preg-hero-main { display: flex; align-items: center; gap: 20px; }
+.preg-fruit { flex: none; width: 110px; height: 110px; border-radius: 50%; display: grid; place-items: center; font-size: 3.6rem; background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1px rgba(255,255,255,.2); }
+.preg-hero-info { flex: 1; min-width: 0; }
+.preg-hero-info .wk { font-family: 'Outfit','Inter',sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+.preg-hero-info .cmp { margin-top: 6px; font-size: .95rem; color: rgba(255,255,255,.9); }
+.preg-hero-info .sz { margin-top: 8px; display: flex; gap: 14px; font-size: .85rem; color: rgba(255,255,255,.82); }
+.preg-hero-info .sz b { color: #fff; }
+
+/* progreso */
+.preg-progress { margin-top: 18px; }
+.preg-progressbar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.18); overflow: hidden; }
+.preg-progressbar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, #ffd2dd, #e0789a); transition: width .6s var(--preg-ease); }
+.preg-progress-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: .76rem; color: rgba(255,255,255,.75); }
+
+/* navegación de semanas */
+.preg-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.preg-nav-btn {
+    display: inline-flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--portal-line);
+    background: var(--preg-card); color: var(--portal-navy); font: inherit; font-weight: 700; font-size: .86rem; cursor: pointer;
+}
+.preg-nav-btn:disabled { opacity: .4; cursor: default; }
+.preg-nav-btn:not(:disabled):hover { background: var(--portal-navy-soft); }
+.preg-nav-btn svg { width: 16px; height: 16px; }
+.preg-nav-current { font-size: .88rem; font-weight: 700; color: var(--portal-text); }
+.preg-nav-current button { border: 0; background: transparent; color: var(--portal-navy); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+/* tarjetas info */
+.preg-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 600px) { .preg-cards { grid-template-columns: 1fr; } }
+.preg-card { padding: 16px; border-radius: 16px; background: var(--preg-card); border: 1px solid var(--portal-line); box-shadow: var(--portal-shadow); }
+.preg-card.full { grid-column: 1 / -1; }
+.preg-card-h { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: .82rem; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--portal-navy); }
+.preg-card-h svg { width: 16px; height: 16px; color: var(--preg-accent); }
+.preg-card p { margin: 0; font-size: .9rem; line-height: 1.5; color: var(--portal-text); }
+.preg-countdown .big { font-family: 'Outfit','Inter',sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--portal-ink); line-height: 1; }
+.preg-countdown .sm { font-size: .82rem; color: var(--portal-muted); margin-top: 3px; }
+.preg-due .big { font-family: 'Outfit','Inter',sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--portal-ink); }
+.preg-tips { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.preg-tips li { display: flex; gap: 8px; align-items: flex-start; font-size: .88rem; color: var(--portal-text); }
+.preg-tips li svg { width: 16px; height: 16px; color: var(--portal-green-strong); flex: none; margin-top: 2px; }
+
+.preg-disclaimer {
+    display: flex; align-items: center; gap: 10px; margin: 2px 0 0; padding: 13px 15px; border-radius: 13px;
+    font-size: .83rem; color: var(--portal-text); background: var(--preg-accent-soft); border: 1px solid #f6d8e2;
+}
+.preg-disclaimer svg { width: 18px; height: 18px; color: var(--preg-accent); flex: none; }
+
+/* ---------- Hoja FUM ---------- */
+.preg-sheet { border: 0; padding: 0; background: var(--preg-card); color: var(--portal-text); box-shadow: 0 -10px 50px -20px rgba(20,25,54,.5); }
+.preg-sheet::backdrop { background: rgba(15, 18, 40, .72); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.preg-sheet { width: 100%; max-width: 480px; margin: auto auto 0; border-radius: 24px 24px 0 0; animation: preg-up .3s var(--preg-ease); }
+@keyframes preg-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@media (min-width: 640px) { .preg-sheet { margin: auto; border-radius: 22px; animation: preg-pop .26s var(--preg-ease); } }
+@keyframes preg-pop { from { transform: scale(.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.preg-sheet-grip { width: 42px; height: 5px; border-radius: 999px; background: var(--portal-line); margin: 10px auto 2px; }
+@media (min-width: 640px) { .preg-sheet-grip { display: none; } }
+.preg-sheet-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-bottom: 1px solid var(--portal-line-soft); }
+.preg-sheet-head h2 { margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--portal-ink); }
+.preg-sheet-close { width: 36px; height: 36px; border-radius: 10px; border: 0; display: grid; place-items: center; background: var(--portal-surface-muted); color: var(--portal-text); cursor: pointer; }
+.preg-sheet-close svg { width: 18px; height: 18px; }
+.preg-sheet-body { padding: 18px 20px; }
+.preg-setup-help { margin: 0 0 14px; font-size: .88rem; line-height: 1.45; color: var(--portal-muted); }
+.preg-sheet-foot { display: flex; gap: 10px; padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--portal-line-soft); }
+.preg-sheet-foot .btn { flex: 1; justify-content: center; }
+.preg-sheet-foot .preg-end-btn { flex: 0 0 auto; color: var(--portal-danger); }
+.preg-field label { display: block; margin-bottom: 6px; font-size: .85rem; font-weight: 700; color: var(--portal-text); }
+.preg-input { width: 100%; padding: 11px 13px; border-radius: 12px; border: 1.5px solid var(--portal-line); font: inherit; font-size: 1rem; color: var(--portal-ink); background: #fff; }
+.preg-input:focus { outline: none; border-color: var(--portal-navy); box-shadow: var(--portal-focus); }
+.preg-setup-hint { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--preg-accent-soft); color: #9a3a58; font-size: .85rem; font-weight: 600; }
+
+.preg-content-flex { display: flex; flex-direction: column; gap: 16px; }
+
+@media (max-width: 560px) { .preg-head-titles h1 { font-size: 1.25rem; } .preg-fruit { width: 92px; height: 92px; font-size: 3rem; } }
+@media (prefers-reduced-motion: reduce) { .preg-hero, .preg-sheet, .preg-progressbar i { animation: none !important; transition: none !important; } }
