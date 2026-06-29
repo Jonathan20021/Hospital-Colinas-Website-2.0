@@ -1,4 +1,39 @@
+# Hospital General Las Colinas — robots.txt
+# SEO + descubrimiento por asistentes y buscadores con IA.
+# Guía para IA (formato llms.txt): https://colinashospital.com/llms.txt
+#                                   https://colinashospital.com/llms-full.txt
+
 User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /includes/
+Disallow: /storage/
+Disallow: /database/
+
+# Asistentes y buscadores con IA — acceso explícitamente permitido al
+# contenido público (se mantienen protegidas las áreas privadas).
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-Web
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: CCBot
+User-agent: DuckAssistBot
+User-agent: cohere-ai
+User-agent: YouBot
 Allow: /
 Disallow: /admin/
 Disallow: /api/

@@ -216,6 +216,9 @@ $leadershipGerencias = [
                 "telephone": "<?= e($contact['phone']) ?>",
                 "email": "<?= e($contact['email']) ?>",
                 "priceRange": "$$",
+                "hasMap": "<?= e($contact['maps']) ?>",
+                "availableLanguage": "es",
+                "areaServed": "Santiago de los Caballeros, Cibao, República Dominicana",
                 "address": {
                     "@type": "PostalAddress",
                     "streetAddress": "Av. 27 de Febrero, Plaza Colinas Mall",

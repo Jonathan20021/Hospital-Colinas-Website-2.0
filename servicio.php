@@ -54,6 +54,11 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
     <meta property="og:image" content="<?= e(absolute_url($service['image'])) ?>">
+    <meta property="og:image:alt" content="<?= e($service['title']) ?> — Hospital General Las Colinas">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($service['title']) ?> | Hospital General Las Colinas">
+    <meta name="twitter:description" content="<?= e($service['summary']) ?>">
+    <meta name="twitter:image" content="<?= e(absolute_url($service['image'])) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -75,8 +80,26 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
         "provider": {
             "@type": "Hospital",
             "name": "Hospital General Las Colinas",
-            "telephone": "<?= e($contact['phone']) ?>"
+            "url": "<?= e(absolute_url()) ?>",
+            "telephone": "<?= e($contact['phone']) ?>",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Av. 27 de Febrero, Plaza Colinas Mall",
+                "addressLocality": "Santiago",
+                "addressCountry": "DO"
+            }
         }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "<?= e(absolute_url()) ?>"},
+            {"@type": "ListItem", "position": 2, "name": "Servicios", "item": "<?= e(absolute_url('servicios')) ?>"},
+            {"@type": "ListItem", "position": 3, "name": <?= json_encode($service['title'], JSON_UNESCAPED_UNICODE) ?>, "item": "<?= e(canonical_url()) ?>"}
+        ]
     }
     </script>
 </head>

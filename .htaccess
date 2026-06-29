@@ -28,6 +28,9 @@ DirectoryIndex index.php
 
     # Pretty routes
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
+    # Guías para asistentes / buscadores con IA (llms.txt)
+    RewriteRule ^llms\.txt$ llms.php [L]
+    RewriteRule ^llms-full\.txt$ llms.php?full=1 [L,QSA]
     RewriteRule ^portal/?$ portal/index.php [L,QSA]
     RewriteRule ^portal/([a-zA-Z0-9_\-]+)/?$ portal/$1.php [L,QSA]
     RewriteRule ^portal-medico/?$ portal-medico/index.php [L,QSA]

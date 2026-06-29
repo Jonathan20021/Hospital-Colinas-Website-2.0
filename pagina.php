@@ -56,6 +56,11 @@ $serviceCatalog = service_pages_catalog($services, $assets);
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
     <meta property="og:image" content="<?= e(absolute_url($page['image'])) ?>">
+    <meta property="og:image:alt" content="<?= e($page['title']) ?> — Hospital General Las Colinas">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?= e($page['title']) ?> | Hospital General Las Colinas">
+    <meta name="twitter:description" content="<?= e($description) ?>">
+    <meta name="twitter:image" content="<?= e(absolute_url($page['image'])) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -63,6 +68,70 @@ $serviceCatalog = service_pages_catalog($services, $assets);
         rel="stylesheet">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Inicio", "item": "<?= e(absolute_url()) ?>"},
+            {"@type": "ListItem", "position": 2, "name": <?= json_encode($page['nav'] ?? $page['title'], JSON_UNESCAPED_UNICODE) ?>, "item": "<?= e(canonical_url()) ?>"}
+        ]
+    }
+    </script>
+    <?php if ($slug === 'preguntas-frecuentes' && !empty($page['sections'])): ?>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+                <?php $faqCount = count($page['sections']);
+                foreach (array_values($page['sections']) as $i => $faq): ?>
+                {
+                    "@type": "Question",
+                    "name": <?= json_encode($faq['title'], JSON_UNESCAPED_UNICODE) ?>,
+                    "acceptedAnswer": {"@type": "Answer", "text": <?= json_encode($faq['text'], JSON_UNESCAPED_UNICODE) ?>}
+                }<?= $i < $faqCount - 1 ? ',' : '' ?>
+                <?php endforeach; ?>
+            ]
+        }
+        </script>
+    <?php endif; ?>
+    <?php if ($slug === 'contacto'): ?>
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Hospital",
+            "@id": "<?= e(absolute_url()) ?>#hospital",
+            "name": "Hospital General Las Colinas",
+            "url": "<?= e(absolute_url()) ?>",
+            "logo": "<?= e(absolute_url($assets['logo'])) ?>",
+            "image": "<?= e(absolute_url($assets['hero'])) ?>",
+            "telephone": "<?= e($contact['phone']) ?>",
+            "email": "<?= e($contact['email']) ?>",
+            "priceRange": "$$",
+            "hasMap": "<?= e($contact['maps']) ?>",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Av. 27 de Febrero, Plaza Colinas Mall",
+                "addressLocality": "Santiago de los Caballeros",
+                "addressRegion": "Santiago",
+                "postalCode": "51000",
+                "addressCountry": "DO"
+            },
+            "geo": {"@type": "GeoCoordinates", "latitude": 19.451010, "longitude": -70.687126},
+            "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+                "opens": "00:00",
+                "closes": "23:59"
+            },
+            "availableLanguage": "es",
+            "areaServed": "Santiago de los Caballeros, Cibao, República Dominicana",
+            "sameAs": ["<?= e($contact['facebook']) ?>", "<?= e($contact['instagram']) ?>"]
+        }
+        </script>
+    <?php endif; ?>
 </head>
 
 <body class="bg-white font-sans text-slate-950 antialiased content-page">
