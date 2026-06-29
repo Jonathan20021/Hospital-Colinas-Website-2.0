@@ -163,6 +163,12 @@ $leadershipGerencias = [
     <meta name="author" content="Hospital General Las Colinas">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#262161">
+    <?php if (defined('SITE_VERIFICATION_GOOGLE') && SITE_VERIFICATION_GOOGLE !== ''): ?>
+    <meta name="google-site-verification" content="<?= e(SITE_VERIFICATION_GOOGLE) ?>">
+    <?php endif; ?>
+    <?php if (defined('SITE_VERIFICATION_BING') && SITE_VERIFICATION_BING !== ''): ?>
+    <meta name="msvalidate.01" content="<?= e(SITE_VERIFICATION_BING) ?>">
+    <?php endif; ?>
     <meta name="geo.region" content="DO-25">
     <meta name="geo.placename" content="Santiago de los Caballeros">
     <meta name="geo.position" content="19.451010;-70.687126">

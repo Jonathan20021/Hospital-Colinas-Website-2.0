@@ -50,3 +50,19 @@ define('PORTAL_API_VERIFY_TLS', false);
 // Modelo de visión (opcional). Por defecto 'gpt-4.1-mini' (preciso y económico).
 // Para más precisión analítica: 'o4-mini' (razona; cuesta algo más).
 // define('OPENAI_IMAGING_MODEL', 'gpt-4.1-mini');
+
+// ── Verificación de propiedad para buscadores (SEO) ─────────────────────────
+// Tokens de verificación que se renderizan como <meta> en la portada (index.php).
+// NO son secretos: igualmente quedan visibles en el HTML público. Se ponen aquí
+// solo para no tener que re-subir index.php cada vez que cambien.
+//
+// Google Search Console: al añadir la propiedad por "Prefijo de URL"
+// (https://colinashospital.com/), elige el método "Etiqueta HTML" y copia el
+// valor del atributo content="..." aquí abajo. Alternativa sin código: método
+// "Archivo HTML" — sube el googleXXXX.html que te da Google a la raíz del cPanel.
+// define('SITE_VERIFICATION_GOOGLE', 'pega-aqui-el-content-del-meta-de-google');
+
+// Bing Webmaster Tools (también alimenta a Copilot). Método "Meta tag": copia el
+// valor de content="..." de la etiqueta <meta name="msvalidate.01" ...>.
+// Lo más fácil: en Bing, "Importar desde Google Search Console" y te ahorras esto.
+// define('SITE_VERIFICATION_BING', 'pega-aqui-el-content-del-meta-de-bing');
