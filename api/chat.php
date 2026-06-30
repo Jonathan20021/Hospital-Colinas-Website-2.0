@@ -3,7 +3,8 @@
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/../includes/data.php';
 require_once __DIR__ . '/../includes/doctors.php';
-require_once __DIR__ . '/../includes/ai.php';
+require_once __DIR__ . '/../includes/ai.php';      // settings (nombre/bienvenida/toggle) + esquema de logs
+require_once __DIR__ . '/../includes/ai-bot.php';  // motor de respuestas DETERMINISTA (sin OpenAI)
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -47,7 +48,7 @@ if (!empty($payload['honeypot'] ?? '')) {
 }
 
 $settings = ai_settings_load();
-if (!$settings['enabled'] || $settings['api_key'] === '') {
+if (!$settings['enabled']) {
     http_response_code(503);
     echo json_encode([
         'ok' => false,
@@ -112,48 +113,11 @@ if (count($cleaned) === 0 || end($cleaned)['role'] !== 'user') {
     exit;
 }
 
-$systemPrompt = ai_build_system_prompt($settings, $services, $assets, $contact, $insurers);
+// ── Motor DETERMINISTA (sin IA / sin OpenAI) ───────────────────────────────
+// Genera la respuesta con reglas + datos reales del directorio. Nunca alucina.
+$reply = bot_reply($cleaned, $services, $assets, $contact, $insurers);
 
-$openaiMessages = array_merge(
-    [['role' => 'system', 'content' => $systemPrompt]],
-    $cleaned
-);
-
-$result = ai_run_conversation($openaiMessages, $settings, 10);
-
-if (!$result['ok']) {
-    // Loggear tool_log y error en ai_conversations para depurar
-    if (db_ready()) {
-        try {
-            $sessionId = $_SESSION['ai_session'] ?? bin2hex(random_bytes(16));
-            $_SESSION['ai_session'] = $sessionId;
-            $stmt = db()->prepare('INSERT INTO ai_conversations (session_id, role, content, tokens, ip_address) VALUES (?, ?, ?, ?, ?)');
-            $userMessage = end($cleaned);
-            $stmt->execute([$sessionId, 'user', $userMessage['content'], null, $ip]);
-            $errSummary = '❌ ERROR: ' . ($result['error'] ?? 'desconocido');
-            if (!empty($result['tool_log'])) {
-                $errSummary .= "\nTools ejecutados:\n";
-                foreach ($result['tool_log'] as $t) {
-                    $errSummary .= '  - ' . $t['name'] . ' args=' . json_encode($t['args'], JSON_UNESCAPED_UNICODE)
-                                . ' result=' . substr(json_encode($t['result'], JSON_UNESCAPED_UNICODE), 0, 300) . "\n";
-                }
-            }
-            $stmt->execute([$sessionId, 'system', $errSummary, null, $ip]);
-        } catch (Throwable) {}
-    }
-    http_response_code(502);
-    echo json_encode([
-        'ok' => false,
-        'error' => 'El asistente no pudo responder en este momento.',
-        'detail' => $result['error'] ?? null,
-        'tools' => array_map(fn($t) => ['name' => $t['name'], 'ok' => $t['result']['ok'] ?? false, 'error' => $t['result']['error'] ?? null], $result['tool_log'] ?? []),
-    ]);
-    exit;
-}
-
-$reply = (string) $result['content'];
-$toolLog = $result['tool_log'] ?? [];
-
+// Logging best-effort (mismo esquema ai_conversations) para analítica.
 if (db_ready()) {
     try {
         $sessionId = $_SESSION['ai_session'] ?? null;
@@ -164,13 +128,7 @@ if (db_ready()) {
         $stmt = db()->prepare('INSERT INTO ai_conversations (session_id, role, content, tokens, ip_address) VALUES (?, ?, ?, ?, ?)');
         $userMessage = end($cleaned);
         $stmt->execute([$sessionId, 'user', $userMessage['content'], null, $ip]);
-        $tokens = $result['usage']['total_tokens'] ?? null;
-        // Si hubo tool calls, guardamos un resumen como mensaje 'system' para depurar
-        if (!empty($toolLog)) {
-            $toolSummary = '🔧 TOOL CALLS: ' . implode(' → ', array_map(fn($t) => $t['name'] . '(' . substr(json_encode($t['args'], JSON_UNESCAPED_UNICODE), 0, 80) . ') ' . ($t['result']['ok'] ?? false ? 'OK' : 'ERR'), $toolLog));
-            $stmt->execute([$sessionId, 'system', $toolSummary, null, $ip]);
-        }
-        $stmt->execute([$sessionId, 'assistant', $reply, $tokens, $ip]);
+        $stmt->execute([$sessionId, 'assistant', $reply, null, $ip]);
     } catch (Throwable) {
         // Persistence is best-effort — never block the response.
     }
@@ -179,6 +137,4 @@ if (db_ready()) {
 echo json_encode([
     'ok' => true,
     'reply' => $reply,
-    'usage' => $result['usage'] ?? null,
-    'tools' => array_map(fn($t) => ['name' => $t['name'], 'ok' => $t['result']['ok'] ?? false], $toolLog),
 ]);

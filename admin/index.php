@@ -18,6 +18,10 @@ if (!admin_can('dashboard', $currentUser)) {
     exit;
 }
 
+// Colinas IA ahora es determinista (no requiere OpenAI): su estado depende del
+// toggle de activación, no de la credencial de OpenAI.
+$assistantEnabled = (bool) ai_public_config()['enabled'];
+
 // Estadísticas de médicos: live desde la API del hospital (con cache 1h)
 $apiRes = portal_directory_doctors();
 $apiDoctors = $apiRes['ok'] ? $apiRes['data'] : [];
@@ -172,11 +176,11 @@ admin_header('Dashboard', 'dashboard');
         <div class="admin-stats-info">
             <span>Estado Asistente</span>
             <strong style="font-size: 1.35rem; margin-top: 0.8rem; font-family: 'Inter', sans-serif;">
-                <?= ai_is_ready() ? 'Operativo' : 'Inactivo' ?>
+                <?= $assistantEnabled ? 'Operativo' : 'Inactivo' ?>
             </strong>
         </div>
-        <div class="admin-stats-icon" style="<?= ai_is_ready() ? 'color: var(--success); background-color: var(--success-light);' : 'color: var(--danger); background-color: var(--danger-light);' ?>">
-            <i data-lucide="<?= ai_is_ready() ? 'bolt' : 'bolt-off' ?>"></i>
+        <div class="admin-stats-icon" style="<?= $assistantEnabled ? 'color: var(--success); background-color: var(--success-light);' : 'color: var(--danger); background-color: var(--danger-light);' ?>">
+            <i data-lucide="<?= $assistantEnabled ? 'bolt' : 'bolt-off' ?>"></i>
         </div>
     </article>
 </section>

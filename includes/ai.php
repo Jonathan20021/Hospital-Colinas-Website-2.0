@@ -124,8 +124,10 @@ function ai_is_ready(): bool
 function ai_public_config(): array
 {
     $settings = ai_settings_load();
+    // El asistente ahora es DETERMINISTA (includes/ai-bot.php): no requiere
+    // api_key de OpenAI. Basta con el toggle `enabled` del panel de admin.
     return [
-        'enabled' => $settings['enabled'] && $settings['api_key'] !== '',
+        'enabled' => (bool) $settings['enabled'],
         'assistant_name' => $settings['assistant_name'],
         'welcome_message' => $settings['welcome_message'],
     ];
