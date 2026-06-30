@@ -88,13 +88,13 @@ $categories = news_distinct_categories();
                         <i data-lucide="cross" class="h-4 w-4"></i>
                         Emergencias 24/7
                     </a>
-                    <a href="<?= e(base_url('#pacientes')) ?>" class="utility-link">
+                    <a href="<?= e(base_url('portal/login.php')) ?>" class="utility-link">
                         <i data-lucide="users-round" class="h-4 w-4"></i>
-                        Pacientes y visitantes
+                        Portal del Paciente
                     </a>
-                    <a href="<?= e(base_url('directorio-medico')) ?>" class="utility-link">
+                    <a href="<?= e(base_url('portal-medico/login.php')) ?>" class="utility-link">
                         <i data-lucide="user-round-check" class="h-4 w-4"></i>
-                        Profesionales médicos
+                        Portal Médico
                     </a>
                 </div>
             </div>
