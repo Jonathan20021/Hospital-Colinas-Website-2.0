@@ -224,7 +224,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                                         style="width:56px;height:56px;border-radius:50%;object-fit:cover">
                                     <div>
                                         <h3><?= e($d['name']) ?></h3>
-                                        <p><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($d['specialty']) ?></p>
+                                        <p><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> <?= e($d['specialty']) ?><?php if (!empty($d['subspecialty'])): ?> · <?= e($d['subspecialty']) ?><?php endif; ?></p>
                                         <?php if (!empty($d['office_name'])): ?>
                                             <p><i data-lucide="map-pin" class="h-3.5 w-3.5"></i> <?= e($d['office_name']) ?></p>
                                         <?php endif; ?>
@@ -251,7 +251,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                             <p class="section-label">Agendando con</p>
                             <h2><?= e($selectedDoctor['name']) ?></h2>
                             <p class="portal-hint"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>
-                                <?= e($selectedDoctor['specialty']) ?></p>
+                                <?= e($selectedDoctor['specialty']) ?><?php if (!empty($selectedDoctor['subspecialty'])): ?> · <?= e($selectedDoctor['subspecialty']) ?><?php endif; ?></p>
                         </div>
                         <a href="?specialty_id=<?= $specId ?>" class="portal-text-link portal-change-link">Cambiar médico</a>
                     </div>
