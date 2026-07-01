@@ -158,6 +158,8 @@
     max-width: 100%;
     min-height: 1056px; /* ~ Letter */
     margin: 0 auto;
+    display: flex;
+    flex-direction: column; /* la firma se empuja al fondo del papel */
     background: #fff;
     color: var(--ink);
     box-shadow: 0 24px 60px -24px rgba(30, 36, 62, .35), 0 2px 8px rgba(30, 36, 62, .06);
@@ -222,6 +224,7 @@
 
 /* Cuerpo editable */
 .doc-body {
+    flex: 1 1 auto; /* ocupa el alto disponible y empuja la firma abajo */
     min-height: 320px;
     outline: none;
     text-align: left;
@@ -269,8 +272,8 @@
 }
 .doc-body .page-break::after { content: 'salto de página'; background: #fff; padding: 0 8px; }
 
-/* Firma */
-.doc-sign { margin-top: 54px; display: flex; justify-content: center; }
+/* Firma — el papel es flex-column y el cuerpo crece, así la firma cae al fondo */
+.doc-sign { margin-top: 32px; display: flex; justify-content: center; }
 .doc-sign-inner { width: 280px; text-align: center; }
 .doc-sign-img { max-height: 74px; max-width: 250px; margin: 0 auto 2px; display: block; }
 .doc-sign-space { height: 62px; }
@@ -278,15 +281,39 @@
 .doc-sign-name { color: var(--navy); font-weight: 800; margin-top: 6px; font-size: .95rem; }
 .doc-sign-sub { color: var(--muted); font-size: .78rem; }
 
-/* ── Responsive ────────────────────────────────────────────────────────── */
+/* ── Responsive (web + PWA del portal médico) ──────────────────────────── */
+@media (max-width: 860px) {
+    /* La barra de acciones se apila y los botones se reparten el ancho */
+    .doc-ed-bar-r { width: 100%; }
+    .doc-ed-bar-r .doctor-btn { flex: 1 1 auto; justify-content: center; }
+}
 @media (max-width: 720px) {
-    .doc-paper { padding: 30px 22px 40px; }
-    .doc-ed-canvas { padding: 18px 8px 28px; }
-    .doc-lh-logos { flex-direction: column; align-items: center; gap: 12px; }
+    .doc-ed { --paper-w: 100%; }
+    .doc-paper { padding: 28px 20px 34px; min-height: 0; }
+    .doc-ed-canvas { padding: 16px 6px calc(24px + env(safe-area-inset-bottom, 0px)); }
+    .doc-lh-logos { flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+    .doc-lh-inst-img, .doc-lh-own img { max-height: 46px; }
     .doc-lh-own { text-align: center; }
-    .doc-meta { flex-direction: column; }
+    .doc-meta { flex-direction: column; gap: 4px; }
     .doc-meta-r { text-align: left; }
-    .doc-ed-toolbar { position: static; }
+    /* En móvil la toolbar deja de ser sticky y hace scroll horizontal (no crece en alto) */
+    .doc-ed-toolbar {
+        position: static;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .doc-ed-tb-grp { flex: none; }
+    .doc-ed-title { font-size: 1.28rem; }
+    .doc-ed-tools { flex-direction: column; align-items: stretch; }
+    .doc-ed-sel { max-width: none; }
+    .doc-paper-title { font-size: 1.24rem; }
+}
+@media (max-width: 480px) {
+    .doc-paper { padding: 22px 15px 28px; }
+    .doc-ed-tb { width: 32px; height: 32px; }
+    .doc-ed-vars { width: 100%; }
+    .doc-sign-inner { width: 100%; max-width: 280px; }
 }
 
 /* ── Impresión / Guardar como PDF desde el navegador ───────────────────── */

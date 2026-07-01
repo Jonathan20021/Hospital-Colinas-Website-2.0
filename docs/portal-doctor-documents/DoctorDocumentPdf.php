@@ -177,12 +177,12 @@ class DoctorDocumentPdf
         $body = $doc['body_html'] !== '' ? $doc['body_html'] : '<p style="color:#94a3b8">(Documento sin contenido)</p>';
 
         return '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><style>
-        @page { margin: 118px 54px 96px 54px; }
+        @page { margin: 46px 54px 176px 54px; }
         * { font-family: "DejaVu Sans", sans-serif; }
         body { margin: 0; color: #1f2430; font-size: 11.5pt; line-height: 1.5; }
 
-        /* Membrete fijo en el encabezado de todas las páginas */
-        .lh { position: fixed; top: -96px; left: 0; right: 0; }
+        /* Membrete en el flujo (solo primera página, sin encimarse) */
+        .lh { margin: 0 0 16px; }
         .lh-logos { width: 100%; border-collapse: collapse; }
         .lh-logos td { vertical-align: middle; }
         .lh-left { text-align: left; }
@@ -197,10 +197,13 @@ class DoctorDocumentPdf
         .lh-rule { height: 3px; margin-top: 8px;
                    background: ' . $navy . '; border-bottom: 2px solid ' . $green . '; }
 
-        /* Pie fijo */
-        .ft { position: fixed; bottom: -74px; left: 0; right: 0;
+        /* Pie fijo (todas las páginas) */
+        .ft { position: fixed; bottom: 0; left: 0; right: 0;
               border-top: 1px solid #e2e8f0; padding-top: 6px;
               color: #94a3b8; font-size: 8pt; text-align: center; }
+
+        /* Firma anclada SIEMPRE al fondo, sobre el pie (reservado por el margen) */
+        .sign { position: fixed; left: 0; right: 0; bottom: 44px; text-align: center; }
 
         .meta { width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 9.5pt; color: #334155; }
         .meta td { vertical-align: top; }
@@ -225,7 +228,6 @@ class DoctorDocumentPdf
         .doc-align-justify { text-align: justify; }
         .page-break { page-break-before: always; }
 
-        .sign { margin-top: 44px; width: 100%; }
         .sign-inner { width: 270px; margin-left: auto; margin-right: auto; text-align: center; }
         .sig-space { height: 60px; }
         .sig-line { border-top: 1px solid #334155; margin-top: 4px; }
