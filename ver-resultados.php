@@ -259,6 +259,7 @@ $description = 'Aprende a ver tus resultados de laboratorio, imágenes y recetas
             setTimeout(showAll, 1800);
         })();
     </script>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 
 </html>

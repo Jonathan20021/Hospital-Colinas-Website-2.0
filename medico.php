@@ -327,6 +327,7 @@ $agendarUrl = $doctorId > 0
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 
 </html>

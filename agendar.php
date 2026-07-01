@@ -335,6 +335,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
     <?php if ($step === 3): ?>
         <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <?php endif; ?>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 
 </html>

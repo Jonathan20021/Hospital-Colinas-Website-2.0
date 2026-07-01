@@ -86,5 +86,6 @@ $logo  = base_url('assets/site/logo.png');
             <div class="foot"><strong>Hospital General Las Colinas</strong> · Santiago, RD</div>
         <?php endif; ?>
     </div>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 </html>

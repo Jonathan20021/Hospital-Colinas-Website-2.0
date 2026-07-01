@@ -373,6 +373,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
     <?php require __DIR__ . '/includes/widget-colinas-ai.php'; ?>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 
 </html>

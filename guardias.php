@@ -323,5 +323,6 @@ if (window.top !== window.self) { try { window.top.location = window.self.locati
     }
 })();
 </script>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 </html>

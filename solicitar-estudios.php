@@ -111,6 +111,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
     <script src="<?= e(base_url('assets/js/solicitar-estudios.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 
 </html>

@@ -28,6 +28,28 @@ function portal_api_verify_tls(): bool {
 }
 
 /**
+ * IP real del navegador para reenviar a JENOFONTE (Auditoría Web).
+ * Usa CF-Connecting-IP (si el sitio estuviera tras Cloudflare) o REMOTE_ADDR.
+ * NO confía en X-Forwarded-For del cliente (spoofeable; el sitio va directo al
+ * cPanel, así que REMOTE_ADDR ya es la IP real).
+ */
+function portal_client_real_ip(): string {
+    $ip = (string)($_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+    return filter_var($ip, FILTER_VALIDATE_IP) !== false ? substr($ip, 0, 45) : '';
+}
+
+/** Cabeceras que reenvían identidad de red del navegador al API interno. */
+function portal_client_fwd_headers(): array {
+    $h = [];
+    $ip = portal_client_real_ip();
+    if ($ip !== '') $h[] = 'X-Client-IP: ' . $ip;
+    if (!empty($_SERVER['HTTP_USER_AGENT'])) {
+        $h[] = 'X-Client-UA: ' . substr(preg_replace('/[\r\n]/', '', (string)$_SERVER['HTTP_USER_AGENT']), 0, 255);
+    }
+    return $h;
+}
+
+/**
  * Realiza una llamada a la API.
  *
  * @return array { ok:bool, status:int, data:mixed, message:?string, errors:?array, raw:string }
@@ -41,6 +63,7 @@ function portal_api_call(string $method, string $path, array $payload = [], ?str
         'Content-Type: application/json',
     ];
     if ($token) $headers[] = 'Authorization: Bearer ' . $token;
+    $headers = array_merge($headers, portal_client_fwd_headers());
 
     $opts = [
         CURLOPT_RETURNTRANSFER => true,
@@ -96,6 +119,7 @@ function portal_api_call_binary(string $method, string $path, array $query = [],
     $ch = curl_init($url);
     $headers = ['Accept: application/pdf, application/octet-stream, application/json'];
     if ($token) $headers[] = 'Authorization: Bearer ' . $token;
+    $headers = array_merge($headers, portal_client_fwd_headers());
 
     $respHeaders = [];
     curl_setopt_array($ch, [

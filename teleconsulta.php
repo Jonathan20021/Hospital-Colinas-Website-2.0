@@ -105,5 +105,6 @@ if (strlen($t) < 16) {
         </script>
     <?php endif; ?>
     </main>
+    <script defer src="/assets/js/track.js"></script>
 </body>
 </html>
