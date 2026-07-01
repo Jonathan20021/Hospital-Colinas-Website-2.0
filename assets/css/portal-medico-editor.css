@@ -1,0 +1,309 @@
+/* ============================================================================
+   Editor de documentos clínicos ("Word" del Portal Médico)
+   Marca HGLC: navy #262161 · verde #5da334
+   ========================================================================== */
+
+.doc-ed {
+    --navy: #262161;
+    --green: #5da334;
+    --ink: #1f2430;
+    --muted: #64748b;
+    --line: #e6e8f0;
+    --paper-w: 816px; /* ~ Letter a 96dpi */
+    max-width: 1080px;
+    margin: 0 auto;
+}
+
+/* ── Barra de acciones ─────────────────────────────────────────────────── */
+.doc-ed-bar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin: 6px 0 14px;
+}
+.doc-ed-bar-l { flex: 1 1 320px; min-width: 260px; }
+.doc-ed-title {
+    width: 100%;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: var(--navy);
+    padding: 2px 2px 6px;
+    letter-spacing: -.01em;
+    outline: none;
+    transition: border-color .15s;
+}
+.doc-ed-title::placeholder { color: #b8bed0; font-weight: 700; }
+.doc-ed-title:focus { border-bottom-color: var(--green); }
+.doc-ed-ctx {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: .84rem;
+    font-weight: 600;
+}
+.doc-ed-ctx span { display: inline-flex; align-items: center; gap: 5px; }
+.doc-ed-ctx i { color: #94a3b8; }
+.doc-ed-status { font-weight: 700; }
+.doc-ed-status.is-saving { color: #b45309; }
+.doc-ed-status.is-saved { color: #047857; }
+.doc-ed-status.is-error { color: #be123c; }
+
+.doc-ed-bar-r { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* ── Herramientas (plantillas + variables) ─────────────────────────────── */
+.doc-ed-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px 14px 0 0;
+    border-bottom: 0;
+}
+.doc-ed-tools-grp { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.doc-ed-sel { max-width: 230px; height: 38px; padding: 6px 12px; }
+.doc-ed-tbtn { height: 38px; }
+.doc-ed-vars-lbl {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--muted); font-size: .8rem; font-weight: 700;
+}
+.doc-ed-chip {
+    border: 1px solid #d7dbe8;
+    background: #f7f8fc;
+    color: var(--navy);
+    font-size: .78rem;
+    font-weight: 700;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all .14s;
+}
+.doc-ed-chip:hover { background: var(--navy); color: #fff; border-color: var(--navy); transform: translateY(-1px); }
+
+/* ── Toolbar de formato ────────────────────────────────────────────────── */
+.doc-ed-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: saturate(180%) blur(8px);
+    border: 1px solid var(--line);
+    border-radius: 0;
+    box-shadow: 0 6px 18px -14px rgba(38, 33, 97, .35);
+}
+.doc-ed-tb-grp {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding-right: 6px;
+    margin-right: 3px;
+    border-right: 1px solid var(--line);
+}
+.doc-ed-tb-grp:last-child { border-right: 0; }
+.doc-ed-tb-right { margin-left: auto; border-right: 0; }
+.doc-ed-tb {
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    transition: all .13s;
+}
+.doc-ed-tb:hover { background: #eef0f8; color: var(--navy); }
+.doc-ed-tb.is-active { background: var(--navy); color: #fff; }
+.doc-ed-tb i { width: 17px; height: 17px; }
+.doc-ed-block {
+    height: 34px;
+    border: 1px solid #d7dbe8;
+    border-radius: 9px;
+    padding: 0 10px;
+    font-size: .84rem;
+    font-weight: 600;
+    color: var(--navy);
+    background: #fff;
+    cursor: pointer;
+}
+
+/* ── Lienzo + papel ────────────────────────────────────────────────────── */
+.doc-ed-canvas {
+    background:
+        radial-gradient(1200px 400px at 50% -10%, rgba(38, 33, 97, .06), transparent 60%),
+        #eef1f6;
+    border: 1px solid var(--line);
+    border-top: 0;
+    border-radius: 0 0 14px 14px;
+    padding: 30px 20px 44px;
+}
+.doc-paper {
+    width: var(--paper-w);
+    max-width: 100%;
+    min-height: 1056px; /* ~ Letter */
+    margin: 0 auto;
+    background: #fff;
+    color: var(--ink);
+    box-shadow: 0 24px 60px -24px rgba(30, 36, 62, .35), 0 2px 8px rgba(30, 36, 62, .06);
+    border-radius: 4px;
+    padding: 54px 64px 60px;
+    font-family: 'DejaVu Sans', 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+/* Membrete */
+.doc-lh { margin-bottom: 22px; }
+.doc-lh-logos {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    min-height: 58px;
+}
+.doc-lh-inst-img { max-height: 58px; max-width: 240px; width: auto; object-fit: contain; }
+.doc-lh-own { text-align: right; }
+.doc-lh-own img { max-height: 58px; max-width: 220px; width: auto; object-fit: contain; }
+.doc-lh-id { text-align: center; margin-top: 12px; }
+.doc-lh-name {
+    color: var(--navy);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 1.18rem;
+    letter-spacing: -.01em;
+}
+.doc-lh-spec { color: #475569; font-size: .9rem; margin-top: 2px; }
+.doc-lh-cred { color: var(--muted); font-size: .8rem; margin-top: 3px; }
+.doc-lh-rule {
+    height: 3px;
+    margin-top: 14px;
+    background: var(--navy);
+    border-bottom: 2px solid var(--green);
+    border-radius: 2px;
+}
+
+/* Línea del paciente + fecha */
+.doc-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: .86rem;
+    color: #334155;
+    margin-bottom: 20px;
+}
+.doc-meta-r { text-align: right; color: var(--muted); white-space: nowrap; }
+
+/* Título del documento en el papel */
+.doc-paper-title {
+    color: var(--navy);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 1.4rem;
+    margin: 0 0 16px;
+    letter-spacing: -.01em;
+}
+
+/* Cuerpo editable */
+.doc-body {
+    min-height: 320px;
+    outline: none;
+    text-align: left;
+    word-wrap: break-word;
+}
+.doc-body:empty::before,
+.doc-body.is-empty::before {
+    content: attr(data-placeholder);
+    color: #aab1c4;
+    pointer-events: none;
+}
+.doc-body p { margin: 0 0 11px; }
+.doc-body h1 { font-size: 1.3rem; color: var(--navy); font-family: 'Outfit', sans-serif; font-weight: 800; margin: 18px 0 9px; }
+.doc-body h2 { font-size: 1.12rem; color: var(--navy); font-family: 'Outfit', sans-serif; font-weight: 700; margin: 16px 0 8px; }
+.doc-body h3 { font-size: 1rem; color: #334155; font-weight: 700; margin: 14px 0 6px; }
+.doc-body ul, .doc-body ol { margin: 0 0 11px; padding-left: 26px; }
+.doc-body li { margin: 0 0 4px; }
+.doc-body blockquote {
+    margin: 12px 0;
+    padding: 6px 16px;
+    border-left: 3px solid var(--green);
+    color: #475569;
+    background: #f8faf6;
+    border-radius: 0 8px 8px 0;
+}
+.doc-body table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+.doc-body th, .doc-body td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; vertical-align: top; }
+.doc-body th { background: #f1f5f9; color: var(--navy); font-weight: 700; }
+.doc-body hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+.doc-body img { max-width: 100%; height: auto; }
+.doc-body .doc-align-center { text-align: center; }
+.doc-body .doc-align-right { text-align: right; }
+.doc-body .doc-align-justify { text-align: justify; }
+.doc-body .page-break {
+    border-top: 1px dashed #c4b5fd;
+    text-align: center;
+    color: #a78bda;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin: 18px 0;
+    padding-top: 4px;
+    position: relative;
+}
+.doc-body .page-break::after { content: 'salto de página'; background: #fff; padding: 0 8px; }
+
+/* Firma */
+.doc-sign { margin-top: 54px; display: flex; justify-content: center; }
+.doc-sign-inner { width: 280px; text-align: center; }
+.doc-sign-img { max-height: 74px; max-width: 250px; margin: 0 auto 2px; display: block; }
+.doc-sign-space { height: 62px; }
+.doc-sign-line { border-top: 1px solid #334155; }
+.doc-sign-name { color: var(--navy); font-weight: 800; margin-top: 6px; font-size: .95rem; }
+.doc-sign-sub { color: var(--muted); font-size: .78rem; }
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+    .doc-paper { padding: 30px 22px 40px; }
+    .doc-ed-canvas { padding: 18px 8px 28px; }
+    .doc-lh-logos { flex-direction: column; align-items: center; gap: 12px; }
+    .doc-lh-own { text-align: center; }
+    .doc-meta { flex-direction: column; }
+    .doc-meta-r { text-align: left; }
+    .doc-ed-toolbar { position: static; }
+}
+
+/* ── Impresión / Guardar como PDF desde el navegador ───────────────────── */
+@media print {
+    body * { visibility: hidden !important; }
+    #doc-paper, #doc-paper * { visibility: visible !important; }
+    #doc-paper {
+        position: absolute;
+        left: 0; top: 0;
+        width: 100%;
+        min-height: 0;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    .doc-body .page-break { border: 0; page-break-before: always; }
+    .doc-body .page-break::after { content: ''; }
+    @page { margin: 1.6cm 1.7cm; }
+}

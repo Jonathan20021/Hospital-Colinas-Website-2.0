@@ -292,6 +292,99 @@ doctor_layout_begin('Mi cuenta', 'cuenta');
 })();
 </script>
 
+<div class="doctor-card mt-6" data-reveal data-reveal-d="4">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="image" class="h-4 w-4"></i> Mi membrete / logo</h2>
+    </header>
+    <div class="doctor-form-pad">
+        <p class="doctor-subtitle" style="margin-top:0">Sube el logo o membrete de tu consultorio. Aparece en el encabezado de los documentos que redactes en el <strong>editor de documentos</strong>, junto al del hospital. Si no subes ninguno, se usa solo el membrete de HGLC.</p>
+        <p id="lh-current" class="doctor-save-status" style="margin:0 0 10px">Comprobando…</p>
+
+        <div id="lh-preview-wrap" hidden style="margin:0 0 18px">
+            <p class="doctor-label" style="margin:0 0 6px">Logo actual</p>
+            <div style="display:inline-block;border:1px solid #e5e7eb;border-radius:12px;background:#fff;padding:12px 16px;max-width:100%">
+                <img id="lh-preview" alt="Logo actual" style="display:block;max-width:340px;max-height:120px;width:auto;height:auto">
+            </div>
+        </div>
+
+        <p class="doctor-label" style="margin:0 0 6px">Subir un logo nuevo</p>
+        <p class="doctor-subtitle" style="margin-top:0;font-size:.85rem">PNG o JPG, preferiblemente horizontal y con fondo transparente o blanco (máx. ~2 MB).</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px">
+            <label class="doctor-btn doctor-btn-outline" style="cursor:pointer;margin:0"><i data-lucide="upload" class="h-4 w-4"></i> Elegir imagen
+                <input type="file" id="lh-upload" accept="image/png,image/jpeg,image/webp" hidden>
+            </label>
+            <button type="button" class="doctor-btn doctor-btn-primary" id="lh-save" disabled><i data-lucide="save" class="h-4 w-4"></i> Guardar logo</button>
+            <button type="button" class="doctor-btn doctor-btn-ghost" id="lh-delete" hidden><i data-lucide="trash-2" class="h-4 w-4"></i> Eliminar logo</button>
+        </div>
+        <div id="lh-new-wrap" hidden style="margin-top:14px">
+            <p class="doctor-label" style="margin:0 0 6px">Vista previa del nuevo logo</p>
+            <div style="display:inline-block;border:1px dashed #cbd5e1;border-radius:12px;background:#fff;padding:12px 16px;max-width:100%">
+                <img id="lh-new" alt="Nuevo logo" style="display:block;max-width:340px;max-height:120px;width:auto;height:auto">
+            </div>
+        </div>
+        <p id="lh-status" class="doctor-save-status" style="margin-top:8px"></p>
+    </div>
+</div>
+
+<script>
+(function () {
+    var upload = document.getElementById('lh-upload');
+    if (!upload) return;
+    function whenApi(cb) { var n = 0; (function w() { if (window.doctorApi) return cb(); if (n++ < 200) setTimeout(w, 50); })(); }
+    var statusEl = document.getElementById('lh-status');
+    var curEl = document.getElementById('lh-current');
+    var previewWrap = document.getElementById('lh-preview-wrap');
+    var previewImg = document.getElementById('lh-preview');
+    var newWrap = document.getElementById('lh-new-wrap');
+    var newImg = document.getElementById('lh-new');
+    var saveBtn = document.getElementById('lh-save');
+    var delBtn = document.getElementById('lh-delete');
+    var pending = null;
+
+    function refresh() {
+        window.doctorApi('GET', '/portal-doctor/me/letterhead').then(function (r) {
+            var has = !!(r.ok && r.data && r.data.has_logo && r.data.logo);
+            if (has) {
+                previewImg.src = r.data.logo; previewWrap.hidden = false;
+                curEl.textContent = '✓ Tienes un logo cargado.';
+            } else {
+                previewImg.removeAttribute('src'); previewWrap.hidden = true;
+                curEl.textContent = 'Aún no has cargado un logo. Los documentos saldrán solo con el membrete de HGLC.';
+            }
+            delBtn.hidden = !has;
+        }).catch(function () {});
+    }
+    whenApi(refresh);
+
+    upload.addEventListener('change', function (ev) {
+        var f = ev.target.files[0]; if (!f) return;
+        if (!/^image\/(png|jpeg|webp)$/.test(f.type)) { statusEl.textContent = '⚠ Solo PNG, JPG o WEBP.'; return; }
+        if (f.size > 2 * 1024 * 1024) { statusEl.textContent = '⚠ La imagen supera los 2 MB.'; return; }
+        var rd = new FileReader();
+        rd.onload = function () { pending = rd.result; newImg.src = pending; newWrap.hidden = false; saveBtn.disabled = false; statusEl.textContent = ''; };
+        rd.readAsDataURL(f);
+    });
+
+    saveBtn.addEventListener('click', function () {
+        if (!pending) return;
+        saveBtn.disabled = true; statusEl.textContent = 'Guardando…';
+        window.doctorApi('POST', '/portal-doctor/me/letterhead', { image: pending }).then(function (r) {
+            statusEl.textContent = r.ok ? '✓ Logo guardado.' : ('⚠ ' + (r.message || 'No se pudo guardar.'));
+            if (r.ok) { pending = null; newWrap.hidden = true; upload.value = ''; refresh(); }
+            else saveBtn.disabled = false;
+        });
+    });
+
+    delBtn.addEventListener('click', function () {
+        if (!confirm('¿Eliminar tu logo? Los documentos volverán a usar solo el membrete de HGLC.')) return;
+        window.doctorApi('DELETE', '/portal-doctor/me/letterhead').then(function (r) {
+            statusEl.textContent = r.ok ? '✓ Logo eliminado.' : '⚠ Error al eliminar.';
+            if (r.ok) refresh();
+        });
+    });
+})();
+</script>
+
 <div class="doctor-grid-2 mt-6" data-reveal>
     <div class="doctor-card">
         <header class="doctor-card-header">

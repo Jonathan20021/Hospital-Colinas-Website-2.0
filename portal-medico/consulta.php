@@ -66,6 +66,9 @@ $bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta mé
             <a href="<?= e(base_url('portal-medico/paciente.php?id=' . (int)$appt['patient_id'])) ?>" class="doctor-btn doctor-btn-outline">
                 <i data-lucide="user" class="h-4 w-4"></i> Ver historial
             </a>
+            <a href="<?= e(base_url('portal-medico/editor.php?patient=' . (int)$appt['patient_id'] . '&appt=' . (int)$appt['id'])) ?>" class="doctor-btn doctor-btn-outline">
+                <i data-lucide="file-pen-line" class="h-4 w-4"></i> Redactar documento
+            </a>
             <?php if ($appt['status'] === 'scheduled'): ?>
                 <button type="button" class="doctor-btn doctor-btn-primary" id="btn-save-complete">
                     <i data-lucide="check-circle-2" class="h-4 w-4"></i> Guardar y completar
@@ -251,6 +254,10 @@ $bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta mé
             <a class="doctor-pdf-card doctor-pdf-card-accent js-pdf-link" data-type="constancia" target="_blank" rel="noopener" href="<?= e(base_url('portal-medico/documento.php?appt=' . (int)$appt['id'] . '&type=constancia')) ?>">
                 <i data-lucide="file-check-2" class="h-6 w-6"></i>
                 <div><strong>Constancia médica</strong><span>Comprobante de asistencia</span></div>
+            </a>
+            <a class="doctor-pdf-card js-doc-editor" href="<?= e(base_url('portal-medico/editor.php?patient=' . (int)$appt['patient_id'] . '&appt=' . (int)$appt['id'])) ?>">
+                <i data-lucide="file-pen-line" class="h-6 w-6"></i>
+                <div><strong>Documento libre</strong><span>Redacta o pega con tu membrete</span></div>
             </a>
         </div>
     </section>

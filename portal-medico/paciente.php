@@ -56,6 +56,9 @@ doctor_layout_begin('Paciente: ' . ($patient['name'] ?? ''), 'pacientes');
         </div>
     </div>
     <div class="doctor-patient-actions">
+        <a href="<?= e(base_url('portal-medico/editor.php?patient=' . (int)$id)) ?>" class="doctor-btn doctor-btn-primary">
+            <i data-lucide="file-pen-line" class="h-4 w-4"></i> Nuevo documento
+        </a>
         <a href="<?= e(base_url('portal-medico/historial.php?id=' . (int)$id . '&download=1')) ?>" class="doctor-btn doctor-btn-outline" target="_blank" rel="noopener">
             <i data-lucide="file-down" class="h-4 w-4"></i> Descargar historial
         </a>
@@ -161,6 +164,78 @@ $sevCls      = ['severa' => 'sev-high', 'moderada' => 'sev-mid', 'leve' => 'sev-
         </div>
     <?php endif; ?>
 </section>
+
+<section class="doctor-card mt-4" id="docs-list-card">
+    <header class="doctor-card-header">
+        <h2><i data-lucide="file-text" class="h-5 w-5"></i> Documentos</h2>
+        <a href="<?= e(base_url('portal-medico/editor.php?patient=' . (int)$id)) ?>" class="doctor-text-link"><i data-lucide="plus" class="h-3.5 w-3.5 inline-block align-text-bottom"></i> Nuevo documento</a>
+    </header>
+    <div class="doctor-form-pad">
+        <p id="docs-loading" class="doctor-text-soft">Cargando documentos…</p>
+        <div id="docs-list" class="doctor-doc-list"></div>
+    </div>
+</section>
+
+<style>
+.doctor-doc-list{display:flex;flex-direction:column;gap:10px}
+.doctor-doc-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid #e6e8f0;border-radius:12px;background:#fff}
+.doctor-doc-ico{flex:none;width:46px;height:46px;border-radius:10px;background:#eef0f8;color:#262161;display:grid;place-items:center}
+.doctor-doc-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.doctor-doc-meta strong{color:#1e2540;font-size:.93rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.doctor-doc-meta span{color:#64748b;font-size:.82rem}
+.doctor-doc-actions{flex:none;display:flex;gap:6px;flex-wrap:wrap}
+.doctor-doc-actions .doctor-btn{justify-content:center;white-space:nowrap}
+@media(max-width:560px){.doctor-doc-row{flex-wrap:wrap}.doctor-doc-actions{width:100%}.doctor-doc-actions .doctor-btn{flex:1}}
+</style>
+<script>
+(function () {
+    var pid = <?= (int)$id ?>;
+    var editorBase = <?= json_encode(base_url('portal-medico/editor.php'), JSON_UNESCAPED_SLASHES) ?>;
+    var pdfBase = <?= json_encode(base_url('portal-medico/documento-editor.php'), JSON_UNESCAPED_SLASHES) ?>;
+    var listEl = document.getElementById('docs-list');
+    var loadEl = document.getElementById('docs-loading');
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+    function fdate(s) { if (!s) return ''; var d = new Date(String(s).replace(' ', 'T')); if (isNaN(d)) return String(s).slice(0, 16); var p = function (n) { return ('0' + n).slice(-2); }; return p(d.getDate()) + '/' + p(d.getMonth() + 1) + '/' + d.getFullYear() + ' · ' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+
+    function render(docs) {
+        if (!docs.length) {
+            listEl.innerHTML = '<div class="doctor-empty"><div class="doctor-empty-illustration"><i data-lucide="file-pen-line" class="h-7 w-7"></i></div><p class="doctor-empty-title">Sin documentos</p><p>Redacta una carta, informe o indicaciones con tu membrete profesional.</p></div>';
+            if (window.lucide) lucide.createIcons();
+            return;
+        }
+        listEl.innerHTML = docs.map(function (d) {
+            return '<div class="doctor-doc-row" data-id="' + d.id + '">'
+                + '<div class="doctor-doc-ico"><i data-lucide="file-text" class="h-5 w-5"></i></div>'
+                + '<div class="doctor-doc-meta"><strong>' + esc(d.title) + '</strong><span>Actualizado ' + fdate(d.updated_at) + '</span></div>'
+                + '<div class="doctor-doc-actions">'
+                + '<a class="doctor-btn doctor-btn-outline" href="' + editorBase + '?patient=' + pid + '&doc=' + d.id + '"><i data-lucide="pencil" class="h-4 w-4"></i> Abrir</a>'
+                + '<a class="doctor-btn doctor-btn-outline" href="' + pdfBase + '?doc=' + d.id + '" target="_blank" rel="noopener"><i data-lucide="file-down" class="h-4 w-4"></i> PDF</a>'
+                + '<button type="button" class="doctor-btn doctor-btn-ghost" data-del="' + d.id + '" aria-label="Eliminar"><i data-lucide="trash-2" class="h-4 w-4"></i></button>'
+                + '</div></div>';
+        }).join('');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    (function () {
+        var n = 0; (function w() { if (window.doctorApi) return go(); if (n++ < 200) setTimeout(w, 50); })();
+    })();
+    function go() {
+        window.doctorApi('GET', '/portal-doctor/me/documents', { patient_id: pid }).then(function (r) {
+            if (loadEl) loadEl.style.display = 'none';
+            if (!r.ok || !Array.isArray(r.data)) { listEl.innerHTML = '<p class="doctor-text-soft">No se pudieron cargar los documentos.</p>'; return; }
+            render(r.data);
+        });
+    }
+    listEl.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-del]'); if (!b) return;
+        if (!confirm('¿Eliminar este documento del expediente?')) return;
+        window.doctorApi('DELETE', '/portal-doctor/me/documents/' + b.dataset.del).then(function (r) {
+            if (r.ok) { var row = b.closest('.doctor-doc-row'); if (row) row.remove(); if (!listEl.querySelector('.doctor-doc-row')) render([]); }
+            else alert(r.message || 'No se pudo eliminar.');
+        });
+    });
+})();
+</script>
 
 <section class="doctor-card mt-4" id="imaging-card">
     <header class="doctor-card-header">
