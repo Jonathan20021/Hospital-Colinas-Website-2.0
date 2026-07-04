@@ -295,11 +295,15 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                     </div>
 
                     <?php
+                    // ARS que el hospital acepta — alineadas con el catálogo oficial
+                    // de facturación (SGC, tabla `seguro`, entradas activas). Ordenadas
+                    // por uso real de los pacientes.
                     $arsOptions = [
-                        'SeNaSa', 'ARS Humano', 'ARS Universal', 'ARS Palic', 'ARS Mapfre Salud',
-                        'ARS Reservas', 'ARS Meta', 'ARS Simag', 'ARS Renacer', 'ARS APS',
-                        'ARS Futuro', 'ARS Monumental', 'ARS Yunén', 'ARS Constitución',
-                        'ARS GMA', 'ARS CMD',
+                        'SeNaSa', 'ARS Humano', 'ARS Primera', 'ARS Universal', 'ARS Mapfre Salud',
+                        'ARS Monumental', 'ARS Futuro', 'ARS Reservas', 'ARS Yunén', 'ARS MetaSalud',
+                        'ARS Simag', 'ARS APS', 'ARS Asemap', 'ARS SEMMA',
+                        'ARS GMA (Grupo Médico Asociado)', 'ARS CMD (Colegio Médico Dominicano)',
+                        'ARS UASD', 'IDOPRIL', 'Plan Salud Banco Central',
                     ];
                     ?>
                     <div class="portal-grid-2 mt-1">
