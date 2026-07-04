@@ -13,7 +13,8 @@ $assetVersion = (string) max(
     filemtime(__DIR__ . '/assets/js/app.js'),
     @filemtime(__DIR__ . '/assets/css/portal.css') ?: 0,
     @filemtime(__DIR__ . '/assets/js/portal.js') ?: 0,
-    @filemtime(__DIR__ . '/assets/js/agendar.js') ?: 0
+    @filemtime(__DIR__ . '/assets/js/agendar.js') ?: 0,
+    @filemtime(__DIR__ . '/assets/css/agendar.css') ?: 0
 );
 
 // Paso actual
@@ -68,6 +69,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/agendar.css')) ?>?v=<?= e($assetVersion) ?>">
     <?php if ($hcaptchaSiteKey): ?>
         <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <?php endif; ?>
@@ -77,7 +79,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <?php render_public_header($assets, $contact, ''); ?>
 
-    <main id="contenido" class="portal-shell portal-shell-app" style="grid-template-columns: 1fr; max-width: 960px">
+    <main id="contenido" class="portal-shell portal-shell-app agendar-v2" style="grid-template-columns: 1fr; max-width: 960px">
         <div class="portal-main">
 
             <header class="portal-header">

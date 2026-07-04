@@ -1,0 +1,499 @@
+/* ============================================================================
+   Agendar cita — UI v2 (SOLO página pública /agendar)
+   Todo va scopeado bajo `.agendar-v2` (clase en <main>) y se carga DESPUÉS de
+   portal.css, así que sobreescribe por especificidad/orden SIN tocar el portal
+   del paciente ni otras páginas que comparten las mismas clases.
+
+   Marca: navy #262161 (autoridad/jerarquía) + verde #5da334 (acción/disponible).
+   ========================================================================== */
+
+.agendar-v2 {
+    --nv: #262161;
+    --nv-deep: #1b1650;
+    --gr: #5da334;
+    --gr-deep: #4a8f27;
+    --gr-tint: #eef6e7;
+    --gr-line: #d3e7ba;
+    --ink: #1c1a17;
+    --muted: #6b6f72;
+    --line: #e9e4da;
+    --soft: #f7f5f1;
+}
+
+/* ── Fix de raíz: el ítem de grid crecía con su hijo más ancho (calendario)
+   y desbordaba en móvil. min-width:0 permite que se encoja al viewport. ── */
+.agendar-v2 .portal-main {
+    min-width: 0;
+}
+
+/* ─────────────────────────── Hero / cabecera ─────────────────────────── */
+.agendar-v2 .portal-header {
+    padding: 2.25rem 2.25rem;
+    background:
+        radial-gradient(130% 120% at 100% 0%, rgba(93, 163, 52, .28), transparent 52%),
+        linear-gradient(135deg, var(--nv) 0%, var(--nv-deep) 100%);
+    border: 0;
+    border-radius: 20px;
+    box-shadow: 0 18px 40px -22px rgba(38, 33, 97, .55);
+    color: #fff;
+    gap: 1.5rem;
+}
+
+.agendar-v2 .portal-header .section-label {
+    color: #a7e07a;
+    letter-spacing: .12em;
+    font-weight: 700;
+}
+
+.agendar-v2 .portal-header h1 {
+    color: #fff;
+    text-transform: none;              /* mata el capitalize global feo en ES */
+    font-size: clamp(1.7rem, 3vw, 2.15rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+}
+
+.agendar-v2 .portal-header .portal-subtitle {
+    color: rgba(255, 255, 255, .82);
+    max-width: 46ch;
+}
+
+/* "Ya tengo cuenta" → pill fantasma sobre navy */
+.agendar-v2 .portal-header .btn-outline,
+.agendar-v2.portal-page .portal-header .btn-outline {
+    background: rgba(255, 255, 255, .10);
+    border: 1px solid rgba(255, 255, 255, .38);
+    color: #fff;
+    backdrop-filter: blur(4px);
+    border-radius: 999px;
+    padding: .62rem 1.15rem;
+    font-weight: 600;
+    box-shadow: none;
+    white-space: nowrap;
+    transition: background .18s, color .18s, transform .18s;
+}
+
+.agendar-v2 .portal-header .btn-outline:hover,
+.agendar-v2.portal-page .portal-header .btn-outline:hover {
+    background: #fff;
+    color: var(--nv);
+    border-color: #fff;
+    transform: translateY(-1px);
+}
+
+/* ─────────────────────────── Stepper ─────────────────────────── */
+.agendar-v2 .portal-steps {
+    border-radius: 16px;
+    border-color: var(--line);
+    box-shadow: 0 1px 2px rgba(38, 33, 97, .04);
+    padding: 1.1rem 1.5rem;
+}
+
+.agendar-v2 .portal-steps li.is-current {
+    color: var(--nv);
+}
+
+.agendar-v2 .portal-steps li.is-current span {
+    background: var(--nv);
+    box-shadow: 0 0 0 4px rgba(38, 33, 97, .14);
+}
+
+.agendar-v2 .portal-steps li.is-done {
+    color: var(--gr-deep);
+}
+
+.agendar-v2 .portal-steps li.is-done span,
+.agendar-v2 .portal-steps li.is-done:not(:last-child)::after {
+    background: var(--gr);
+}
+
+/* ─────────────────────────── Tarjetas ─────────────────────────── */
+.agendar-v2 .portal-card {
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(38, 33, 97, .04);
+}
+
+.agendar-v2 .portal-card:hover {
+    box-shadow: 0 10px 30px -18px rgba(38, 33, 97, .28);
+}
+
+.agendar-v2 .portal-section-title {
+    color: var(--nv);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+}
+
+.agendar-v2 .portal-section-title i {
+    color: var(--gr) !important;       /* unifica el icono al verde de marca */
+}
+
+/* ─────────────────────────── Buscador ─────────────────────────── */
+.agendar-v2 .portal-page .form-input.agendar-search-input,
+.agendar-v2 .form-input.agendar-search-input {
+    border-radius: 14px;
+    border-color: var(--line);
+}
+
+.agendar-v2 .form-input.agendar-search-input:focus {
+    border-color: var(--gr);
+    box-shadow: 0 0 0 3px rgba(93, 163, 52, .16);
+}
+
+/* ─────────────────────────── Especialidades ─────────────────────────── */
+.agendar-v2 .specialty-grid {
+    gap: .7rem;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+
+.agendar-v2 .specialty-card {
+    border-radius: 14px;
+    border-color: var(--line);
+    padding: 1rem 1.05rem;
+    color: var(--nv);
+}
+
+.agendar-v2 .specialty-card:hover {
+    border-color: var(--gr);
+    background: var(--gr-tint);
+    box-shadow: 0 10px 24px -14px rgba(93, 163, 52, .5);
+    transform: translateY(-2px);
+}
+
+.agendar-v2 .specialty-card:focus-visible {
+    border-color: var(--gr);
+    box-shadow: 0 0 0 3px rgba(93, 163, 52, .22);
+}
+
+.agendar-v2 .specialty-card-icon {
+    border-radius: 11px;
+    background: var(--gr-tint);
+    color: var(--gr-deep);
+}
+
+/* ─────────────────────────── Médicos ─────────────────────────── */
+.agendar-v2 .portal-doctor {
+    border-radius: 14px;
+    border-color: var(--line);
+}
+
+.agendar-v2 .portal-doctor:hover {
+    border-color: var(--gr-line);
+    box-shadow: 0 10px 26px -16px rgba(38, 33, 97, .3);
+}
+
+.agendar-v2 .portal-doctor h3 {
+    color: var(--nv);
+    font-weight: 700;
+}
+
+.agendar-v2 .portal-doctor-icon {
+    background: linear-gradient(135deg, var(--nv), var(--nv-deep));
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Resumen "Agendando con" — navy tenue en vez de verde */
+.agendar-v2 .portal-doctor-summary {
+    background: linear-gradient(135deg, #f2f1fa, #fff);
+    border-color: #dcd9ef;
+}
+
+.agendar-v2 .portal-doctor-summary .section-label {
+    color: var(--gr-deep);
+}
+
+.agendar-v2 .portal-doctor-summary h2 {
+    color: var(--nv);
+}
+
+.agendar-v2 .portal-doctor-summary .portal-doctor-icon {
+    background: linear-gradient(135deg, var(--gr), var(--gr-deep));
+}
+
+.agendar-v2 .portal-change-link {
+    color: var(--nv);
+    font-weight: 600;
+}
+
+/* ─────────────────────────── Calendario ───────────────────────────
+   Antes: cada día disponible era un bloque verde enorme (aspect-ratio 1/1).
+   Ahora: celda blanca compacta + punto verde de disponibilidad; el verde
+   sólido se reserva para el día seleccionado. Más limpio y clínico. */
+.agendar-v2 .cal-shell {
+    border-radius: 16px;
+    border-color: var(--line);
+    padding: 1.25rem 1.25rem 1rem;
+}
+
+.agendar-v2 .cal-title {
+    color: var(--nv);
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+.agendar-v2 .cal-nav {
+    border-color: var(--line);
+    color: var(--nv);
+}
+
+.agendar-v2 .cal-nav:hover:not(:disabled) {
+    background: #f2f1fa;
+    border-color: #dcd9ef;
+}
+
+.agendar-v2 .cal-grid {
+    gap: .35rem;
+}
+
+.agendar-v2 .cal-cell {
+    aspect-ratio: auto;
+    min-height: 46px;
+    border-radius: 12px;
+    font-size: .95rem;
+    color: var(--nv);
+    font-weight: 600;
+}
+
+.agendar-v2 .cal-out,
+.agendar-v2 .cal-disabled {
+    color: #c5bfb3;
+    font-weight: 500;
+}
+
+.agendar-v2 .cal-avail {
+    background: #fff;
+    color: var(--nv);
+    border: 1px solid var(--gr-line);
+}
+
+.agendar-v2 .cal-avail:hover {
+    background: var(--gr-tint);
+    border-color: var(--gr);
+    transform: none;
+    box-shadow: 0 4px 12px -4px rgba(93, 163, 52, .4);
+}
+
+.agendar-v2 .cal-dot {
+    bottom: 6px;
+    width: 5px;
+    height: 5px;
+    background: var(--gr);
+}
+
+.agendar-v2 .cal-selected {
+    background: var(--gr) !important;
+    color: #fff !important;
+    border-color: var(--gr) !important;
+    box-shadow: 0 8px 18px -6px rgba(93, 163, 52, .55) !important;
+}
+
+.agendar-v2 .cal-today {
+    outline-color: var(--nv);
+}
+
+.agendar-v2 .cal-legend {
+    border-top-color: var(--line);
+    color: var(--muted);
+}
+
+.agendar-v2 .cal-dot-static {
+    background: var(--gr);
+}
+
+/* Calendario + horarios lado a lado en escritorio (patrón Calendly): usa el
+   ancho, deja las celdas más cuadradas y pone los horarios a mano derecha. */
+@media (min-width: 721px) {
+    .agendar-v2 .portal-slot-picker {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    .agendar-v2 .cal-times {
+        margin-top: 0;
+        border-left: 1px solid var(--line);
+        padding-left: 1.5rem;
+        align-self: stretch;
+    }
+
+    .agendar-v2 .cal-times-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Horarios */
+.agendar-v2 .cal-times h3 {
+    color: var(--nv);
+    font-weight: 700;
+}
+
+.agendar-v2 .cal-times-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: .5rem;
+}
+
+.agendar-v2 .cal-time {
+    border-radius: 11px;
+    border-color: var(--line);
+    color: var(--ink);
+}
+
+.agendar-v2 .cal-time:hover {
+    border-color: var(--gr);
+    color: var(--gr-deep);
+    background: var(--gr-tint);
+}
+
+.agendar-v2 .cal-time.is-active {
+    background: var(--gr);
+    border-color: var(--gr);
+    color: #fff;
+    box-shadow: 0 6px 14px -6px rgba(93, 163, 52, .55);
+}
+
+/* ─────────────────────────── Formulario de datos ─────────────────────────── */
+.agendar-v2 .form-label {
+    color: var(--nv);
+    font-weight: 600;
+}
+
+.agendar-v2 .portal-page .form-input:focus,
+.agendar-v2 .form-input:focus,
+.agendar-v2 .portal-page select.form-input:focus {
+    border-color: var(--gr);
+    box-shadow: 0 0 0 3px rgba(93, 163, 52, .16);
+}
+
+/* Caja "Cita seleccionada" — acento navy + barra verde */
+.agendar-v2 .portal-confirm-box {
+    position: relative;
+    background: #f7f7fc;
+    border: 1px solid #dcd9ef;
+    border-radius: 14px;
+    padding-left: 1.5rem;
+    overflow: hidden;
+}
+
+.agendar-v2 .portal-confirm-box::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: var(--gr);
+}
+
+.agendar-v2 .portal-confirm-box p {
+    color: var(--gr-deep);
+}
+
+.agendar-v2 .portal-confirm-box h3 {
+    color: var(--nv);
+    font-weight: 800;
+}
+
+/* Botón confirmar/enviar — verde de marca sólido */
+.agendar-v2 .btn-green {
+    background: var(--gr);
+    border-color: var(--gr);
+    box-shadow: 0 8px 18px -8px rgba(93, 163, 52, .6);
+}
+
+.agendar-v2 .btn-green:hover {
+    background: var(--gr-deep);
+    border-color: var(--gr-deep);
+}
+
+/* ─────────────────────────── Responsive ─────────────────────────── */
+/* Stepper en móvil: sin conectores para que "Fecha y datos" no se corte */
+@media (max-width: 480px) {
+    .agendar-v2 .portal-steps {
+        gap: .25rem;
+        padding: .9rem .75rem;
+    }
+
+    .agendar-v2 .portal-steps li:not(:last-child)::after {
+        display: none;
+    }
+
+    .agendar-v2 .portal-steps li {
+        flex: 0 1 auto;
+        font-size: .78rem;
+        gap: .35rem;
+        justify-content: center;
+    }
+
+    .agendar-v2 .portal-steps li span {
+        width: 1.55rem;
+        height: 1.55rem;
+        font-size: .78rem;
+    }
+}
+
+@media (max-width: 640px) {
+    .agendar-v2 .portal-header {
+        padding: 1.5rem 1.35rem;
+        border-radius: 16px;
+    }
+
+    .agendar-v2 .cal-shell {
+        padding: 1rem .85rem .85rem;
+    }
+
+    .agendar-v2 .cal-grid,
+    .agendar-v2 .cal-weekdays {
+        gap: .28rem;
+    }
+
+    .agendar-v2 .cal-cell {
+        min-height: 40px;
+        font-size: .88rem;
+        border-radius: 10px;
+    }
+
+    .agendar-v2 .cal-weekdays {
+        font-size: .66rem;
+    }
+
+    .agendar-v2 .cal-times-grid {
+        grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    }
+
+    .agendar-v2 .cal-legend {
+        gap: .9rem;
+        flex-wrap: wrap;
+    }
+}
+
+/* Entrada suave (una sola vez, discreta), respetando reduce-motion */
+@media (prefers-reduced-motion: no-preference) {
+    .agendar-v2 .portal-header,
+    .agendar-v2 .portal-steps,
+    .agendar-v2 > .portal-main > .portal-card {
+        animation: agv2-rise .5s cubic-bezier(.2, .7, .2, 1) both;
+    }
+
+    .agendar-v2 .portal-steps {
+        animation-delay: .05s;
+    }
+
+    .agendar-v2 > .portal-main > .portal-card {
+        animation-delay: .1s;
+    }
+
+    @keyframes agv2-rise {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
