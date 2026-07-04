@@ -294,6 +294,33 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                         </div>
                     </div>
 
+                    <?php
+                    $arsOptions = [
+                        'SeNaSa', 'ARS Humano', 'ARS Universal', 'ARS Palic', 'ARS Mapfre Salud',
+                        'ARS Reservas', 'ARS Meta', 'ARS Simag', 'ARS Renacer', 'ARS APS',
+                        'ARS Futuro', 'ARS Monumental', 'ARS Yunén', 'ARS Constitución',
+                        'ARS GMA', 'ARS CMD',
+                    ];
+                    ?>
+                    <div class="portal-grid-2 mt-1">
+                        <div>
+                            <label class="form-label" for="g-ars">ARS / Seguro médico (opcional)</label>
+                            <select name="ars_select" id="g-ars" class="form-input">
+                                <option value="">— Selecciona tu ARS —</option>
+                                <?php foreach ($arsOptions as $ars): ?>
+                                    <option value="<?= e($ars) ?>"><?= e($ars) ?></option>
+                                <?php endforeach; ?>
+                                <option value="__directo__">Pago directo / Privado</option>
+                                <option value="__otra__">Otra…</option>
+                            </select>
+                        </div>
+                        <div id="g-ars-otra-wrap" hidden>
+                            <label class="form-label" for="g-ars-otra">Nombre de tu ARS</label>
+                            <input type="text" id="g-ars-otra" class="form-input" maxlength="100"
+                                placeholder="Escribe el nombre de tu ARS">
+                        </div>
+                    </div>
+
                     <label class="form-label mt-3" for="g-notes">Motivo de la consulta (opcional)</label>
                     <textarea name="notes" id="g-notes" rows="2" class="form-input"
                         placeholder="Síntomas, consulta general, control, etc."></textarea>

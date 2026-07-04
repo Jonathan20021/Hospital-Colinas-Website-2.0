@@ -15,6 +15,25 @@
     const submitBtn = document.getElementById('g-submit');
     const result    = document.getElementById('guest-result');
 
+    // ARS: mostrar el campo de texto "Otra…" solo cuando corresponde.
+    const arsSelect   = document.getElementById('g-ars');
+    const arsOtraWrap = document.getElementById('g-ars-otra-wrap');
+    const arsOtraInput = document.getElementById('g-ars-otra');
+    arsSelect?.addEventListener('change', () => {
+        const isOtra = arsSelect.value === '__otra__';
+        if (arsOtraWrap) arsOtraWrap.hidden = !isOtra;
+        if (isOtra) setTimeout(() => arsOtraInput?.focus(), 50);
+    });
+
+    // Devuelve el ARS elegido: texto libre si es "Otra…", '' para pago directo o sin elegir.
+    function getArsValue() {
+        if (!arsSelect) return '';
+        const v = arsSelect.value;
+        if (v === '__otra__') return (arsOtraInput?.value || '').trim();
+        if (v === '__directo__' || v === '') return '';
+        return v;
+    }
+
     let selectedDay = null;
     let daysData = {};
     const today = new Date(); today.setHours(0,0,0,0);
@@ -234,6 +253,7 @@
             doctor_id:        Number(form.doctor_id.value),
             appointment_time: form.appointment_time.value,
             notes:            form.notes.value.trim(),
+            ars:              getArsValue(),
         };
 
         if (window.AGENDAR_HCAPTCHA && typeof hcaptcha !== 'undefined') {
