@@ -8,6 +8,25 @@
  * portal de doctor (o viceversa) no pueda colisionar.
  */
 
+/**
+ * CSP del portal del médico. `frame-ancestors` variable: 'none' en páginas
+ * normales, 'self' en el layout incrustable (nota clínica dentro de la
+ * teleconsulta, mismo origen). Permite los CDN realmente usados (jsDelivr:
+ * FullCalendar, Chart.js, LiveKit) y conexiones https/wss (WebRTC de LiveKit);
+ * blob: para los web workers del visor DICOM. Ningún script de dominio no listado.
+ */
+function doctor_portal_csp(string $frameAncestors = "'none'"): string {
+    return "default-src 'self'; "
+        . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        . "font-src 'self' https://fonts.gstatic.com data:; "
+        . "img-src 'self' data: blob:; "
+        . "connect-src 'self' https: wss:; "
+        . "worker-src 'self' blob:; child-src 'self' blob:; media-src 'self' blob:; "
+        . "manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
+        . "frame-ancestors " . $frameAncestors;
+}
+
 function doctor_portal_session_start(): void {
     if (session_status() !== PHP_SESSION_ACTIVE) {
         $secure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
@@ -28,7 +47,7 @@ function doctor_portal_session_start(): void {
         // salida.
         if (!headers_sent()) {
             header('X-Frame-Options: DENY');
-            header("Content-Security-Policy: frame-ancestors 'none'");
+            header("Content-Security-Policy: " . doctor_portal_csp("'none'"));
             header('X-Robots-Tag: noindex, nofollow');
         }
     }

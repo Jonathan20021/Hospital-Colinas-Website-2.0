@@ -198,7 +198,7 @@ function doctor_layout_end(): void
         <?php endif; ?>
 
         <?php // Portal aislado: sin footer del sitio publico. ?>
-        <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide.min.js') ?: 1) ?>"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($assetVersion) ?>"></script>
         <?php
@@ -310,7 +310,7 @@ function doctor_layout_begin_bare(string $title): void
     // lo enmarquen (p. ej. la teleconsulta). Sigue bloqueado para sitios externos.
     if (!headers_sent()) {
         header('X-Frame-Options: SAMEORIGIN');
-        header("Content-Security-Policy: frame-ancestors 'self'");
+        header("Content-Security-Policy: " . doctor_portal_csp("'self'"));
     }
     $v = (string) max(
         @filemtime(__DIR__ . '/../assets/css/portal-medico.css') ?: 0,
@@ -350,7 +350,7 @@ function doctor_layout_end_bare(): void
     $v = (string) (@filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0);
     ?>
         </main>
-        <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide.min.js') ?: 1) ?>"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($v) ?>"></script>
     </body>

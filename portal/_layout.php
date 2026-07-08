@@ -356,7 +356,7 @@ function portal_layout_end(): void
         <?php endif; ?>
 
         <div class="portal-toast-region" id="portal-toast-region" aria-live="polite" aria-atomic="true"></div>
-        <script src="https://unpkg.com/lucide@latest"></script>
+        <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide.min.js') ?: 1) ?>"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal.js')) ?>?v=<?= e($assetVersion) ?>"></script>
         <?php

@@ -24,7 +24,7 @@ function portal_session_start(): void {
         // salida.
         if (!headers_sent()) {
             header('X-Frame-Options: DENY');
-            header("Content-Security-Policy: frame-ancestors 'none'");
+            header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; connect-src 'self'; worker-src 'self' blob:; child-src 'self' blob:; media-src 'self' blob:; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'");
             header('X-Robots-Tag: noindex, nofollow');
         }
     }
