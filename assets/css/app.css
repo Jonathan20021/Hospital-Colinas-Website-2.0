@@ -10191,8 +10191,31 @@ body.cai-locked .mobile-actionbar {
         font-size: .76rem;
     }
 
+    .profile-hero-card {
+        border-radius: 20px;
+    }
+
+    .profile-identity {
+        padding: 1.75rem 1.5rem;
+    }
+
     .profile-identity h1 {
         font-size: clamp(1.9rem, 9vw, 2.6rem);
+    }
+
+    .profile-card {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+
+    .profile-info-card h3,
+    .profile-info-card dl div {
+        padding: 1.1rem 1.25rem;
+    }
+
+    .profile-cta-card {
+        padding: 1.75rem 1.5rem;
+        border-radius: 20px;
     }
 
     .profile-quick-actions .btn {
