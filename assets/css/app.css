@@ -7672,6 +7672,11 @@ body.cai-locked .mobile-actionbar {
         bottom: calc(5.6rem + env(safe-area-inset-bottom));
     }
 
+    /* Lower the FAB on profile pages which do not have the mobile-actionbar */
+    .profile-shell #colinasAi.cai-root {
+        bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    }
+
     .cai-fab {
         width: 56px;
         height: 56px;
