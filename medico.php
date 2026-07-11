@@ -202,74 +202,71 @@ $agendarUrl = $doctorId > 0
                                 </a>
                             <?php endif; ?>
                         </div>
-                    </div>
-                </div>
 
-                <div class="profile-meta-strip">
-                    <div>
-                        <span><i data-lucide="building-2" class="h-4 w-4"></i></span>
-                        <div>
-                            <small>Consultorio</small>
-                            <strong><?= e($doctor['office']) ?></strong>
+                        <div class="profile-meta-strip">
+                            <div>
+                                <span><i data-lucide="building-2" class="h-4 w-4"></i></span>
+                                <div>
+                                    <small>Consultorio</small>
+                                    <strong><?= e($doctor['office']) ?></strong>
+                                </div>
+                            </div>
+                            <div>
+                                <span><i data-lucide="clock-3" class="h-4 w-4"></i></span>
+                                <div>
+                                    <small>Horario</small>
+                                    <strong><?= e($doctor['schedule']) ?></strong>
+                                </div>
+                            </div>
+                            <div>
+                                <span><i data-lucide="phone" class="h-4 w-4"></i></span>
+                                <div>
+                                    <small>Call center</small>
+                                    <strong><a href="tel:<?= e($callCenterTel) ?>"><?= e($callCenterDisplay) ?></a></strong>
+                                </div>
+                            </div>
+                            <div>
+                                <span><i data-lucide="languages" class="h-4 w-4"></i></span>
+                                <div>
+                                    <small>Idiomas</small>
+                                    <strong><?= e($doctor['languages']) ?></strong>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        <span><i data-lucide="clock-3" class="h-4 w-4"></i></span>
-                        <div>
-                            <small>Horario</small>
-                            <strong><?= e($doctor['schedule']) ?></strong>
-                        </div>
-                    </div>
-                    <div>
-                        <span><i data-lucide="phone" class="h-4 w-4"></i></span>
-                        <div>
-                            <small>Call center</small>
-                            <strong><a
-                                    href="tel:<?= e($callCenterTel) ?>"><?= e($callCenterDisplay) ?></a></strong>
-                        </div>
-                    </div>
-                    <div>
-                        <span><i data-lucide="languages" class="h-4 w-4"></i></span>
-                        <div>
-                            <small>Idiomas</small>
-                            <strong><?= e($doctor['languages']) ?></strong>
-                        </div>
-                    </div>
-                </div>
+                    </div> <!-- end profile-identity -->
+                </div> <!-- end profile-hero-card -->
             </section>
 
             <section class="profile-body">
-                <div>
-                    <article class="profile-card">
-                        <h2><i data-lucide="briefcase-medical" class="h-5 w-5"></i> Trayectoria profesional</h2>
-                        <span
-                            class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
-                        <?php $profileNarrative = trim((string) ($doctor['biography'] ?: $doctor['education'])); ?>
-                        <?php if ($profileNarrative !== ''): ?>
-                            <p><?= nl2br(e($profileNarrative)) ?></p>
-                        <?php elseif (empty($doctor['services'])): ?>
-                            <p>Este especialista forma parte del equipo de <?= e($doctor['specialty']) ?> del Hospital
-                                General Las Colinas. Para conocer disponibilidad, seguros aceptados y agendar una consulta,
-                                utiliza el botón de cita o comunícate con nuestro equipo de atención.</p>
-                        <?php endif; ?>
-                        <?php if ($doctor['services']): ?>
-                            <p><?= nl2br(e($doctor['services'])) ?></p>
-                        <?php endif; ?>
-                    </article>
-
-                    <?php if ($associationLines): ?>
-                        <article class="profile-card">
-                            <h2><i data-lucide="users-round" class="h-5 w-5"></i> Asociaciones</h2>
-                            <div class="profile-associations">
-                                <?php foreach ($associationLines as $association): ?>
-                                    <p><i data-lucide="users-round" class="h-4 w-4"></i><?= e($association) ?></p>
-                                <?php endforeach; ?>
-                            </div>
-                        </article>
+                <article class="profile-card">
+                    <h2><i data-lucide="briefcase-medical" class="h-5 w-5"></i> Trayectoria profesional</h2>
+                    <span
+                        class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
+                    <?php $profileNarrative = trim((string) ($doctor['biography'] ?: $doctor['education'])); ?>
+                    <?php if ($profileNarrative !== ''): ?>
+                        <p><?= nl2br(e($profileNarrative)) ?></p>
+                    <?php elseif (empty($doctor['services'])): ?>
+                        <p>Este especialista forma parte del equipo de <?= e($doctor['specialty']) ?> del Hospital
+                            General Las Colinas. Para conocer disponibilidad, seguros aceptados y agendar una consulta,
+                            utiliza el botón de cita o comunícate con nuestro equipo de atención.</p>
                     <?php endif; ?>
-                </div>
+                    <?php if ($doctor['services']): ?>
+                        <p><?= nl2br(e($doctor['services'])) ?></p>
+                    <?php endif; ?>
+                </article>
 
-                <aside class="profile-aside">
+                <?php if ($associationLines): ?>
+                    <article class="profile-card">
+                        <h2><i data-lucide="users-round" class="h-5 w-5"></i> Asociaciones</h2>
+                        <div class="profile-associations">
+                            <?php foreach ($associationLines as $association): ?>
+                                <p><i data-lucide="users-round" class="h-4 w-4"></i><?= e($association) ?></p>
+                            <?php endforeach; ?>
+                        </div>
+                    </article>
+                <?php endif; ?>
+
+                <div class="profile-bottom-grid">
                     <div class="profile-info-card">
                         <h3><i data-lucide="shield-check" class="h-5 w-5"></i> Información clínica</h3>
                         <dl>
@@ -313,7 +310,7 @@ $agendarUrl = $doctorId > 0
                             Agendar ahora
                         </a>
                     </div>
-                </aside>
+                </div>
 
                 <a href="<?= e(base_url('directorio-medico')) ?>" class="profile-back">
                     <i data-lucide="arrow-left" class="h-4 w-4"></i>
