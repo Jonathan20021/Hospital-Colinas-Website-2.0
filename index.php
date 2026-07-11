@@ -798,6 +798,7 @@ $leadershipGerencias = [
                         <article class="featured-doctor">
                             <a href="<?= e(base_url('medico/' . $doctor['slug'])) ?>" class="featured-doctor-photo">
                                 <img src="<?= e(base_url($doctor['photo'])) ?>" alt="<?= e($doctor['name']) ?>"
+                                    class="<?= strncmp($doctor['photo'], 'data:', 5) === 0 ? 'is-avatar' : '' ?>"
                                     loading="lazy">
                                 <span><?= e($doctor['specialty']) ?></span>
                             </a>

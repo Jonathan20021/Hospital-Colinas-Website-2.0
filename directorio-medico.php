@@ -329,6 +329,7 @@ $directoryValues = [
                         <article class="dir-doctor-card" data-doctor-card data-search="<?= e($search) ?>">
                             <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-doctor-photo">
                                 <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
+                                    class="<?= strncmp($profile['photo'], 'data:', 5) === 0 ? 'is-avatar' : '' ?>"
                                     loading="lazy">
                                 <span class="dir-doctor-tag"><?= e($profile['specialty']) ?></span>
                             </a>

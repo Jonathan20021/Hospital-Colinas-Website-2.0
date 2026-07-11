@@ -8356,7 +8356,7 @@ body.cai-locked .mobile-actionbar {
 .featured-doctor-photo {
     position: relative;
     display: block;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 4 / 5;
     overflow: hidden;
     background: #f3eee6;
 }
@@ -8365,7 +8365,7 @@ body.cai-locked .mobile-actionbar {
     height: 100%;
     width: 100%;
     object-fit: cover;
-    object-position: center top;
+    object-position: 50% 18%;
     transition: transform .5s ease;
 }
 
@@ -8958,7 +8958,9 @@ body.cai-locked .mobile-actionbar {
 .dir-doctor-photo {
     position: relative;
     display: block;
-    aspect-ratio: 4 / 3;
+    /* Retrato: las fotos de médicos son verticales (cuerpo/medio cuerpo).
+       Un marco horizontal los cortaba por la cintura y dejaba media pared. */
+    aspect-ratio: 4 / 5;
     overflow: hidden;
     background: #f3eee6;
 }
@@ -8967,8 +8969,16 @@ body.cai-locked .mobile-actionbar {
     height: 100%;
     width: 100%;
     object-fit: cover;
-    object-position: center top;
+    /* Encuadre alto, no pegado al borde: deja aire sobre la cabeza sin bajar la cara. */
+    object-position: 50% 18%;
     transition: transform .45s ease;
+}
+
+/* Los médicos sin foto usan un avatar SVG cuadrado con sus iniciales:
+   ese sí va centrado, o el monograma se sube y se corta. */
+.dir-doctor-photo img.is-avatar,
+.featured-doctor-photo img.is-avatar {
+    object-position: center center;
 }
 
 .dir-doctor-card:hover .dir-doctor-photo img {
@@ -10042,8 +10052,10 @@ body.cai-locked .mobile-actionbar {
         grid-template-columns: 1fr;
     }
 
+    /* A una columna la tarjeta ocupa todo el ancho: un 4/5 la haría altísima.
+       Cuadrado = buen compromiso sin volver a cortar la cara. */
     .dir-doctor-photo {
-        aspect-ratio: 16 / 11;
+        aspect-ratio: 1 / 1;
     }
 
     .profile-topbar-inner {
