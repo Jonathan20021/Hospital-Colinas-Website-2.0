@@ -60,6 +60,10 @@ admin_header('Médicos', 'medicos');
 .med-photo-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
 .med-photo-edit { position:absolute; bottom:0; left:0; right:0; padding:.3rem; background:rgba(15,23,42,.75); color:#fff; font-size:.65rem; text-align:center; cursor:pointer; opacity:0; transition:opacity .15s; }
 .med-photo-wrap:hover .med-photo-edit { opacity:1; }
+/* En pantallas táctiles no hay hover: el overlay debe verse siempre. */
+@media (hover: none) { .med-photo-edit { opacity:1; } }
+.med-photo-wrap.is-uploading .med-photo-edit { opacity:1; background:rgba(5,150,105,.9); }
+.med-photo-wrap.is-uploading img { filter:grayscale(1); opacity:.5; }
 .med-body h3 { margin:0 0 .25rem; color:#0f172a; font-size:1.05rem; }
 .med-spec { color:#047857; font-weight:600; font-size:.85rem; margin:0; }
 .med-meta { display:flex; gap:1rem; margin-top:.4rem; font-size:.78rem; color:#64748b; flex-wrap:wrap; }
@@ -237,6 +241,7 @@ admin_header('Médicos', 'medicos');
                                 <?= !empty($d['is_featured']) ? '★ Quitar de portada' : '☆ Destacar en portada' ?>
                             </button>
                         </form>
+                        <button type="button" class="med-btn" onclick="document.getElementById('photo-input-<?= $id ?>').click()">📷 <?= $hasPhoto ? 'Cambiar foto' : 'Subir foto' ?></button>
                         <button type="button" class="med-btn" onclick="document.getElementById('form-<?= $id ?>').classList.toggle('is-open')">Editar</button>
                         <?php if ($hasPhoto): ?>
                             <form method="POST" action="api-medico-action.php" onsubmit="return confirm('¿Eliminar foto?')" style="margin:0">
@@ -254,7 +259,7 @@ admin_header('Médicos', 'medicos');
                         <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
                         <input type="hidden" name="action" value="upload_photo">
                         <input type="hidden" name="id" value="<?= $id ?>">
-                        <input type="file" id="photo-input-<?= $id ?>" name="photo" accept="image/jpeg,image/png,image/webp" onchange="this.form.submit()">
+                        <input type="file" id="photo-input-<?= $id ?>" name="photo" accept="image/jpeg,image/png,image/webp">
                     </form>
 
                     <form method="POST" action="api-medico-action.php" class="med-edit-form" id="form-<?= $id ?>">
@@ -319,4 +324,72 @@ admin_header('Médicos', 'medicos');
         <?php endif; ?>
     </div>
 </section>
+
+<script>
+/* Las fotos de cámara/celular pesan 5-15 MB y la API las rechaza con 413 (tope 5 MB).
+   Antes de enviar, redimensionamos a 1400px y recomprimimos a JPEG: quedan ~200-400 KB. */
+(function () {
+    var MAX_DIM    = 1400;
+    var QUALITY    = 0.85;
+    var HARD_LIMIT = 5 * 1024 * 1024; // el mismo tope que aplica la API
+    var SKIP_UNDER = 900 * 1024;      // ya es liviana: no la re-encodes
+
+    function mb(bytes) { return (bytes / 1048576).toFixed(1); }
+
+    function shrink(file) {
+        return new Promise(function (resolve) {
+            if (file.size <= SKIP_UNDER || !window.createImageBitmap || !window.DataTransfer) {
+                return resolve(file);
+            }
+            createImageBitmap(file).then(function (bmp) {
+                var scale = Math.min(1, MAX_DIM / Math.max(bmp.width, bmp.height));
+                var w = Math.round(bmp.width * scale);
+                var h = Math.round(bmp.height * scale);
+                var canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                canvas.getContext('2d').drawImage(bmp, 0, 0, w, h);
+                canvas.toBlob(function (blob) {
+                    if (!blob || blob.size >= file.size) return resolve(file);
+                    var name = file.name.replace(/\.[^.]+$/, '') + '.jpg';
+                    resolve(new File([blob], name, { type: 'image/jpeg' }));
+                }, 'image/jpeg', QUALITY);
+            }).catch(function () { resolve(file); });
+        });
+    }
+
+    document.querySelectorAll('input[type=file][name=photo]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            var file = input.files && input.files[0];
+            if (!file) return;
+
+            var form = input.form;
+            var card = form.closest('.med-card');
+            var wrap = card && card.querySelector('.med-photo-wrap');
+            var label = wrap && wrap.querySelector('.med-photo-edit');
+
+            if (wrap) wrap.classList.add('is-uploading');
+            if (label) label.textContent = 'Preparando…';
+
+            shrink(file).then(function (out) {
+                if (out.size > HARD_LIMIT) {
+                    if (wrap) wrap.classList.remove('is-uploading');
+                    if (label) label.textContent = '📷 Cambiar';
+                    input.value = '';
+                    alert('La imagen pesa ' + mb(out.size) + ' MB y el máximo permitido es 5 MB.\n\n' +
+                          'Reduce su tamaño (o guárdala como JPG) e inténtalo de nuevo.');
+                    return;
+                }
+                if (out !== file) {
+                    var dt = new DataTransfer();
+                    dt.items.add(out);
+                    input.files = dt.files;
+                }
+                if (label) label.textContent = 'Subiendo…';
+                form.submit();
+            });
+        });
+    });
+})();
+</script>
 <?php admin_footer(); ?>

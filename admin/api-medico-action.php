@@ -12,6 +12,19 @@ require __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/../includes/portal_client.php';
 
 require_admin_permission('doctors');
+
+// Si el POST excede post_max_size, PHP descarta $_POST y $_FILES enteros: sin este
+// guard el CSRF fallaría y el admin vería una pantalla en blanco sin explicación.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+    $_SESSION['admin_flash'] = [
+        'type'    => 'danger',
+        'message' => 'La imagen es demasiado pesada para el servidor (límite: ' . ini_get('post_max_size')
+                   . '). Usa una foto más liviana.',
+    ];
+    header('Location: medicos.php');
+    exit;
+}
+
 verify_csrf();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -28,8 +41,30 @@ if ($apiKey === '') {
 
 function flash_and_redirect(string $type, string $message): void {
     $_SESSION['admin_flash'] = ['type' => $type, 'message' => $message];
-    header('Location: medicos.php#doc-' . (int)($_POST['id'] ?? 0));
+    // En caso de error NO usamos el ancla: el navegador saltaría a la ficha del
+    // médico y el aviso (que se pinta arriba del listado) quedaría fuera de vista.
+    $anchor = $type === 'success' ? '#doc-' . (int)($_POST['id'] ?? 0) : '';
+    header('Location: medicos.php' . $anchor);
     exit;
+}
+
+/** Traduce el código de error de PHP a algo que el admin pueda accionar. */
+function upload_error_message(int $code): string {
+    switch ($code) {
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+            return 'La imagen supera el tamaño máximo que acepta el servidor ('
+                 . ini_get('upload_max_filesize') . '). Usa una foto más liviana.';
+        case UPLOAD_ERR_PARTIAL:
+            return 'La imagen se subió incompleta. Vuelve a intentarlo.';
+        case UPLOAD_ERR_NO_FILE:
+            return 'No seleccionaste ninguna imagen.';
+        case UPLOAD_ERR_NO_TMP_DIR:
+        case UPLOAD_ERR_CANT_WRITE:
+            return 'El servidor no pudo guardar la imagen temporalmente. Avisa a soporte.';
+        default:
+            return 'No se recibió la imagen (error ' . $code . ').';
+    }
 }
 
 $action = $_POST['action'] ?? '';
@@ -93,8 +128,11 @@ function bust_directory_cache(): void {
 }
 
 if ($action === 'upload_photo') {
-    if (empty($_FILES['photo']) || $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
+    if (empty($_FILES['photo'])) {
         flash_and_redirect('danger', 'No se recibió la imagen.');
+    }
+    if ($_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
+        flash_and_redirect('danger', upload_error_message((int)$_FILES['photo']['error']));
     }
     $r = hospital_api_call_admin('POST', '/doctors/' . $id . '/photo', [], $_FILES['photo']);
     bust_directory_cache();
