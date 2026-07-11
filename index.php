@@ -135,7 +135,7 @@ $serviceDirectory = [
 
 $leadershipDirector = [
     'name' => 'Dr. Rafael Sánchez Cárdenas',
-    'role' => 'Director General',
+    'role' => 'Gerente General',
     'bio' => 'Lidera la operación clínica y administrativa del hospital con un enfoque en calidad, ética y atención humanizada.',
     'initials' => 'RS',
 ];

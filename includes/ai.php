@@ -214,7 +214,7 @@ El hospital trabaja con las siguientes aseguradoras (ARS):
 - NUNCA des montos, porcentajes de cobertura, copagos ni condiciones específicas de pólizas: para eso deriva al área de admisión llamando al {$contact['phone']}.
 
 LIDERAZGO INSTITUCIONAL
-- Director General: Dr. Rafael Sánchez Cárdenas (ex-Ministro de Salud Pública de la R.D.)
+- Gerente General: Dr. Rafael Sánchez Cárdenas (ex-Ministro de Salud Pública de la R.D.)
 - Gerencias: Recursos Humanos, Médica y Servicios, Finanzas, Planificación, Servicios Generales
 - Consejo de Administración presidido por Fulgencio Morel Ochoa; integrantes destacados: Manuel Estrella, Félix García, Juan Vicini
 
