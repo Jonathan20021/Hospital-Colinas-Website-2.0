@@ -399,84 +399,55 @@ $leadershipGerencias = [
     </header>
 
     <main id="contenido">
-        <section id="inicio" class="hero-section">
-            <div class="hero-shell">
-                <div class="hero-copy">
-                    <span class="hero-kicker">
-                        <i data-lucide="badge-check" class="h-4 w-4"></i>
-                        Hospital General · Santiago, RD
-                    </span>
-                    <h1>Atención médica avanzada para Santiago</h1>
-                    <p>
-                        Hospital General Las Colinas conecta especialistas, emergencia, diagnóstico y hospitalización en
-                        una experiencia clara para pacientes, familias y médicos referidores.
-                    </p>
+        <section id="inicio" class="hero-ultra">
+            <div class="hero-ultra-split">
+                <!-- Lado Izquierdo: Contenido -->
+                <div class="hero-ultra-left">
+                    <div class="hero-ultra-content">
+                        <span class="hero-ultra-badge">
+                            <i data-lucide="shield-check" class="h-4 w-4"></i>
+                            Calidad clínica acreditada · Santiago, RD
+                        </span>
+                        <h1 class="hero-ultra-title">Atención médica avanzada para Santiago</h1>
+                        <p class="hero-ultra-text">
+                            Hospital General Las Colinas conecta especialistas, emergencia, diagnóstico y hospitalización en una experiencia de salud del más alto nivel.
+                        </p>
+                        
+                        <div class="hero-ultra-stats" aria-label="Indicadores institucionales">
+                            <div class="ultra-stat"><b>24/7</b> <span>Emergencias</span></div>
+                            <div class="ultra-stat"><b>55+</b> <span>Consultorios</span></div>
+                            <div class="ultra-stat"><b>65+</b> <span>Habitaciones</span></div>
+                        </div>
 
-                    <div class="hero-actions">
-                        <button type="button" class="js-open-appointment btn btn-green btn-lg">
-                            Agendar cita
-                            <i data-lucide="calendar-check" class="h-4 w-4"></i>
-                        </button>
-                        <a href="#servicios" class="btn btn-outline btn-lg">
-                            Ver servicios
-                            <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                        </a>
-                        <a href="<?= e(base_url('directorio-medico')) ?>" class="btn btn-outline btn-lg">
-                            Directorio médico
-                            <i data-lucide="user-round-search" class="h-4 w-4"></i>
-                        </a>
-                        <a href="tel:18098060444" class="btn btn-emergency btn-lg">
-                            Emergencias 24/7
-                            <i data-lucide="phone-call" class="h-4 w-4"></i>
-                        </a>
-                    </div>
-
-                    <div class="hero-assist-panel" aria-label="Capacidades principales">
-                        <a href="#buscar-atencion" class="hero-assist-item">
-                            <i data-lucide="stethoscope" class="h-5 w-5"></i>
-                            <span><strong>Especialidades</strong><small>Consulta especializada y servicios
-                                    clínicos.</small></span>
-                        </a>
-                        <a href="<?= e(base_url('directorio-medico')) ?>" class="hero-assist-item">
-                            <i data-lucide="users-round" class="h-5 w-5"></i>
-                            <span><strong>Profesionales médicos</strong><small>Directorio preparado para perfiles y
-                                    horarios.</small></span>
-                        </a>
+                        <div class="hero-ultra-actions">
+                            <button type="button" class="js-open-appointment btn btn-green btn-lg btn-glow">
+                                Agendar cita <i data-lucide="calendar-check" class="h-4 w-4"></i>
+                            </button>
+                            <a href="tel:18098060444" class="btn btn-outline-white btn-lg">
+                                Emergencias <i data-lucide="phone-call" class="h-4 w-4"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <div class="hero-feature">
-                    <div class="hero-feature-image">
-                        <img src="<?= e(base_url($assets['hero'])) ?>" alt="Fachada del Hospital General Las Colinas"
-                            class="h-full w-full object-cover">
-                    </div>
-                    <span class="hero-feature-badge" aria-label="Acreditación clínica">
-                        <i data-lucide="shield-check" class="h-4 w-4"></i>
-                        Calidad clínica acreditada
-                    </span>
-                    <div class="hero-feature-panel" aria-label="Indicadores institucionales">
-                        <span><b>24/7</b> Emergencias adulto y pediátrica</span>
-                        <span><b>55+</b> Consultorios especializados</span>
-                        <span><b>65+</b> Habitaciones</span>
-                    </div>
+                <!-- Lado Derecho: Imagen -->
+                <div class="hero-ultra-right">
+                    <img src="<?= e(base_url($assets['hero'])) ?>" alt="Hospital General Las Colinas" class="hero-ultra-image">
                 </div>
             </div>
 
-            <div class="hero-access-wrap">
-                <div class="task-grid" aria-label="Accesos rápidos para pacientes">
+            <!-- Dock Flotante Inferior -->
+            <div class="hero-ultra-dock-container">
+                <nav class="hero-ultra-dock" aria-label="Accesos rápidos">
                     <?php foreach ($taskCards as $card): ?>
-                        <a href="<?= e($card['href']) ?>"
-                            class="<?= !empty($card['modal']) ? 'js-open-appointment ' : '' ?>task-card"
-                            <?= !empty($card['external']) ? 'target="_blank" rel="noopener"' : '' ?>>
-                            <span class="task-icon"><i data-lucide="<?= e($card['icon']) ?>" class="h-8 w-8"></i></span>
-                            <span class="task-body">
-                                <strong><?= e($card['title']) ?></strong>
-                                <small><?= e($card['text']) ?></small>
-                                <em><?= e($card['action']) ?> <i data-lucide="arrow-right" class="h-4 w-4"></i></em>
-                            </span>
+                        <a href="<?= e($card['href']) ?>" 
+                           class="ultra-dock-item <?= !empty($card['modal']) ? 'js-open-appointment' : '' ?>"
+                           <?= !empty($card['external']) ? 'target="_blank" rel="noopener"' : '' ?>>
+                            <i data-lucide="<?= e($card['icon']) ?>" class="h-5 w-5"></i>
+                            <span><?= e($card['title']) ?></span>
                         </a>
                     <?php endforeach; ?>
-                </div>
+                </nav>
             </div>
         </section>
 
