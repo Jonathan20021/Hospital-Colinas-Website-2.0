@@ -21,7 +21,6 @@ $associationLines = $doctor ? array_filter(array_map('trim', preg_split('/\r\n|\
 // con el WhatsApp institucional: (809) 501-2002.
 $callCenterDisplay = $contact['whatsapp_phone'];                                 // (809) 501-2002
 $callCenterTel     = '1' . preg_replace('/\D/', '', $contact['whatsapp_phone']); // 18095012002
-$doctorEmail = $doctor['email'] ?? '';
 
 // "Agendar cita" desde el perfil lleva DIRECTO al asistente con este médico
 // preseleccionado (paso 3). Si no hay id (fallback sin API), va al asistente general.
@@ -36,7 +35,7 @@ $agendarUrl = $doctorId > 0
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><?= $doctor ? e($doctor['name'] . ' — ' . $doctor['specialty']) : 'Médico no encontrado' ?> | Hospital
         General Las Colinas</title>
     <meta name="description"
@@ -94,7 +93,6 @@ $agendarUrl = $doctorId > 0
             "image": "<?= e(absolute_url($doctor['photo'])) ?>",
             "medicalSpecialty": <?= json_encode($doctor['specialty'], JSON_UNESCAPED_UNICODE) ?>,
             "telephone": "<?= e($callCenterDisplay) ?>",
-            <?php if ($doctorEmail): ?>"email": <?= json_encode($doctorEmail, JSON_UNESCAPED_UNICODE) ?>,<?php endif; ?>
             "hospitalAffiliation": {
                 "@type": "Hospital",
                 "name": "Hospital General Las Colinas",
@@ -173,6 +171,7 @@ $agendarUrl = $doctorId > 0
                         </span>
                     </div>
                     <div class="profile-identity">
+                        <span class="profile-institution">Equipo médico · Hospital General Las Colinas</span>
                         <span class="profile-pills">
                             <span class="profile-specialty-pill">
                                 <i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>
@@ -195,12 +194,6 @@ $agendarUrl = $doctorId > 0
                                 <i data-lucide="phone" class="h-4 w-4"></i>
                                 Llamar
                             </a>
-                            <?php if ($doctorEmail): ?>
-                                <a href="mailto:<?= e($doctorEmail) ?>" class="btn btn-ghost">
-                                    <i data-lucide="mail" class="h-4 w-4"></i>
-                                    Escribir
-                                </a>
-                            <?php endif; ?>
                         </div>
 
                         <div class="profile-meta-strip">
@@ -238,38 +231,52 @@ $agendarUrl = $doctorId > 0
             </section>
 
             <section class="profile-body">
-                <article class="profile-card">
-                    <h2><i data-lucide="briefcase-medical" class="h-5 w-5"></i> Trayectoria profesional</h2>
-                    <span
-                        class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
-                    <?php $profileNarrative = trim((string) ($doctor['biography'] ?: $doctor['education'])); ?>
-                    <?php if ($profileNarrative !== ''): ?>
-                        <p><?= nl2br(e($profileNarrative)) ?></p>
-                    <?php elseif (empty($doctor['services'])): ?>
-                        <p>Este especialista forma parte del equipo de <?= e($doctor['specialty']) ?> del Hospital
-                            General Las Colinas. Para conocer disponibilidad, seguros aceptados y agendar una consulta,
-                            utiliza el botón de cita o comunícate con nuestro equipo de atención.</p>
-                    <?php endif; ?>
-                    <?php if ($doctor['services']): ?>
-                        <p><?= nl2br(e($doctor['services'])) ?></p>
-                    <?php endif; ?>
-                </article>
+                <div class="profile-content-grid">
+                    <div class="profile-narrative">
+                        <article class="profile-card">
+                            <h2><i data-lucide="briefcase-medical" class="h-5 w-5"></i> Trayectoria profesional</h2>
+                            <span
+                                class="profile-card-lead"><?= e($doctor['title'] ? $doctor['title'] . ' ' . $doctor['specialty'] : 'Especialista en ' . $doctor['specialty']) ?></span>
+                            <?php $profileNarrative = trim((string) ($doctor['biography'] ?: $doctor['education'])); ?>
+                            <?php if ($profileNarrative !== ''): ?>
+                                <p><?= nl2br(e($profileNarrative)) ?></p>
+                            <?php elseif (empty($doctor['services'])): ?>
+                                <p>Este especialista forma parte del equipo de <?= e($doctor['specialty']) ?> del Hospital
+                                    General Las Colinas. Para conocer disponibilidad, seguros aceptados y agendar una consulta,
+                                    utiliza el botón de cita o comunícate con nuestro equipo de atención.</p>
+                            <?php endif; ?>
+                            <?php if ($doctor['services']): ?>
+                                <p><?= nl2br(e($doctor['services'])) ?></p>
+                            <?php endif; ?>
+                        </article>
 
-                <?php if ($associationLines): ?>
-                    <article class="profile-card">
-                        <h2><i data-lucide="users-round" class="h-5 w-5"></i> Asociaciones</h2>
-                        <div class="profile-associations">
-                            <?php foreach ($associationLines as $association): ?>
-                                <p><i data-lucide="users-round" class="h-4 w-4"></i><?= e($association) ?></p>
-                            <?php endforeach; ?>
+                        <?php if ($associationLines): ?>
+                            <article class="profile-card">
+                                <h2><i data-lucide="users-round" class="h-5 w-5"></i> Asociaciones</h2>
+                                <div class="profile-associations">
+                                    <?php foreach ($associationLines as $association): ?>
+                                        <p><i data-lucide="users-round" class="h-4 w-4"></i><?= e($association) ?></p>
+                                    <?php endforeach; ?>
+                                </div>
+                            </article>
+                        <?php endif; ?>
+
+                        <div class="profile-cta-card">
+                            <span><i data-lucide="calendar-check" class="h-4 w-4"></i> Solicita cita</span>
+                            <h3>¿Necesitas atención con este especialista?</h3>
+                            <p>Coordina tu consulta con el equipo del hospital. Te confirmaremos disponibilidad y orientaremos
+                                sobre seguros.</p>
+                            <a href="<?= e($agendarUrl) ?>" class="btn btn-green">
+                                <i data-lucide="calendar-days" class="h-4 w-4"></i>
+                                Agendar ahora
+                            </a>
                         </div>
-                    </article>
-                <?php endif; ?>
+                    </div>
 
-                <div class="profile-bottom-grid">
-                    <div class="profile-info-card">
-                        <h3><i data-lucide="shield-check" class="h-5 w-5"></i> Información clínica</h3>
-                        <dl>
+                    <aside class="profile-sidebar" aria-label="Información y cita">
+                        <div class="profile-info-card">
+                            <h3><i data-lucide="shield-check" class="h-5 w-5"></i> Información clínica</h3>
+                            <dl>
                             <div>
                                 <dt><i data-lucide="building-2" class="h-4 w-4"></i> Consultorio</dt>
                                 <dd><?= e($doctor['office']) ?></dd>
@@ -284,32 +291,16 @@ $agendarUrl = $doctorId > 0
                                         href="tel:<?= e($callCenterTel) ?>"><?= e($callCenterDisplay) ?></a>
                                 </dd>
                             </div>
-                            <?php if ($doctorEmail): ?>
-                                <div>
-                                    <dt><i data-lucide="mail" class="h-4 w-4"></i> Correo electrónico</dt>
-                                    <dd><a href="mailto:<?= e($doctorEmail) ?>"><?= e($doctorEmail) ?></a></dd>
-                                </div>
-                            <?php endif; ?>
                             <div>
                                 <dt><i data-lucide="shield-check" class="h-4 w-4"></i> Seguros aceptados</dt>
                                 <dd>
-                                    <?= e(implode(', ', array_column($insurers, 'name'))) ?>.
-                                    <a href="<?= e(base_url('seguros-aceptados')) ?>">Ver todos los seguros</a>
+                                    Principales ARS y seguros nacionales.
+                                    <a href="<?= e(base_url('seguros-aceptados')) ?>">Consultar cobertura</a>
                                 </dd>
                             </div>
-                        </dl>
-                    </div>
-
-                    <div class="profile-cta-card">
-                        <span><i data-lucide="calendar-check" class="h-4 w-4"></i> Solicita cita</span>
-                        <h3>¿Necesitas atención con este especialista?</h3>
-                        <p>Coordina tu consulta con el equipo del hospital. Te confirmaremos disponibilidad y orientaremos
-                            sobre seguros.</p>
-                        <a href="<?= e($agendarUrl) ?>" class="btn btn-green">
-                            <i data-lucide="calendar-days" class="h-4 w-4"></i>
-                            Agendar ahora
-                        </a>
-                    </div>
+                            </dl>
+                        </div>
+                    </aside>
                 </div>
 
                 <a href="<?= e(base_url('directorio-medico')) ?>" class="profile-back">

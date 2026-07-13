@@ -24,6 +24,7 @@ function fallback_medical_profiles(array $services, array $assets): array
         $name = 'Equipo de ' . $specialty;
         $profiles[] = [
             'id' => null,
+            'specialty_id' => null,
             'name' => $name,
             'slug' => slugify($name),
             'title' => 'Equipo clínico',
@@ -106,6 +107,7 @@ function public_doctors(array $services, array $assets): array
                 $name = trim(($row['title'] ? $row['title'] . ' ' : '') . $row['first_name'] . ' ' . $row['last_name']);
                 return [
                     'id' => (int) $row['id'],
+                    'specialty_id' => (int) ($row['specialty_id'] ?? 0),
                     'name' => $name,
                     'slug' => $row['slug'],
                     'title' => $row['title'],

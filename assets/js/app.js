@@ -337,7 +337,8 @@
             doctorLivePanel?.classList.toggle('hidden', query.length === 0);
             doctorClear?.classList.toggle('hidden', query.length === 0);
             if (doctorResultCount) {
-                doctorResultCount.textContent = `${query.length > 0 ? liveVisible : visible} Resultado/s`;
+                const resultTotal = query.length > 0 ? liveVisible : visible;
+                doctorResultCount.textContent = `${resultTotal} ${resultTotal === 1 ? 'especialista' : 'especialistas'}`;
             }
             doctorEmpty?.classList.toggle('hidden', visible > 0);
         };
@@ -346,6 +347,8 @@
         doctorSearchForm?.addEventListener('submit', (event) => {
             event.preventDefault();
             filterDoctors();
+            doctorLivePanel?.classList.add('hidden');
+            document.getElementById('doctorGrid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
         doctorClear?.addEventListener('click', () => {
             if (!doctorSearch) return;
@@ -369,6 +372,7 @@
                 activeDoctorFilter = normalize(button.dataset.doctorFilter || 'all');
                 document.querySelectorAll('[data-doctor-filter]').forEach((item) => {
                     item.classList.toggle('is-active', item === button);
+                    item.setAttribute('aria-pressed', item === button ? 'true' : 'false');
                 });
                 filterDoctors();
             });

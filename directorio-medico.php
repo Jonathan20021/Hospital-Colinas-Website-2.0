@@ -13,12 +13,6 @@ $assetVersion = (string) max(
 $consultSpecialties = $services['consultas']['items'];
 $medicalProfiles = public_doctors($services, $assets);
 $directorySpecialties = public_specialties($services);
-$directoryHeroCss = preg_replace('#^assets/#', '../', $assets['hero']);
-$directoryStats = [
-    ['value' => count($medicalProfiles), 'label' => 'Especialistas', 'icon' => 'user-round-search'],
-    ['value' => count($directorySpecialties), 'label' => 'Especialidades', 'icon' => 'stethoscope'],
-    ['value' => '24/7', 'label' => 'Emergencias', 'icon' => 'ambulance'],
-];
 $directoryValues = [
     ['icon' => 'badge-check', 'title' => 'Perfiles verificados', 'text' => 'Datos actualizados por el equipo del hospital.'],
     ['icon' => 'calendar-check', 'title' => 'Cita rápida', 'text' => 'Solicita atención en menos de 1 minuto.'],
@@ -30,7 +24,7 @@ $directoryValues = [
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Directorio médico | Hospital General Las Colinas, Santiago</title>
     <meta name="description"
         content="Directorio médico del Hospital General Las Colinas: <?= e((string) count($medicalProfiles)) ?> especialistas en <?= e((string) count($directorySpecialties)) ?> especialidades. Consulta horarios, consultorios y agenda tu cita en Santiago, RD.">
@@ -156,7 +150,7 @@ $directoryValues = [
                         </div>
                     </div>
                     <a href="<?= e(base_url('#servicios')) ?>" class="nav-link">Servicios</a>
-                    <a href="<?= e(base_url('directorio-medico')) ?>" class="nav-link is-active">Directorio médico</a>
+                    <a href="<?= e(base_url('directorio-medico')) ?>" class="nav-link is-active" aria-current="page">Directorio médico</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="nav-link">Noticias</a>
                 </nav>
 
@@ -212,94 +206,43 @@ $directoryValues = [
     </header>
 
     <main id="contenido">
-        <section class="dir-hero" style="--dir-hero-bg: url('<?= e($directoryHeroCss) ?>');">
+        <section class="dir-hero">
             <div class="dir-hero-grid">
                 <div class="dir-hero-copy">
-                    <span class="dir-hero-kicker">
-                        <i data-lucide="stethoscope" class="h-4 w-4"></i>
-                        Directorio médico
-                    </span>
-                    <h1>Encuentra el especialista indicado</h1>
-                    <p>Profesionales con experiencia clínica, atención humana y tecnología avanzada. Filtra por nombre,
-                        especialidad o servicio.</p>
+                    <nav class="dir-hero-crumbs" aria-label="Ruta de navegación">
+                        <a href="<?= e(base_url()) ?>">Inicio</a>
+                        <span aria-hidden="true">/</span>
+                        <span>Directorio médico</span>
+                    </nav>
+                    <h1>Encuentra al especialista indicado</h1>
+                    <p>Conoce a nuestro equipo médico, consulta sus áreas de práctica y encuentra el profesional adecuado para tu atención.</p>
 
                     <div class="dir-hero-actions">
-                        <button type="button" class="btn btn-green btn-lg js-open-appointment">
+                        <button type="button" class="btn btn-navy btn-lg js-open-appointment">
                             <i data-lucide="calendar-days" class="h-4 w-4"></i>
-                            Agendar cita
+                            Solicitar una cita
                         </button>
-                        <a href="#directorio" class="btn btn-outline-white btn-lg">
-                            Explorar directorio
-                            <i data-lucide="arrow-down" class="h-4 w-4"></i>
+                        <a href="tel:18098060444" class="dir-hero-phone">
+                            <i data-lucide="phone" class="h-4 w-4"></i>
+                            Emergencias: 1 (809) 806-0444
                         </a>
                     </div>
 
-                    <dl class="dir-hero-stats" aria-label="Indicadores del directorio">
-                        <?php foreach ($directoryStats as $stat): ?>
-                            <div>
-                                <dt><i data-lucide="<?= e($stat['icon']) ?>" class="h-4 w-4"></i></dt>
-                                <dd>
-                                    <strong><?= e((string) $stat['value']) ?></strong>
-                                    <small><?= e($stat['label']) ?></small>
-                                </dd>
-                            </div>
-                        <?php endforeach; ?>
+                    <dl class="dir-hero-summary" aria-label="Información del directorio">
+                        <div><dt>Cobertura clínica</dt><dd><?= e((string) count($directorySpecialties)) ?> especialidades</dd></div>
+                        <div><dt>Disponibilidad hospitalaria</dt><dd>Atención 24/7</dd></div>
                     </dl>
                 </div>
+
+                <figure class="dir-hero-visual">
+                    <img src="<?= e(base_url($assets['hero'])) ?>"
+                        alt="Fachada del Hospital General Las Colinas en Santiago" fetchpriority="high">
+                    <figcaption>
+                        <span>Hospital General Las Colinas</span>
+                        <strong>Santiago de los Caballeros</strong>
+                    </figcaption>
+                </figure>
             </div>
-        </section>
-
-        <section class="dir-search-stage" aria-label="Buscar especialistas">
-            <form id="doctorSearchForm" class="dir-search-card" role="search" autocomplete="off">
-                <div class="dir-search-head">
-                    <div class="dir-search-title">
-                        <span><i data-lucide="user-round-search" class="h-6 w-6"></i></span>
-                        <div>
-                            <strong>Encuentra tu especialista</strong>
-                            <small>Escribe el nombre del médico, especialidad o servicio.</small>
-                        </div>
-                    </div>
-                    <span class="dir-result-count">
-                        <i data-lucide="users-round" class="h-4 w-4"></i>
-                        <span id="doctorResultCount"><?= e((string) count($medicalProfiles)) ?> Resultado/s</span>
-                    </span>
-                </div>
-
-                <div class="dir-search-row">
-                    <i data-lucide="search" class="h-5 w-5"></i>
-                    <input id="doctorSearch" type="search" placeholder="Ej. Cardiología, García, Pediatría..."
-                        autocomplete="off" aria-controls="doctorLivePanel">
-                    <button id="doctorClear" type="button" class="dir-search-clear hidden"
-                        aria-label="Limpiar búsqueda">
-                        <i data-lucide="x" class="h-4 w-4"></i>
-                    </button>
-                    <button type="submit" class="dir-search-submit">
-                        <i data-lucide="arrow-right" class="h-4 w-4"></i>
-                        Buscar
-                    </button>
-                </div>
-
-                <div id="doctorLivePanel" class="dir-live-panel hidden">
-                    <div class="dir-live-head">
-                        <span>Coincidencias en tiempo real</span>
-                    </div>
-                    <div id="doctorLiveResults" class="dir-live-grid">
-                        <?php foreach ($medicalProfiles as $profile): ?>
-                            <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['subspecialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
-                            <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-live-result"
-                                data-live-result data-search="<?= e($search) ?>">
-                                <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
-                                    loading="lazy">
-                                <span>
-                                    <strong><?= e($profile['name']) ?></strong>
-                                    <small><?= e($profile['specialty']) ?><?php if (!empty($profile['subspecialty'])): ?> · <?= e($profile['subspecialty']) ?><?php endif; ?></small>
-                                </span>
-                                <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
-                            </a>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-            </form>
         </section>
 
         <section id="directorio" class="dir-section">
@@ -312,28 +255,87 @@ $directoryValues = [
                             consultorio y seguros vigentes.</span>
                     </div>
                     <div class="dir-filter-bar" aria-label="Filtros del directorio">
-                        <button type="button" class="is-active" data-doctor-filter="all">
+                        <button type="button" class="is-active" data-doctor-filter="all" aria-pressed="true">
                             <i data-lucide="layers" class="h-4 w-4"></i>
                             Todos
                         </button>
                         <?php foreach (array_slice($directorySpecialties, 0, 7) as $specialty): ?>
                             <button type="button"
-                                data-doctor-filter="<?= e($specialty['slug']) ?>"><?= e($specialty['name']) ?></button>
+                                data-doctor-filter="<?= e($specialty['slug']) ?>" aria-pressed="false"><?= e($specialty['name']) ?></button>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
+                <div class="dir-search-stage dir-directory-search" aria-label="Buscar especialistas">
+                    <form id="doctorSearchForm" class="dir-search-card" role="search" autocomplete="off">
+                        <div class="dir-search-head">
+                            <div class="dir-search-heading">
+                                <label for="doctorSearch" class="dir-search-label">Encuentra tu especialista</label>
+                                <p id="doctorSearchHelp">Busca por nombre, especialidad o área de atención.</p>
+                            </div>
+                            <span class="dir-result-count">
+                                <span id="doctorResultCount" aria-live="polite"><?= e((string) count($medicalProfiles)) ?> especialistas</span>
+                            </span>
+                        </div>
+
+                        <div class="dir-search-row">
+                            <i data-lucide="search" class="h-5 w-5"></i>
+                            <input id="doctorSearch" type="search" placeholder="Ej. Cardiología, García, Pediatría..."
+                                autocomplete="off" aria-controls="doctorLivePanel" aria-describedby="doctorSearchHelp">
+                            <button id="doctorClear" type="button" class="dir-search-clear hidden"
+                                aria-label="Limpiar búsqueda">
+                                <i data-lucide="x" class="h-4 w-4"></i>
+                            </button>
+                            <button type="submit" class="dir-search-submit">
+                                <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                                <span>Buscar</span>
+                            </button>
+                        </div>
+
+                        <div id="doctorLivePanel" class="dir-live-panel hidden">
+                            <div class="dir-live-head">
+                                <span>Coincidencias en tiempo real</span>
+                            </div>
+                            <div id="doctorLiveResults" class="dir-live-grid">
+                                <?php foreach ($medicalProfiles as $profile): ?>
+                                    <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['subspecialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
+                                    <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-live-result"
+                                        data-live-result data-search="<?= e($search) ?>">
+                                        <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
+                                            loading="lazy">
+                                        <span>
+                                            <strong><?= e($profile['name']) ?></strong>
+                                            <small><?= e($profile['specialty']) ?><?php if (!empty($profile['subspecialty'])): ?> · <?= e($profile['subspecialty']) ?><?php endif; ?></small>
+                                        </span>
+                                        <i data-lucide="arrow-up-right" class="h-4 w-4"></i>
+                                    </a>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
                 <div id="doctorGrid" class="dir-doctor-grid">
-                    <?php foreach ($medicalProfiles as $profile): ?>
-                        <?php $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['subspecialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']); ?>
+                    <?php foreach ($medicalProfiles as $profileIndex => $profile): ?>
+                        <?php
+                        $search = search_key($profile['name'] . ' ' . $profile['specialty'] . ' ' . $profile['subspecialty'] . ' ' . $profile['specialty_slug'] . ' ' . $profile['office'] . ' ' . $profile['services']);
+                        $profileDoctorId = (int) ($profile['id'] ?? 0);
+                        $profileSpecialtyId = (int) ($profile['specialty_id'] ?? 0);
+                        $profileAppointmentUrl = $profileDoctorId > 0
+                            ? base_url('agendar') . '?specialty_id=' . $profileSpecialtyId . '&doctor_id=' . $profileDoctorId
+                            : base_url('agendar');
+                        ?>
                         <article class="dir-doctor-card" data-doctor-card data-search="<?= e($search) ?>">
                             <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-doctor-photo">
                                 <img src="<?= e(base_url($profile['photo'])) ?>" alt="<?= e($profile['name']) ?>"
                                     class="<?= strncmp($profile['photo'], 'data:', 5) === 0 ? 'is-avatar' : '' ?>"
                                     loading="lazy">
-                                <span class="dir-doctor-tag"><?= e($profile['specialty']) ?></span>
                             </a>
                             <div class="dir-doctor-body">
+                                <div class="dir-doctor-card-head">
+                                    <span class="dir-doctor-tag"><?= e($profile['specialty']) ?></span>
+                                    <span class="dir-doctor-number" aria-hidden="true"><?= e(str_pad((string) ($profileIndex + 1), 2, '0', STR_PAD_LEFT)) ?></span>
+                                </div>
                                 <h3><a
                                         href="<?= e(base_url('medico/' . $profile['slug'])) ?>"><?= e($profile['name']) ?></a>
                                 </h3>
@@ -348,18 +350,19 @@ $directoryValues = [
                             <div class="dir-doctor-actions">
                                 <a href="<?= e(base_url('medico/' . $profile['slug'])) ?>" class="dir-action-primary">
                                     Ver perfil
-                                    <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                                    <span class="dir-action-icon"><i data-lucide="arrow-up-right" class="h-3.5 w-3.5"></i></span>
                                 </a>
-                                <button type="button" class="js-open-appointment dir-action-secondary"
-                                    aria-label="Agendar cita">
+                                <a href="<?= e($profileAppointmentUrl) ?>" class="dir-action-secondary"
+                                    aria-label="Solicitar cita con <?= e($profile['name']) ?>">
                                     <i data-lucide="calendar-days" class="h-4 w-4"></i>
-                                </button>
+                                    Solicitar cita
+                                </a>
                             </div>
                         </article>
                     <?php endforeach; ?>
                 </div>
 
-                <p id="doctorEmpty" class="dir-doctor-empty hidden">
+                <p id="doctorEmpty" class="dir-doctor-empty hidden" role="status">
                     <i data-lucide="search-x" class="h-5 w-5"></i>
                     No encontramos coincidencias. Intenta con otro nombre o especialidad.
                 </p>
