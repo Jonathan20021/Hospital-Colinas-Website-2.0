@@ -274,6 +274,27 @@ function doctor_mes_corto_es(int $ts): string
 }
 
 /**
+ * Pestañas de la sección Pacientes: los de citas y los del HIS (SIGMA).
+ * $active: 'citas' | 'sigma'
+ */
+function doctor_patient_tabs(string $active): void
+{
+    $tabs = [
+        ['citas', 'users',    'Mis pacientes',   'portal-medico/pacientes.php'],
+        ['sigma', 'hospital', 'Pacientes SIGMA', 'portal-medico/pacientes-sigma.php'],
+    ];
+    echo '<nav class="doctor-tabs" aria-label="Tipo de paciente">';
+    foreach ($tabs as [$key, $icon, $label, $href]) {
+        $on = $key === $active;
+        printf(
+            '<a href="%s" class="doctor-tab%s"%s><i data-lucide="%s" class="h-4 w-4"></i> %s</a>',
+            e(base_url($href)), $on ? ' is-active' : '', $on ? ' aria-current="page"' : '', e($icon), e($label)
+        );
+    }
+    echo '</nav>';
+}
+
+/**
  * Etiquetas <head> del PWA: manifest, íconos, metadatos de app instalable y
  * pantallas de carga (splash) de iOS. Las rutas usan base_url() para funcionar
  * igual en localhost (subcarpeta) y en producción (raíz).

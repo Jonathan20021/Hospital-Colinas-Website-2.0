@@ -32,6 +32,8 @@ doctor_layout_begin('Mis pacientes', 'pacientes');
     </form>
 </header>
 
+<?php doctor_patient_tabs('citas'); ?>
+
 <section class="doctor-card" data-reveal data-reveal-d="1">
     <header class="doctor-card-header">
         <h2><i data-lucide="users" class="h-5 w-5"></i> <?= (int)$pag['total'] ?> pacientes</h2>

@@ -371,3 +371,25 @@
 @media (prefers-reduced-motion: reduce){
   .is-app a.doctor-card:hover,.is-app .doctor-card-link:hover{transform:none}
 }
+
+/* ── PESTAÑAS DE PACIENTES (citas ↔ SIGMA) ───────────────── */
+.is-app .doctor-tabs{display:flex;gap:6px;margin:0 0 16px;padding:5px;background:#fff;border:1px solid var(--pro-line);border-radius:var(--pro-r);box-shadow:var(--pro-sh-sm);overflow-x:auto}
+.is-app .doctor-tab{display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:var(--pro-r-sm);font-size:.88rem;font-weight:700;color:var(--pro-muted);text-decoration:none;white-space:nowrap;transition:background .12s,color .12s}
+.is-app .doctor-tab:hover{background:var(--pro-line-2);color:var(--pro-ink-2)}
+.is-app .doctor-tab.is-active{background:var(--pro-brand);color:#fff}
+.is-app .doctor-tab.is-active:hover{background:var(--pro-brand)}
+.is-app .doctor-tab svg{flex:none}
+.is-app .doctor-tab:focus-visible{outline:none;box-shadow:var(--pro-ring)}
+
+/* Origen del paciente: ya en el portal (verde de marca) vs solo en el HIS */
+.is-app .doctor-src-badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800;letter-spacing:.01em;white-space:nowrap}
+.is-app .doctor-src-badge.is-portal{background:#e7f7ee;color:var(--pro-green);border:1px solid #bbf0d2}
+.is-app .doctor-src-badge.is-his{background:#eef0ff;color:var(--pro-brand-2);border:1px solid #d8dcff}
+
+/* Datos que nunca deben partirse en dos líneas (cédula, teléfono, fecha) */
+.is-app .doctor-table td.doctor-nowrap{white-space:nowrap}
+
+/* Aviso en línea */
+.is-app .doctor-alert{display:flex;align-items:flex-start;gap:10px;padding:13px 16px;border-radius:var(--pro-r-sm);font-size:.88rem;font-weight:600;margin:0 0 16px}
+.is-app .doctor-alert svg{flex:none;margin-top:1px}
+.is-app .doctor-alert-error{background:#fff1f4;color:var(--pro-red);border:1px solid #fbd0da}
