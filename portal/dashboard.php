@@ -3,17 +3,28 @@ require_once __DIR__ . '/_layout.php';
 portal_require_login();
 
 $token = portal_token();
-$meRes   = portal_api_call('GET', '/portal/me', [], $token);
-$apptRes = portal_api_call('GET', '/portal/me/appointments', ['date_from' => date('Y-m-d')], $token);
+
+// Las 5 llamadas son independientes entre sí -> se lanzan en PARALELO.
+// (Antes iban en serie y sus tiempos se sumaban: ~191 ms de backend + 5 viajes
+//  de red; ahora la página espera solo por la más lenta.)
+$api = portal_api_multi([
+    'me'      => ['GET', '/portal/me'],
+    'appts'   => ['GET', '/portal/me/appointments', ['date_from' => date('Y-m-d')]],
+    'consult' => ['GET', '/portal/me/consultations'],
+    'rx'      => ['GET', '/portal/me/prescriptions'],
+    'lab'     => ['GET', '/portal/me/lab'],
+], $token);
+$meRes      = $api['me'];
+$apptRes    = $api['appts'];
+$consultRes = $api['consult'];
+$rxRes      = $api['rx'];
+$labRes     = $api['lab'];
+
 if ($meRes['ok']) portal_set_verified(!empty($meRes['data']['email_verified_at']));
 
 $patient  = $meRes['data'] ?? [];
 $upcoming = is_array($apptRes['data'] ?? null) ? $apptRes['data'] : [];
 $next     = $upcoming[0] ?? null;
-
-$consultRes = portal_api_call('GET', '/portal/me/consultations', [], $token);
-$rxRes      = portal_api_call('GET', '/portal/me/prescriptions', [], $token);
-$labRes     = portal_api_call('GET', '/portal/me/lab', [], $token);
 
 $consultas = is_array($consultRes['data']['consultations'] ?? null) ? $consultRes['data']['consultations'] : [];
 $recetas   = is_array($rxRes['data']['prescriptions'] ?? null) ? $rxRes['data']['prescriptions'] : [];

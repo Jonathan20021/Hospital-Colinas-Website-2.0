@@ -8,7 +8,14 @@ if (!$id) {
     exit;
 }
 
-$pRes = portal_api_call('GET', '/portal-doctor/me/patients/' . $id, [], doctor_token());
+// Ficha e historial solo dependen del id -> se piden en PARALELO (antes: en serie).
+// Ambos endpoints validan que el paciente sea de este médico, así que si la ficha
+// falla, el historial se descarta sin usarse.
+$api  = portal_api_multi([
+    'patient' => ['GET', '/portal-doctor/me/patients/' . $id],
+    'history' => ['GET', '/portal-doctor/me/patients/' . $id . '/history'],
+], doctor_token());
+$pRes = $api['patient'];
 if (!$pRes['ok']) {
     doctor_flash_set('error', $pRes['message'] ?? 'Paciente no encontrado.');
     header('Location: ' . base_url('portal-medico/pacientes.php'));
@@ -16,7 +23,7 @@ if (!$pRes['ok']) {
 }
 $patient = $pRes['data'];
 
-$hRes = portal_api_call('GET', '/portal-doctor/me/patients/' . $id . '/history', [], doctor_token());
+$hRes    = $api['history'];
 $history = $hRes['data'] ?? [];
 
 // Iniciales + gradiente hash deterministico

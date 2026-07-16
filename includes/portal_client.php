@@ -106,6 +106,88 @@ function portal_api_call(string $method, string $path, array $payload = [], ?str
 }
 
 /**
+ * Ejecuta VARIAS llamadas al API en PARALELO (curl_multi) en vez de en serie.
+ * La página espera solo por la más lenta, no por la suma. Úsalo cuando las
+ * llamadas son independientes entre sí (p.ej. el dashboard del paciente).
+ *
+ * Cada entrada de $calls: [$method, $path, $payload?] con la clave que quieras.
+ * Devuelve un array con LAS MISMAS CLAVES y el mismo contrato que portal_api_call().
+ *
+ *   $r = portal_api_multi(['me' => ['GET','/portal/me'], 'lab' => ['GET','/portal/me/lab']], $token);
+ *   $r['me']['ok'], $r['lab']['data'], ...
+ */
+function portal_api_multi(array $calls, ?string $token = null): array {
+    if (!$calls) return [];
+
+    $mh = curl_multi_init();
+    $handles = [];
+    foreach ($calls as $key => $c) {
+        $method  = strtoupper((string)($c[0] ?? 'GET'));
+        $path    = (string)($c[1] ?? '');
+        $payload = (array)($c[2] ?? []);
+
+        $url = portal_api_base() . '/' . ltrim($path, '/');
+        if ($method === 'GET' && $payload) {
+            $url .= (str_contains($url, '?') ? '&' : '?') . http_build_query($payload);
+        }
+
+        $headers = ['Accept: application/json', 'Content-Type: application/json'];
+        if ($token) $headers[] = 'Authorization: Bearer ' . $token;
+        $headers = array_merge($headers, portal_client_fwd_headers());
+
+        $opts = [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST  => $method,
+            CURLOPT_HTTPHEADER     => $headers,
+            CURLOPT_TIMEOUT        => 20,
+            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_SSL_VERIFYPEER => portal_api_verify_tls(),
+            CURLOPT_SSL_VERIFYHOST => portal_api_verify_tls() ? 2 : 0,
+            CURLOPT_FOLLOWLOCATION => false,
+        ];
+        if ($method !== 'GET' && $payload) $opts[CURLOPT_POSTFIELDS] = json_encode($payload);
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, $opts);
+        curl_multi_add_handle($mh, $ch);
+        $handles[$key] = $ch;
+    }
+
+    $running = null;
+    do {
+        $status = curl_multi_exec($mh, $running);
+        if ($running) curl_multi_select($mh, 1.0);
+    } while ($running && $status === CURLM_OK);
+
+    $out = [];
+    foreach ($handles as $key => $ch) {
+        $raw    = curl_multi_getcontent($ch);
+        $code   = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $err    = curl_error($ch);
+        curl_multi_remove_handle($mh, $ch);
+        curl_close($ch);
+
+        if ($raw === false || $raw === null || $raw === '') {
+            $out[$key] = ['ok' => false, 'status' => $code, 'data' => null,
+                          'message' => $err !== '' ? 'Error de conexión: ' . $err : 'Sin respuesta del API.',
+                          'errors' => null, 'raw' => ''];
+            continue;
+        }
+        $decoded = json_decode($raw, true);
+        $out[$key] = [
+            'ok'      => $code >= 200 && $code < 300 && !empty($decoded['success']),
+            'status'  => $code,
+            'data'    => $decoded['data']    ?? null,
+            'message' => $decoded['message'] ?? null,
+            'errors'  => $decoded['errors']  ?? null,
+            'raw'     => $raw,
+        ];
+    }
+    curl_multi_close($mh);
+    return $out;
+}
+
+/**
  * Variante para endpoints que devuelven contenido binario (PDF, imágenes).
  *
  * @return array { ok:bool, status:int, body:string, content_type:?string, filename:?string }

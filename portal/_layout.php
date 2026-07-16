@@ -52,11 +52,11 @@ function portal_layout_begin(string $title, string $active = ''): void
         <meta name="robots" content="noindex, nofollow">
         <meta name="theme-color" content="#262161">
         <link rel="icon" type="image/png" href="<?= e(base_url($assets['favicon'])) ?>">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800;900&display=swap"
-            rel="stylesheet">
+        <?php /* Fuentes auto-hospedadas (Inter + Outfit VARIABLES 400..800): mismo origen,
+                 sin DNS/TLS a Google ni CSS render-blocking de 25KB/67 @font-face. */ ?>
+        <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
+        <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-portal.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">

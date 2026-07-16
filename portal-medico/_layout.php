@@ -57,11 +57,11 @@ function doctor_layout_begin(string $title, string $active = ''): void
         <meta name="theme-color" content="#2a2566">
         <link rel="icon" type="image/png" href="<?= e(base_url($assets['favicon'])) ?>">
         <?php doctor_pwa_head(); ?>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet">
+        <?php /* Fuentes auto-hospedadas (Inter + Outfit VARIABLES 400..800): mismo origen,
+                 sin DNS/TLS a Google ni CSS render-blocking de 25KB/67 @font-face. */ ?>
+        <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
+        <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-portal.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
@@ -334,8 +334,10 @@ function doctor_layout_begin_bare(string $title): void
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?= e($title) ?> | HGLC</title>
         <meta name="robots" content="noindex, nofollow">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Outfit:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <?php /* Fuentes auto-hospedadas (ver nota arriba): sin salto a Google en el login. */ ?>
+        <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
+        <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-portal.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($v) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($v) ?>">
