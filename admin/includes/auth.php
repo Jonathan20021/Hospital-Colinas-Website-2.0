@@ -68,6 +68,13 @@ function admin_permission_definitions(): array
             'icon' => 'history',
             'active' => 'auditoria',
         ],
+        'doctor_support' => [
+            'label' => 'Soporte médicos',
+            'description' => 'Abrir el portal de un médico en modo soporte (impersonación auditada).',
+            'href' => 'soporte-medico.php',
+            'icon' => 'life-buoy',
+            'active' => 'soporte_medico',
+        ],
         'ai' => [
             'label' => 'Colinas IA',
             'description' => 'Configurar el asistente virtual, modelo y credenciales.',

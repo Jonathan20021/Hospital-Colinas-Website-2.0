@@ -15,6 +15,11 @@ putenv('DB_PASS=your_database_password');
 // Para desarrollo local con XAMPP: 'http://localhost/api/v1' (sin la VIP).
 define('PORTAL_API_BASE', 'https://186.149.243.228:20443/api/v1');
 
+// Modo Soporte del portal médico (impersonación auditada). Secreto compartido
+// servidor-a-servidor con JENOFONTE (mismo valor en el config.php del API interno).
+// Genera uno fuerte: bin2hex(random_bytes(24)). NUNCA en el repo.
+define('DOCTOR_SUPPORT_SECRET', 'PON_AQUI_EL_MISMO_SECRETO_QUE_EN_JENOFONTE');
+
 // La VIP usa certificado autofirmado, por eso desactivamos la verificación TLS
 // en las llamadas server-to-server. NO afecta a los pacientes: ellos hablan
 // solo con tu dominio público (TLS válido). Pon true cuando la VIP tenga

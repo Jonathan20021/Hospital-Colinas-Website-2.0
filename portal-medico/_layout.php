@@ -101,6 +101,13 @@ function doctor_layout_begin(string $title, string $active = ''): void
     <body class="bg-slate-50 font-sans text-slate-950 antialiased portal-page doctor-portal-page <?= $dmLogged ? 'is-app' : '' ?>">
         <a class="skip-link" href="#contenido">Saltar al contenido</a>
 
+        <?php $__sup = $_SESSION['doctor_support'] ?? null; if (is_array($__sup)): ?>
+        <div style="position:sticky;top:0;z-index:10000;background:#b91c1c;color:#fff;padding:.5rem 1rem;font-size:.85rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;box-shadow:0 2px 10px rgba(0,0,0,.25)">
+            <span>🛟 <strong>Modo soporte</strong> — viendo el portal del Dr. <?= e($__sup['doctor_name'] ?? '') ?> como <strong><?= e($__sup['admin_name'] ?? 'soporte') ?></strong>. Todas las acciones quedan auditadas.</span>
+            <a href="<?= e(base_url('portal-medico/soporte-salir.php')) ?>" style="background:#fff;color:#b91c1c;padding:.3rem .85rem;border-radius:6px;font-weight:700;text-decoration:none;white-space:nowrap">Salir del soporte</a>
+        </div>
+        <?php endif; ?>
+
     <?php if ($dmLogged): ?>
         <div class="dm-app" id="dmApp">
             <aside class="dm-sb" aria-label="Menú del médico">
