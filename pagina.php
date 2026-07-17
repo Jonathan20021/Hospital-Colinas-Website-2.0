@@ -42,13 +42,19 @@ $serviceCatalog = service_pages_catalog($services, $assets);
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title><?= e($page['title']) ?> | Hospital General Las Colinas</title>
     <meta name="description" content="<?= e($description) ?>">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="theme-color" content="#262161">
     <link rel="canonical" href="<?= e(canonical_url()) ?>">
     <link rel="icon" type="image/png" href="<?= e(base_url($assets['favicon'])) ?>">
+    <?php if ($slug === 'liderazgo-institucional'): ?>
+        <link rel="preload" as="image" type="image/webp"
+            href="<?= e(base_url('assets/site/assets/liderazgo-hospital-1440.webp')) ?>"
+            imagesrcset="<?= e(base_url('assets/site/assets/liderazgo-hospital-960.webp')) ?> 960w, <?= e(base_url('assets/site/assets/liderazgo-hospital-1440.webp')) ?> 1440w, <?= e(base_url('assets/site/assets/liderazgo-hospital.webp')) ?> 1920w"
+            imagesizes="(max-width: 900px) calc(100vw - 2rem), min(54vw, 700px)" fetchpriority="high">
+    <?php endif; ?>
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Hospital General Las Colinas">
     <meta property="og:title" content="<?= e($page['title']) ?> | Hospital General Las Colinas">
@@ -134,10 +140,13 @@ $serviceCatalog = service_pages_catalog($services, $assets);
     <?php endif; ?>
 </head>
 
-<body class="bg-white font-sans text-slate-950 antialiased content-page">
+<body class="bg-white font-sans text-slate-950 antialiased content-page<?= $slug === 'liderazgo-institucional' ? ' leadership-page' : '' ?>">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <?php render_public_header($assets, $contact, $page['active'] ?? ''); ?>
 
+    <?php if ($slug === 'liderazgo-institucional'): ?>
+        <?php require __DIR__ . '/includes/leadership-page.php'; ?>
+    <?php else: ?>
     <main id="contenido">
         <section class="content-hero">
             <div class="content-hero-shell">
@@ -367,6 +376,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
             <?php endif; ?>
         </section>
     </main>
+    <?php endif; ?>
 
     <?php render_public_footer($assets, $contact, $year); ?>
     <?php render_appointment_modal($services); ?>

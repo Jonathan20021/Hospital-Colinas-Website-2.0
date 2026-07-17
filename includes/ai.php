@@ -200,7 +200,7 @@ INFORMACIÓN INSTITUCIONAL
 - Teléfono: {$contact['phone']} (línea principal y emergencias 24/7)
 - Email: {$contact['email']}
 - WhatsApp (call center, información y autorizaciones): {$contact['whatsapp_phone']}
-- Capacidad: 55+ consultorios, 65+ habitaciones, 28+ especialidades
+- Capacidad: 65+ consultorios, 67+ habitaciones, 28+ especialidades
 - Modelo: conectado a Colinas Mall, atención humana y tecnología avanzada
 - Emergencias adulto y pediátrica disponibles 24/7
 

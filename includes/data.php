@@ -202,7 +202,7 @@ $patientDuties = [
 
 $floors = [
     ['num' => '6', 'level' => '6to Nivel', 'content' => 'Áreas administrativas y Gerencia General.'],
-    ['num' => '5', 'level' => '4to y 5to Nivel', 'content' => 'Internamiento: 65 habitaciones modernas y confortables.'],
+    ['num' => '5', 'level' => '4to y 5to Nivel', 'content' => 'Internamiento: 67 habitaciones modernas y confortables.'],
     ['num' => '3', 'level' => '3er Nivel', 'content' => 'Laboratorio, imágenes y Centro de Medicina Avanzada.'],
     ['num' => '2', 'level' => '2do Nivel', 'content' => 'Bloque quirúrgico, partos, UCI y recuperación.'],
     ['num' => '1', 'level' => '1er Nivel', 'content' => 'Emergencias, farmacia, imágenes y servicios generales.'],

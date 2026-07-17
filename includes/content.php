@@ -98,7 +98,7 @@ function service_pages_catalog(array $services, array $assets): array
             'image' => $assets['room'],
             'summary' => 'Habitaciones modernas para recuperación, observación y cuidado integral.',
             'lead' => 'El internamiento combina seguimiento médico, enfermería, comodidad y acceso a servicios de apoyo dentro del hospital.',
-            'bullets' => ['65 habitaciones modernas y confortables.', 'Seguimiento clínico durante la estadía.', 'Coordinación con farmacia, laboratorio e imágenes.'],
+            'bullets' => ['67 habitaciones modernas y confortables.', 'Seguimiento clínico durante la estadía.', 'Coordinación con farmacia, laboratorio e imágenes.'],
         ],
         'farmacia' => [
             'title' => 'Farmacia hospitalaria',
@@ -278,8 +278,8 @@ function site_pages_catalog(array $services, array $assets, array $contact, arra
             'image' => $assets['hero'],
             'stats' => [
                 ['value' => '24/7', 'label' => 'Emergencias'],
-                ['value' => '55+', 'label' => 'Consultorios'],
-                ['value' => '65+', 'label' => 'Habitaciones'],
+                ['value' => '65+', 'label' => 'Consultorios'],
+                ['value' => '67+', 'label' => 'Habitaciones'],
             ],
             'sections' => [
                 ['icon' => 'heart-handshake', 'title' => 'Enfoque humano', 'text' => 'Atendemos a pacientes y familias con orientación, respeto y comunicación clara durante cada etapa del proceso.'],
@@ -296,8 +296,8 @@ function site_pages_catalog(array $services, array $assets, array $contact, arra
             'nav' => 'Liderazgo',
             'active' => 'hospital',
             'kicker' => 'Gobernanza clínica',
-            'summary' => 'La operación del hospital se apoya en liderazgo médico, gestión administrativa y equipos responsables de calidad, planificación y servicios.',
-            'image' => $assets['doctors'],
+            'summary' => 'Una estructura de dirección médica y administrativa coordina la calidad clínica, la seguridad del paciente y la operación responsable del hospital.',
+            'image' => $assets['hero'],
             'stats' => [
                 ['value' => '5', 'label' => 'Gerencias clave'],
                 ['value' => '1', 'label' => 'Dirección general'],
@@ -341,8 +341,8 @@ function site_pages_catalog(array $services, array $assets, array $contact, arra
             'image' => $assets['corridor'],
             'stats' => [
                 ['value' => '6', 'label' => 'Niveles operativos'],
-                ['value' => '65+', 'label' => 'Habitaciones'],
-                ['value' => '55+', 'label' => 'Consultorios'],
+                ['value' => '67+', 'label' => 'Habitaciones'],
+                ['value' => '65+', 'label' => 'Consultorios'],
             ],
             'sections' => array_map(static fn (array $floor): array => [
                 'icon' => 'layers-3',

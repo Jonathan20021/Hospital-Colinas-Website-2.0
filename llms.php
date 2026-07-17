@@ -50,7 +50,7 @@ $line('# Hospital General Las Colinas (HGLC)');
 $line();
 $line('> Hospital privado en Santiago de los Caballeros, República Dominicana. '
     . 'Ofrece emergencias 24/7 para adultos y niños, ' . $nSpec . '+ especialidades médicas, '
-    . '55+ consultorios, bloque quirúrgico, cuidados intensivos (adulto, pediátrico y neonatal), '
+    . '65+ consultorios, bloque quirúrgico, cuidados intensivos (adulto, pediátrico y neonatal), '
     . 'diagnóstico por imagen (tomografía, resonancia, mamografía, sonografía) y laboratorio clínico. '
     . 'Acepta las principales aseguradoras (ARS) del país y dispone de servicios en línea: '
     . 'agendar citas, teleconsulta, autorización de estudios, consulta de resultados y portales '

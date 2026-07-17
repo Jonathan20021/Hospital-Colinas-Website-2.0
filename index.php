@@ -95,8 +95,8 @@ $patientGuide = [
 
 $careHighlights = [
     ['label' => 'Respuesta inmediata', 'value' => '24/7', 'text' => 'Emergencias adulto y pediátrica.'],
-    ['label' => 'Capacidad clínica', 'value' => '65+', 'text' => 'Habitaciones para internamiento.'],
-    ['label' => 'Consulta externa', 'value' => '55+', 'text' => 'Consultorios especializados.'],
+    ['label' => 'Capacidad clínica', 'value' => '67+', 'text' => 'Habitaciones para internamiento.'],
+    ['label' => 'Consulta externa', 'value' => '65+', 'text' => 'Consultorios especializados.'],
 ];
 
 $journeySteps = [
@@ -137,7 +137,8 @@ $leadershipDirector = [
     'name' => 'Dr. Rafael Sánchez Cárdenas',
     'role' => 'Gerente General',
     'bio' => 'Lidera la operación clínica y administrativa del hospital con un enfoque en calidad, ética y atención humanizada.',
-    'initials' => 'RS',
+    'image' => 'assets/Gerente-General-Colinas-premium.png',
+    'card_image' => 'assets/gerente-general-card.webp',
 ];
 
 $leadershipGerencias = [
@@ -157,7 +158,7 @@ $leadershipGerencias = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital General Las Colinas | Atención médica avanzada en Santiago, RD</title>
     <meta name="description"
-        content="Hospital General Las Colinas en Santiago, Rep. Dominicana: emergencias 24/7, 28+ especialidades médicas, 55+ consultorios, tecnología de diagnóstico avanzada y hospitalización integral.">
+        content="Hospital General Las Colinas en Santiago, Rep. Dominicana: emergencias 24/7, 28+ especialidades médicas, 65+ consultorios, tecnología de diagnóstico avanzada y hospitalización integral.">
     <meta name="keywords"
         content="hospital Santiago, hospital colinas, emergencias 24/7 Santiago, especialistas médicos República Dominicana, cardiología, pediatría, ginecología, tomografía Santiago">
     <meta name="author" content="Hospital General Las Colinas">
@@ -182,7 +183,7 @@ $leadershipGerencias = [
     <meta property="og:site_name" content="Hospital General Las Colinas">
     <meta property="og:title" content="Hospital General Las Colinas | Atención médica avanzada en Santiago, RD">
     <meta property="og:description"
-        content="Emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada en Santiago, República Dominicana.">
+        content="Emergencias 24/7, 28+ especialidades, 65+ consultorios y tecnología de diagnóstico avanzada en Santiago, República Dominicana.">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
     <meta property="og:image" content="<?= e(absolute_url($assets['hero'])) ?>">
@@ -194,7 +195,7 @@ $leadershipGerencias = [
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Hospital General Las Colinas | Atención médica avanzada en Santiago, RD">
     <meta name="twitter:description"
-        content="Emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada.">
+        content="Emergencias 24/7, 28+ especialidades, 65+ consultorios y tecnología de diagnóstico avanzada.">
     <meta name="twitter:image" content="<?= e(absolute_url($assets['hero'])) ?>">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -218,7 +219,7 @@ $leadershipGerencias = [
                 "url": "<?= e(absolute_url()) ?>",
                 "logo": "<?= e(absolute_url($assets['logo'])) ?>",
                 "image": "<?= e(absolute_url($assets['hero'])) ?>",
-                "description": "Hospital privado en Santiago, Rep. Dominicana con emergencias 24/7, 28+ especialidades, 55+ consultorios y tecnología de diagnóstico avanzada.",
+                "description": "Hospital privado en Santiago, Rep. Dominicana con emergencias 24/7, 28+ especialidades, 65+ consultorios y tecnología de diagnóstico avanzada.",
                 "telephone": "<?= e($contact['phone']) ?>",
                 "email": "<?= e($contact['email']) ?>",
                 "priceRange": "$$",
@@ -566,8 +567,8 @@ $leadershipGerencias = [
                         un enfoque humano centrado en pacientes y familias.
                     </p>
                     <ul class="premium-checks">
-                        <li>55+ consultorios con especialistas altamente capacitados.</li>
-                        <li>65+ habitaciones para hospitalización con altos estándares.</li>
+                        <li>65+ consultorios con especialistas altamente capacitados.</li>
+                        <li>67+ habitaciones para hospitalización con altos estándares.</li>
                         <li>Emergencias 24/7 con atención inmediata.</li>
                         <li>Tecnología de diagnóstico y tratamiento de última generación.</li>
                         <li>Modelo conectado a Colinas Mall para una experiencia más accesible.</li>
@@ -611,10 +612,15 @@ $leadershipGerencias = [
                 </div>
 
                 <article class="leadership-feature">
-                    <div class="leader-portrait" aria-hidden="true">
-                        <span class="leader-initials"><?= e($leadershipDirector['initials']) ?></span>
+                    <figure class="leader-portrait">
+                        <picture>
+                            <source srcset="<?= e(base_url($leadershipDirector['card_image'])) ?>" type="image/webp">
+                            <img src="<?= e(base_url($leadershipDirector['image'])) ?>"
+                                alt="Retrato institucional del Dr. Rafael Sánchez Cárdenas, Gerente General"
+                                width="720" height="547" loading="lazy" decoding="async">
+                        </picture>
                         <span class="leader-portrait-badge"><i data-lucide="badge-check" class="h-4 w-4"></i></span>
-                    </div>
+                    </figure>
                     <div class="leader-meta">
                         <span class="leader-role"><i data-lucide="crown" class="h-3.5 w-3.5"></i>
                             <?= e($leadershipDirector['role']) ?></span>
@@ -799,8 +805,8 @@ $leadershipGerencias = [
                     </p>
                     <div class="capability-stats" aria-label="Capacidad de infraestructura">
                         <article><strong>6</strong><span>Niveles clínicos y operativos</span></article>
-                        <article><strong>65+</strong><span>Habitaciones de internamiento</span></article>
-                        <article><strong>55+</strong><span>Consultorios especializados</span></article>
+                        <article><strong>67+</strong><span>Habitaciones de internamiento</span></article>
+                        <article><strong>65+</strong><span>Consultorios especializados</span></article>
                     </div>
                     <a href="<?= e(base_url('instalaciones')) ?>" class="btn btn-outline mt-7">
                         Conoce nuestras instalaciones
