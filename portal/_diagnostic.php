@@ -5,7 +5,7 @@
  * Visítalo UNA vez desde el navegador para confirmar que todo
  * está bien configurado en este entorno. BÓRRALO después.
  *
- *   https://colinashospital.kyrosrd.com/portal/_diagnostic.php
+ *   https://colinashospital.com/portal/_diagnostic.php
  *
  * Verifica:
  *   - PHP + extensiones requeridas (curl, openssl, pdo, session)
@@ -101,7 +101,7 @@ curl_setopt_array($ch, [
     CURLOPT_NOBODY         => true,
     CURLOPT_CUSTOMREQUEST  => 'OPTIONS',
     CURLOPT_HTTPHEADER     => [
-        'Origin: ' . (($_SERVER['HTTPS'] ?? '') ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'colinashospital.kyrosrd.com'),
+        'Origin: ' . (($_SERVER['HTTPS'] ?? '') ? 'https' : 'http') . '://' . ($_SERVER['HTTP_HOST'] ?? 'colinashospital.com'),
         'Access-Control-Request-Method: POST',
     ],
     CURLOPT_TIMEOUT        => 8,
