@@ -235,6 +235,32 @@
         return d.toLocaleDateString('es-DO', { weekday: 'long', day: '2-digit', month: 'long' });
     }
 
+    // ── Validación de cédula/teléfono (espeja la del servidor: bloquea basura) ──
+    function digitsOnly(s) { return (s || '').replace(/\D/g, ''); }
+    function junkDigits(d) {
+        if (!d) return false;
+        if (/^(\d)\1+$/.test(d)) return true;                      // 5555…, 0000…
+        if (new Set(d.split('')).size <= 2) return true;           // ≤2 dígitos distintos
+        const asc = '01234567890123456789', desc = '98765432109876543210';
+        return asc.indexOf(d) !== -1 || desc.indexOf(d) !== -1;    // 12345…, 98765…
+    }
+    function validateIdentity(cedula, phone) {
+        const cRaw = (cedula || '').trim();
+        if (/[A-Za-z]/.test(cRaw)) {                               // pasaporte / ID extranjero
+            const al = cRaw.replace(/[^A-Za-z0-9]/g, '');
+            if (al.length < 5 || al.length > 20 || /^(.)\1+$/.test(al)) return 'Ingresa una cédula o pasaporte válido.';
+        } else {
+            const cd = digitsOnly(cRaw);
+            if (cd.length < 8 || cd.length > 13) return 'La cédula no tiene un largo válido.';
+            if (junkDigits(cd)) return 'Ingresa una cédula real (no números repetidos o en secuencia).';
+        }
+        let pd = digitsOnly(phone);
+        if (pd.length === 11 && pd[0] === '1') pd = pd.slice(1);
+        if (pd.length !== 10) return 'El teléfono debe tener 10 dígitos.';
+        if (junkDigits(pd)) return 'Ingresa un teléfono real (no números repetidos o en secuencia).';
+        return null;
+    }
+
     form?.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!apptInput.value) {
@@ -255,6 +281,14 @@
             notes:            form.notes.value.trim(),
             ars:              getArsValue(),
         };
+
+        const idError = validateIdentity(payload.cedula, payload.phone);
+        if (idError) {
+            result.innerHTML = `<div class="portal-flash portal-flash-error" style="margin-top:1rem">${idError}</div>`;
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '✓ Confirmar cita';
+            return;
+        }
 
         if (window.AGENDAR_HCAPTCHA && typeof hcaptcha !== 'undefined') {
             const t = hcaptcha.getResponse();
