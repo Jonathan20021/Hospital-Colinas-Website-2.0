@@ -169,6 +169,7 @@ $linkTo = static fn (int $id): string => base_url('guardias') . '?t=' . urlencod
         .svc-foot{ padding:0 12px; }
     }
     </style>
+    <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
 <body>
 <div class="svc">

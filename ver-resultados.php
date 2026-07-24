@@ -44,6 +44,7 @@ $description = 'Aprende a ver tus resultados de laboratorio, imágenes y recetas
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/ver-resultados.css')) ?>?v=<?= e($assetVersion) ?>">
     <script>document.documentElement.className += ' vr-js';</script>
+    <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
 
 <body class="bg-white font-sans text-slate-950 antialiased content-page">

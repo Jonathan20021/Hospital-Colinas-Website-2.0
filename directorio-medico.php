@@ -88,6 +88,7 @@ $directoryValues = [
         ]
     }
     </script>
+    <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
 
 <body class="bg-white font-sans text-slate-950 antialiased directory-page">

@@ -138,6 +138,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
         }
         </script>
     <?php endif; ?>
+    <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
 
 <body class="bg-white font-sans text-slate-950 antialiased content-page<?= $slug === 'liderazgo-institucional' ? ' leadership-page' : '' ?><?= $slug === 'seguros-aceptados' ? ' seguros-page' : '' ?>">

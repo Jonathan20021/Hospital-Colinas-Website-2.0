@@ -60,6 +60,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
     <?php if ($hcaptchaSiteKey): ?>
         <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <?php endif; ?>
+    <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
 
 <body class="bg-slate-50 font-sans text-slate-950 antialiased portal-page">

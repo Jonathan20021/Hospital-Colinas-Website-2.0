@@ -95,6 +95,7 @@ $related = array_slice($related, 0, 3);
         }
         </script>
     <?php endif; ?>
+    <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
 
 <body class="bg-white font-sans text-slate-950 antialiased">
