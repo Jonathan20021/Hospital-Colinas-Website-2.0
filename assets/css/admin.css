@@ -2222,3 +2222,40 @@ textarea:focus {
 .media-gallery-overlay button:hover {
     transform: scale(1.05);
 }
+/* ── TESTIMONIOS (admin) ─────────────────────────────────── */
+.admin-btn-ghost{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem .9rem;border-radius:10px;border:1px solid #e2e8f0;background:#fff;color:#475569;font-weight:700;font-size:.85rem;text-decoration:none;cursor:pointer;transition:background .12s,border-color .12s}
+.admin-btn-ghost:hover{background:#f8fafc;border-color:#cbd5e1}
+.admin-btn-ghost svg{width:16px;height:16px}
+
+.tm-google-config{background:#fff;border:1px solid #e8ecf4;border-radius:16px;padding:1.25rem 1.4rem;margin:0 0 1.4rem;box-shadow:0 1px 2px rgba(33,28,80,.05)}
+.tm-google-config-head h3{display:flex;align-items:center;gap:.5rem;margin:0 0 .25rem;font-size:1.02rem;color:#262161}
+.tm-google-config-head h3 svg{width:18px;height:18px;color:#f59e0b}
+.tm-google-config-head p{margin:0 0 1rem;color:#64748b;font-size:.85rem;line-height:1.5}
+.tm-google-config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.85rem}
+.tm-google-config-grid label{display:flex;flex-direction:column;gap:.35rem;font-size:.8rem;font-weight:700;color:#475569}
+.tm-google-config-grid input[type=number],.tm-google-config-grid input[type=url]{padding:.55rem .7rem;border:1px solid #d8dee9;border-radius:9px;font-size:.9rem}
+.tm-google-config-grid input:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.14)}
+.tm-check{flex-direction:row!important;align-items:center;gap:.5rem!important}
+.tm-check input{width:auto}
+.tm-google-config-foot{display:flex;align-items:center;gap:1rem;margin-top:1rem;flex-wrap:wrap}
+.tm-hint{color:#94a3b8;font-size:.78rem}
+
+.tm-filters{display:flex;gap:.5rem;margin:0 0 1rem;flex-wrap:wrap}
+.tm-filter{padding:.45rem .9rem;border-radius:999px;border:1px solid #e2e8f0;background:#fff;color:#64748b;font-weight:700;font-size:.82rem;text-decoration:none;transition:background .12s,color .12s}
+.tm-filter:hover{background:#f1f5f9}
+.tm-filter.is-active{background:#262161;color:#fff;border-color:#262161}
+.tm-filter.has-badge{border-color:#f59e0b;color:#b45309}
+.tm-filter.has-badge.is-active{background:#b45309;border-color:#b45309;color:#fff}
+
+.tm-admin-avatar{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:12px;color:#fff;font-weight:800;font-size:.82rem;flex:none}
+.status-pill.is-off{background:#fee2e2;color:#b91c1c}
+.admin-actions .tm-approve{color:#0a7a52!important;font-weight:800}
+
+.tm-form{background:#fff;border:1px solid #e8ecf4;border-radius:16px;padding:1.4rem;box-shadow:0 1px 2px rgba(33,28,80,.05);max-width:920px}
+.tm-form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1rem}
+.tm-form label{display:flex;flex-direction:column;gap:.4rem;font-size:.82rem;font-weight:700;color:#475569}
+.tm-form input,.tm-form select,.tm-form textarea{padding:.6rem .75rem;border:1px solid #d8dee9;border-radius:10px;font-size:.92rem;font-family:inherit}
+.tm-form input:focus,.tm-form select:focus,.tm-form textarea:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.14)}
+.tm-form-full{margin-bottom:1rem}
+.tm-form textarea{resize:vertical;line-height:1.55}
+.tm-form-actions{display:flex;align-items:center;gap:.75rem;margin-top:.5rem}

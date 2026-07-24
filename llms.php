@@ -83,6 +83,7 @@ $line('- [Repositorio digital](' . $u('repositorio') . '): protocolos clínicos 
 $line('- [Nosotros](' . $u('nosotros') . '): historia, misión, visión y valores del hospital.');
 $line('- [Instalaciones](' . $u('instalaciones') . '): infraestructura, niveles, tecnología y capacidad clínica.');
 $line('- [Liderazgo institucional](' . $u('liderazgo-institucional') . '): dirección general y equipo gerencial.');
+$line('- [Testimonios](' . $u('testimonios') . '): experiencias y reseñas de pacientes del hospital.');
 $line('- [Contacto](' . $u('contacto') . '): dirección, teléfono, WhatsApp, mapa y cómo llegar.');
 $line();
 

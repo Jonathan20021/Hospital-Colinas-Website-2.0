@@ -3,11 +3,16 @@ require __DIR__ . '/includes/helpers.php';
 require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/doctors.php';
 require __DIR__ . '/includes/news.php';
+require __DIR__ . '/includes/testimonials.php';
 require __DIR__ . '/includes/public-layout.php';
 
 news_ensure_schema();
+testimonials_ensure_schema();
 
 $year = date('Y');
+// Testimonios destacados para la sección de prueba social (y la insignia de Google).
+$homeTestimonials = testimonials_featured(6);
+$homeGoogle = testimonials_google();
 // Médicos marcados como "Destacado en portada" desde admin/medicos.php (flag is_featured).
 // Si no hay ninguno marcado, caemos a los primeros para que la sección nunca quede vacía.
 $allDoctors = public_doctors($services, $assets);
@@ -903,6 +908,55 @@ $leadershipGerencias = [
                 </div>
             </div>
         </section>
+
+        <?php if ($homeTestimonials): ?>
+        <section id="testimonios" class="tm-home-section" aria-labelledby="tmHomeTitle">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="tm-home-head">
+                    <div>
+                        <p class="tm-eyebrow">La voz de nuestros pacientes</p>
+                        <h2 id="tmHomeTitle" class="section-title">Lo que dicen quienes confiaron en nosotros</h2>
+                    </div>
+                    <?php if ($homeGoogle['enabled'] && $homeGoogle['rating'] > 0): ?>
+                        <a class="tm-google-badge" <?= $homeGoogle['url'] ? 'href="' . e($homeGoogle['url']) . '" target="_blank" rel="noopener"' : '' ?>>
+                            <span class="tm-google-g" aria-hidden="true">G</span>
+                            <span class="tm-google-meta">
+                                <strong><?= e(number_format($homeGoogle['rating'], 1)) ?></strong>
+                                <?= testimonials_stars_html((int) round($homeGoogle['rating'])) ?>
+                                <small><?= $homeGoogle['total'] > 0 ? number_format($homeGoogle['total']) . ' reseñas en Google' : 'Reseñas en Google' ?></small>
+                            </span>
+                        </a>
+                    <?php endif; ?>
+                </div>
+
+                <div class="tm-home-wall">
+                    <?php foreach ($homeTestimonials as $t): [$c1, $c2] = testimonials_avatar_palette($t['author_name']); ?>
+                        <article class="tm-card">
+                            <div class="tm-card-top">
+                                <?= testimonials_stars_html((int) $t['rating']) ?>
+                                <?php if ($t['source'] === 'google'): ?>
+                                    <span class="tm-card-source" title="Reseña de Google"><span class="tm-google-g sm" aria-hidden="true">G</span></span>
+                                <?php endif; ?>
+                            </div>
+                            <blockquote><?= e($t['body']) ?></blockquote>
+                            <footer class="tm-card-author">
+                                <span class="tm-avatar" style="background:linear-gradient(135deg,<?= e($c1) ?>,<?= e($c2) ?>)"><?= e(testimonials_initials($t['author_name'])) ?></span>
+                                <span>
+                                    <strong><?= e($t['author_name']) ?></strong>
+                                    <small><?= e(trim(($t['author_role'] ?? '') . ($t['author_location'] ? ' · ' . $t['author_location'] : ''), ' ·')) ?></small>
+                                </span>
+                            </footer>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="tm-home-cta">
+                    <a href="<?= e(base_url('testimonios')) ?>" class="btn btn-outline">Ver todos los testimonios <i data-lucide="arrow-right" class="h-4 w-4"></i></a>
+                    <a href="<?= e(base_url('testimonios')) ?>#enviar" class="tm-home-share">Comparte tu experiencia</a>
+                </div>
+            </div>
+        </section>
+        <?php endif; ?>
 
         <section id="galeria" class="tour-section">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

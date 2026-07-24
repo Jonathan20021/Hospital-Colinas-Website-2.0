@@ -140,12 +140,14 @@ $serviceCatalog = service_pages_catalog($services, $assets);
     <?php endif; ?>
 </head>
 
-<body class="bg-white font-sans text-slate-950 antialiased content-page<?= $slug === 'liderazgo-institucional' ? ' leadership-page' : '' ?>">
+<body class="bg-white font-sans text-slate-950 antialiased content-page<?= $slug === 'liderazgo-institucional' ? ' leadership-page' : '' ?><?= $slug === 'seguros-aceptados' ? ' seguros-page' : '' ?>">
     <a class="skip-link" href="#contenido">Saltar al contenido</a>
     <?php render_public_header($assets, $contact, $page['active'] ?? ''); ?>
 
     <?php if ($slug === 'liderazgo-institucional'): ?>
         <?php require __DIR__ . '/includes/leadership-page.php'; ?>
+    <?php elseif ($slug === 'seguros-aceptados'): ?>
+        <?php require __DIR__ . '/includes/seguros-page.php'; ?>
     <?php else: ?>
     <main id="contenido">
         <section class="content-hero">
@@ -310,6 +312,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
                         <a href="<?= e(base_url('nosotros')) ?>">Nosotros</a>
                         <a href="<?= e(base_url('liderazgo-institucional')) ?>">Liderazgo institucional</a>
                         <a href="<?= e(base_url('instalaciones')) ?>">Instalaciones</a>
+                        <a href="<?= e(base_url('testimonios')) ?>">Testimonios</a>
                         <a href="<?= e(base_url('pacientes')) ?>">Pacientes y visitantes</a>
                         <a href="<?= e(base_url('contacto')) ?>">Contacto</a>
                     </article>

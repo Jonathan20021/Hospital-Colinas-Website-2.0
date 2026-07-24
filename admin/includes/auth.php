@@ -54,6 +54,13 @@ function admin_permission_definitions(): array
             'icon' => 'library',
             'active' => 'repositorio',
         ],
+        'testimonials' => [
+            'label' => 'Testimonios',
+            'description' => 'Aprobar, editar y publicar testimonios y reseñas de pacientes.',
+            'href' => 'testimonios.php',
+            'icon' => 'message-square-quote',
+            'active' => 'testimonios',
+        ],
         'users' => [
             'label' => 'Usuarios admin',
             'description' => 'Administrar cuentas, roles y permisos del panel.',

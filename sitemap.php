@@ -22,6 +22,7 @@ $urls = [
     ['loc' => $directory, 'changefreq' => 'weekly', 'priority' => '0.9'],
     ['loc' => $newsHome, 'changefreq' => 'daily', 'priority' => '0.85'],
     ['loc' => absolute_url('repositorio'), 'changefreq' => 'weekly', 'priority' => '0.8'],
+    ['loc' => absolute_url('testimonios'), 'changefreq' => 'weekly', 'priority' => '0.78'],
     ['loc' => $home . '#nosotros', 'changefreq' => 'monthly', 'priority' => '0.7'],
     ['loc' => $home . '#liderazgo', 'changefreq' => 'monthly', 'priority' => '0.6'],
     ['loc' => $home . '#servicios', 'changefreq' => 'monthly', 'priority' => '0.8'],
