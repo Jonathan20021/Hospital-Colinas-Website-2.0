@@ -213,6 +213,7 @@ $insurersDir = 'assets/LOGO%20ASEGURADORAS/';
 $insurers = [
     ['name' => 'ARS Humano', 'file' => 'HUMANO.svg'],
     ['name' => 'ARS Primera', 'file' => 'PRIMERA.png'],
+    ['name' => 'ARS Monumental', 'file' => 'ARS_MONUMENTAL_LOGO.jpg'],
     ['name' => 'SENASA', 'file' => 'SENASA.png'],
     ['name' => 'ARS SEMMA', 'file' => 'SEMMA.png'],
     ['name' => 'Seguro Médico UASD (ARS UASD)', 'file' => 'UASD.png'],
