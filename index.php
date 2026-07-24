@@ -421,8 +421,8 @@ $leadershipGerencias = [
                         
                         <div class="hero-ultra-stats" aria-label="Indicadores institucionales">
                             <div class="ultra-stat"><b>24/7</b> <span>Emergencias</span></div>
-                            <div class="ultra-stat"><b>55+</b> <span>Consultorios</span></div>
-                            <div class="ultra-stat"><b>65+</b> <span>Habitaciones</span></div>
+                            <div class="ultra-stat"><b>65+</b> <span>Consultorios</span></div>
+                            <div class="ultra-stat"><b>67+</b> <span>Habitaciones</span></div>
                         </div>
 
                         <div class="hero-ultra-actions">
