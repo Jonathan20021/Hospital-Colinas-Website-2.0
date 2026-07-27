@@ -16,6 +16,14 @@ if (!$doctor) {
 
 $associationLines = $doctor ? array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $doctor['associations'] ?? ''))) : [];
 
+// Subtítulo del HERO: una sola línea institucional breve. La trayectoria completa
+// del médico va ÚNICAMENTE en la sección "Trayectoria profesional" (más abajo); el
+// hero no la repite. La especialidad ya se muestra como etiqueta sobre el nombre.
+// Se mantiene neutro en género (el equipo médico es mixto).
+$heroLead = $doctor
+    ? 'Atención médica especializada con enfoque humano en el Hospital General Las Colinas, Santiago.'
+    : '';
+
 // En los perfiles SIEMPRE se muestra el número del CALL CENTER del hospital
 // (no el teléfono directo del médico, por privacidad). El call center coincide
 // con el WhatsApp institucional: (809) 501-2002.
@@ -183,8 +191,7 @@ $agendarUrl = $doctorId > 0
                             <?php endif; ?>
                         </span>
                         <h1><?= e($doctor['name']) ?></h1>
-                        <p><?= e($doctor['biography'] ?: 'Atención especializada en ' . $doctor['specialty'] . ' del Hospital General Las Colinas.') ?>
-                        </p>
+                        <p><?= e($heroLead) ?></p>
 
                         <div class="profile-quick-actions">
                             <a href="<?= e($agendarUrl) ?>" class="btn btn-green">
