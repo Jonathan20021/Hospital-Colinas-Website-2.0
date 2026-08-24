@@ -25,6 +25,17 @@ $docId = (int) ($_GET['doctor_id'] ?? 0);
 $specsRes = portal_directory_specialties();
 $specs = $specsRes['ok'] ? $specsRes['data'] : [];
 
+// Orden alfabético insensible a acentos/mayúsculas: agrupa variantes juntas
+// (p.ej. CIRUGÍA GENERAL / CIRUGÍA MAXILOFACIAL / CIRUGÍA VISCERAL). Solo afecta
+// la presentación aquí; no cambia los datos en JENOFONTE.
+usort($specs, static function ($a, $b) {
+    $norm = static fn($s) => strtr(
+        mb_strtoupper(trim((string) ($s['name'] ?? '')), 'UTF-8'),
+        ['Á' => 'A', 'É' => 'E', 'Í' => 'I', 'Ó' => 'O', 'Ú' => 'U', 'Ü' => 'U', 'Ñ' => 'N']
+    );
+    return strcmp($norm($a), $norm($b));
+});
+
 $docsRes = portal_directory_doctors();
 $allDocs = $docsRes['ok'] ? $docsRes['data'] : [];
 

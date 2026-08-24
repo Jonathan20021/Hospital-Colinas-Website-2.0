@@ -497,3 +497,65 @@
         }
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MAYÚSCULAS + catálogo más legible (ago 2026) — SOLO visual, no toca datos.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Nombres de especialidad SIEMPRE en mayúscula y COMPLETOS (antes se cortaban
+   con "…", p.ej. CIRUGÍA MAXILOFA…). Ahora envuelven a 2 líneas si hace falta. */
+.agendar-v2 .specialty-card-name {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: .01em;
+    line-height: 1.2;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    /* Las palabras largas (GASTROENTEROLOGÍA, OTORRINOLARINGOLOGÍA) parten con
+       guion en la sílaba correcta —gracias a <html lang="es-DO">— y solo se
+       cortan si de verdad no caben. Ya no se ve "GASTROENTEROLOGÍ / A". */
+    word-break: normal;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+    font-size: clamp(.82rem, .74rem + .28vw, .95rem);
+}
+
+/* Tarjetas con altura pareja y mejor alineación */
+.agendar-v2 .specialty-card {
+    min-height: 68px;
+    align-items: center;
+    gap: .8rem;
+}
+
+.agendar-v2 .specialty-card-arrow {
+    flex-shrink: 0;
+    opacity: .5;
+    transition: transform .16s ease, opacity .16s ease;
+}
+
+.agendar-v2 .specialty-card:hover .specialty-card-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+    color: var(--gr-deep);
+}
+
+/* Look en mayúscula para pasos, títulos, nombres de médico y botón principal */
+.agendar-v2 .portal-steps li {
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-weight: 600;
+}
+
+.agendar-v2 .portal-section-title,
+.agendar-v2 .portal-doctor h3 {
+    text-transform: uppercase;
+    letter-spacing: .01em;
+}
+
+.agendar-v2 .btn-green {
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-weight: 700;
+}
