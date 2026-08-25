@@ -5,6 +5,11 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Dominio oficial: colinashospital.com. El subdominio viejo (colinashospital.kyrosrd.com)
+    # redirige permanente al oficial, conservando la ruta y forzando HTTPS.
+    RewriteCond %{HTTP_HOST} ^colinashospital\.kyrosrd\.com$ [NC]
+    RewriteRule ^ https://colinashospital.com%{REQUEST_URI} [R=301,L]
+
     # Forzar HTTPS en producción (no en local ni si un proxy ya terminó el TLS).
     RewriteCond %{HTTPS} off
     RewriteCond %{HTTP:X-Forwarded-Proto} !=https
