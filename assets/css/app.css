@@ -16466,3 +16466,13 @@ a.tm-google-badge:hover{transform:translateY(-2px);box-shadow:0 12px 28px -14px 
     background: #f4f8f0; border-color: #cfe6bd; color: #262161;
 }
 .content-page .content-service-group a:hover svg { color: #5da334; transform: translate(2px, -2px); }
+
+/* ── Menú con más ítems (se añadió "Empleos"): compactar el nav de escritorio
+   para que 6 enlaces + 2 CTAs entren en el header capado sin encimarse. ── */
+@media (min-width: 1280px) {
+    .nav-primary { gap: .5rem; }
+    .nav-link { font-size: .875rem; padding: 0 .16rem; letter-spacing: 0; }
+    .nav-actions { gap: .4rem; margin-left: .6rem; }
+    .nav-cta { padding: .6rem .78rem; font-size: .8rem; }
+    .nav-search { margin: 0 .1rem; }
+}
