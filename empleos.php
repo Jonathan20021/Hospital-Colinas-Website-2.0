@@ -75,11 +75,11 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
 <?php render_public_header($assets, $contact, $active); ?>
 
 <main id="contenido">
-    <!-- Hero (mismo patrón que el Directorio) -->
-    <section class="dir-hero">
-        <div class="dir-hero-grid">
-            <div class="dir-hero-copy">
-                <nav class="dir-hero-crumbs" aria-label="Ruta de navegación">
+    <!-- Hero (panel navy dividido, réplica del Directorio) -->
+    <section class="emp-hero">
+        <div class="emp-hero-grid">
+            <div class="emp-hero-copy">
+                <nav class="emp-hero-crumbs" aria-label="Ruta de navegación">
                     <a href="<?= e(base_url()) ?>">Inicio</a>
                     <span aria-hidden="true">/</span>
                     <span>Empleos</span>
@@ -87,24 +87,24 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
                 <h1>Súmate a nuestro equipo</h1>
                 <p>En el Hospital General Las Colinas construimos una atención médica de excelencia para Santiago. Postúlate a nuestras vacantes abiertas — en línea, en minutos y de forma segura.</p>
 
-                <div class="dir-hero-actions">
-                    <a href="#vacantes" class="btn btn-navy btn-lg">
+                <div class="emp-hero-actions">
+                    <a href="#vacantes" class="btn btn-green btn-lg">
                         <i data-lucide="briefcase" class="h-4 w-4"></i>
                         Ver vacantes
                     </a>
-                    <a href="#suscribir" class="dir-hero-phone">
+                    <a href="#suscribir" class="emp-hero-alt">
                         <i data-lucide="bell-plus" class="h-4 w-4"></i>
                         Recibir alertas por correo
                     </a>
                 </div>
 
-                <dl class="dir-hero-summary" aria-label="Resumen de empleos">
+                <dl class="emp-hero-summary" aria-label="Resumen de empleos">
                     <div><dt>Vacantes abiertas</dt><dd><?= e((string) $count) ?></dd></div>
                     <div><dt>Ubicación</dt><dd>Santiago, RD</dd></div>
                 </dl>
             </div>
 
-            <figure class="dir-hero-visual">
+            <figure class="emp-hero-visual">
                 <img src="<?= e(base_url($assets['hero'])) ?>"
                     alt="Fachada del Hospital General Las Colinas en Santiago" fetchpriority="high">
                 <figcaption>
