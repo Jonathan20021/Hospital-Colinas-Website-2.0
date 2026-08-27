@@ -43,12 +43,12 @@ $title = ($ok ? 'Suscripción cancelada' : 'Enlace no válido') . ' | Empleos �
                 <span class="emp-empty-icon"><i data-lucide="bell-off"></i></span>
                 <h2>Suscripción cancelada</h2>
                 <p>Ya no recibirás correos de alertas de empleo. Lamentamos verte partir — puedes volver a suscribirte cuando quieras.</p>
-                <a class="emp-btn emp-btn-ghost" href="<?= e(base_url('empleos')) ?>"><i data-lucide="briefcase"></i> Ver vacantes</a>
+                <a class="btn btn-outline" href="<?= e(base_url('empleos')) ?>"><i data-lucide="briefcase"></i> Ver vacantes</a>
             <?php else: ?>
                 <span class="emp-empty-icon"><i data-lucide="alert-circle"></i></span>
                 <h2>Enlace no válido</h2>
                 <p>Este enlace de baja no es válido. Si sigues recibiendo correos, usa el enlace "Cancelar mi suscripción" del correo más reciente.</p>
-                <a class="emp-btn emp-btn-ghost" href="<?= e(base_url('empleos')) ?>"><i data-lucide="briefcase"></i> Ver vacantes</a>
+                <a class="btn btn-outline" href="<?= e(base_url('empleos')) ?>"><i data-lucide="briefcase"></i> Ver vacantes</a>
             <?php endif; ?>
         </div>
     </div>

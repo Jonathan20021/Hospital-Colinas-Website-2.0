@@ -40,15 +40,15 @@ $title = ($ok ? 'Suscripción confirmada' : 'No pudimos confirmar') . ' | Empleo
     <div class="emp-wrap">
         <div class="emp-empty">
             <?php if ($ok): ?>
-                <span class="emp-empty-icon" style="background:rgba(93,163,52,.14);color:#4a8a28"><i data-lucide="badge-check"></i></span>
+                <span class="emp-empty-icon" style="background:rgba(111,180,63,.16);color:#3f7a26"><i data-lucide="badge-check"></i></span>
                 <h2>¡Suscripción confirmada!</h2>
                 <p>Listo. Te avisaremos por correo apenas publiquemos una nueva vacante. Puedes darte de baja cuando quieras desde cualquiera de esos correos.</p>
-                <a class="emp-btn emp-btn-primary" href="<?= e(base_url('empleos')) ?>"><i data-lucide="briefcase"></i> Ver vacantes</a>
+                <a class="btn btn-green" href="<?= e(base_url('empleos')) ?>"><i data-lucide="briefcase"></i> Ver vacantes</a>
             <?php else: ?>
                 <span class="emp-empty-icon"><i data-lucide="alert-circle"></i></span>
                 <h2>No pudimos confirmar</h2>
                 <p>El enlace no es válido o ya expiró. Vuelve a suscribirte y te enviaremos uno nuevo.</p>
-                <a class="emp-btn emp-btn-primary" href="<?= e(base_url('empleos')) ?>#suscribir"><i data-lucide="bell-plus"></i> Suscribirme de nuevo</a>
+                <a class="btn btn-green" href="<?= e(base_url('empleos')) ?>#suscribir"><i data-lucide="bell-plus"></i> Suscribirme de nuevo</a>
             <?php endif; ?>
         </div>
     </div>

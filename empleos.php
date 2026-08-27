@@ -3,9 +3,9 @@
  * /empleos — Vacantes del Hospital General Las Colinas.
  *
  * Muestra las vacantes OPEN publicadas en la app de reclutamiento (HGLC PEOPLE),
- * traídas por el puente seguro de JENOFONTE (`GET /portal/empleos`). Nada toca la
- * BD interna: el sitio solo renderiza lo publicable. La postulación (con CV) se
- * hace en `/empleos/{id}`.
+ * traídas por el puente seguro de JENOFONTE (`GET /portal/empleos`). Usa la línea
+ * gráfica del sitio (mismos patrones que el Directorio: .dir-hero, .dir-section,
+ * .section-label, .dir-filter-bar, .btn). La postulación se hace en /empleos/{id}.
  */
 require __DIR__ . '/includes/helpers.php';
 require __DIR__ . '/includes/data.php';
@@ -24,14 +24,10 @@ $vacancies = ($res['ok'] && isset($res['data']['vacancies']) && is_array($res['d
     ? $res['data']['vacancies'] : [];
 
 $EMPLOYMENT_LABEL = [
-    'FULL_TIME' => 'Tiempo completo',
-    'PART_TIME' => 'Medio tiempo',
-    'TEMPORARY' => 'Temporal',
-    'CONTRACT'  => 'Por contrato',
-    'INTERN'    => 'Pasantía',
+    'FULL_TIME' => 'Tiempo completo', 'PART_TIME' => 'Medio tiempo',
+    'TEMPORARY' => 'Temporal', 'CONTRACT' => 'Por contrato', 'INTERN' => 'Pasantía',
 ];
 
-// Áreas (departamentos) con vacantes, para el filtro.
 $departments = [];
 foreach ($vacancies as $v) {
     $d = trim((string) ($v['department'] ?? ''));
@@ -39,6 +35,7 @@ foreach ($vacancies as $v) {
 }
 $departments = array_keys($departments);
 sort($departments, SORT_NATURAL | SORT_FLAG_CASE);
+$count = count($vacancies);
 
 $title = 'Empleos y vacantes | Hospital General Las Colinas, Santiago';
 $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General Las Colinas, Santiago (RD): postúlate en línea de forma rápida y segura.';
@@ -77,116 +74,146 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
 <a class="skip-link" href="#contenido">Saltar al contenido</a>
 <?php render_public_header($assets, $contact, $active); ?>
 
-<main id="contenido" class="emp-v2">
-    <!-- Hero -->
-    <section class="emp-hero">
-        <div class="emp-hero-inner">
-            <p class="emp-eyebrow"><i data-lucide="briefcase"></i> Trabaja con nosotros</p>
-            <h1>Súmate al equipo del <em>Hospital General Las Colinas</em></h1>
-            <p class="emp-hero-lead">
-                Construimos una atención médica de excelencia en Santiago. Si compartes ese propósito,
-                postúlate a nuestras vacantes abiertas — en línea, en minutos y de forma segura.
-            </p>
-            <div class="emp-hero-stats">
-                <span><strong><?= e((string) count($vacancies)) ?></strong> vacante<?= count($vacancies) === 1 ? '' : 's' ?> abierta<?= count($vacancies) === 1 ? '' : 's' ?></span>
-                <span aria-hidden="true">•</span>
-                <span>Santiago, Rep. Dom.</span>
+<main id="contenido">
+    <!-- Hero (mismo patrón que el Directorio) -->
+    <section class="dir-hero">
+        <div class="dir-hero-grid">
+            <div class="dir-hero-copy">
+                <nav class="dir-hero-crumbs" aria-label="Ruta de navegación">
+                    <a href="<?= e(base_url()) ?>">Inicio</a>
+                    <span aria-hidden="true">/</span>
+                    <span>Empleos</span>
+                </nav>
+                <h1>Súmate a nuestro equipo</h1>
+                <p>En el Hospital General Las Colinas construimos una atención médica de excelencia para Santiago. Postúlate a nuestras vacantes abiertas — en línea, en minutos y de forma segura.</p>
+
+                <div class="dir-hero-actions">
+                    <a href="#vacantes" class="btn btn-navy btn-lg">
+                        <i data-lucide="briefcase" class="h-4 w-4"></i>
+                        Ver vacantes
+                    </a>
+                    <a href="#suscribir" class="dir-hero-phone">
+                        <i data-lucide="bell-plus" class="h-4 w-4"></i>
+                        Recibir alertas por correo
+                    </a>
+                </div>
+
+                <dl class="dir-hero-summary" aria-label="Resumen de empleos">
+                    <div><dt>Vacantes abiertas</dt><dd><?= e((string) $count) ?></dd></div>
+                    <div><dt>Ubicación</dt><dd>Santiago, RD</dd></div>
+                </dl>
             </div>
+
+            <figure class="dir-hero-visual">
+                <img src="<?= e(base_url($assets['hero'])) ?>"
+                    alt="Fachada del Hospital General Las Colinas en Santiago" fetchpriority="high">
+                <figcaption>
+                    <span>Hospital General Las Colinas</span>
+                    <strong>Santiago de los Caballeros</strong>
+                </figcaption>
+            </figure>
         </div>
     </section>
 
-    <div class="emp-wrap">
-        <?php if (empty($vacancies)): ?>
-            <!-- Estado vacío -->
-            <div class="emp-empty">
-                <span class="emp-empty-icon"><i data-lucide="briefcase"></i></span>
-                <h2>No hay vacantes abiertas por ahora</h2>
-                <p>En este momento no tenemos posiciones publicadas. Vuelve pronto: actualizamos nuestras
-                    vacantes con frecuencia.</p>
-                <a class="emp-btn emp-btn-primary" href="#suscribir">
-                    <i data-lucide="bell-plus"></i> Avísame de nuevas vacantes
-                </a>
-            </div>
-        <?php else: ?>
-            <!-- Filtros -->
-            <section class="emp-filters" aria-label="Filtrar vacantes">
-                <div class="emp-search">
-                    <i data-lucide="search"></i>
-                    <input type="search" id="empSearch" placeholder="Busca por cargo, área o palabra clave…"
-                        autocomplete="off" aria-label="Buscar vacantes">
+    <!-- Vacantes -->
+    <section id="vacantes" class="dir-section">
+        <div class="dir-section-shell">
+            <div class="dir-section-head">
+                <div>
+                    <p class="section-label"><i data-lucide="briefcase" class="h-4 w-4"></i> Oportunidades</p>
+                    <h2>Vacantes abiertas</h2>
+                    <span>Explora nuestras posiciones disponibles y postúlate en línea.
+                        <?= $count > 0 ? e((string) $count) . ' vacante' . ($count === 1 ? '' : 's') . ' abierta' . ($count === 1 ? '' : 's') . '.' : '' ?></span>
                 </div>
                 <?php if (count($departments) > 1): ?>
-                    <div class="emp-chips" id="empChips" role="tablist" aria-label="Filtrar por área">
-                        <button type="button" class="emp-chip is-active" data-dept="">Todas</button>
+                    <div class="dir-filter-bar" id="empChips" aria-label="Filtrar por área">
+                        <button type="button" class="is-active" data-dept="" aria-pressed="true">
+                            <i data-lucide="layers" class="h-4 w-4"></i> Todas
+                        </button>
                         <?php foreach ($departments as $d): ?>
-                            <button type="button" class="emp-chip" data-dept="<?= e($d) ?>"><?= e($d) ?></button>
+                            <button type="button" data-dept="<?= e($d) ?>" aria-pressed="false"><?= e($d) ?></button>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-            </section>
-
-            <!-- Grid de vacantes -->
-            <section class="emp-grid" id="empGrid" aria-label="Vacantes disponibles">
-                <?php foreach ($vacancies as $v):
-                    $vid = (string) ($v['id'] ?? '');
-                    if ($vid === '') continue;
-                    $etype = (string) ($v['employmentType'] ?? '');
-                    $etypeLabel = $EMPLOYMENT_LABEL[$etype] ?? $etype;
-                    $dept = trim((string) ($v['department'] ?? ''));
-                    $loc = trim((string) ($v['location'] ?? ''));
-                    $seats = (int) ($v['seats'] ?? 0);
-                    $desc = trim((string) ($v['description'] ?? ''));
-                    $snippet = mb_substr($desc, 0, 160, 'UTF-8');
-                    if (mb_strlen($desc, 'UTF-8') > 160) $snippet .= '…';
-                    $haystack = mb_strtolower(trim(($v['title'] ?? '') . ' ' . $dept . ' ' . $loc . ' ' . $etypeLabel . ' ' . $desc), 'UTF-8');
-                ?>
-                    <article class="emp-card" data-dept="<?= e($dept) ?>" data-search="<?= e($haystack) ?>">
-                        <div class="emp-card-top">
-                            <?php if ($dept !== ''): ?><span class="emp-card-dept"><?= e($dept) ?></span><?php endif; ?>
-                            <?php if ($etypeLabel !== ''): ?><span class="emp-card-type"><?= e($etypeLabel) ?></span><?php endif; ?>
-                        </div>
-                        <h3 class="emp-card-title"><?= e((string) ($v['title'] ?? 'Vacante')) ?></h3>
-                        <ul class="emp-card-meta">
-                            <?php if ($loc !== ''): ?><li><i data-lucide="map-pin"></i><?= e($loc) ?></li><?php endif; ?>
-                            <?php if ($seats > 0): ?><li><i data-lucide="users"></i><?= e((string) $seats) ?> plaza<?= $seats === 1 ? '' : 's' ?></li><?php endif; ?>
-                        </ul>
-                        <?php if ($snippet !== ''): ?><p class="emp-card-desc"><?= e($snippet) ?></p><?php endif; ?>
-                        <a class="emp-card-cta" href="<?= e(base_url('empleos/' . rawurlencode($vid))) ?>">
-                            Ver y postular <i data-lucide="arrow-right"></i>
-                        </a>
-                    </article>
-                <?php endforeach; ?>
-            </section>
-
-            <p class="emp-noresults" id="empNoResults" hidden>
-                <i data-lucide="search-x"></i> No encontramos vacantes con ese criterio.
-            </p>
-        <?php endif; ?>
-    </div>
-
-    <!-- Alertas de empleo (newsletter) -->
-    <section class="emp-subscribe" id="suscribir" aria-label="Alertas de empleo">
-        <div class="emp-subscribe-card">
-            <span class="emp-subscribe-icon"><i data-lucide="bell-ring"></i></span>
-            <div class="emp-subscribe-body">
-                <h2>Recibe nuestras vacantes por correo</h2>
-                <p>Suscríbete y te avisamos automáticamente apenas publiquemos una nueva posición. Puedes darte de baja cuando quieras.</p>
-                <form id="empSubscribeForm" novalidate>
-                    <div class="emp-subscribe-hp" aria-hidden="true">
-                        <label>No llenar<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
-                    </div>
-                    <div class="emp-subscribe-row">
-                        <input type="email" name="email" id="empSubEmail" required maxlength="160"
-                            placeholder="tu@correo.com" autocomplete="email" inputmode="email" aria-label="Tu correo">
-                        <button type="submit" class="emp-btn emp-btn-primary" id="empSubBtn">
-                            <span class="emp-sub-label"><i data-lucide="bell-plus"></i> Suscribirme</span>
-                            <span class="emp-sub-loading" hidden><i data-lucide="loader-2" class="emp-spin"></i> Enviando…</span>
-                        </button>
-                    </div>
-                    <p class="emp-subscribe-msg" id="empSubMsg" role="alert" hidden></p>
-                    <p class="emp-subscribe-legal">Al suscribirte aceptas recibir correos sobre vacantes del Hospital General Las Colinas conforme a la Ley 172-13. Te enviaremos un correo para confirmar.</p>
-                </form>
             </div>
+
+            <?php if (empty($vacancies)): ?>
+                <div class="emp-empty">
+                    <span class="emp-empty-icon"><i data-lucide="briefcase"></i></span>
+                    <h2>No hay vacantes abiertas por ahora</h2>
+                    <p>En este momento no tenemos posiciones publicadas. Suscríbete abajo y te avisamos por correo apenas publiquemos una nueva.</p>
+                    <a class="btn btn-green" href="#suscribir"><i data-lucide="bell-plus" class="h-4 w-4"></i> Avísame de nuevas vacantes</a>
+                </div>
+            <?php else: ?>
+                <div class="emp-search">
+                    <i data-lucide="search"></i>
+                    <input type="search" id="empSearch" placeholder="Busca por cargo, área o palabra clave…" autocomplete="off" aria-label="Buscar vacantes">
+                </div>
+
+                <div class="emp-vac-grid" id="empGrid">
+                    <?php foreach ($vacancies as $v):
+                        $vid = (string) ($v['id'] ?? '');
+                        if ($vid === '') continue;
+                        $etype = (string) ($v['employmentType'] ?? '');
+                        $etypeLabel = $EMPLOYMENT_LABEL[$etype] ?? $etype;
+                        $dept = trim((string) ($v['department'] ?? ''));
+                        $loc = trim((string) ($v['location'] ?? ''));
+                        $seats = (int) ($v['seats'] ?? 0);
+                        $desc = trim((string) ($v['description'] ?? ''));
+                        $snippet = mb_substr($desc, 0, 150, 'UTF-8');
+                        if (mb_strlen($desc, 'UTF-8') > 150) $snippet .= '…';
+                        $haystack = mb_strtolower(trim(($v['title'] ?? '') . ' ' . $dept . ' ' . $loc . ' ' . $etypeLabel . ' ' . $desc), 'UTF-8');
+                    ?>
+                        <article class="emp-vac-card" data-dept="<?= e($dept) ?>" data-search="<?= e($haystack) ?>">
+                            <div class="emp-vac-head">
+                                <?php if ($dept !== ''): ?><span class="emp-vac-tag"><i data-lucide="building-2"></i><?= e($dept) ?></span><?php else: ?><span></span><?php endif; ?>
+                                <?php if ($etypeLabel !== ''): ?><span class="emp-vac-type"><?= e($etypeLabel) ?></span><?php endif; ?>
+                            </div>
+                            <h3 class="emp-vac-title"><?= e((string) ($v['title'] ?? 'Vacante')) ?></h3>
+                            <ul class="emp-vac-meta">
+                                <?php if ($loc !== ''): ?><li><i data-lucide="map-pin"></i><?= e($loc) ?></li><?php endif; ?>
+                                <?php if ($seats > 0): ?><li><i data-lucide="users"></i><?= e((string) $seats) ?> plaza<?= $seats === 1 ? '' : 's' ?></li><?php endif; ?>
+                            </ul>
+                            <?php if ($snippet !== ''): ?><p class="emp-vac-desc"><?= e($snippet) ?></p><?php endif; ?>
+                            <div class="emp-vac-foot">
+                                <a class="emp-vac-cta" href="<?= e(base_url('empleos/' . rawurlencode($vid))) ?>">
+                                    Ver y postular <i data-lucide="arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+
+                <p class="emp-noresults" id="empNoResults" hidden>
+                    <i data-lucide="search-x"></i> No encontramos vacantes con ese criterio.
+                </p>
+            <?php endif; ?>
+
+            <!-- Alertas de empleo (newsletter) -->
+            <section class="emp-subscribe" id="suscribir" aria-label="Alertas de empleo">
+                <div class="emp-subscribe-card">
+                    <span class="emp-subscribe-icon"><i data-lucide="bell-ring"></i></span>
+                    <div class="emp-subscribe-body">
+                        <h2>Recibe nuestras vacantes por correo</h2>
+                        <p>Suscríbete y te avisamos automáticamente apenas publiquemos una nueva posición. Puedes darte de baja cuando quieras.</p>
+                        <form id="empSubscribeForm" novalidate>
+                            <div class="emp-subscribe-hp" aria-hidden="true">
+                                <label>No llenar<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                            </div>
+                            <div class="emp-subscribe-row">
+                                <input type="email" name="email" id="empSubEmail" required maxlength="160"
+                                    placeholder="tu@correo.com" autocomplete="email" inputmode="email" aria-label="Tu correo">
+                                <button type="submit" class="btn btn-green" id="empSubBtn">
+                                    <span class="emp-sub-label"><i data-lucide="bell-plus" class="h-4 w-4"></i> Suscribirme</span>
+                                    <span class="emp-sub-loading" hidden><i data-lucide="loader-2" class="h-4 w-4 emp-spin"></i> Enviando…</span>
+                                </button>
+                            </div>
+                            <p class="emp-subscribe-msg" id="empSubMsg" role="alert" hidden></p>
+                            <p class="emp-subscribe-legal">Al suscribirte aceptas recibir correos sobre vacantes del Hospital General Las Colinas conforme a la Ley 172-13. Te enviaremos un correo para confirmar.</p>
+                        </form>
+                    </div>
+                </div>
+            </section>
         </div>
     </section>
 </main>
@@ -203,28 +230,26 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
     var grid = document.getElementById('empGrid');
     var noRes = document.getElementById('empNoResults');
     if (!grid) return;
-    var cards = Array.prototype.slice.call(grid.querySelectorAll('.emp-card'));
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.emp-vac-card'));
     var dept = '';
-
-    function norm(s) { return (s || '').toLowerCase(); }
     function apply() {
-        var q = norm(search ? search.value : '').trim();
+        var q = (search ? search.value : '').toLowerCase().trim();
         var shown = 0;
         cards.forEach(function (c) {
             var okDept = !dept || c.getAttribute('data-dept') === dept;
             var okQ = !q || (c.getAttribute('data-search') || '').indexOf(q) !== -1;
             var vis = okDept && okQ;
-            c.style.display = vis ? '' : 'none';
+            c.classList.toggle('is-hidden', !vis);
             if (vis) shown++;
         });
         if (noRes) noRes.hidden = shown !== 0;
     }
     if (search) search.addEventListener('input', apply);
     if (chips) chips.addEventListener('click', function (e) {
-        var btn = e.target.closest('.emp-chip');
+        var btn = e.target.closest('button[data-dept]');
         if (!btn) return;
-        chips.querySelectorAll('.emp-chip').forEach(function (b) { b.classList.remove('is-active'); });
-        btn.classList.add('is-active');
+        chips.querySelectorAll('button').forEach(function (b) { b.classList.remove('is-active'); b.setAttribute('aria-pressed', 'false'); });
+        btn.classList.add('is-active'); btn.setAttribute('aria-pressed', 'true');
         dept = btn.getAttribute('data-dept') || '';
         apply();
     });
@@ -252,12 +277,8 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
         fetch(endpoint, { method: 'POST', body: data, credentials: 'same-origin' })
             .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
             .then(function (j) {
-                if (j && j.ok) {
-                    form.reset();
-                    show('¡Listo! Te enviamos un correo para confirmar tu suscripción. Revisa tu bandeja (y el spam).', 'ok');
-                } else {
-                    show((j && j.error) ? j.error : 'No pudimos completar la suscripción. Inténtalo más tarde.', 'error');
-                }
+                if (j && j.ok) { form.reset(); show('¡Listo! Te enviamos un correo para confirmar tu suscripción. Revisa tu bandeja (y el spam).', 'ok'); }
+                else { show((j && j.error) ? j.error : 'No pudimos completar la suscripción. Inténtalo más tarde.', 'error'); }
             })
             .catch(function () { show('No pudimos conectar. Inténtalo de nuevo.', 'error'); })
             .finally(function () {
