@@ -350,6 +350,7 @@ $leadershipGerencias = [
                     <a href="#servicios" class="nav-link" data-section="servicios">Servicios</a>
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="nav-link">Directorio médico</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="nav-link">Noticias</a>
+                    <a href="<?= e(base_url('empleos')) ?>" class="nav-link">Empleos</a>
                 </nav>
 
                 <div class="nav-actions">
@@ -389,6 +390,7 @@ $leadershipGerencias = [
                     <a href="#servicios" class="mobile-link">Servicios</a>
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="mobile-link">Directorio médico</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="mobile-link">Noticias</a>
+                    <a href="<?= e(base_url('empleos')) ?>" class="mobile-link">Empleos</a>
                     <button type="button" class="mobile-link js-open-command text-left">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
                     </button>
