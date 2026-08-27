@@ -103,8 +103,8 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
                 <h2>No hay vacantes abiertas por ahora</h2>
                 <p>En este momento no tenemos posiciones publicadas. Vuelve pronto: actualizamos nuestras
                     vacantes con frecuencia.</p>
-                <a class="emp-btn emp-btn-ghost" href="<?= e(base_url('contacto')) ?>">
-                    <i data-lucide="mail"></i> Contáctanos
+                <a class="emp-btn emp-btn-primary" href="#suscribir">
+                    <i data-lucide="bell-plus"></i> Avísame de nuevas vacantes
                 </a>
             </div>
         <?php else: ?>
@@ -163,6 +163,32 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
             </p>
         <?php endif; ?>
     </div>
+
+    <!-- Alertas de empleo (newsletter) -->
+    <section class="emp-subscribe" id="suscribir" aria-label="Alertas de empleo">
+        <div class="emp-subscribe-card">
+            <span class="emp-subscribe-icon"><i data-lucide="bell-ring"></i></span>
+            <div class="emp-subscribe-body">
+                <h2>Recibe nuestras vacantes por correo</h2>
+                <p>Suscríbete y te avisamos automáticamente apenas publiquemos una nueva posición. Puedes darte de baja cuando quieras.</p>
+                <form id="empSubscribeForm" novalidate>
+                    <div class="emp-subscribe-hp" aria-hidden="true">
+                        <label>No llenar<input type="text" name="website" tabindex="-1" autocomplete="off"></label>
+                    </div>
+                    <div class="emp-subscribe-row">
+                        <input type="email" name="email" id="empSubEmail" required maxlength="160"
+                            placeholder="tu@correo.com" autocomplete="email" inputmode="email" aria-label="Tu correo">
+                        <button type="submit" class="emp-btn emp-btn-primary" id="empSubBtn">
+                            <span class="emp-sub-label"><i data-lucide="bell-plus"></i> Suscribirme</span>
+                            <span class="emp-sub-loading" hidden><i data-lucide="loader-2" class="emp-spin"></i> Enviando…</span>
+                        </button>
+                    </div>
+                    <p class="emp-subscribe-msg" id="empSubMsg" role="alert" hidden></p>
+                    <p class="emp-subscribe-legal">Al suscribirte aceptas recibir correos sobre vacantes del Hospital General Las Colinas conforme a la Ley 172-13. Te enviaremos un correo para confirmar.</p>
+                </form>
+            </div>
+        </div>
+    </section>
 </main>
 
 <?php render_public_footer($assets, $contact, $year); ?>
@@ -201,6 +227,45 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
         btn.classList.add('is-active');
         dept = btn.getAttribute('data-dept') || '';
         apply();
+    });
+})();
+</script>
+<script>
+(function () {
+    var form = document.getElementById('empSubscribeForm');
+    if (!form) return;
+    var btn = document.getElementById('empSubBtn');
+    var msg = document.getElementById('empSubMsg');
+    var email = document.getElementById('empSubEmail');
+    var endpoint = <?= json_encode(base_url('api/empleos-suscribir.php'), JSON_UNESCAPED_SLASHES) ?>;
+    function show(text, kind) { msg.textContent = text; msg.className = 'emp-subscribe-msg ' + (kind || 'error'); msg.hidden = false; }
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        msg.hidden = true;
+        var val = email.value.trim();
+        if (!val || val.indexOf('@') === -1) { show('Escribe un correo válido.', 'error'); return; }
+        var data = new FormData(form);
+        btn.disabled = true;
+        btn.querySelector('.emp-sub-label').hidden = true;
+        btn.querySelector('.emp-sub-loading').hidden = false;
+        if (window.lucide) lucide.createIcons();
+        fetch(endpoint, { method: 'POST', body: data, credentials: 'same-origin' })
+            .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+            .then(function (j) {
+                if (j && j.ok) {
+                    form.reset();
+                    show('¡Listo! Te enviamos un correo para confirmar tu suscripción. Revisa tu bandeja (y el spam).', 'ok');
+                } else {
+                    show((j && j.error) ? j.error : 'No pudimos completar la suscripción. Inténtalo más tarde.', 'error');
+                }
+            })
+            .catch(function () { show('No pudimos conectar. Inténtalo de nuevo.', 'error'); })
+            .finally(function () {
+                btn.disabled = false;
+                btn.querySelector('.emp-sub-label').hidden = false;
+                btn.querySelector('.emp-sub-loading').hidden = true;
+                if (window.lucide) lucide.createIcons();
+            });
     });
 })();
 </script>

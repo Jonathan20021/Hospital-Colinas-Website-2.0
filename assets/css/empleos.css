@@ -251,3 +251,35 @@
     .emp-field-row { grid-template-columns: 1fr; }
     .emp-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Suscripción a alertas de empleo (newsletter) ── */
+.emp-v2 .emp-subscribe { max-width: 1120px; margin: 0 auto; padding: 0 1.25rem 4rem; }
+.emp-subscribe-card {
+    display: flex; gap: 1.5rem; align-items: flex-start; position: relative;
+    background:
+        radial-gradient(900px 300px at 90% -40%, rgba(93, 163, 52, .25), transparent 60%),
+        linear-gradient(135deg, var(--navy), var(--navy-700));
+    color: #fff; border-radius: var(--radius); padding: 2.25rem 2rem; box-shadow: var(--shadow-lg);
+}
+.emp-subscribe-icon { flex: none; display: grid; place-items: center; width: 3.4rem; height: 3.4rem; border-radius: 14px; background: rgba(255, 255, 255, .12); color: #bfe6a6; }
+.emp-subscribe-icon svg { width: 1.7rem; height: 1.7rem; }
+.emp-subscribe-body { flex: 1; min-width: 0; }
+.emp-subscribe-body h2 { font-family: 'Outfit', sans-serif; font-weight: 800; font-size: clamp(1.35rem, 3vw, 1.8rem); margin: 0 0 .4rem; color: #fff; }
+.emp-subscribe-body > p { margin: 0 0 1.1rem; color: #d9dcf0; line-height: 1.55; font-size: 1rem; max-width: 60ch; }
+.emp-subscribe-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.emp-subscribe-row { display: flex; gap: .6rem; flex-wrap: wrap; }
+.emp-subscribe-row input[type=email] {
+    flex: 1; min-width: 200px; padding: .85rem 1rem; border: 0; border-radius: 12px;
+    font-size: 1rem; background: #fff; color: var(--ink);
+}
+.emp-subscribe-row input[type=email]:focus { outline: 3px solid rgba(93, 163, 52, .55); outline-offset: 1px; }
+.emp-subscribe-row .emp-btn { flex: none; }
+.emp-subscribe-msg { margin: .9rem 0 0; padding: .7rem .85rem; border-radius: 10px; font-size: .9rem; line-height: 1.45; }
+.emp-subscribe-msg[hidden] { display: none; }
+.emp-subscribe-msg.error { background: rgba(255, 255, 255, .16); color: #ffdad5; }
+.emp-subscribe-msg.ok { background: rgba(93, 163, 52, .3); color: #eafce0; }
+.emp-subscribe-legal { margin: .9rem 0 0; font-size: .78rem; color: #aeb3d4; line-height: 1.5; }
+@media (max-width: 640px) {
+    .emp-subscribe-card { flex-direction: column; gap: 1rem; padding: 1.75rem 1.35rem; }
+    .emp-subscribe-row .emp-btn { width: 100%; }
+}
