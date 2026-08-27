@@ -63,6 +63,7 @@ function render_public_header(array $assets, array $contact, string $active = ''
                         médico</a>
                     <a href="<?= e(base_url('repositorio')) ?>" class="<?= e($navClass('repositorio')) ?>">Repositorio</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="<?= e($navClass('noticias')) ?>">Noticias</a>
+                    <a href="<?= e(base_url('empleos')) ?>" class="<?= e($navClass('empleos')) ?>">Empleos</a>
                 </nav>
 
                 <div class="nav-actions">
@@ -104,6 +105,7 @@ function render_public_header(array $assets, array $contact, string $active = ''
                     <a href="<?= e(base_url('directorio-medico')) ?>" class="mobile-link">Directorio médico</a>
                     <a href="<?= e(base_url('repositorio')) ?>" class="mobile-link">Repositorio Digital</a>
                     <a href="<?= e(base_url('noticias')) ?>" class="mobile-link">Noticias</a>
+                    <a href="<?= e(base_url('empleos')) ?>" class="mobile-link">Empleos</a>
                     <a href="<?= e(base_url('#buscar-atencion')) ?>" class="mobile-link">
                         <i data-lucide="search" class="h-4 w-4"></i> Buscar atención
                     </a>
