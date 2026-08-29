@@ -36,6 +36,10 @@ foreach (['/portal', '/portal-medico', '/admin'] as $p) {
 if (!$isLocal && !$isSensitivePath):
 ?>
 <!-- Google tag (gtag.js) -->
+<?php /* Lighthouse: sin preconnect se pierden ~300 ms en el DNS+TLS de Google
+         antes de poder empezar a bajar gtag.js (170 KB, el script mas pesado). */ ?>
+<link rel="preconnect" href="https://www.googletagmanager.com">
+<link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
 <script async src="https://www.googletagmanager.com/gtag/js?id=<?= $GA_MEASUREMENT_ID ?>"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
