@@ -675,6 +675,484 @@
 }
 
 .agendar-v2 .specialty-card:not(.ag-top-card) .ag-card-count {
-    margin-left: auto;
-    padding-left: .5rem;
+    font-size: .74rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* ============================================================================
+   Onboarding v3 — una decisión por pantalla
+   El paso 3 pedía elegir hora Y rellenar seis campos con captcha a la vez.
+   Ahora: (3) fecha y hora → (4) tus datos. Esto viste esa separación.
+   ========================================================================== */
+
+/* ── Atajo a las próximas fechas con cupo ──────────────────────────────
+   Con agendas poco cargadas el mes se ve casi todo gris y el paciente no
+   sabe dónde mirar. Esto pone los días con hueco al frente, a un toque. */
+.agendar-v2 .cal-rapido {
+    grid-column: 1 / -1;               /* ocupa las dos columnas del picker */
+    margin-bottom: 1.25rem;
+}
+
+.agendar-v2 .cal-rapido-label {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .6rem;
+}
+
+.agendar-v2 .cal-rapido-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
+    gap: .6rem;
+}
+
+.agendar-v2 .cal-rapido-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .1rem;
+    padding: .7rem .5rem .6rem;
+    border: 1px solid var(--gr-line);
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+}
+
+.agendar-v2 .cal-rapido-chip:hover {
+    border-color: var(--gr);
+    background: var(--gr-tint);
+    box-shadow: 0 6px 16px -8px rgba(93, 163, 52, .5);
+}
+
+.agendar-v2 .cal-rapido-dia,
+.agendar-v2 .cal-rapido-mes {
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+}
+
+.agendar-v2 .cal-rapido-num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.05;
+    color: var(--nv);
+    letter-spacing: -0.02em;
+}
+
+.agendar-v2 .cal-rapido-cupos {
+    margin-top: .25rem;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--gr-deep);
+}
+
+.agendar-v2 .cal-rapido-chip.is-active {
+    border-color: var(--gr);
+    background: var(--gr);
+    box-shadow: 0 10px 22px -10px rgba(93, 163, 52, .65);
+}
+
+.agendar-v2 .cal-rapido-chip.is-active .cal-rapido-dia,
+.agendar-v2 .cal-rapido-chip.is-active .cal-rapido-mes,
+.agendar-v2 .cal-rapido-chip.is-active .cal-rapido-cupos {
+    color: rgba(255, 255, 255, .85);
+}
+
+.agendar-v2 .cal-rapido-chip.is-active .cal-rapido-num {
+    color: #fff;
+}
+
+/* ── Salida del paso 3: la única acción tras elegir hora ─────────────── */
+.agendar-v2 .ag-continuar {
+    position: sticky;                  /* siempre al alcance del pulgar */
+    bottom: .75rem;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--nv) 0%, var(--nv-deep) 100%);
+    box-shadow: 0 18px 40px -18px rgba(38, 33, 97, .7);
+    color: #fff;
+}
+
+.agendar-v2 .ag-continuar[hidden] {
+    display: none;                     /* [hidden] pierde contra display:flex */
+}
+
+.agendar-v2 .ag-continuar-label {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: #a7e07a;
+}
+
+.agendar-v2 .ag-continuar-when {
+    font-size: 1.02rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: #fff;
+}
+
+.agendar-v2 .ag-continuar-btn {
+    flex: 0 0 auto;
+    padding: .7rem 1.4rem;
+    font-weight: 700;
+}
+
+/* ── Resumen de la cita, arriba del paso 4 ────────────────────────────
+   Antes vivía enterrado sobre el captcha, a 900 px de scroll. Es lo que
+   el paciente necesita tener delante mientras escribe sus datos. */
+.agendar-v2 .ag-resumen {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.35rem;
+    margin-bottom: 1rem;
+    border-radius: 18px;
+    background:
+        radial-gradient(120% 140% at 100% 0%, rgba(93, 163, 52, .3), transparent 55%),
+        linear-gradient(135deg, var(--nv) 0%, var(--nv-deep) 100%);
+    box-shadow: 0 16px 36px -20px rgba(38, 33, 97, .6);
+    color: #fff;
+}
+
+.agendar-v2 .ag-resumen-icono {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .13);
+    color: #a7e07a;
+}
+
+.agendar-v2 .ag-resumen-txt {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.agendar-v2 .ag-resumen-label {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+    color: #a7e07a;
+}
+
+.agendar-v2 .ag-resumen h2 {
+    margin: .1rem 0 .15rem;
+    font-size: clamp(1.02rem, 2.4vw, 1.25rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: #fff;
+}
+
+.agendar-v2 .ag-resumen .ag-confirm-medico {
+    font-size: .85rem;
+    color: rgba(255, 255, 255, .78);
+}
+
+.agendar-v2 .ag-resumen-cambiar {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .45rem .85rem;
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 999px;
+    background: transparent;
+    color: #fff;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+}
+
+.agendar-v2 .ag-resumen-cambiar:hover {
+    background: rgba(255, 255, 255, .14);
+    border-color: rgba(255, 255, 255, .55);
+}
+
+/* ── Formulario del paso 4 ────────────────────────────────────────────── */
+.agendar-v2 .ag-form-intro {
+    margin: -.35rem 0 1.1rem;
+    font-size: .88rem;
+    color: var(--muted);
+}
+
+.agendar-v2 .ag-acciones {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-top: 1.25rem;
+}
+
+.agendar-v2 .ag-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .7rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--nv);
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+}
+
+.agendar-v2 .ag-volver:hover {
+    background: var(--soft);
+    border-color: #dcd9ef;
+}
+
+.agendar-v2 .ag-submit {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: .8rem 1.5rem;
+    font-size: .98rem;
+    font-weight: 700;
+}
+
+/* Lo que despeja las dudas del último momento: coste, confirmación, datos. */
+.agendar-v2 .ag-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.25rem;
+    margin: 1.1rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    list-style: none;
+}
+
+.agendar-v2 .ag-trust li {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.agendar-v2 .ag-trust i {
+    color: var(--gr);
+}
+
+/* ── Móvil ────────────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+    /* Con 4 pasos los rótulos no caben. Se deja el número de todos y el
+       rótulo solo del paso en curso: font-size:0 apaga el texto suelto
+       del <li> sin tocar el <span> del número, que trae el suyo. */
+    .agendar-v2 .portal-steps li {
+        font-size: 0;
+        gap: 0;
+    }
+
+    .agendar-v2 .portal-steps li span {
+        font-size: .78rem;
+    }
+
+    .agendar-v2 .portal-steps li.is-current {
+        font-size: .76rem;
+        gap: .35rem;
+    }
+
+    /* Con auto-fit los 4 atajos caian 3+1 y el ultimo quedaba huerfano.
+       Cuatro columnas fijas los mantienen en una sola fila. */
+    .agendar-v2 .cal-rapido-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: .4rem;
+    }
+
+    .agendar-v2 .cal-rapido-chip {
+        padding: .6rem .25rem .5rem;
+    }
+
+    .agendar-v2 .cal-rapido-num {
+        font-size: 1.3rem;
+    }
+
+    .agendar-v2 .cal-rapido-dia,
+    .agendar-v2 .cal-rapido-mes,
+    .agendar-v2 .cal-rapido-cupos {
+        font-size: .62rem;
+    }
+
+    .agendar-v2 .ag-continuar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .75rem;
+        text-align: center;
+    }
+
+    .agendar-v2 .ag-continuar-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .agendar-v2 .ag-resumen {
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    .agendar-v2 .ag-resumen-cambiar {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .agendar-v2 .ag-acciones {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .agendar-v2 .ag-volver {
+        justify-content: center;
+    }
+}
+
+/* Tailwind (preflight) declara `svg{display:block}`, asi que cada icono suelto
+   dentro de un <p> empujaba el texto a la linea de abajo: en la tarjeta del
+   medico el estetoscopio salia solo, encima de "CARDIOLOGIA - Adultos". */
+.agendar-v2 p > svg {
+    display: inline-block;
+    vertical-align: -0.15em;
+}
+
+/* ── Rejilla de la tarjeta de especialidad ────────────────────────────
+   portal.css declara `grid-template-columns: 40px 1fr 20px` (icono, nombre,
+   flecha). Al meter el contador de especialistas como CUARTO hijo se corrio
+   todo: el nombre cayo en la columna de 40 px —"GINE / COL / OGIA / Y / OBS /
+   TET / RICI / A"— y la flecha se fue a una segunda fila. */
+/* Con el contador en la MISMA fila el nombre se quedaba en 133 px y
+   "ANESTESIOLOGIA" partia en dos. Baja a una segunda fila, de subtitulo:
+   el nombre recupera el ancho entero y de paso se lee mejor. */
+.agendar-v2 .specialty-card {
+    grid-template-columns: 40px minmax(0, 1fr) 20px;
+    row-gap: .05rem;
+}
+
+.agendar-v2 .specialty-card .specialty-card-icon {
+    grid-row: 1 / 3;
+}
+
+.agendar-v2 .specialty-card .specialty-card-name {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.agendar-v2 .specialty-card .ag-card-count {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.agendar-v2 .specialty-card .specialty-card-arrow {
+    grid-column: 3;
+    grid-row: 1 / 3;
+}
+
+/* Las destacadas no llevan icono ni flecha: una sola columna, nombre y
+   debajo cuantos especialistas hay. */
+.agendar-v2 .specialty-card.ag-top-card .specialty-card-name,
+.agendar-v2 .specialty-card.ag-top-card .ag-card-count {
+    grid-column: 1;
+}
+
+.agendar-v2 .specialty-card.ag-top-card {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: .3rem;
+    padding: 1rem;
+    min-height: 88px;
+}
+
+.agendar-v2 .ag-top-card .specialty-card-name {
+    font-size: .9rem;
+    line-height: 1.25;
+}
+
+.agendar-v2 .ag-top-card .ag-card-count {
+    font-size: .74rem;
+    color: var(--gr-deep);
+    font-weight: 600;
+}
+
+/* Solo las especialidades de palabra kilometrica (OTORRINOLARINGOLOGIA,
+   GASTROENTEROLOGIA). Ver ag_nombre_largo() en agendar.php. */
+.agendar-v2 .specialty-card-name.es-larga {
+    font-size: .78rem;
+    letter-spacing: 0;
+}
+
+/* ── Sin cupos ────────────────────────────────────────────────────────
+   Era una frase suelta y el camino se acababa ahi. Ahora el paciente ve
+   a donde ir: otro medico de la misma especialidad, o el telefono. */
+.agendar-v2 .ag-vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .6rem;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+}
+
+.agendar-v2 .ag-vacio > svg {
+    color: var(--nv);
+    opacity: .45;
+}
+
+.agendar-v2 .ag-vacio h3 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--nv);
+}
+
+.agendar-v2 .ag-vacio p {
+    max-width: 42ch;
+    font-size: .9rem;
+    line-height: 1.55;
+    color: var(--muted);
+}
+
+.agendar-v2 .ag-vacio-acciones {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: .5rem;
+}
+
+.agendar-v2 .ag-vacio-tel {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .7rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--nv);
+    font-weight: 700;
+    font-size: .9rem;
+}
+
+.agendar-v2 .ag-vacio-tel:hover {
+    background: var(--soft);
+    border-color: #dcd9ef;
 }

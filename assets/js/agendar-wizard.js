@@ -22,8 +22,9 @@
         1: document.getElementById('ag-paso-1'),
         2: document.getElementById('ag-paso-2'),
         3: document.getElementById('ag-paso-3'),
+        4: document.getElementById('ag-paso-4'),
     };
-    if (!secciones[1] || !secciones[2] || !secciones[3]) return;
+    if (!secciones[1] || !secciones[2] || !secciones[3] || !secciones[4]) return;
 
     const pasos = document.querySelectorAll('.portal-steps li');
     const listaDocs = document.getElementById('ag-doctors');
@@ -32,6 +33,7 @@
     const tarjetaSlots = document.getElementById('ag-slot-card');
     const form = document.getElementById('guest-form');
     const cabecera = document.getElementById('ag-cabecera');
+    const barraSeguir = document.getElementById('ag-continuar');
     const confirmMedico = document.getElementById('ag-confirm-medico');
 
     /* ---------------------------------------------------------------- utils */
@@ -44,13 +46,26 @@
         if (window.lucide) window.lucide.createIcons();
     }
 
-    /** Lleva la vista al principio del paso, sin brusquedad. */
+    /**
+     * Lleva la vista al principio del paso, sin brusquedad.
+     *
+     * scrollIntoView({block:'start'}) dejaba el destino DEBAJO de la cabecera
+     * del sitio, que es sticky y mide ~153 px en escritorio: al cambiar de paso
+     * el indicador quedaba tapado entero y el resumen a medias. Se mide la
+     * cabecera en vivo en vez de restar un numero fijo, porque su alto cambia
+     * con el ancho de pantalla.
+     */
     function irA(el) {
         if (!el) return;
+        const cab = document.querySelector('.site-header');
+        const tapa = cab && getComputedStyle(cab).position === 'sticky'
+            ? cab.getBoundingClientRect().height
+            : 0;
+        const y = Math.max(0, window.scrollY + el.getBoundingClientRect().top - tapa - 12);
         try {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.scrollTo({ top: y, behavior: 'smooth' });
         } catch (e) {
-            el.scrollIntoView();
+            window.scrollTo(0, y);
         }
     }
 
@@ -71,7 +86,7 @@
      * hacia delante sí, al responder al botón atrás no.
      */
     function mostrarPaso(n, empujar) {
-        [1, 2, 3].forEach((i) => { secciones[i].hidden = i !== n; });
+        [1, 2, 3, 4].forEach((i) => { secciones[i].hidden = i !== n; });
         marcarPasos(n);
         estado.step = n;
 
@@ -82,7 +97,7 @@
         if (empujar) {
             let url = baseUrl;
             if (n === 2 && estado.specialtyId) url += '?specialty_id=' + estado.specialtyId;
-            if (n === 3 && estado.doctorId) url += '?specialty_id=' + estado.specialtyId + '&doctor_id=' + estado.doctorId;
+            if (n >= 3 && estado.doctorId) url += '?specialty_id=' + estado.specialtyId + '&doctor_id=' + estado.doctorId;
             history.pushState({ ...estado }, '', url);
         }
 
@@ -158,8 +173,8 @@
             confirmMedico.textContent = d.name + ' · ' + d.specialty + sub2;
         }
         if (tarjetaSlots) tarjetaSlots.dataset.doctorId = String(id);
+        if (barraSeguir) barraSeguir.hidden = true;   // otra agenda, otra hora
         if (form) {
-            form.classList.add('hidden');           // se abre al elegir hora
             const oculto = form.querySelector('input[name="doctor_id"]');
             if (oculto) oculto.value = String(id);
             const hora = document.getElementById('appointment_time');
@@ -205,6 +220,14 @@
             elegirMedico(parseInt(elegir.dataset.elegirMedico, 10), true);
             return;
         }
+        if (ev.target.closest('#ag-ir-datos')) {
+            ev.preventDefault();
+            // Sin hora elegida no hay nada que confirmar.
+            const hora = document.getElementById('appointment_time');
+            if (!hora || !hora.value) return;
+            mostrarPaso(4, true);
+            return;
+        }
         const volver = ev.target.closest('[data-volver]');
         if (volver) {
             ev.preventDefault();
@@ -228,7 +251,7 @@
     const picker = document.getElementById('slot-picker');
     if (picker) {
         picker.addEventListener('click', (ev) => {
-            if (!ev.target.closest('.cal-cell[data-day]')) return;
+            if (!ev.target.closest('[data-day]')) return;
             setTimeout(() => {
                 const horarios = picker.querySelector('.cal-times');
                 if (!horarios) return;
@@ -243,7 +266,13 @@
     window.addEventListener('popstate', (ev) => {
         const st = ev.state;
         if (!st) { mostrarPaso(1, false); return; }
-        if (st.step === 3 && st.doctorId) { elegirMedico(st.doctorId, false); return; }
+        // Volver del 4 al 3 no debe recargar horarios ni borrar la seleccion.
+        if (st.step === 4 && st.doctorId) { mostrarPaso(4, false); return; }
+        if (st.step === 3 && st.doctorId) {
+            if (estado.doctorId === st.doctorId) { mostrarPaso(3, false); return; }
+            elegirMedico(st.doctorId, false);
+            return;
+        }
         if (st.step === 2 && st.specialtyId) { elegirEspecialidad(st.specialtyId, false); return; }
         estado.specialtyId = 0; estado.doctorId = 0;
         mostrarPaso(1, false);

@@ -138,7 +138,23 @@
                 }
                 daysData = r.data?.days || {};
                 if (Object.keys(daysData).length === 0) {
-                    picker.innerHTML = '<p class="portal-empty-text">No hay horarios disponibles en los próximos 30 días.</p>';
+                    // Antes era una frase suelta y ahi se acababa el camino: el
+                    // paciente tenia que deducir solo que podia volver atras.
+                    const tel = window.AGENDAR_TEL || '';
+                    const soloDigitos = tel.replace(/\D/g, '');
+                    picker.innerHTML = `
+                        <div class="ag-vacio">
+                            <i data-lucide="calendar-x" class="h-9 w-9"></i>
+                            <h3>Sin cupos en los próximos 30 días</h3>
+                            <p>Este especialista no tiene agenda abierta ahora mismo.
+                               Puedes elegir otro médico de la misma especialidad, o
+                               llamarnos y te ubicamos una cita.</p>
+                            <div class="ag-vacio-acciones">
+                                <button type="button" class="btn btn-green" data-volver="2">Ver otros médicos</button>
+                                ${tel ? `<a class="ag-vacio-tel" href="tel:1${soloDigitos}"><i data-lucide="phone" class="h-4 w-4"></i> ${tel}</a>` : ''}
+                            </div>
+                        </div>`;
+                    if (window.lucide) lucide.createIcons();
                     return;
                 }
                 // El paciente aterrizaba en el mes actual, que puede tener 3 dias
@@ -203,7 +219,30 @@
             }
         }
 
-        picker.innerHTML = `
+        // Con disponibilidad escasa el mes entero se ve gris y el paciente no
+        // sabe donde mirar. Estos son los proximos dias con cupo, a un toque.
+        const proximos = Object.keys(daysData)
+            .filter(d => (daysData[d] || []).length && d >= minDate)
+            .sort()
+            .slice(0, 4);
+        const atajos = proximos.length > 1 ? `
+            <div class="cal-rapido">
+                <p class="cal-rapido-label">Próximas fechas disponibles</p>
+                <div class="cal-rapido-grid">
+                    ${proximos.map(dd => {
+                        const fd = new Date(dd + 'T00:00:00');
+                        const n  = daysData[dd].length;
+                        return `<button type="button" class="cal-rapido-chip${dd === selectedDay ? ' is-active' : ''}" data-day="${dd}">
+                            <span class="cal-rapido-dia">${fd.toLocaleDateString('es-DO', { weekday: 'short' })}</span>
+                            <span class="cal-rapido-num">${fd.getDate()}</span>
+                            <span class="cal-rapido-mes">${fd.toLocaleDateString('es-DO', { month: 'short' })}</span>
+                            <span class="cal-rapido-cupos">${n} ${n === 1 ? 'hora' : 'horas'}</span>
+                        </button>`;
+                    }).join('')}
+                </div>
+            </div>` : '';
+
+        picker.innerHTML = atajos + `
             <div class="cal-shell">
                 <div class="cal-head">
                     <button type="button" class="cal-nav" id="cal-prev" ${canPrev ? '' : 'disabled'}>‹</button>
@@ -240,8 +279,18 @@
             viewMonth++; if (viewMonth > 11) { viewMonth = 0; viewYear++; }
             render();
         });
-        picker.querySelectorAll('.cal-cell[data-day]').forEach(b => {
-            b.addEventListener('click', () => { selectedDay = b.dataset.day; render(); });
+        // [data-day] cubre las celdas del calendario Y los atajos de arriba.
+        picker.querySelectorAll('[data-day]').forEach(b => {
+            b.addEventListener('click', () => {
+                selectedDay = b.dataset.day;
+                // Un atajo puede apuntar al mes siguiente: sin mover la vista, el
+                // calendario se quedaba en agosto sin marcar nada al pulsar "1 SEP".
+                const partes = selectedDay.split('-').map(Number);
+                viewYear = partes[0];
+                viewMonth = partes[1] - 1;
+                limpiarHora();      // cambiar de dia invalida la hora ya elegida
+                render();
+            });
         });
         picker.querySelectorAll('.cal-time').forEach(b => {
             b.addEventListener('click', () => {
@@ -250,14 +299,35 @@
                 const ts = b.dataset.time;
                 apptInput.value = ts;
                 const d = new Date(ts.replace(' ', 'T'));
-                confirmWhen.textContent = d.toLocaleDateString('es-DO', {
+                // Con text-transform:capitalize salia "Lunes, 31 De Agosto De
+                // 2026, 08:00 A. M."; en espanol solo va la primera letra.
+                const crudo = d.toLocaleDateString('es-DO', {
                     weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
                     hour: '2-digit', minute: '2-digit', hour12: true,
                 });
-                form.classList.remove('hidden');
-                setTimeout(() => form.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                const cuando = crudo.charAt(0).toUpperCase() + crudo.slice(1);
+                if (confirmWhen) confirmWhen.textContent = cuando;
+                // El formulario ya no se despliega aqui: vive en el paso 4.
+                // Esto solo habilita la salida, que es lo unico que queda.
+                const elegido = document.getElementById('ag-elegido');
+                const barra   = document.getElementById('ag-continuar');
+                if (elegido) elegido.textContent = cuando;
+                if (barra) {
+                    barra.hidden = false;
+                    if (barra.getBoundingClientRect().bottom > window.innerHeight) {
+                        try { barra.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+                        catch (e) { barra.scrollIntoView(); }
+                    }
+                }
             });
         });
+    }
+
+    /** Deja la seleccion de hora en blanco y esconde la salida al paso 4. */
+    function limpiarHora() {
+        if (apptInput) apptInput.value = '';
+        const barra = document.getElementById('ag-continuar');
+        if (barra) barra.hidden = true;
     }
 
     function formatDayLabel(dateStr) {

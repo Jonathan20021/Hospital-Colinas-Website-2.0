@@ -85,6 +85,23 @@ foreach ($allDocs as $d) {
     if ($sid) { $docsPorSpec[$sid] = ($docsPorSpec[$sid] ?? 0) + 1; }
 }
 
+/**
+ * true si el nombre trae una palabra que no cabe de una pieza en la tarjeta.
+ *
+ * OTORRINOLARINGOLOGIA pide 199 px y solo hay 167, asi que siempre parte. El
+ * guionado automatico (hyphens:auto + lang="es-DO") depende de que el navegador
+ * tenga cargado el diccionario espanol, y no en todos esta: sin el sale
+ * "GASTROENTEROLOGI / A". Bajar la letra SOLO en esos nombres es determinista y
+ * no encoge las otras 23 tarjetas.
+ */
+function ag_nombre_largo(string $nombre): bool
+{
+    foreach (preg_split('/\s+/u', trim($nombre)) as $palabra) {
+        if (mb_strlen($palabra, 'UTF-8') > 15) { return true; }
+    }
+    return false;
+}
+
 // Las mas solicitadas primero (ver $topSpecialtyNames en includes/data.php).
 $topSpecs = [];
 foreach (($topSpecialtyNames ?? []) as $nombre) {
@@ -151,7 +168,8 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
             <ol class="portal-steps">
                 <li class="<?= $step === 1 ? 'is-current' : 'is-done' ?>"><span>1</span> Especialidad</li>
                 <li class="<?= $step === 2 ? 'is-current' : ($step > 2 ? 'is-done' : '') ?>"><span>2</span> Médico</li>
-                <li class="<?= $step === 3 ? 'is-current' : '' ?>"><span>3</span> Fecha y datos</li>
+                <li class="<?= $step === 3 ? 'is-current' : '' ?>"><span>3</span> Fecha y hora</li>
+                <li><span>4</span> Tus datos</li>
             </ol>
 
             <?php /* Los 3 pasos viven en la MISMA pagina; se muestra el que toca. */ ?>
@@ -170,7 +188,7 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                                 <?php foreach ($topSpecs as $sp): ?>
                                     <button type="submit" name="specialty_id" value="<?= (int) $sp['id'] ?>" class="specialty-card ag-top-card"
                                         data-search="<?= e(mb_strtolower($sp['name'], 'UTF-8')) ?>">
-                                        <span class="specialty-card-name"><?= e($sp['name']) ?></span>
+                                        <span class="specialty-card-name<?= ag_nombre_largo((string) $sp['name']) ? ' es-larga' : '' ?>"><?= e($sp['name']) ?></span>
                                         <?php if (!empty($docsPorSpec[(int) $sp['id']])): ?>
                                             <span class="ag-card-count"><?= (int) $docsPorSpec[(int) $sp['id']] ?> especialistas</span>
                                         <?php endif; ?>
@@ -197,9 +215,10 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                                 <button type="submit" name="specialty_id" value="<?= (int) $s['id'] ?>" class="specialty-card"
                                     data-search="<?= e(mb_strtolower($s['name'], 'UTF-8')) ?>">
                                     <span class="specialty-card-icon"><i data-lucide="stethoscope" class="h-5 w-5"></i></span>
-                                    <span class="specialty-card-name"><?= e($s['name']) ?></span>
+                                    <span class="specialty-card-name<?= ag_nombre_largo((string) $s['name']) ? ' es-larga' : '' ?>"><?= e($s['name']) ?></span>
                                     <?php if (!empty($docsPorSpec[(int) $s['id']])): ?>
-                                        <span class="ag-card-count"><?= (int) $docsPorSpec[(int) $s['id']] ?></span>
+                                        <?php $n = (int) $docsPorSpec[(int) $s['id']]; ?>
+                                        <span class="ag-card-count"><?= $n ?> <?= $n === 1 ? 'especialista' : 'especialistas' ?></span>
                                     <?php endif; ?>
                                     <i data-lucide="arrow-right" class="h-4 w-4 specialty-card-arrow"></i>
                                 </button>
@@ -349,8 +368,38 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     <div id="slot-picker" class="portal-slot-picker hidden"></div>
                 </div>
 
-                <form id="guest-form" class="portal-card mt-4 hidden">
+                <?php /* Aparece al elegir hora. Antes el formulario entero se
+                         desplegaba aqui mismo; ahora esto es la unica salida. */ ?>
+                <div class="ag-continuar" id="ag-continuar" hidden>
+                    <div>
+                        <p class="ag-continuar-label">Hora seleccionada</p>
+                        <p class="ag-continuar-when" id="ag-elegido">&mdash;</p>
+                    </div>
+                    <button type="button" class="btn btn-green ag-continuar-btn" id="ag-ir-datos">
+                        Continuar <i data-lucide="arrow-right" class="h-4 w-4"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section class="ag-paso" id="ag-paso-4" data-paso="4" hidden>
+                <!-- Paso 4: los datos del paciente -->
+                <?php /* El resumen va ARRIBA, no enterrado sobre el captcha: es
+                         lo que el paciente necesita ver mientras escribe. */ ?>
+                <div class="ag-resumen" id="ag-resumen">
+                    <div class="ag-resumen-icono"><i data-lucide="calendar-check" class="h-6 w-6"></i></div>
+                    <div class="ag-resumen-txt">
+                        <p class="ag-resumen-label">Tu cita</p>
+                        <h2 id="confirm-when">&mdash;</h2>
+                        <p class="ag-confirm-medico" id="ag-confirm-medico"></p>
+                    </div>
+                    <button type="button" class="ag-resumen-cambiar" data-volver="3">
+                        <i data-lucide="pencil" class="h-3.5 w-3.5"></i> Cambiar
+                    </button>
+                </div>
+
+                <form id="guest-form" class="portal-card">
                     <h2 class="portal-section-title">Tus datos para la cita</h2>
+                    <p class="ag-form-intro">Los necesitamos para registrarte en el expediente y enviarte la confirmación.</p>
                     <input type="hidden" name="doctor_id" value="<?= $docId ?>">
                     <input type="hidden" name="appointment_time" id="appointment_time">
 
@@ -412,14 +461,6 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     <textarea name="notes" id="g-notes" rows="2" class="form-input"
                         placeholder="Síntomas, consulta general, control, etc."></textarea>
 
-                    <?php /* Se queda pegado arriba mientras el paciente rellena: el nombre
-                             del medico estaba a 900+ px de scroll y se perdia de vista. */ ?>
-                    <div class="portal-confirm-box mt-4" id="ag-confirm">
-                        <p>Tu cita</p>
-                        <h3 id="confirm-when">—</h3>
-                        <p class="ag-confirm-medico" id="ag-confirm-medico"></p>
-                    </div>
-
                     <?php if ($hcaptchaSiteKey): ?>
                         <div class="h-captcha mt-4" data-sitekey="<?= e($hcaptchaSiteKey) ?>"></div>
                     <?php endif; ?>
@@ -430,9 +471,20 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
 
                     <div id="guest-result"></div>
 
-                    <button type="submit" class="btn btn-green mt-3" id="g-submit">
-                        <i data-lucide="check" class="h-4 w-4"></i> Confirmar cita
-                    </button>
+                    <div class="ag-acciones">
+                        <button type="button" class="ag-volver" data-volver="3">
+                            <i data-lucide="arrow-left" class="h-4 w-4"></i> Volver
+                        </button>
+                        <button type="submit" class="btn btn-green ag-submit" id="g-submit">
+                            <i data-lucide="check" class="h-4 w-4"></i> Confirmar cita
+                        </button>
+                    </div>
+
+                    <ul class="ag-trust">
+                        <li><i data-lucide="shield-check" class="h-4 w-4"></i> Agendar no tiene costo</li>
+                        <li><i data-lucide="mail" class="h-4 w-4"></i> Confirmación por correo</li>
+                        <li><i data-lucide="lock" class="h-4 w-4"></i> Datos protegidos</li>
+                    </ul>
                 </form>
 
                 <script>
@@ -442,6 +494,7 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     window.AGENDAR_BASE_URL = <?= json_encode(base_url('agendar'), JSON_UNESCAPED_SLASHES) ?>;
                     window.AGENDAR_STATE = { specialtyId: <?= (int) $specId ?>, doctorId: <?= (int) $docId ?>, step: <?= (int) $step ?> };
                     window.AGENDAR_HCAPTCHA = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
+                    window.AGENDAR_TEL = <?= json_encode((string) ($contact['phone'] ?? ''), JSON_UNESCAPED_UNICODE) ?>;
                     window.AGENDAR_SLOTS_URL = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
                     window.AGENDAR_SUBMIT_URL = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
                 </script>
