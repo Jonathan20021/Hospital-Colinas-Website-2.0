@@ -243,7 +243,7 @@ $description = 'Aprende a ver tus resultados de laboratorio, imágenes y recetas
 
     <?php render_public_footer($assets, $contact, $year); ?>
     <?php require __DIR__ . '/includes/widget-colinas-ai.php'; ?>
-    <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide.min.js') ?: 1)) ?>"></script>
+    <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <script>
         (function () {

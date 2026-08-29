@@ -163,7 +163,7 @@ function admin_footer(): void
 
         <?php /* Lucide auto-hospedado: unpkg@latest era un punto unico de falla externo
                  (el panel se quedaba sin iconos si unpkg fallaba) y una version sin fijar. */ ?>
-        <script src="../assets/js/lucide.min.js?v=<?= e(admin_asset_version('js/lucide.min.js')) ?>"></script>
+        <script src="../assets/js/lucide-subset.js?v=<?= e(admin_asset_version('js/lucide-subset.js')) ?>"></script>
         <script>
             // Inicializar iconos de Lucide
             if (window.lucide) window.lucide.createIcons();

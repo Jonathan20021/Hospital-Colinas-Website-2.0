@@ -109,7 +109,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
             csrfToken: ''
         };
     </script>
-    <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide.min.js') ?: 1)) ?>"></script>
+    <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
     <script src="<?= e(base_url('assets/js/solicitar-estudios.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>

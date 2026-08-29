@@ -1,0 +1,30 @@
+# Iconos que NO aparecen literalmente en las plantillas: llegan desde datos
+# (includes/data.php, content.php, categorias del repositorio, servicios de
+# la BD...) y por eso el escaneo estatico no los ve. Se sacaron del HTML ya
+# renderizado de las 46 rutas publicas.
+#
+# Si alguna vez falta un icono, el subconjunto carga el bundle completo como
+# respaldo (no se rompe nada), pero conviene anadirlo aqui y regenerar:
+#   node tools/build-lucide-subset.cjs
+apple
+award
+bed-double
+blocks
+bone
+brain
+chart-no-axes-combined
+circle-help
+circle-parking
+droplets
+handshake
+landmark
+layers-3
+map
+microscope
+ribbon
+scissors
+search-check
+siren
+test-tube
+trending-up
+utensils

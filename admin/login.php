@@ -286,7 +286,7 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
     </main>
 
     <script src="../assets/js/qrcode.min.js?v=<?= e(admin_asset_version('js/qrcode.min.js')) ?>"></script>
-    <script src="../assets/js/lucide.min.js?v=<?= e(admin_asset_version('js/lucide.min.js')) ?>"></script>
+    <script src="../assets/js/lucide-subset.js?v=<?= e(admin_asset_version('js/lucide-subset.js')) ?>"></script>
     <script>
         if (window.lucide) window.lucide.createIcons();
         <?php if ($stage === 'enroll' && $enrollUri !== ''): ?>

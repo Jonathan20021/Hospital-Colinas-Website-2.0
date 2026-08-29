@@ -205,7 +205,7 @@ function doctor_layout_end(): void
         <?php endif; ?>
 
         <?php // Portal aislado: sin footer del sitio publico. ?>
-        <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide.min.js') ?: 1) ?>"></script>
+        <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide-subset.js') ?: 1) ?>"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($assetVersion) ?>"></script>
         <?php
@@ -380,7 +380,7 @@ function doctor_layout_end_bare(): void
     $v = (string) (@filemtime(__DIR__ . '/../assets/js/portal-medico.js') ?: 0);
     ?>
         </main>
-        <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide.min.js') ?: 1) ?>"></script>
+        <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= (int)(@filemtime(__DIR__ . '/../assets/js/lucide-subset.js') ?: 1) ?>"></script>
         <script>if (window.lucide) lucide.createIcons();</script>
         <script src="<?= e(base_url('assets/js/portal-medico.js')) ?>?v=<?= e($v) ?>"></script>
     </body>

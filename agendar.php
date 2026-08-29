@@ -375,7 +375,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
     </main>
 
     <?php render_public_footer($assets, $contact, $year); ?>
-    <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide.min.js') ?: 1)) ?>"></script>
+    <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
     <?php if ($step === 3): ?>
         <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
