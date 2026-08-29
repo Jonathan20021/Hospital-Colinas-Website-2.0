@@ -344,21 +344,146 @@
         const asc = '01234567890123456789', desc = '98765432109876543210';
         return asc.indexOf(d) !== -1 || desc.indexOf(d) !== -1;    // 12345…, 98765…
     }
-    function validateIdentity(cedula, phone) {
+    // Un validador POR CAMPO, para poder colgar el error del campo que falla
+    // en vez de soltar un aviso generico al pie. Espejan a Validator.php del
+    // servidor (api/helpers/Validator.php: checkCedula, checkPhone, junkDigits).
+    function validarCedula(cedula) {
         const cRaw = (cedula || '').trim();
+        if (cRaw === '') return 'Necesitamos tu cédula para registrarte.';
         if (/[A-Za-z]/.test(cRaw)) {                               // pasaporte / ID extranjero
             const al = cRaw.replace(/[^A-Za-z0-9]/g, '');
             if (al.length < 5 || al.length > 20 || /^(.)\1+$/.test(al)) return 'Ingresa una cédula o pasaporte válido.';
-        } else {
-            const cd = digitsOnly(cRaw);
-            if (cd.length < 8 || cd.length > 13) return 'La cédula no tiene un largo válido.';
-            if (junkDigits(cd)) return 'Ingresa una cédula real (no números repetidos o en secuencia).';
+            return null;
         }
+        const cd = digitsOnly(cRaw);
+        if (cd.length < 8 || cd.length > 13) return 'La cédula no tiene un largo válido.';
+        if (junkDigits(cd)) return 'Ingresa una cédula real (no números repetidos o en secuencia).';
+        return null;
+    }
+
+    function validarTelefono(phone) {
+        if (!(phone || '').trim()) return 'Necesitamos un teléfono para confirmarte la cita.';
         let pd = digitsOnly(phone);
         if (pd.length === 11 && pd[0] === '1') pd = pd.slice(1);
         if (pd.length !== 10) return 'El teléfono debe tener 10 dígitos.';
         if (junkDigits(pd)) return 'Ingresa un teléfono real (no números repetidos o en secuencia).';
         return null;
+    }
+
+    function validarNombre(v) {
+        const t = (v || '').trim();
+        if (t.length < 3) return 'Escribe tu nombre completo.';
+        if (!/[A-Za-zÁÉÍÓÚÑáéíóúñ]{2}/.test(t)) return 'Escribe tu nombre completo.';
+        return null;
+    }
+
+    function validarCorreo(v) {
+        const t = (v || '').trim();
+        if (t === '') return 'Necesitamos tu correo para enviarte la confirmación.';
+        // Deliberadamente laxa: el correo lo verifica el hospital al enviar.
+        return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t) ? null : 'Revisa tu correo electrónico.';
+    }
+
+    const CAMPOS = {
+        'g-name':   validarNombre,
+        'g-cedula': validarCedula,
+        'g-email':  validarCorreo,
+        'g-phone':  validarTelefono,
+    };
+
+    /** Cuelga (o quita) el mensaje de error debajo del campo. Devuelve si es válido. */
+    function marcarCampo(input, error) {
+        if (!input) return true;
+        const caja = input.parentElement;
+        let msg = caja.querySelector('.ag-error');
+        if (error) {
+            if (!msg) {
+                msg = document.createElement('p');
+                msg.className = 'ag-error';
+                msg.id = input.id + '-error';
+                caja.appendChild(msg);
+            }
+            msg.textContent = error;
+            input.classList.add('is-invalido');
+            input.setAttribute('aria-invalid', 'true');
+            input.setAttribute('aria-describedby', msg.id);
+        } else {
+            if (msg) msg.remove();
+            input.classList.remove('is-invalido');
+            input.removeAttribute('aria-invalid');
+            input.removeAttribute('aria-describedby');
+        }
+        return !error;
+    }
+
+    /** Revisa los cuatro campos. Devuelve el primero que falle, o null. */
+    function revisarFormulario() {
+        let primero = null;
+        for (const id of Object.keys(CAMPOS)) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            const err = CAMPOS[id](el.value);
+            marcarCampo(el, err);
+            if (err && !primero) primero = el;
+        }
+        return primero;
+    }
+
+    // ── Mascaras de formato ───────────────────────────────────────────────
+    // El servidor hace preg_replace('/\D/','') ANTES de validar, asi que dar
+    // formato no puede provocar un rechazo; solo evita erratas al teclear.
+    function formatoCedula(v) {
+        if (/[A-Za-z]/.test(v)) return v;                  // pasaporte: no se toca
+        const d = v.replace(/\D/g, '').slice(0, 11);
+        if (d.length <= 3)  return d;
+        if (d.length <= 10) return d.slice(0, 3) + '-' + d.slice(3);
+        return d.slice(0, 3) + '-' + d.slice(3, 10) + '-' + d.slice(10);
+    }
+
+    function formatoTelefono(v) {
+        let d = v.replace(/\D/g, '');
+        if (d.length === 11 && d[0] === '1') d = d.slice(1);
+        d = d.slice(0, 10);
+        if (d.length <= 3) return d;
+        if (d.length <= 6) return '(' + d.slice(0, 3) + ') ' + d.slice(3);
+        return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6);
+    }
+
+    function ponerMascara(el, formatea) {
+        if (!el) return;
+        el.addEventListener('input', (ev) => {
+            // Al borrar no se reformatea: si no, quitar un digito devolvia el
+            // parentesis o el guion y el cursor se quedaba peleando.
+            if (ev.inputType && ev.inputType.indexOf('delete') === 0) return;
+            // Solo con el cursor al final; editando en medio, recolocarlo bien
+            // es fragil y estorba mas de lo que ayuda.
+            if (el.selectionStart !== el.value.length) return;
+            const nuevo = formatea(el.value);
+            if (nuevo !== el.value) {
+                el.value = nuevo;
+                el.setSelectionRange(nuevo.length, nuevo.length);
+            }
+        });
+    }
+
+    // Se ata una sola vez aunque init() vuelva a correr al cambiar de medico.
+    if (form && !form.dataset.validaBound) {
+        form.dataset.validaBound = '1';
+        ponerMascara(document.getElementById('g-cedula'), formatoCedula);
+        ponerMascara(document.getElementById('g-phone'), formatoTelefono);
+        for (const id of Object.keys(CAMPOS)) {
+            const el = document.getElementById(id);
+            if (!el) continue;
+            // Al SALIR del campo, y solo si escribio algo: no se rine a nadie
+            // por un campo que aun no ha tocado.
+            el.addEventListener('blur', () => {
+                if (el.value.trim() !== '') marcarCampo(el, CAMPOS[id](el.value));
+            });
+            // Ya marcado en rojo, se corrige en vivo mientras teclea.
+            el.addEventListener('input', () => {
+                if (el.classList.contains('is-invalido')) marcarCampo(el, CAMPOS[id](el.value));
+            });
+        }
     }
 
     if (form && !form.dataset.bound) {
@@ -384,11 +509,15 @@
             ars:              getArsValue(),
         };
 
-        const idError = validateIdentity(payload.cedula, payload.phone);
-        if (idError) {
-            result.innerHTML = `<div class="portal-flash portal-flash-error" style="margin-top:1rem">${idError}</div>`;
+        // Antes esto soltaba un aviso generico al pie. Ahora cada campo malo
+        // queda marcado y el foco va al primero, que es donde hay que escribir.
+        const malo = revisarFormulario();
+        if (malo) {
             submitBtn.disabled = false;
             submitBtn.innerHTML = '✓ Confirmar cita';
+            malo.focus();
+            try { malo.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            catch (e) { malo.scrollIntoView(); }
             return;
         }
 
@@ -414,8 +543,22 @@
             if (j.success) {
                 renderConfirmation(j.data, payload.email);
             } else {
-                const errs = j.errors ? Object.values(j.errors).flat().join(' · ') : '';
-                result.innerHTML = `<div class="portal-flash portal-flash-error" style="margin-top:1rem">${j.message || 'Error.'} ${errs}</div>`;
+                // El servidor devuelve errors:{campo:[mensajes]}. Los que casan
+                // con un campo del formulario se cuelgan de el; el resto va al pie.
+                const mapa = { name: 'g-name', cedula: 'g-cedula', email: 'g-email', phone: 'g-phone' };
+                const sueltos = [];
+                let primero = null;
+                for (const [campo, msgs] of Object.entries(j.errors || {})) {
+                    const texto = Array.isArray(msgs) ? msgs.join(' ') : String(msgs);
+                    const el = mapa[campo] ? document.getElementById(mapa[campo]) : null;
+                    if (el) { marcarCampo(el, texto); if (!primero) primero = el; }
+                    else sueltos.push(texto);
+                }
+                if (primero) primero.focus();
+                const errs = sueltos.join(' · ');
+                result.innerHTML = (j.message || errs)
+                    ? `<div class="portal-flash portal-flash-error" style="margin-top:1rem">${j.message || 'Error.'} ${errs}</div>`
+                    : '';
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '✓ Confirmar cita';
                 if (window.hcaptcha) hcaptcha.reset();

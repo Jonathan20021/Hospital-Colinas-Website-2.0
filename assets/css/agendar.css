@@ -1156,3 +1156,87 @@
     background: var(--soft);
     border-color: #dcd9ef;
 }
+
+/* ── Validación campo a campo ─────────────────────────────────────────
+   Antes el unico aviso era una linea generica al pie, DESPUES del captcha.
+   Ahora el error cuelga del campo que falla. */
+.agendar-v2 .form-input.is-invalido {
+    border-color: #c0392b;
+    background: #fdf6f5;
+}
+
+.agendar-v2 .form-input.is-invalido:focus {
+    border-color: #c0392b;
+    box-shadow: 0 0 0 3px rgba(192, 57, 43, .16);
+}
+
+.agendar-v2 .ag-error {
+    display: flex;
+    align-items: flex-start;
+    gap: .3rem;
+    margin: .35rem 0 0;
+    font-size: .8rem;
+    line-height: 1.35;
+    font-weight: 500;
+    color: #a5342a;
+}
+
+.agendar-v2 .ag-error::before {
+    content: "!";
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 15px;
+    height: 15px;
+    margin-top: .08rem;
+    border-radius: 50%;
+    background: #c0392b;
+    color: #fff;
+    font-size: .66rem;
+    font-weight: 800;
+}
+
+/* ── Paso 2: quién puede atender antes ────────────────────────────────
+   El paciente elegia entre hasta 12 especialistas en orden arbitrario y sin
+   un dato con el que decidir. Se pinta DESPUES de las tarjetas: si el hospital
+   no responde, la linea desaparece y el paso 2 sigue funcionando igual. */
+.agendar-v2 .ag-prox {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .4rem;
+    padding: .2rem .6rem .2rem .5rem;
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.agendar-v2 .ag-prox::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.agendar-v2 .ag-prox.es-libre {
+    background: var(--gr-tint);
+    color: var(--gr-deep);
+}
+
+.agendar-v2 .ag-prox.es-sincupo {
+    background: #f4f2ee;
+    color: var(--muted);
+}
+
+.agendar-v2 .ag-prox.es-cargando {
+    background: transparent;
+    color: #a9a49a;
+    font-weight: 500;
+    padding-left: 0;
+}
+
+.agendar-v2 .ag-prox.es-cargando::before {
+    background: #d6d1c6;
+}

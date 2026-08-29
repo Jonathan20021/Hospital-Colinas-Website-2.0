@@ -329,6 +329,8 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                                         <p class="portal-hint">Horario:
                                             <?= e(substr($d['schedule']['start'] ?? '09:00', 0, 5)) ?>–<?= e(substr($d['schedule']['end'] ?? '17:00', 0, 5)) ?>
                                         </p>
+                                        <?php /* Lo rellena el JS con la primera fecha con cupo. */ ?>
+                                        <p class="ag-prox" data-prox="<?= (int) $d['id'] ?>" hidden></p>
                                     </div>
                                     <a href="?specialty_id=<?= $specId ?>&doctor_id=<?= (int) $d['id'] ?>" class="btn btn-green">Ver
                                         fechas →</a>
@@ -397,7 +399,12 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     </button>
                 </div>
 
-                <form id="guest-form" class="portal-card">
+                <?php /* novalidate: los campos siguen siendo `required` (semantica y
+                         lectores de pantalla), pero la validacion nativa se dispara
+                         ANTES del submit y con burbujas del navegador, en su idioma
+                         y sin estilo. Con esto manda la nuestra, que cuelga el
+                         mensaje del campo. */ ?>
+                <form id="guest-form" class="portal-card" novalidate>
                     <h2 class="portal-section-title">Tus datos para la cita</h2>
                     <p class="ag-form-intro">Los necesitamos para registrarte en el expediente y enviarte la confirmación.</p>
                     <input type="hidden" name="doctor_id" value="<?= $docId ?>">
@@ -496,6 +503,7 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     window.AGENDAR_HCAPTCHA = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
                     window.AGENDAR_TEL = <?= json_encode((string) ($contact['phone'] ?? ''), JSON_UNESCAPED_UNICODE) ?>;
                     window.AGENDAR_SLOTS_URL = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
+                    window.AGENDAR_PROXIMAS_URL = <?= json_encode(base_url('api/agendar-proximas.php')) ?>;
                     window.AGENDAR_SUBMIT_URL = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
                 </script>
             </section>

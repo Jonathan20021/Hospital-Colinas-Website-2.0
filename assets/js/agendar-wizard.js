@@ -127,6 +127,7 @@
             '<p><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i> ' + esc(d.specialty) + sub + '</p>' +
             oficina +
             '<p class="portal-hint">Horario: ' + esc(d.from) + '–' + esc(d.to) + '</p>' +
+            '<p class="ag-prox" data-prox="' + d.id + '" hidden></p>' +
             '</div>' +
             '<button type="button" class="btn btn-green" data-elegir-medico="' + d.id + '">Ver fechas →</button>' +
             '</article>';
@@ -139,7 +140,71 @@
         listaDocs.hidden = míos.length === 0;
         if (vacioDocs) vacioDocs.hidden = míos.length !== 0;
         pintarIconos();
+        cargarProximas(specialtyId);
         return míos.length;
+    }
+
+    /* ------------------------------------------- paso 2: quién atiende antes */
+
+    // Se guarda por especialidad: ir y volver no vuelve a preguntar.
+    const proximasPorEsp = {};
+
+    function huecos() {
+        return listaDocs ? [...listaDocs.querySelectorAll('[data-prox]')] : [];
+    }
+
+    function pintarProximas(datos) {
+        const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+        huecos().forEach((el) => {
+            const info = datos[el.dataset.prox];
+            if (info === undefined) { el.hidden = true; return; }   // no se pudo consultar
+            if (info === null) {
+                el.className = 'ag-prox es-sincupo';
+                el.textContent = 'Sin cupos próximamente';
+                el.hidden = false;
+                return;
+            }
+            const f = new Date(info.date + 'T00:00:00');
+            const dias = Math.round((f - hoy) / 86400000);
+            let cuando;
+            if (dias <= 0)      cuando = 'hoy';
+            else if (dias === 1) cuando = 'mañana';
+            else cuando = 'el ' + f.toLocaleDateString('es-DO', { weekday: 'long', day: 'numeric', month: 'long' });
+            el.className = 'ag-prox es-libre';
+            el.textContent = 'Puede atenderte ' + cuando;
+            el.hidden = false;
+        });
+    }
+
+    /**
+     * Pide la primera fecha con cupo de TODOS los médicos de la especialidad en
+     * una sola petición (el servidor las hace en paralelo con curl_multi).
+     *
+     * Es información de apoyo, no un requisito: se pinta DESPUÉS de las tarjetas
+     * y si falla simplemente no aparece. El paso 2 nunca se queda esperándola.
+     */
+    function cargarProximas(specialtyId) {
+        const ids = huecos().map((el) => el.dataset.prox);
+        if (!ids.length || !window.AGENDAR_PROXIMAS_URL) return;
+
+        if (proximasPorEsp[specialtyId]) { pintarProximas(proximasPorEsp[specialtyId]); return; }
+
+        huecos().forEach((el) => {
+            el.className = 'ag-prox es-cargando';
+            el.textContent = 'Consultando disponibilidad…';
+            el.hidden = false;
+        });
+
+        fetch(window.AGENDAR_PROXIMAS_URL + '?doctor_ids=' + ids.join(','))
+            .then((r) => r.json())
+            .then((j) => {
+                if (!j || !j.success || !j.data) throw new Error('sin datos');
+                // Si el paciente ya cambió de especialidad, esto pinta sobre
+                // tarjetas que ya no existen: huecos() no las encuentra y no pasa nada.
+                proximasPorEsp[specialtyId] = j.data.doctors || {};
+                pintarProximas(proximasPorEsp[specialtyId]);
+            })
+            .catch(() => { huecos().forEach((el) => { el.hidden = true; }); });
     }
 
     /* --------------------------------------------- paso 3: médico + horarios */
@@ -292,7 +357,8 @@
 
     // Si el servidor ya pintó el paso 2, los médicos vienen del HTML; si el
     // paciente llegó por enlace directo al 2 sin lista, se pinta aquí.
-    if (estado.step === 2 && listaDocs && !listaDocs.children.length) {
-        pintarMedicos(estado.specialtyId);
+    if (estado.step === 2 && listaDocs) {
+        if (!listaDocs.children.length) pintarMedicos(estado.specialtyId);
+        else cargarProximas(estado.specialtyId);   // ya pintadas por el servidor
     }
 })();
