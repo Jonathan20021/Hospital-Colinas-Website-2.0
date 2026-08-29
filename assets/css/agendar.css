@@ -1240,3 +1240,22 @@
 .agendar-v2 .ag-prox.es-cargando::before {
     background: #d6d1c6;
 }
+
+/* Por que las tarjetas estan en ese orden. Solo sale si de verdad se reordeno. */
+.agendar-v2 .ag-orden {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    margin: -.5rem 0 1rem;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--gr-deep);
+}
+
+.agendar-v2 .ag-orden[hidden] {
+    display: none;                     /* display:flex le gana a [hidden] */
+}
+
+.agendar-v2 .ag-orden svg {
+    color: var(--gr);
+}

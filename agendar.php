@@ -305,6 +305,13 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                 <!-- Paso 2: Médico -->
                 <div class="portal-card">
                     <h2 class="portal-section-title">Médicos disponibles</h2>
+                    <?php /* Lo destapa el JS solo si de verdad reordenó algo: si todos
+                             tienen el mismo primer hueco, el orden no cambia y decirlo
+                             sobraria. */ ?>
+                    <p class="ag-orden" id="ag-orden" hidden>
+                        <i data-lucide="clock" class="h-3.5 w-3.5"></i>
+                        Primero quien puede atenderte antes
+                    </p>
                     <?php /* Los dos existen siempre: el wizard alterna cual se ve. */ ?>
                     <div class="portal-empty" id="ag-doctors-empty"<?= $doctors ? ' hidden' : '' ?>>
                             <i data-lucide="user-round-x" class="h-10 w-10"></i>

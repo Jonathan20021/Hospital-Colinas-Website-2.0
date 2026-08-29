@@ -34,6 +34,7 @@
     const form = document.getElementById('guest-form');
     const cabecera = document.getElementById('ag-cabecera');
     const barraSeguir = document.getElementById('ag-continuar');
+    const avisoOrden = document.getElementById('ag-orden');
     const confirmMedico = document.getElementById('ag-confirm-medico');
 
     /* ---------------------------------------------------------------- utils */
@@ -138,6 +139,7 @@
         const míos = doctores.filter((d) => d.specialtyId === specialtyId);
         listaDocs.innerHTML = míos.map(tarjetaMedico).join('');
         listaDocs.hidden = míos.length === 0;
+        if (avisoOrden) avisoOrden.hidden = true;   // se vuelve a decidir abajo
         if (vacioDocs) vacioDocs.hidden = míos.length !== 0;
         pintarIconos();
         cargarProximas(specialtyId);
@@ -174,6 +176,41 @@
             el.textContent = 'Puede atenderte ' + cuando;
             el.hidden = false;
         });
+        ordenarPorDisponibilidad(datos);
+    }
+
+    /**
+     * Pone delante a quien puede atender antes.
+     *
+     * Se hace DESPUÉS de pintar, cuando llega la disponibilidad: pintar ya
+     * ordenado obligaría a dejar el paso 2 en blanco ~2 s esperando al hospital.
+     *
+     * El orden entre médicos del MISMO día no se toca (el desempate es la
+     * posición original): repartir trabajo entre especialistas que pueden
+     * atender el mismo día no es una decisión que le toque tomar a esto.
+     */
+    function ordenarPorDisponibilidad(datos) {
+        if (!listaDocs) return;
+        const tarjetas = [...listaDocs.children];
+        if (tarjetas.length < 2) return;
+
+        const clave = (art) => {
+            const hueco = art.querySelector('[data-prox]');
+            const info = hueco ? datos[hueco.dataset.prox] : undefined;
+            if (info && info.date) return info.date;   // 'YYYY-MM-DD' ya ordena como texto
+            if (info === null) return '9998';          // consultado y sin cupo
+            return '9999';                             // no se pudo consultar
+        };
+
+        const puestas = tarjetas
+            .map((art, i) => ({ art: art, k: clave(art), i: i }))
+            .sort((a, b) => (a.k < b.k ? -1 : a.k > b.k ? 1 : a.i - b.i));
+
+        // Si ya venían en ese orden no se toca el DOM: mover tarjetas que no
+        // cambian de sitio solo provoca un parpadeo gratuito.
+        if (puestas.every((x, n) => x.i === n)) return;
+        puestas.forEach((x) => listaDocs.appendChild(x.art));
+        if (avisoOrden) avisoOrden.hidden = false;
     }
 
     /**
