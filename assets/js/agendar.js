@@ -709,6 +709,10 @@
         `;
         if (window.lucide) lucide.createIcons();
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Cierra el embudo: sin esto no hay forma de saber cuantos de los que
+        // empiezan llegan al final. La ruta no lleva ningun dato de la cita.
+        if (window.HglcTrack) window.HglcTrack.vista('/agendar/confirmada');
     }
     } // fin de init()
 

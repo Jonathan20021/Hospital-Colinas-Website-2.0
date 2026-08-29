@@ -22,16 +22,18 @@
     var tz = '';
     try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
 
-    var data = {
-      v: vid,
-      path: location.pathname + location.search,
-      ref: document.referrer || '',
-      title: (document.title || '').slice(0, 160),
-      sw: (window.screen && screen.width) || 0,
-      sh: (window.screen && screen.height) || 0,
-      tz: tz,
-      lang: navigator.language || ''
-    };
+    function datos(ruta) {
+      return {
+        v: vid,
+        path: ruta,
+        ref: document.referrer || '',
+        title: (document.title || '').slice(0, 160),
+        sw: (window.screen && screen.width) || 0,
+        sh: (window.screen && screen.height) || 0,
+        tz: tz,
+        lang: navigator.language || ''
+      };
+    }
 
     // La ruta del proxy se deriva de la URL del propio script
     // (.../assets/js/track.js) para que tambien funcione cuando el sitio no
@@ -43,18 +45,28 @@
         return (m ? m[1] : '') + '/api/track.php';
       } catch (e) { return '/api/track.php'; }
     })();
-    var body = JSON.stringify(data);
-
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
-    } else {
-      fetch(url, {
-        method: 'POST',
-        body: body,
-        headers: { 'Content-Type': 'application/json' },
-        keepalive: true,
-        credentials: 'same-origin'
-      });
+    function enviar(ruta) {
+      try {
+        var body = JSON.stringify(datos(ruta));
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
+        } else {
+          fetch(url, {
+            method: 'POST',
+            body: body,
+            headers: { 'Content-Type': 'application/json' },
+            keepalive: true,
+            credentials: 'same-origin'
+          });
+        }
+      } catch (e) { /* nunca romper la pagina por analitica */ }
     }
+
+    // Vistas virtuales: las paginas que cambian de pantalla SIN recargar
+    // (el wizard de /agendar) avisan por aqui. La ruta debe ser fija y sin
+    // datos personales: sirve para medir el embudo, no para identificar.
+    window.HglcTrack = { vista: function (ruta) { enviar(String(ruta || '')); } };
+
+    enviar(location.pathname + location.search);
   } catch (e) { /* nunca romper la página por analítica */ }
 })();

@@ -104,6 +104,17 @@
 
         irA(document.querySelector('.portal-steps') || secciones[n]);
 
+        // Sin recargas, la Auditoria Web solo veia la primera pantalla y el
+        // embudo entero era invisible. Estas rutas son FIJAS y no llevan ningun
+        // dato del paciente: sirven para saber donde se abandona, nada mas.
+        const RUTAS = {
+            1: '/agendar/paso-1-especialidad',
+            2: '/agendar/paso-2-medico',
+            3: '/agendar/paso-3-fecha',
+            4: '/agendar/paso-4-datos',
+        };
+        if (window.HglcTrack && RUTAS[n]) window.HglcTrack.vista(RUTAS[n]);
+
         // Que el lector de pantalla anuncie el paso nuevo.
         const titulo = secciones[n].querySelector('h2');
         if (titulo) {
