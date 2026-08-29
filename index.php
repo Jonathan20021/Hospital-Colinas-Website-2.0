@@ -209,6 +209,9 @@ $leadershipGerencias = [
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
+    <?php /* El logo del header es el UNICO candidato a LCP segun el trace: va primero
+             y con prioridad alta. El hero, que nunca llega a serlo, va detras. */ ?>
+    <?= preload_logo_tag($assets['logo']) ?>
     <?= preload_image_tag($assets['hero'], '(max-width: 1024px) 100vw, 46vw') ?>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
@@ -449,7 +452,6 @@ $leadershipGerencias = [
                              a un telefono el JPEG de 11 MB (ver tools/optimize-images.php). */ ?>
                     <?= picture_tag($assets['hero'], 'Hospital General Las Colinas', [
                         'class'         => 'hero-ultra-image',
-                        'fetchpriority' => 'high',
                         'decoding'      => 'async',
                         'sizes'         => '(max-width: 1024px) 100vw, 46vw',
                     ]) ?>

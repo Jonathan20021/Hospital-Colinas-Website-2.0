@@ -314,11 +314,12 @@ function preload_image_tag(string $relativePath, string $sizes = '100vw'): strin
     }
     $href = $v['webp'][1280] ?? end($v['webp']);
 
+    // Sin fetchpriority: la prioridad alta es para el logo, que es el elemento
+    // LCP real. El hero se precarga igual, pero por detras.
     return '<link rel="preload" as="image" type="image/webp"'
         . ' href="' . e(base_url($href)) . '"'
         . ' imagesrcset="' . implode(', ', $srcset) . '"'
-        . ' imagesizes="' . e($sizes) . '"'
-        . ' fetchpriority="high">';
+        . ' imagesizes="' . e($sizes) . '">';
 }
 
 
@@ -351,4 +352,32 @@ function img_srcset_attrs(string $relativePath, string $sizes = '100vw'): string
         . ' srcset="' . implode(', ', $srcset) . '"'
         . ' sizes="' . e($sizes) . '"'
         . img_dimensions($src);
+}
+
+/**
+ * Preload del logo del header. Segun el trace de Lighthouse es el UNICO
+ * candidato a LCP del sitio (IMG.brand-logo), asi que es el que merece la
+ * prioridad alta: lo descubre tarde el navegador porque vive en el <header>
+ * y solo se resuelve despues del CSS.
+ */
+function preload_logo_tag(string $relativePath = 'assets/site/logo.png'): string
+{
+    $v = optimized_variants($relativePath);
+    $fb = $v['fallback'] ?? 'png';
+
+    if (empty($v[$fb])) {
+        return '<link rel="preload" as="image" href="' . e(base_url($relativePath)) . '" fetchpriority="high">';
+    }
+
+    $srcset = [];
+    foreach ($v[$fb] as $w => $rel) {
+        $srcset[] = e(base_url($rel)) . ' ' . (int) $w . 'w';
+    }
+    $href = $v[$fb][720] ?? end($v[$fb]);
+
+    return '<link rel="preload" as="image"'
+        . ' href="' . e(base_url($href)) . '"'
+        . ' imagesrcset="' . implode(', ', $srcset) . '"'
+        . ' imagesizes="360px"'
+        . ' fetchpriority="high">';
 }
