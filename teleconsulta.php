@@ -6,6 +6,7 @@
  * y avisa al médico (push) que el paciente entró.
  */
 require_once __DIR__ . '/includes/helpers.php';
+enable_html_compression();
 require_once __DIR__ . '/includes/portal_client.php';
 
 $t = preg_replace('/[^a-f0-9]/i', '', (string)($_GET['t'] ?? ''));

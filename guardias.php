@@ -10,6 +10,7 @@
  * Aislada y endurecida: sin header/menu/footer del sitio, noindex y anti-iframe.
  */
 require __DIR__ . '/includes/helpers.php';
+enable_html_compression();
 require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/portal_client.php';
 

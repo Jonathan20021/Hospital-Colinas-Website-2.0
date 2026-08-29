@@ -1,5 +1,9 @@
 <?php
 
+/* El gzip del hosting esta mal afinado; se comprime desde PHP.
+   Tiene que ir antes de cualquier salida. Ver enable_html_compression(). */
+enable_html_compression();
+
 function render_public_header(array $assets, array $contact, string $active = ''): void
 {
     $navClass = static fn(string $id): string => trim('nav-link ' . ($active === $id ? 'is-active' : ''));

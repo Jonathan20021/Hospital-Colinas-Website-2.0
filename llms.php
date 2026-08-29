@@ -14,6 +14,7 @@
  */
 
 require __DIR__ . '/includes/helpers.php';
+enable_html_compression();
 require __DIR__ . '/includes/data.php';
 require __DIR__ . '/includes/doctors.php';
 require __DIR__ . '/includes/news.php';

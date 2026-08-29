@@ -18,6 +18,7 @@ $_SERVER['SCRIPT_NAME'] = preg_replace(
 );
 
 require_once __DIR__ . '/../includes/helpers.php';
+enable_html_compression();
 require_once __DIR__ . '/../includes/data.php';
 require_once __DIR__ . '/../includes/content.php';
 require_once __DIR__ . '/../includes/public-layout.php';

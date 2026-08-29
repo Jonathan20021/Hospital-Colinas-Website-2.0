@@ -5,6 +5,7 @@
  * Consulta el endpoint público del API interno (sin exponer datos sensibles).
  */
 require_once __DIR__ . '/includes/helpers.php';
+enable_html_compression();
 require_once __DIR__ . '/includes/portal_client.php';
 
 $token = preg_replace('/[^a-f0-9]/i', '', (string)($_GET['token'] ?? ''));

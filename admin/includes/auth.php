@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../includes/helpers.php';
+enable_html_compression();
 require_once __DIR__ . '/../../includes/db.php';
 require_once __DIR__ . '/totp.php';
 

@@ -381,3 +381,43 @@ function preload_logo_tag(string $relativePath = 'assets/site/logo.png'): string
         . ' imagesizes="360px"'
         . ' fetchpriority="high">';
 }
+/**
+ * Activa la compresión de PHP para las respuestas de texto (HTML, XML).
+ *
+ * POR QUE: el mod_deflate del hosting está mal afinado y produce gzip casi al
+ * doble de tamaño de lo normal — el HTML del home sale a 136 KB cuando el mismo
+ * contenido comprimido en condiciones son 32 KB. `DeflateCompressionLevel` y
+ * `DeflateWindowSize` son directivas de server/vhost y NO se pueden poner en un
+ * .htaccess, así que se comprime desde PHP: Apache respeta el Content-Encoding
+ * que ya viene puesto y no vuelve a comprimir.
+ *
+ * Se llama de forma EXPLÍCITA desde los layouts y desde las páginas con <head>
+ * propio. Nunca desde helpers.php a secas: los endpoints que sirven PDF o
+ * imágenes (receta-pdf, portal-asset, documento…) fijan su propio
+ * Content-Length y comprimir ahí rompería la descarga.
+ *
+ * Usa zlib.output_compression, que comprime al vuelo, y no ob_gzhandler, que
+ * retendría la página entera y empeoraría el TTFB.
+ */
+function enable_html_compression(): void
+{
+    static $hecho = false;
+    if ($hecho) {
+        return;
+    }
+    $hecho = true;
+
+    if (PHP_SAPI === 'cli' || headers_sent() || !extension_loaded('zlib')) {
+        return;
+    }
+    if (ini_get('zlib.output_compression')) {
+        return; // ya viene activa del php.ini
+    }
+    $acepta = strtolower((string) ($_SERVER['HTTP_ACCEPT_ENCODING'] ?? ''));
+    if (!str_contains($acepta, 'gzip')) {
+        return;
+    }
+
+    @ini_set('zlib.output_compression_level', '6');
+    @ini_set('zlib.output_compression', '1');
+}
