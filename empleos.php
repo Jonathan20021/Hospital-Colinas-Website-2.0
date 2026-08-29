@@ -108,7 +108,7 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
             </div>
 
             <figure class="emp-hero-visual">
-                <img src="<?= e(base_url($assets['hero'])) ?>"
+                <img<?= img_srcset_attrs($assets['hero'], '100vw') ?>
                     alt="Fachada del Hospital General Las Colinas en Santiago" fetchpriority="high">
                 <figcaption>
                     <span>Hospital General Las Colinas</span>

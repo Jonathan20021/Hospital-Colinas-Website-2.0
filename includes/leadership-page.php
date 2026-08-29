@@ -74,7 +74,7 @@ $governanceCommitments = [
                                     <?= e(base_url('assets/site/assets/liderazgo-hospital-1440.webp')) ?> 1440w,
                                     <?= e(base_url('assets/site/assets/liderazgo-hospital.webp')) ?> 1920w"
                             sizes="(max-width: 900px) calc(100vw - 2rem), min(54vw, 700px)">
-                        <img src="<?= e(base_url($assets['hero'])) ?>"
+                        <img<?= img_srcset_attrs($assets['hero'], '100vw') ?>
                             alt="Entrada principal del Hospital General Las Colinas"
                             width="1920" height="1371" fetchpriority="high" decoding="async">
                     </picture>

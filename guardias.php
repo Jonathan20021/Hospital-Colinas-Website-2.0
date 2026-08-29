@@ -177,7 +177,7 @@ $linkTo = static fn (int $id): string => base_url('guardias') . '?t=' . urlencod
 <div class="svc">
     <div class="svc-top">
         <a class="brand" href="#" onclick="return false">
-            <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas">
+            <img src="<?= e(base_url(optimized_src($assets['logo'], 720))) ?>" srcset="<?= e(base_url(optimized_src($assets['logo'], 360))) ?> 360w, <?= e(base_url(optimized_src($assets['logo'], 720))) ?> 720w" sizes="360px"<?= img_dimensions(optimized_src($assets['logo'], 720)) ?> alt="Hospital General Las Colinas">
         </a>
         <span class="tag">Listas de Servicio</span>
     </div>

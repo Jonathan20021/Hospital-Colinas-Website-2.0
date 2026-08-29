@@ -53,12 +53,12 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
     <meta property="og:description" content="<?= e($service['summary']) ?>">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
-    <meta property="og:image" content="<?= e(absolute_url($service['image'])) ?>">
+    <meta property="og:image" content="<?= e(absolute_url(optimized_src($service['image'], 1280))) ?>">
     <meta property="og:image:alt" content="<?= e($service['title']) ?> — Hospital General Las Colinas">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="<?= e($service['title']) ?> | Hospital General Las Colinas">
     <meta name="twitter:description" content="<?= e($service['summary']) ?>">
-    <meta name="twitter:image" content="<?= e(absolute_url($service['image'])) ?>">
+    <meta name="twitter:image" content="<?= e(absolute_url(optimized_src($service['image'], 1280))) ?>">
     <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
              mismo origen, sin DNS/TLS a Google ni CSS render-blocking. */ ?>
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
@@ -138,7 +138,7 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
                     </div>
                 </div>
                 <figure class="service-hero-media">
-                    <img src="<?= e(base_url($service['image'])) ?>" alt="<?= e($service['title']) ?>" loading="eager">
+                    <img<?= img_srcset_attrs($service['image'], '100vw') ?> alt="<?= e($service['title']) ?>" loading="eager">
                     <figcaption>
                         <strong>Hospital General Las Colinas</strong>
                         <span><?= e($contact['phone']) ?> · Santiago, RD</span>

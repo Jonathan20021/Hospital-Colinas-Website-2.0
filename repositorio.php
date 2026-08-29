@@ -71,7 +71,7 @@ $researchSources = [
     <meta property="og:description" content="<?= e($description) ?>">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
-    <meta property="og:image" content="<?= e(absolute_url($assets['hero'])) ?>">
+    <meta property="og:image" content="<?= e(absolute_url(optimized_src($assets['hero'], 1280))) ?>">
     <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
              mismo origen, sin DNS/TLS a Google ni CSS render-blocking. */ ?>
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>

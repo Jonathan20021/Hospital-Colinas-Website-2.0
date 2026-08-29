@@ -323,7 +323,7 @@ $leadershipGerencias = [
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="#inicio" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
+                    <img src="<?= e(base_url(optimized_src($assets['logo'], 720))) ?>" srcset="<?= e(base_url(optimized_src($assets['logo'], 360))) ?> 360w, <?= e(base_url(optimized_src($assets['logo'], 720))) ?> 720w" sizes="360px"<?= img_dimensions(optimized_src($assets['logo'], 720)) ?> alt="Hospital General Las Colinas"
                         class="brand-logo">
                 </a>
 

@@ -43,13 +43,13 @@ $directoryValues = [
         content="Encuentra a tu especialista entre <?= e((string) count($medicalProfiles)) ?> médicos del Hospital General Las Colinas en Santiago, RD.">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
-    <meta property="og:image" content="<?= e(absolute_url($assets['hero'])) ?>">
+    <meta property="og:image" content="<?= e(absolute_url(optimized_src($assets['hero'], 1280))) ?>">
     <meta property="og:image:alt" content="Directorio médico Hospital General Las Colinas">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Directorio médico | Hospital General Las Colinas">
     <meta name="twitter:description" content="Encuentra a tu especialista en el Hospital General Las Colinas.">
-    <meta name="twitter:image" content="<?= e(absolute_url($assets['hero'])) ?>">
+    <meta name="twitter:image" content="<?= e(absolute_url(optimized_src($assets['hero'], 1280))) ?>">
 
     <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
              mismo origen, sin DNS/TLS a Google ni CSS render-blocking. */ ?>
@@ -125,7 +125,7 @@ $directoryValues = [
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
+                    <img src="<?= e(base_url(optimized_src($assets['logo'], 720))) ?>" srcset="<?= e(base_url(optimized_src($assets['logo'], 360))) ?> 360w, <?= e(base_url(optimized_src($assets['logo'], 720))) ?> 720w" sizes="360px"<?= img_dimensions(optimized_src($assets['logo'], 720)) ?> alt="Hospital General Las Colinas"
                         class="brand-logo">
                 </a>
 
@@ -236,7 +236,7 @@ $directoryValues = [
                 </div>
 
                 <figure class="dir-hero-visual">
-                    <img src="<?= e(base_url($assets['hero'])) ?>"
+                    <img<?= img_srcset_attrs($assets['hero'], '100vw') ?>
                         alt="Fachada del Hospital General Las Colinas en Santiago" fetchpriority="high">
                     <figcaption>
                         <span>Hospital General Las Colinas</span>
@@ -387,7 +387,7 @@ $directoryValues = [
         <section class="dir-location" aria-label="Cómo llegar">
             <div class="dir-location-shell">
                 <div class="dir-location-info">
-                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas">
+                    <img src="<?= e(base_url(optimized_src($assets['logo'], 720))) ?>" srcset="<?= e(base_url(optimized_src($assets['logo'], 360))) ?> 360w, <?= e(base_url(optimized_src($assets['logo'], 720))) ?> 720w" sizes="360px"<?= img_dimensions(optimized_src($assets['logo'], 720)) ?> alt="Hospital General Las Colinas">
                     <h2>Visítanos en Santiago</h2>
                     <p>Acceso conectado a Colinas Mall, con áreas de estacionamiento y orientación.</p>
                     <ul>

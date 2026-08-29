@@ -194,7 +194,7 @@ function svg_dimensions(string $absolutePath): string
  * Anchos de los derivados que genera tools/optimize-images.php.
  * Si se cambia ahí, cambiar aquí.
  */
-const IMG_ANCHOS_OPT = [768, 1280, 1920];
+const IMG_ANCHOS_OPT = [360, 720, 768, 1280, 1920];
 
 /**
  * Devuelve los derivados optimizados de una foto, o [] si no se han generado.
@@ -209,10 +209,13 @@ function optimized_variants(string $relativePath): array
 
     $base = pathinfo($relativePath, PATHINFO_FILENAME);
     $dirRel = 'assets/site/assets/opt';
-    $out = ['webp' => [], 'jpg' => []];
+    // El respaldo conserva el formato del original: PNG si lo era (el logo
+    // necesita la transparencia), JPEG para las fotos.
+    $fallbackFmt = strtolower((string) pathinfo($relativePath, PATHINFO_EXTENSION)) === 'png' ? 'png' : 'jpg';
+    $out = ['webp' => [], $fallbackFmt => [], 'fallback' => $fallbackFmt];
 
     foreach (IMG_ANCHOS_OPT as $w) {
-        foreach (['webp', 'jpg'] as $fmt) {
+        foreach (['webp', $fallbackFmt] as $fmt) {
             $rel = "$dirRel/$base-$w.$fmt";
             if (is_file(__DIR__ . '/../' . $rel)) {
                 $out[$fmt][$w] = $rel;
@@ -235,7 +238,6 @@ function optimized_variants(string $relativePath): array
 function picture_tag(string $relativePath, string $alt, array $opts = []): string
 {
     $variants = optimized_variants($relativePath);
-    $dims     = img_dimensions($relativePath);
     $sizes    = (string) ($opts['sizes'] ?? '100vw');
 
     $attrs = '';
@@ -245,8 +247,11 @@ function picture_tag(string $relativePath, string $alt, array $opts = []): strin
         }
     }
 
+    $fb = $variants['fallback'] ?? 'jpg';
+
     // Sin derivados: el original, tal cual estaba antes.
-    if (!$variants['jpg']) {
+    if (empty($variants[$fb])) {
+        $dims = img_dimensions($relativePath);
         return '<img src="' . e(base_url($relativePath)) . '"' . $dims . ' alt="' . e($alt) . '"' . $attrs . '>';
     }
 
@@ -259,15 +264,19 @@ function picture_tag(string $relativePath, string $alt, array $opts = []): strin
     };
 
     // El <img> apunta al JPEG intermedio: es el respaldo si no hay WebP.
-    $jpgs = $variants['jpg'];
-    $fallback = $jpgs[1280] ?? end($jpgs);
+    $fallbacks = $variants[$fb];
+    $fallback  = $fallbacks[1280] ?? $fallbacks[720] ?? end($fallbacks);
+    // Se mide el DERIVADO: al redimensionar, la proporcion redondea y no es
+    // exactamente la del original (4933x1783 -> 360x130). Si se reservase con
+    // la del original, la caja bailaria 1px al cargar.
+    $dims = img_dimensions($fallback);
 
     $html  = '<picture>';
     if ($variants['webp']) {
         $html .= '<source type="image/webp" srcset="' . $srcset($variants['webp']) . '" sizes="' . e($sizes) . '">';
     }
     $html .= '<img src="' . e(base_url($fallback)) . '"'
-        . ' srcset="' . $srcset($jpgs) . '"'
+        . ' srcset="' . $srcset($fallbacks) . '"'
         . ' sizes="' . e($sizes) . '"'
         . $dims
         . ' alt="' . e($alt) . '"' . $attrs . '>';
@@ -280,9 +289,10 @@ function picture_tag(string $relativePath, string $alt, array $opts = []): strin
  * Ruta de un derivado concreto (ancho + formato), o el original si no existe.
  * Para sitios donde no cabe un <picture>: og:image, JSON-LD, poster de video.
  */
-function optimized_src(string $relativePath, int $width = 1280, string $fmt = 'jpg'): string
+function optimized_src(string $relativePath, int $width = 1280, ?string $fmt = null): string
 {
     $v = optimized_variants($relativePath);
+    $fmt = $fmt ?? ($v['fallback'] ?? 'jpg');
     return $v[$fmt][$width] ?? $relativePath;
 }
 
@@ -309,4 +319,36 @@ function preload_image_tag(string $relativePath, string $sizes = '100vw'): strin
         . ' imagesrcset="' . implode(', ', $srcset) . '"'
         . ' imagesizes="' . e($sizes) . '"'
         . ' fetchpriority="high">';
+}
+
+
+/**
+ * Atributos src/srcset/sizes/width/height de una foto, usando los derivados,
+ * SIN convertir el <img> en <picture>. Para banners y cabeceras donde no
+ * compensa tocar la estructura: se pierde el WebP pero se gana casi todo el
+ * peso (el hero pasa de 11 MB a 106 KB en movil).
+ *
+ * Uso: <img<?= img_srcset_attrs($assets['hero'], '100vw') ?> alt="...">
+ */
+function img_srcset_attrs(string $relativePath, string $sizes = '100vw'): string
+{
+    $v  = optimized_variants($relativePath);
+    $fb = $v['fallback'] ?? 'jpg';
+
+    if (empty($v[$fb])) {
+        return ' src="' . e(base_url($relativePath)) . '"' . img_dimensions($relativePath);
+    }
+
+    $mapa = $v[$fb];
+    $src  = $mapa[1280] ?? $mapa[720] ?? end($mapa);
+
+    $srcset = [];
+    foreach ($mapa as $w => $rel) {
+        $srcset[] = e(base_url($rel)) . ' ' . (int) $w . 'w';
+    }
+
+    return ' src="' . e(base_url($src)) . '"'
+        . ' srcset="' . implode(', ', $srcset) . '"'
+        . ' sizes="' . e($sizes) . '"'
+        . img_dimensions($src);
 }

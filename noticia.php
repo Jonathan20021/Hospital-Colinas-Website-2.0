@@ -44,7 +44,7 @@ $related = array_slice($related, 0, 3);
         <meta property="og:description" content="<?= e($item['excerpt']) ?>">
         <meta property="og:url" content="<?= e(canonical_url()) ?>">
         <meta property="og:locale" content="es_DO">
-        <meta property="og:image" content="<?= e(absolute_url($item['cover_image'] ?: $assets['hero'])) ?>">
+        <meta property="og:image" content="<?= e(absolute_url(optimized_src($item['cover_image'] ?: $assets['hero'], 1280))) ?>">
         <meta property="article:published_time" content="<?= e(date('c', strtotime($item['published_at']))) ?>">
         <meta property="article:section" content="<?= e($item['category']) ?>">
         <meta property="article:author" content="<?= e($item['author']) ?>">
@@ -52,7 +52,7 @@ $related = array_slice($related, 0, 3);
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="<?= e($item['title']) ?>">
         <meta name="twitter:description" content="<?= e($item['excerpt']) ?>">
-        <meta name="twitter:image" content="<?= e(absolute_url($item['cover_image'] ?: $assets['hero'])) ?>">
+        <meta name="twitter:image" content="<?= e(absolute_url(optimized_src($item['cover_image'] ?: $assets['hero'], 1280))) ?>">
     <?php endif; ?>
 
     <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
@@ -70,7 +70,7 @@ $related = array_slice($related, 0, 3);
             "@type": "NewsArticle",
             "headline": <?= json_encode($item['title'], JSON_UNESCAPED_UNICODE) ?>,
             "description": <?= json_encode($item['excerpt'], JSON_UNESCAPED_UNICODE) ?>,
-            "image": "<?= e(absolute_url($item['cover_image'] ?: $assets['hero'])) ?>",
+            "image": "<?= e(absolute_url(optimized_src($item['cover_image'] ?: $assets['hero'], 1280))) ?>",
             "datePublished": "<?= e(date('c', strtotime($item['published_at']))) ?>",
             "dateModified": "<?= e(date('c', strtotime($item['updated_at'] ?? $item['published_at']))) ?>",
             "articleSection": <?= json_encode($item['category'], JSON_UNESCAPED_UNICODE) ?>,
@@ -102,7 +102,7 @@ $related = array_slice($related, 0, 3);
     <header class="profile-topbar">
         <div class="profile-topbar-inner">
             <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
+                <img src="<?= e(base_url(optimized_src($assets['logo'], 720))) ?>" srcset="<?= e(base_url(optimized_src($assets['logo'], 360))) ?> 360w, <?= e(base_url(optimized_src($assets['logo'], 720))) ?> 720w" sizes="360px"<?= img_dimensions(optimized_src($assets['logo'], 720)) ?> alt="Hospital General Las Colinas"
                     class="brand-logo h-14 w-auto max-w-[260px] object-contain">
             </a>
             <nav aria-label="Navegación">

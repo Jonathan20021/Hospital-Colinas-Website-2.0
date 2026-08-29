@@ -40,6 +40,16 @@ const FUENTES = [
     'assets/site/assets/DSC09544-CJJT60MC.jpg',   // consultorios
 ];
 
+/**
+ * Imagenes con transparencia (PNG) y sus anchos propios. El logo se pinta a
+ * 221px como mucho (360px de max-width en pantallas grandes), asi que 720
+ * cubre pantallas de densidad doble de sobra; servia 4933px y 114 KB en
+ * TODAS las paginas.
+ */
+const FUENTES_PNG = [
+    'assets/site/logo.png' => [360, 720],
+];
+
 $raiz    = dirname(__DIR__);
 $destRel = 'assets/site/assets/opt';
 $destAbs = $raiz . '/' . $destRel;
@@ -131,6 +141,69 @@ foreach (FUENTES as $rel) {
     if ($origen) {
         imagedestroy($origen);
     }
+}
+
+/* ---- PNG con transparencia (logo) ---- */
+foreach (FUENTES_PNG as $rel => $anchosPng) {
+    $src = $raiz . '/' . $rel;
+    if (!is_file($src)) {
+        printf("  SALTA  %-34s (no existe)\n", basename($rel));
+        continue;
+    }
+
+    [$anchoOrig, $altoOrig] = getimagesize($src);
+    $pesoOrig = filesize($src);
+    $totalOrig += $pesoOrig;
+    $base = pathinfo($rel, PATHINFO_FILENAME);
+
+    printf("\n%s  (%dx%d, %.0f KB)\n", basename($rel), $anchoOrig, $altoOrig, $pesoOrig / 1024);
+
+    $origen = null;
+    foreach ($anchosPng as $w) {
+        if ($w >= $anchoOrig) continue;
+        $h = (int) round($altoOrig * ($w / $anchoOrig));
+
+        foreach (['webp', 'png'] as $fmt) {
+            $outRel = "$destRel/$base-$w.$fmt";
+            $outAbs = "$raiz/$outRel";
+
+            if (!$force && is_file($outAbs) && filemtime($outAbs) >= filemtime($src)) {
+                printf("    ya estaba  %-30s %7.0f KB\n", basename($outRel), filesize($outAbs) / 1024);
+                $totalNuevo += filesize($outAbs);
+                continue;
+            }
+            if ($list) {
+                printf("    generaria  %-30s %dx%d\n", basename($outRel), $w, $h);
+                continue;
+            }
+
+            if ($origen === null) {
+                $origen = @imagecreatefrompng($src);
+                if (!$origen) { fwrite(STDERR, "    No se pudo abrir $rel\n"); continue 3; }
+            }
+
+            $dst = imagecreatetruecolor($w, $h);
+            // Conservar la transparencia del logo.
+            imagealphablending($dst, false);
+            imagesavealpha($dst, true);
+            imagefill($dst, 0, 0, imagecolorallocatealpha($dst, 0, 0, 0, 127));
+            imagecopyresampled($dst, $origen, 0, 0, 0, 0, $w, $h, $anchoOrig, $altoOrig);
+
+            $ok = $fmt === 'webp'
+                ? imagewebp($dst, $outAbs, CALIDAD_WEBP)
+                : imagepng($dst, $outAbs, 9);
+            imagedestroy($dst);
+
+            if ($ok) {
+                $peso = filesize($outAbs);
+                $totalNuevo += $peso;
+                printf("    OK         %-30s %7.0f KB  (%dx%d)\n", basename($outRel), $peso / 1024, $w, $h);
+            } else {
+                fwrite(STDERR, "    FALLO al escribir $outRel\n");
+            }
+        }
+    }
+    if ($origen) imagedestroy($origen);
 }
 
 printf(
