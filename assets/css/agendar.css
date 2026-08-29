@@ -1311,4 +1311,5 @@
 .site-footer .btn {
     padding: .9rem 1.3rem;
     font-size: .9rem;
+    border-radius: 12px;
 }
