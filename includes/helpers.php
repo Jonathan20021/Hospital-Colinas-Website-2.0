@@ -189,3 +189,124 @@ function svg_dimensions(string $absolutePath): string
 
     return ' width="' . (int) round($w) . '" height="' . (int) round($h) . '"';
 }
+
+/**
+ * Anchos de los derivados que genera tools/optimize-images.php.
+ * Si se cambia ahí, cambiar aquí.
+ */
+const IMG_ANCHOS_OPT = [768, 1280, 1920];
+
+/**
+ * Devuelve los derivados optimizados de una foto, o [] si no se han generado.
+ * Estructura: ['webp' => [ancho => rutaRelativa], 'jpg' => [...]].
+ */
+function optimized_variants(string $relativePath): array
+{
+    static $cache = [];
+    if (array_key_exists($relativePath, $cache)) {
+        return $cache[$relativePath];
+    }
+
+    $base = pathinfo($relativePath, PATHINFO_FILENAME);
+    $dirRel = 'assets/site/assets/opt';
+    $out = ['webp' => [], 'jpg' => []];
+
+    foreach (IMG_ANCHOS_OPT as $w) {
+        foreach (['webp', 'jpg'] as $fmt) {
+            $rel = "$dirRel/$base-$w.$fmt";
+            if (is_file(__DIR__ . '/../' . $rel)) {
+                $out[$fmt][$w] = $rel;
+            }
+        }
+    }
+
+    return $cache[$relativePath] = $out;
+}
+
+/**
+ * <picture> con WebP + respaldo JPEG y srcset por ancho, para no mandarle a un
+ * telefono la foto de 11 MB pensada para escritorio.
+ *
+ * Si todavía no se han generado los derivados (tools/optimize-images.php),
+ * degrada solo: devuelve un <img> normal apuntando al original.
+ *
+ * @param array $opts class, sizes, loading, fetchpriority, decoding, id, style
+ */
+function picture_tag(string $relativePath, string $alt, array $opts = []): string
+{
+    $variants = optimized_variants($relativePath);
+    $dims     = img_dimensions($relativePath);
+    $sizes    = (string) ($opts['sizes'] ?? '100vw');
+
+    $attrs = '';
+    foreach (['id', 'class', 'style', 'loading', 'fetchpriority', 'decoding'] as $k) {
+        if (!empty($opts[$k])) {
+            $attrs .= ' ' . $k . '="' . e((string) $opts[$k]) . '"';
+        }
+    }
+
+    // Sin derivados: el original, tal cual estaba antes.
+    if (!$variants['jpg']) {
+        return '<img src="' . e(base_url($relativePath)) . '"' . $dims . ' alt="' . e($alt) . '"' . $attrs . '>';
+    }
+
+    $srcset = function (array $mapa): string {
+        $parts = [];
+        foreach ($mapa as $w => $rel) {
+            $parts[] = e(base_url($rel)) . ' ' . (int) $w . 'w';
+        }
+        return implode(', ', $parts);
+    };
+
+    // El <img> apunta al JPEG intermedio: es el respaldo si no hay WebP.
+    $jpgs = $variants['jpg'];
+    $fallback = $jpgs[1280] ?? end($jpgs);
+
+    $html  = '<picture>';
+    if ($variants['webp']) {
+        $html .= '<source type="image/webp" srcset="' . $srcset($variants['webp']) . '" sizes="' . e($sizes) . '">';
+    }
+    $html .= '<img src="' . e(base_url($fallback)) . '"'
+        . ' srcset="' . $srcset($jpgs) . '"'
+        . ' sizes="' . e($sizes) . '"'
+        . $dims
+        . ' alt="' . e($alt) . '"' . $attrs . '>';
+    $html .= '</picture>';
+
+    return $html;
+}
+
+/**
+ * Ruta de un derivado concreto (ancho + formato), o el original si no existe.
+ * Para sitios donde no cabe un <picture>: og:image, JSON-LD, poster de video.
+ */
+function optimized_src(string $relativePath, int $width = 1280, string $fmt = 'jpg'): string
+{
+    $v = optimized_variants($relativePath);
+    return $v[$fmt][$width] ?? $relativePath;
+}
+
+/**
+ * <link rel="preload"> de una imagen responsiva. Sin imagesrcset el navegador
+ * precargaria el original a tamaño completo (el hero eran 11 MB), que ademas
+ * no es el archivo que acabaria usando.
+ */
+function preload_image_tag(string $relativePath, string $sizes = '100vw'): string
+{
+    $v = optimized_variants($relativePath);
+    if (!$v['webp']) {
+        return '<link rel="preload" as="image" href="' . e(base_url($relativePath)) . '" fetchpriority="high">';
+    }
+
+    $srcset = [];
+    foreach ($v['webp'] as $w => $rel) {
+        $srcset[] = e(base_url($rel)) . ' ' . (int) $w . 'w';
+    }
+    $href = $v['webp'][1280] ?? end($v['webp']);
+
+    return '<link rel="preload" as="image" type="image/webp"'
+        . ' href="' . e(base_url($href)) . '"'
+        . ' imagesrcset="' . implode(', ', $srcset) . '"'
+        . ' imagesizes="' . e($sizes) . '"'
+        . ' fetchpriority="high">';
+}

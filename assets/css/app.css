@@ -653,6 +653,14 @@ body {
     clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
 }
 
+/* <picture> es solo el envoltorio de los <source>: no debe crear una caja propia,
+   o el width/height:100% del <img> se mediria contra ella (que es inline) en vez
+   de contra el contenedor real. Las reglas .leader-portrait picture y
+   .leadership-hero-media picture son mas especificas y siguen mandando. */
+picture {
+    display: contents;
+}
+
 .hero-ultra-image {
     width: 100%;
     height: 100%;

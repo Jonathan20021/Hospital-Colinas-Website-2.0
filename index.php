@@ -191,7 +191,8 @@ $leadershipGerencias = [
         content="Emergencias 24/7, 28+ especialidades, 65+ consultorios y tecnología de diagnóstico avanzada en Santiago, República Dominicana.">
     <meta property="og:url" content="<?= e(canonical_url()) ?>">
     <meta property="og:locale" content="es_DO">
-    <meta property="og:image" content="<?= e(absolute_url($assets['hero'])) ?>">
+    <?php /* Derivado de 1280px (~270 KB): antes cualquier scraper se bajaba el original de 11 MB. */ ?>
+    <meta property="og:image" content="<?= e(absolute_url(optimized_src($assets['hero'], 1280))) ?>">
     <meta property="og:image:alt" content="Fachada del Hospital General Las Colinas">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -201,14 +202,14 @@ $leadershipGerencias = [
     <meta name="twitter:title" content="Hospital General Las Colinas | Atención médica avanzada en Santiago, RD">
     <meta name="twitter:description"
         content="Emergencias 24/7, 28+ especialidades, 65+ consultorios y tecnología de diagnóstico avanzada.">
-    <meta name="twitter:image" content="<?= e(absolute_url($assets['hero'])) ?>">
+    <meta name="twitter:image" content="<?= e(absolute_url(optimized_src($assets['hero'], 1280))) ?>">
 
     <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
              mismo origen, sin DNS/TLS a Google ni CSS render-blocking. */ ?>
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
-    <link rel="preload" as="image" href="<?= e(base_url($assets['hero'])) ?>" fetchpriority="high">
+    <?= preload_image_tag($assets['hero'], '(max-width: 1024px) 100vw, 46vw') ?>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
 
@@ -223,7 +224,7 @@ $leadershipGerencias = [
                 "alternateName": "Colinas Hospital General",
                 "url": "<?= e(absolute_url()) ?>",
                 "logo": "<?= e(absolute_url($assets['logo'])) ?>",
-                "image": "<?= e(absolute_url($assets['hero'])) ?>",
+                "image": "<?= e(absolute_url(optimized_src($assets['hero'], 1280))) ?>",
                 "description": "Hospital privado en Santiago, Rep. Dominicana con emergencias 24/7, 28+ especialidades, 65+ consultorios y tecnología de diagnóstico avanzada.",
                 "telephone": "<?= e($contact['phone']) ?>",
                 "email": "<?= e($contact['email']) ?>",
@@ -441,8 +442,14 @@ $leadershipGerencias = [
 
                 <!-- Lado Derecho: Imagen -->
                 <div class="hero-ultra-right">
-                    <?php /* Es el LCP del home: prioridad alta y decodificacion asincrona. */ ?>
-                    <img src="<?= e(base_url($assets['hero'])) ?>" alt="Hospital General Las Colinas" class="hero-ultra-image" fetchpriority="high" decoding="async">
+                    <?php /* Es el LCP del home: prioridad alta y responsivo, para no mandarle
+                             a un telefono el JPEG de 11 MB (ver tools/optimize-images.php). */ ?>
+                    <?= picture_tag($assets['hero'], 'Hospital General Las Colinas', [
+                        'class'         => 'hero-ultra-image',
+                        'fetchpriority' => 'high',
+                        'decoding'      => 'async',
+                        'sizes'         => '(max-width: 1024px) 100vw, 46vw',
+                    ]) ?>
                 </div>
             </div>
 
@@ -589,18 +596,24 @@ $leadershipGerencias = [
                 </div>
                 <div class="clinical-mosaic" aria-label="Vistas del hospital">
                     <figure class="mosaic-main">
-                        <img src="<?= e(base_url($assets['doctors'])) ?>"
-                            alt="Equipo médico del Hospital General Las Colinas" loading="lazy">
+                        <?= picture_tag($assets['doctors'], 'Equipo médico del Hospital General Las Colinas', [
+                            'loading' => 'lazy', 'decoding' => 'async',
+                            'sizes'   => '(max-width: 900px) 100vw, 50vw',
+                        ]) ?>
                         <figcaption>Equipo clínico<small>Especialistas con enfoque humano.</small></figcaption>
                     </figure>
                     <figure>
-                        <img src="<?= e(base_url($assets['ct'])) ?>" alt="Tomografía del Hospital General Las Colinas"
-                            loading="lazy">
+                        <?= picture_tag($assets['ct'], 'Tomografía del Hospital General Las Colinas', [
+                            'loading' => 'lazy', 'decoding' => 'async',
+                            'sizes'   => '(max-width: 900px) 100vw, 25vw',
+                        ]) ?>
                         <figcaption>Tomografía<small>Imágenes diagnósticas avanzadas.</small></figcaption>
                     </figure>
                     <figure>
-                        <img src="<?= e(base_url($assets['corridor'])) ?>"
-                            alt="Áreas clínicas del Hospital General Las Colinas" loading="lazy">
+                        <?= picture_tag($assets['corridor'], 'Áreas clínicas del Hospital General Las Colinas', [
+                            'loading' => 'lazy', 'decoding' => 'async',
+                            'sizes'   => '(max-width: 900px) 100vw, 25vw',
+                        ]) ?>
                         <figcaption>Áreas clínicas<small>Espacios amplios y funcionales.</small></figcaption>
                     </figure>
                 </div>
@@ -824,8 +837,10 @@ $leadershipGerencias = [
                 </div>
                 <div class="capability-showcase">
                     <figure class="capability-photo">
-                        <img src="<?= e(base_url($assets['corridor'])) ?>"
-                            alt="Áreas clínicas modernas del Hospital General Las Colinas" loading="eager">
+                        <?= picture_tag($assets['corridor'], 'Áreas clínicas modernas del Hospital General Las Colinas', [
+                            'loading' => 'lazy', 'decoding' => 'async',
+                            'sizes'   => '(max-width: 900px) 100vw, 55vw',
+                        ]) ?>
                         <figcaption>
                             <strong>Áreas clínicas conectadas</strong>
                             <span>Diagnóstico, cirugía, UCI, farmacia y hospitalización en una misma sede.</span>
@@ -978,7 +993,7 @@ $leadershipGerencias = [
                     </div>
                     <div class="tour-video">
                         <video id="hospitalVideo" class="h-full w-full object-cover" preload="metadata"
-                            poster="<?= e(base_url($assets['reception'])) ?>" controls playsinline>
+                            poster="<?= e(base_url(optimized_src($assets['reception'], 1280))) ?>" controls playsinline>
                             <source src="<?= e(base_url($assets['video'])) ?>" type="video/mp4">
                             Tu navegador no soporta video HTML5.
                         </video>
@@ -999,9 +1014,14 @@ $leadershipGerencias = [
                 </div>
                 <div id="galleryRail" class="gallery-rail">
                     <?php foreach ($gallery as $image): ?>
-                        <button type="button" class="gallery-card" data-gallery-src="<?= e(base_url($image['src'])) ?>"
+                        <?php /* La miniatura usaba el original (la fachada son 11 MB) y el lightbox
+                                 tambien: ambos pasan a los derivados. */ ?>
+                        <button type="button" class="gallery-card" data-gallery-src="<?= e(base_url(optimized_src($image['src'], 1920))) ?>"
                             data-gallery-title="<?= e($image['title']) ?>" data-gallery-text="<?= e($image['text']) ?>">
-                            <img src="<?= e(base_url($image['src'])) ?>" alt="<?= e($image['title']) ?>" loading="lazy">
+                            <?= picture_tag($image['src'], $image['title'], [
+                                'loading' => 'lazy', 'decoding' => 'async',
+                                'sizes'   => '(max-width: 640px) 78vw, 320px',
+                            ]) ?>
                             <span><strong><?= e($image['title']) ?></strong><small><?= e($image['text']) ?></small></span>
                         </button>
                     <?php endforeach; ?>
