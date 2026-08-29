@@ -14,6 +14,7 @@ $assetVersion = (string) max(
     @filemtime(__DIR__ . '/assets/css/portal.css') ?: 0,
     @filemtime(__DIR__ . '/assets/js/portal.js') ?: 0,
     @filemtime(__DIR__ . '/assets/js/agendar.js') ?: 0,
+    @filemtime(__DIR__ . '/assets/js/agendar-wizard.js') ?: 0,
     @filemtime(__DIR__ . '/assets/css/agendar.css') ?: 0
 );
 
@@ -58,6 +59,26 @@ if ($docId) {
 $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
 
 $step = $docId ? 3 : ($specId ? 2 : 1);
+
+// Datos de medicos para el wizard de una sola pagina. SOLO lo que la agenda
+// necesita: nada de correo, telefono ni exequatur (eso es dato personal del
+// medico y no tiene por que viajar al navegador de un paciente).
+$docsForJs = array_map(static function (array $d) {
+    return [
+        'id'          => (int) ($d['id'] ?? 0),
+        'specialtyId' => (int) ($d['specialty_id'] ?? 0),
+        'name'        => (string) ($d['name'] ?? ''),
+        'specialty'   => (string) ($d['specialty'] ?? ''),
+        'subspecialty'=> (string) ($d['subspecialty'] ?? ''),
+        'office'      => (string) ($d['office_name'] ?? ''),
+        'photo'       => !empty($d['photo_url']) ? portal_directory_photo_url($d['photo_url']) : doctor_avatar_svg($d['name'] ?? 'Medico'),
+        'from'        => substr((string) ($d['schedule']['start'] ?? '09:00'), 0, 5),
+        'to'          => substr((string) ($d['schedule']['end'] ?? '17:00'), 0, 5),
+    ];
+}, $allDocs);
+
+$specNames = [];
+foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
 ?>
 <!DOCTYPE html>
 <html lang="es-DO">
@@ -112,7 +133,8 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                 <li class="<?= $step === 3 ? 'is-current' : '' ?>"><span>3</span> Fecha y datos</li>
             </ol>
 
-            <?php if ($step === 1): ?>
+            <?php /* Los 3 pasos viven en la MISMA pagina; se muestra el que toca. */ ?>
+            <section class="ag-paso" id="ag-paso-1" data-paso="1"<?= $step !== 1 ? ' hidden' : '' ?>>
                 <!-- Paso 1: Especialidad -->
                 <form method="GET" class="portal-card" id="step1">
                     <h2 class="portal-section-title"><i data-lucide="stethoscope" class="h-5 w-5"
@@ -216,18 +238,19 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                     })();
                 </script>
 
-            <?php elseif ($step === 2): ?>
+            </section>
+
+            <section class="ag-paso" id="ag-paso-2" data-paso="2"<?= $step !== 2 ? ' hidden' : '' ?>>
                 <!-- Paso 2: Médico -->
                 <div class="portal-card">
                     <h2 class="portal-section-title">Médicos disponibles</h2>
-                    <?php if (!$doctors): ?>
-                        <div class="portal-empty">
+                    <?php /* Los dos existen siempre: el wizard alterna cual se ve. */ ?>
+                    <div class="portal-empty" id="ag-doctors-empty"<?= $doctors ? ' hidden' : '' ?>>
                             <i data-lucide="user-round-x" class="h-10 w-10"></i>
                             <p>No hay médicos registrados para esa especialidad.</p>
-                            <a href="<?= e(base_url('agendar')) ?>" class="portal-text-link">Elegir otra especialidad</a>
-                        </div>
-                    <?php else: ?>
-                        <div class="portal-doctors">
+                        <a href="<?= e(base_url('agendar')) ?>" class="portal-text-link" data-volver="1">Elegir otra especialidad</a>
+                    </div>
+                    <div class="portal-doctors" id="ag-doctors"<?= $doctors ? '' : ' hidden' ?>>
                             <?php foreach ($doctors as $d):
                                 $photo = !empty($d['photo_url'])
                                     ? portal_directory_photo_url($d['photo_url'])
@@ -250,15 +273,19 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                                         fechas →</a>
                                 </article>
                             <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                    <a href="<?= e(base_url('agendar')) ?>" class="portal-text-link mt-4 block">← Cambiar especialidad</a>
+                    </div>
+                    <a href="<?= e(base_url('agendar')) ?>" class="portal-text-link mt-4 block" data-volver="1">← Cambiar especialidad</a>
                 </div>
 
-            <?php else: ?>
+            </section>
+
+            <section class="ag-paso" id="ag-paso-3" data-paso="3"<?= $step !== 3 ? ' hidden' : '' ?>>
                 <!-- Paso 3: Slot + datos -->
+                <?php if (!$selectedDoctor): ?>
+                    <div class="portal-card portal-doctor-summary" id="ag-doctor-summary" hidden></div>
+                <?php endif; ?>
                 <?php if ($selectedDoctor): ?>
-                    <div class="portal-card portal-doctor-summary">
+                    <div class="portal-card portal-doctor-summary" id="ag-doctor-summary">
                         <?php $photo = !empty($selectedDoctor['photo_url']) ? portal_directory_photo_url($selectedDoctor['photo_url']) : doctor_avatar_svg($selectedDoctor['name']); ?>
                         <img src="<?= e($photo) ?>" alt="" style="width:56px;height:56px;border-radius:50%;object-fit:cover">
                         <div>
@@ -271,7 +298,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                     </div>
                 <?php endif; ?>
 
-                <div class="portal-card" data-doctor-id="<?= $docId ?>">
+                <div class="portal-card" id="ag-slot-card" data-doctor-id="<?= $docId ?>">
                     <h2 class="portal-section-title">Selecciona fecha y hora</h2>
                     <div class="portal-slot-loader" id="slot-loader">
                         <i data-lucide="loader-2" class="h-5 w-5 animate-spin"></i>
@@ -293,7 +320,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
                         <div>
                             <label class="form-label" for="g-cedula">Cédula</label>
                             <input type="text" name="cedula" id="g-cedula" class="form-input" required
-                                placeholder="000-0000000-0">
+                                inputmode="numeric" autocomplete="off" placeholder="000-0000000-0">
                         </div>
                     </div>
                     <div class="portal-grid-2">
@@ -365,11 +392,15 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
 
                 <script>
                     window.PORTAL_DOCTOR_ID = <?= $docId ?>;
+                    window.AGENDAR_DOCTORS = <?= json_encode($docsForJs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+                    window.AGENDAR_SPECIALTIES = <?= json_encode($specNames, JSON_UNESCAPED_UNICODE) ?>;
+                    window.AGENDAR_BASE_URL = <?= json_encode(base_url('agendar'), JSON_UNESCAPED_SLASHES) ?>;
+                    window.AGENDAR_STATE = { specialtyId: <?= (int) $specId ?>, doctorId: <?= (int) $docId ?>, step: <?= (int) $step ?> };
                     window.AGENDAR_HCAPTCHA = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
                     window.AGENDAR_SLOTS_URL = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
                     window.AGENDAR_SUBMIT_URL = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
                 </script>
-            <?php endif; ?>
+            </section>
 
         </div>
     </main>
@@ -377,9 +408,9 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
     <?php render_public_footer($assets, $contact, $year); ?>
     <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
-    <?php if ($step === 3): ?>
-        <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
-    <?php endif; ?>
+    <?php /* Ahora los 3 pasos viven en la misma pagina: los dos scripts van siempre. */ ?>
+    <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+    <script src="<?= e(base_url('assets/js/agendar-wizard.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/agendar-wizard.js') ?: 1)) ?>"></script>
     <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 

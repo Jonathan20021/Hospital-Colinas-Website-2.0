@@ -141,6 +141,17 @@
                     picker.innerHTML = '<p class="portal-empty-text">No hay horarios disponibles en los próximos 30 días.</p>';
                     return;
                 }
+                // El paciente aterrizaba en el mes actual, que puede tener 3 dias
+                // sueltos o ninguno, y tenia que ir buscando mes a mes. Se abre
+                // directamente en el PRIMER dia con hueco y ya seleccionado, asi
+                // ve horarios de entrada.
+                const conHueco = Object.keys(daysData).filter(d => (daysData[d] || []).length).sort();
+                if (conHueco.length && !selectedDay) {
+                    selectedDay = conHueco[0];
+                    const partes = conHueco[0].split('-').map(Number);
+                    viewYear = partes[0];
+                    viewMonth = partes[1] - 1;
+                }
                 render();
             })
             .catch(e => {
