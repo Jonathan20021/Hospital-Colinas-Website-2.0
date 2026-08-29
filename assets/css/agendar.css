@@ -1298,3 +1298,17 @@
     font-size: .76rem;
     font-weight: 800;
 }
+
+/* ── Botones de la cabecera y el menu movil ───────────────────────────
+   portal.css declara `.btn { padding: .7rem 1.25rem }` SIN scope y se cuela en
+   la cascara del sitio, que solo esta pagina carga junto al portal. Resultado:
+   los 5 botones del menu movil median 40 px, frente a 47 en el resto del sitio
+   y por debajo del minimo tactil de 44. Se devuelve la medida del sitio SOLO
+   fuera de .agendar-v2, sin tocar portal.css (lo comparte el portal del
+   paciente). */
+.site-header .btn,
+.mobile-menu .btn,
+.site-footer .btn {
+    padding: .9rem 1.3rem;
+    font-size: .9rem;
+}
