@@ -157,12 +157,12 @@ admin_header('Auditoría de accesos', 'auditoria');
             <table class="audit-table">
                 <thead>
                     <tr>
-                        <th>Fecha y hora</th>
-                        <th>Actor</th>
-                        <th>Acción</th>
-                        <th>Paciente</th>
-                        <th class="hide-sm">IP</th>
-                        <th>Estado</th>
+                        <th scope="col">Fecha y hora</th>
+                        <th scope="col">Actor</th>
+                        <th scope="col">Acción</th>
+                        <th scope="col">Paciente</th>
+                        <th scope="col" class="hide-sm">IP</th>
+                        <th scope="col">Estado</th>
                     </tr>
                 </thead>
                 <tbody>

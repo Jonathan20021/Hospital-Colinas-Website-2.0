@@ -2333,3 +2333,17 @@ textarea:focus {
         scroll-behavior: auto !important;
     }
 }
+
+/* Texto solo para lectores de pantalla (p. ej. el nombre de la columna
+   de acciones, que visualmente va vacia). */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

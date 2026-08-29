@@ -160,13 +160,13 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
             </div>
 
             <?php if (!db_ready()): ?>
-                <div class="admin-alert is-error">
+                <div class="admin-alert is-error" role="alert">
                     <i data-lucide="alert-triangle" style="width: 18px; height: 18px; flex-shrink:0;"></i>
                     <span>La base de datos no está instalada. <a href="install.php">Instalar ahora</a>.</span>
                 </div>
             <?php endif; ?>
             <?php if ($error): ?>
-                <div class="admin-alert is-error">
+                <div class="admin-alert is-error" role="alert">
                     <i data-lucide="shield-alert" style="width: 18px; height: 18px; flex-shrink:0;"></i>
                     <span><?= e($error) ?></span>
                 </div>
@@ -198,7 +198,7 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
             </div>
 
             <?php if ($error): ?>
-                <div class="admin-alert is-error">
+                <div class="admin-alert is-error" role="alert">
                     <i data-lucide="shield-alert" style="width: 18px; height: 18px; flex-shrink:0;"></i>
                     <span><?= e($error) ?></span>
                 </div>
@@ -231,7 +231,7 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
             </div>
 
             <?php if ($error): ?>
-                <div class="admin-alert is-error">
+                <div class="admin-alert is-error" role="alert">
                     <i data-lucide="shield-alert" style="width: 18px; height: 18px; flex-shrink:0;"></i>
                     <span><?= e($error) ?></span>
                 </div>
@@ -263,7 +263,7 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
             </div>
 
             <?php if ($error): ?>
-                <div class="admin-alert is-error">
+                <div class="admin-alert is-error" role="alert">
                     <i data-lucide="shield-alert" style="width: 18px; height: 18px; flex-shrink:0;"></i>
                     <span><?= e($error) ?></span>
                 </div>

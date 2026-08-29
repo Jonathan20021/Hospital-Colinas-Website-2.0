@@ -23,7 +23,7 @@ admin_header('Noticias / Sala de prensa', 'noticias');
             <h2>Noticias publicadas</h2>
         </div>
         <form class="admin-table-search" method="get">
-            <input type="search" name="q" value="<?= e($query) ?>" placeholder="Buscar por título o resumen">
+            <input type="search" aria-label="Buscar noticia por título o resumen" name="q" value="<?= e($query) ?>" placeholder="Buscar por título o resumen">
             <button type="submit">Buscar</button>
         </form>
     </div>
@@ -32,12 +32,12 @@ admin_header('Noticias / Sala de prensa', 'noticias');
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Noticia</th>
-                    <th>Categoría</th>
-                    <th>Estado</th>
-                    <th>Publicación</th>
-                    <th>Vistas</th>
-                    <th></th>
+                    <th scope="col">Noticia</th>
+                    <th scope="col">Categoría</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Publicación</th>
+                    <th scope="col">Vistas</th>
+                    <th scope="col"><span class="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>

@@ -63,7 +63,7 @@ doctor_layout_begin('Disponibilidad', 'disponibilidad');
         </div>
         <div class="av-confirm">
             <div class="av-sel" id="av-sel">
-                <i data-lucide="hand-pointer"></i>
+                <i data-lucide="pointer"></i>
                 <div><strong id="av-sel-main">Ninguna fecha seleccionada</strong><span id="av-sel-sub">Elige en el calendario de arriba</span></div>
             </div>
             <label class="doctor-label" for="av-reason">Motivo (opcional)</label>

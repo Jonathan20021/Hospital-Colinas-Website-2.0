@@ -65,7 +65,7 @@ admin_header('Soporte a médicos', 'soporte_medico');
   <?php endif; ?>
 
   <form method="GET" style="margin-bottom:1rem;display:flex;gap:.5rem;max-width:560px">
-    <input type="search" name="q" value="<?= e($q) ?>" placeholder="Buscar médico por nombre o correo…"
+    <input type="search" aria-label="Buscar médico por nombre o correo" name="q" value="<?= e($q) ?>" placeholder="Buscar médico por nombre o correo…"
            style="flex:1;padding:.6rem .8rem;border:1px solid #cbd5e1;border-radius:8px;font-size:.95rem">
     <button type="submit" style="background:#262161;color:#fff;border:0;border-radius:8px;padding:.6rem 1.1rem;font-weight:600;cursor:pointer">Buscar</button>
   </form>
@@ -74,10 +74,10 @@ admin_header('Soporte a médicos', 'soporte_medico');
     <table style="width:100%;border-collapse:collapse;font-size:.9rem">
       <thead>
         <tr style="text-align:left;color:#64748b;background:#f8fafc">
-          <th style="padding:.7rem .9rem">Médico</th>
-          <th style="padding:.7rem .9rem">Especialidad</th>
-          <th style="padding:.7rem .9rem">Correo</th>
-          <th style="padding:.7rem .9rem;text-align:right">Acción</th>
+          <th scope="col" style="padding:.7rem .9rem">Médico</th>
+          <th scope="col" style="padding:.7rem .9rem">Especialidad</th>
+          <th scope="col" style="padding:.7rem .9rem">Correo</th>
+          <th scope="col" style="padding:.7rem .9rem;text-align:right">Acción</th>
         </tr>
       </thead>
       <tbody>

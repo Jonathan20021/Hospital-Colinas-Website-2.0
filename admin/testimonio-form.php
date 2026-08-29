@@ -44,7 +44,7 @@ $source = $item['source'] ?? 'hospital';
     </div>
 
     <?php if ($error): ?>
-        <div class="admin-alert is-error"><i data-lucide="alert-circle"></i> <?= e($error) ?></div>
+        <div class="admin-alert is-error" role="alert"><i data-lucide="alert-circle"></i> <?= e($error) ?></div>
     <?php endif; ?>
 
     <form method="post" class="tm-form">

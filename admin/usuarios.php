@@ -23,10 +23,10 @@ admin_header('Usuarios admin', 'usuarios');
 ?>
 <section class="admin-panel">
     <?php if ($notice): ?>
-        <div class="admin-alert is-success"><?= e($notice) ?></div>
+        <div class="admin-alert is-success" role="status"><?= e($notice) ?></div>
     <?php endif; ?>
     <?php if ($error): ?>
-        <div class="admin-alert is-error"><?= e($error) ?></div>
+        <div class="admin-alert is-error" role="alert"><?= e($error) ?></div>
     <?php endif; ?>
 
     <div class="admin-panel-head">
@@ -35,7 +35,7 @@ admin_header('Usuarios admin', 'usuarios');
             <h2>Administradores</h2>
         </div>
         <form class="admin-table-search" method="get">
-            <input type="search" name="q" value="<?= e($query) ?>" placeholder="Buscar usuario o correo">
+            <input type="search" aria-label="Buscar usuario por nombre o correo" name="q" value="<?= e($query) ?>" placeholder="Buscar usuario o correo">
             <button type="submit">Buscar</button>
         </form>
     </div>
@@ -44,12 +44,12 @@ admin_header('Usuarios admin', 'usuarios');
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Usuario</th>
-                    <th>Rol</th>
-                    <th>Permisos</th>
-                    <th>Estado</th>
-                    <th>Último acceso</th>
-                    <th></th>
+                    <th scope="col">Usuario</th>
+                    <th scope="col">Rol</th>
+                    <th scope="col">Permisos</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Último acceso</th>
+                    <th scope="col"><span class="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>

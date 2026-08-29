@@ -71,11 +71,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p>Crea la base MySQL, las tablas del directorio médico y el usuario inicial del panel.</p>
 
         <?php if ($error): ?>
-            <div class="admin-alert is-error"><?= e($error) ?></div>
+            <div class="admin-alert is-error" role="alert"><?= e($error) ?></div>
         <?php endif; ?>
 
         <?php foreach ($messages as $message): ?>
-            <div class="admin-alert is-success"><?= e($message) ?></div>
+            <div class="admin-alert is-success" role="status"><?= e($message) ?></div>
         <?php endforeach; ?>
 
         <form method="post">

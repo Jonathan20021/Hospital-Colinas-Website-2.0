@@ -42,7 +42,7 @@ admin_header($id ? 'Editar documento' : 'Nuevo documento', 'repositorio');
     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
 
     <?php if ($error): ?>
-        <div class="admin-alert is-error"><?= e($error) ?></div>
+        <div class="admin-alert is-error" role="alert"><?= e($error) ?></div>
     <?php endif; ?>
 
     <section class="admin-panel editor-main">

@@ -23,7 +23,7 @@ admin_header('Repositorio Digital', 'repositorio');
             <h2>Protocolos y guías publicados</h2>
         </div>
         <form class="admin-table-search" method="get">
-            <input type="search" name="q" value="<?= e($query) ?>" placeholder="Buscar por título, organización o tema">
+            <input type="search" aria-label="Buscar documento por título, organización o tema" name="q" value="<?= e($query) ?>" placeholder="Buscar por título, organización o tema">
             <button type="submit">Buscar</button>
         </form>
     </div>
@@ -32,12 +32,12 @@ admin_header('Repositorio Digital', 'repositorio');
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Documento</th>
-                    <th>Especialidad</th>
-                    <th>Origen</th>
-                    <th>Año</th>
-                    <th>Estado</th>
-                    <th></th>
+                    <th scope="col">Documento</th>
+                    <th scope="col">Especialidad</th>
+                    <th scope="col">Origen</th>
+                    <th scope="col">Año</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col"><span class="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>

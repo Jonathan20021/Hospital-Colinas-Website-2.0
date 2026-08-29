@@ -50,7 +50,7 @@ admin_header($id ? 'Editar usuario' : 'Nuevo usuario', 'usuarios');
     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
 
     <?php if ($error): ?>
-        <div class="admin-alert is-error"><?= e($error) ?></div>
+        <div class="admin-alert is-error" role="alert"><?= e($error) ?></div>
     <?php endif; ?>
 
     <div class="admin-panel-head">

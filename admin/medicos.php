@@ -154,7 +154,7 @@ admin_header('Médicos', 'medicos');
     <form method="GET" class="med-filters">
         <div class="field">
             <label>Buscar</label>
-            <input type="search" name="q" value="<?= e($query) ?>" placeholder="Nombre, especialidad...">
+            <input type="search" aria-label="Buscar médico por nombre o especialidad" name="q" value="<?= e($query) ?>" placeholder="Nombre, especialidad...">
         </div>
         <div class="field">
             <label>Especialidad</label>

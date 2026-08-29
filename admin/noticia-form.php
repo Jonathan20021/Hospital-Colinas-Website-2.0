@@ -92,7 +92,7 @@ admin_header($id ? 'Editar noticia' : 'Nueva noticia', 'noticias');
     <input type="hidden" id="galleryToken" value="<?= e($galleryToken) ?>">
 
     <?php if ($error): ?>
-        <div class="admin-alert is-error"><?= e($error) ?></div>
+        <div class="admin-alert is-error" role="alert"><?= e($error) ?></div>
     <?php endif; ?>
 
     <section class="admin-panel editor-main">

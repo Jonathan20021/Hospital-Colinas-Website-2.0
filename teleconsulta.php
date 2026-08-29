@@ -33,7 +33,11 @@ if (strlen($t) < 16) {
     <meta name="robots" content="noindex, nofollow">
     <meta name="theme-color" content="#2a2566">
     <link rel="icon" type="image/png" href="<?= e(base_url('assets/site/favicon.png')) ?>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+    <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
+             mismo origen, sin DNS/TLS a Google ni CSS render-blocking. */ ?>
+    <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/teleconsulta.css')) ?>?v=<?= @filemtime(__DIR__ . '/assets/css/teleconsulta.css') ?>">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}

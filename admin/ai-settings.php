@@ -32,10 +32,10 @@ admin_header('Colinas IA', 'ai');
 ?>
 <div class="admin-panel ai-settings-panel">
     <?php if ($saved): ?>
-        <div class="admin-alert is-success">Configuración guardada correctamente.</div>
+        <div class="admin-alert is-success" role="status">Configuración guardada correctamente.</div>
     <?php endif; ?>
     <?php if ($error): ?>
-        <div class="admin-alert is-error"><?= e($error) ?></div>
+        <div class="admin-alert is-error" role="alert"><?= e($error) ?></div>
     <?php endif; ?>
 
     <form method="post" class="ai-form" id="aiSettingsForm">

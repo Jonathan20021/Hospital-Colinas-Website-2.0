@@ -33,13 +33,13 @@ admin_header('Testimonios y reseñas', 'testimonios');
 ?>
 <section class="admin-panel">
     <?php if (isset($_GET['gsaved'])): ?>
-        <div class="admin-alert is-success"><i data-lucide="check-circle-2"></i> Insignia de Google actualizada.</div>
+        <div class="admin-alert is-success" role="status"><i data-lucide="check-circle-2"></i> Insignia de Google actualizada.</div>
     <?php elseif (isset($_GET['saved'])): ?>
-        <div class="admin-alert is-success"><i data-lucide="check-circle-2"></i> Testimonio guardado.</div>
+        <div class="admin-alert is-success" role="status"><i data-lucide="check-circle-2"></i> Testimonio guardado.</div>
     <?php elseif (isset($_GET['approved'])): ?>
-        <div class="admin-alert is-success"><i data-lucide="check-circle-2"></i> Testimonio publicado.</div>
+        <div class="admin-alert is-success" role="status"><i data-lucide="check-circle-2"></i> Testimonio publicado.</div>
     <?php elseif (isset($_GET['deleted'])): ?>
-        <div class="admin-alert is-success"><i data-lucide="check-circle-2"></i> Testimonio eliminado.</div>
+        <div class="admin-alert is-success" role="status"><i data-lucide="check-circle-2"></i> Testimonio eliminado.</div>
     <?php endif; ?>
 
     <div class="admin-panel-head">
@@ -99,11 +99,11 @@ admin_header('Testimonios y reseñas', 'testimonios');
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Testimonio</th>
-                    <th>Origen</th>
-                    <th>Estado</th>
-                    <th>Recibido</th>
-                    <th></th>
+                    <th scope="col">Testimonio</th>
+                    <th scope="col">Origen</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Recibido</th>
+                    <th scope="col"><span class="sr-only">Acciones</span></th>
                 </tr>
             </thead>
             <tbody>

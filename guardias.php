@@ -72,9 +72,11 @@ $linkTo = static fn (int $id): string => base_url('guardias') . '?t=' . urlencod
     <meta name="robots" content="noindex, nofollow, noarchive">
     <meta name="theme-color" content="#262161">
     <link rel="icon" type="image/png" href="<?= e(base_url($assets['favicon'])) ?>">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <?php /* Fuentes auto-hospedadas (Inter + Outfit + Plus Jakarta Sans, VARIABLES):
+             mismo origen, sin DNS/TLS a Google ni CSS render-blocking. */ ?>
+    <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/inter-latin.woff2')) ?>" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <style>
     *{box-sizing:border-box} html,body{margin:0;padding:0}
     body{ background:#eef0f7; font-family:'Inter',system-ui,sans-serif; color:#0f1326; -webkit-text-size-adjust:100%; }
