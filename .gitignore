@@ -23,6 +23,11 @@ assets/source/videohospital-BsNC9-JF.mp4
 /tmp/
 *.tmp
 *.bak
+# ...y los respaldos con sufijo (app.css.bak.redesign.20260531012503): el
+# patron de arriba solo cubre los que TERMINAN en .bak. Uno de esos se colo
+# al repo y acabo publicado en produccion (189 KB descargables).
+*.bak.*
+*~
 
 # Node dependencies
 node_modules/
