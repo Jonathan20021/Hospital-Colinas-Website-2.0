@@ -1259,3 +1259,42 @@
 .agendar-v2 .ag-orden svg {
     color: var(--gr);
 }
+
+/* ── La hora dejo de estar libre al confirmar ─────────────────────────
+   Antes esto era una linea roja al pie del formulario, con la hora caduca
+   todavia arriba y sin salida obvia. Ahora se avisa aqui, en el paso 3,
+   justo encima del calendario ya recargado. */
+.agendar-v2 .ag-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    margin-bottom: 1rem;
+    padding: .85rem 1.1rem;
+    border: 1px solid #f0d9a8;
+    border-left: 4px solid #d99b23;
+    border-radius: 12px;
+    background: #fdf8ed;
+    color: #7a5410;
+    font-size: .88rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.agendar-v2 .ag-aviso[hidden] {
+    display: none;                     /* display:flex le gana a [hidden] */
+}
+
+.agendar-v2 .ag-aviso::before {
+    content: "!";
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    margin-top: .05rem;
+    border-radius: 50%;
+    background: #d99b23;
+    color: #fff;
+    font-size: .76rem;
+    font-weight: 800;
+}

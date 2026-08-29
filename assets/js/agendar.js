@@ -309,6 +309,8 @@
                 if (confirmWhen) confirmWhen.textContent = cuando;
                 // El formulario ya no se despliega aqui: vive en el paso 4.
                 // Esto solo habilita la salida, que es lo unico que queda.
+                const aviso = document.getElementById('ag-aviso-hora');
+                if (aviso) aviso.hidden = true;    // ya eligio otra: el aviso sobra
                 const elegido = document.getElementById('ag-elegido');
                 const barra   = document.getElementById('ag-continuar');
                 if (elegido) elegido.textContent = cuando;
@@ -321,6 +323,47 @@
                 }
             });
         });
+    }
+
+    /**
+     * true si el rechazo va de la HORA, no de los datos del paciente.
+     *
+     * El endpoint (PortalController::createGuestAppointment) tiene cuatro
+     * salidas de este tipo, y todas significan lo mismo para el paciente:
+     *   409 'Ese horario ya fue tomado. Elige otro.'
+     *   409 'El médico no atiende ese día.'
+     *   422 'El médico no atiende en ese horario. Elige un horario disponible.'
+     *   422 'La fecha debe ser futura.'
+     * Los 422 de datos SI traen `errors` por campo, asi que exigir que NO haya
+     * `errors` separa unos de otros sin depender de la redaccion exacta.
+     */
+    function esRechazoDeHora(status, j) {
+        if (j && j.errors && Object.keys(j.errors).length) return false;
+        if (status !== 409 && status !== 422) return false;
+        return /horario|hora|fecha|d[ií]a|tomad/i.test((j && j.message) || '');
+    }
+
+    /** Devuelve al paso 3, recarga los horarios y explica por que. */
+    function volverAElegirHora(mensaje) {
+        limpiarHora();
+        if (result) result.innerHTML = '';        // el aviso va arriba, no aqui
+
+        const caja = document.getElementById('ag-aviso-hora');
+        if (caja) {
+            // Los cuatro mensajes del servidor YA dicen que hay que elegir otra
+            // hora ("Elige otro."), asi que repetirlo sonaba a tartamudeo. Se
+            // anade solo lo que el servidor no sabe: que la agenda ya se recargo.
+            caja.textContent = mensaje + ' Ya actualizamos los horarios que quedan libres.';
+            caja.hidden = false;
+        }
+
+        // Recargar de verdad: si no, el hueco que acaban de tomar seguiria ahi.
+        const idMedico = parseInt((form && form.doctor_id && form.doctor_id.value) || 0, 10);
+        if (idMedico) init(idMedico);
+
+        if (window.AgendarWizard && typeof window.AgendarWizard.irAPaso === 'function') {
+            window.AgendarWizard.irAPaso(3);
+        }
     }
 
     /** Deja la seleccion de hora en blanco y esconde la salida al paso 4. */
@@ -542,6 +585,15 @@
             const j = await r.json();
             if (j.success) {
                 renderConfirmation(j.data, payload.email);
+            } else if (esRechazoDeHora(r.status, j)) {
+                // La hora dejo de valer entre que la eligio y confirmo. No se le
+                // deja con una linea roja al pie: vuelve al paso 3 con los
+                // horarios RECARGADOS, para que el hueco tomado ya no aparezca.
+                // Sus datos siguen escritos; solo tiene que elegir otra hora.
+                volverAElegirHora(j.message || 'Ese horario ya no está disponible.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '✓ Confirmar cita';
+                if (window.hcaptcha) hcaptcha.reset();
             } else {
                 // El servidor devuelve errors:{campo:[mensajes]}. Los que casan
                 // con un campo del formulario se cuelgan de el; el resto va al pie.
@@ -569,6 +621,33 @@
             submitBtn.innerHTML = '✓ Confirmar cita';
         }
         });
+    }
+
+    /**
+     * "Y ahora que?" — la pregunta que le queda al paciente tras confirmar.
+     *
+     * Solo va lo que se puede sostener: la direccion sale de $contact y lo de
+     * traer estudios previos es literal de la pagina oficial "Preparacion para
+     * tu cita", a la que se enlaza para el resto. NO se inventan normas del
+     * hospital: esa pagina, por ejemplo, no dice en ninguna parte que haya que
+     * llegar 15 minutos antes.
+     */
+    function bloqueVisita() {
+        const v = window.AGENDAR_VISITA || {};
+        const est = 'margin:.3rem 0;color:#475569;font-size:.92rem';
+        const filas = [];
+        if (v.direccion) {
+            filas.push('<p style="' + est + '">📍 ' + v.direccion + '</p>');
+        }
+        filas.push('<p style="' + est + '">📋 Lleva estudios, recetas o reportes previos relacionados con tu consulta.</p>');
+        if (v.guia) {
+            filas.push('<p style="margin:.7rem 0 0"><a href="' + v.guia +
+                '" style="color:#047857;font-weight:600;font-size:.92rem">Cómo prepararte para tu cita →</a></p>');
+        }
+        return '<div style="background:#f8f7f4;border:1px solid #e9e4da;border-radius:12px;'
+             + 'padding:1.15rem 1.35rem;margin-top:1.25rem;text-align:left">'
+             + '<h3 style="margin:0 0 .5rem;color:#262161;font-size:1rem;font-weight:800">Para tu visita</h3>'
+             + filas.join('') + '</div>';
     }
 
     function renderConfirmation(data, email) {
@@ -615,6 +694,8 @@
                     <p style="margin:.25rem 0"><strong>Especialidad:</strong> ${data.specialty}</p>
                     <p style="margin:.25rem 0"><strong>Fecha y hora:</strong> ${whenLabel}</p>
                 </div>
+
+                ${bloqueVisita()}
 
                 ${data.email_sent
                     ? '<p style="color:#047857;margin:1.5rem 0;font-weight:600">📧 Te enviamos los detalles a tu correo.</p>'

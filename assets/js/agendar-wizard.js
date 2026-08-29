@@ -380,6 +380,12 @@
         mostrarPaso(1, false);
     });
 
+    // agendar.js necesita poder devolver al paciente al paso 3 cuando el
+    // hospital rechaza la hora al confirmar. Es lo unico que se expone.
+    window.AgendarWizard = {
+        irAPaso: function (n) { if (secciones[n]) mostrarPaso(n, true); },
+    };
+
     // Estado inicial en el historial, para que el primer "atrás" funcione.
     // Enlace directo al paso 3: el resumen de la cita tambien necesita el medico.
     if (estado.doctorId && confirmMedico) {

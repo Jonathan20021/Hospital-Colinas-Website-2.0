@@ -368,6 +368,9 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     </div>
                 <?php endif; ?>
 
+                <?php /* Lo llena el JS si el hospital rechaza la hora al confirmar. */ ?>
+                <div class="ag-aviso" id="ag-aviso-hora" role="alert" hidden></div>
+
                 <div class="portal-card" id="ag-slot-card" data-doctor-id="<?= $docId ?>">
                     <h2 class="portal-section-title">Selecciona fecha y hora</h2>
                     <div class="portal-slot-loader" id="slot-loader">
@@ -509,6 +512,13 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     window.AGENDAR_STATE = { specialtyId: <?= (int) $specId ?>, doctorId: <?= (int) $docId ?>, step: <?= (int) $step ?> };
                     window.AGENDAR_HCAPTCHA = <?= $hcaptchaSiteKey ? 'true' : 'false' ?>;
                     window.AGENDAR_TEL = <?= json_encode((string) ($contact['phone'] ?? ''), JSON_UNESCAPED_UNICODE) ?>;
+                    <?php /* Para la pantalla de confirmacion. La direccion sale de
+                             $contact y la guia enlaza a la pagina oficial del hospital:
+                             no se inventan normas de visita aqui. */ ?>
+                    window.AGENDAR_VISITA = <?= json_encode([
+                        'direccion' => trim((string) ($contact['address'] ?? '')),
+                        'guia'      => base_url('preparacion-para-tu-cita'),
+                    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
                     window.AGENDAR_SLOTS_URL = <?= json_encode(base_url('api/agendar-slots.php')) ?>;
                     window.AGENDAR_PROXIMAS_URL = <?= json_encode(base_url('api/agendar-proximas.php')) ?>;
                     window.AGENDAR_SUBMIT_URL = <?= json_encode(base_url('api/guest-appointment.php')) ?>;
