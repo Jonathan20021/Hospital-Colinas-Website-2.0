@@ -380,7 +380,7 @@ $step = $docId ? 3 : ($specId ? 2 : 1);
     <?php if ($step === 3): ?>
         <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <?php endif; ?>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 
 </html>

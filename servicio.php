@@ -213,7 +213,7 @@ $isSpecialty = ($service['group'] ?? '') === 'Especialidades' || ($service['grou
     <?php require __DIR__ . '/includes/widget-colinas-ai.php'; ?>
     <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide.min.js') ?: 1)) ?>"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 
 </html>

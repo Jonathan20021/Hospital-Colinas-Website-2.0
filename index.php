@@ -441,7 +441,8 @@ $leadershipGerencias = [
 
                 <!-- Lado Derecho: Imagen -->
                 <div class="hero-ultra-right">
-                    <img src="<?= e(base_url($assets['hero'])) ?>" alt="Hospital General Las Colinas" class="hero-ultra-image">
+                    <?php /* Es el LCP del home: prioridad alta y decodificacion asincrona. */ ?>
+                    <img src="<?= e(base_url($assets['hero'])) ?>" alt="Hospital General Las Colinas" class="hero-ultra-image" fetchpriority="high" decoding="async">
                 </div>
             </div>
 
@@ -1227,7 +1228,9 @@ $leadershipGerencias = [
             <i data-lucide="x" class="h-5 w-5"></i>
         </button>
         <figure>
-            <img id="lightboxImage" src="" alt="">
+            <?php /* Sin src: un src="" hace que el navegador vuelva a pedir la URL de
+                     la pagina como imagen. El JS le pone el src al abrir. */ ?>
+            <img id="lightboxImage" alt="">
             <figcaption>
                 <strong id="lightboxTitle"></strong>
                 <span id="lightboxText"></span>
@@ -1237,7 +1240,7 @@ $leadershipGerencias = [
 
     <script src="<?= e(base_url('assets/js/lucide.min.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide.min.js') ?: 1)) ?>"></script>
     <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 
 </html>

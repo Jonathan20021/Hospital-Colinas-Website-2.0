@@ -1,0 +1,19 @@
+# assets/ — todo lo de aquí se pide siempre con ?v=<filemtime>, así que la URL
+# cambia sola en cada despliegue. Con eso el navegador puede cachear un año sin
+# riesgo de quedarse con una versión vieja: al cambiar el archivo cambia la URL.
+#
+# Antes el sitio daba 7 días a CSS/JS (mod_expires del .htaccess raíz), lo que
+# obligaba a revalidar assets que en la práctica nunca cambian sin cambiar de URL.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|woff2|woff|ttf|otf|eot|jpg|jpeg|png|webp|avif|gif|svg|ico|mp4|webm)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+# Sin listados: assets/, assets/source/, assets/vendor/… no deben poder navegarse.
+Options -Indexes
+
+# Nada de código ejecutable dentro de assets/.
+<FilesMatch "\.(?i:php|phtml|phar|cgi|pl|py|sh)$">
+    Require all denied
+</FilesMatch>

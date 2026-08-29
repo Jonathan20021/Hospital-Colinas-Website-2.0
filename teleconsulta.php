@@ -109,6 +109,6 @@ if (strlen($t) < 16) {
         </script>
     <?php endif; ?>
     </main>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 </html>

@@ -1,0 +1,17 @@
+# storage/ — estado interno del sitio. NADA de aquí debe servirse por HTTP.
+#
+# Contiene:
+#   cache/directory/doctors.json  → volcado del directorio traído del API interno,
+#                                   con correo, teléfono y exequátur de cada médico.
+#                                   Era descargable (57 KB, 92 médicos) y además
+#                                   la carpeta se listaba sola.
+#   cache/doctor-photos/          → las fotos NO se enlazan desde aquí; se sirven
+#                                   por api/portal-asset.php, que las lee del disco.
+#   ai-rate/                      → contadores del limitador del chatbot.
+#
+# La excepción es storage/uploads/, que sí se enlaza directo desde el HTML
+# (fotos de médicos y galerías de noticias subidas desde el admin): ese
+# subdirectorio vuelve a permitir el acceso en su propio .htaccess.
+
+Require all denied
+Options -Indexes

@@ -1,4 +1,10 @@
 # Carpeta de archivos subidos: servir contenido estático, nunca ejecutar código.
+#
+# El .htaccess del directorio padre (storage/) deniega todo; aquí se vuelve a
+# permitir porque estas rutas SÍ se enlazan directo desde el HTML público
+# (fotos de médicos del admin y galerías de noticias).
+Require all granted
+
 <FilesMatch "\.(?i:php|phtml|php3|php4|php5|php7|phar|cgi|pl|py)$">
     Require all denied
 </FilesMatch>

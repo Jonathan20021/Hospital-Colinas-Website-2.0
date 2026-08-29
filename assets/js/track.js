@@ -33,7 +33,16 @@
       lang: navigator.language || ''
     };
 
-    var url = '/api/track.php';
+    // La ruta del proxy se deriva de la URL del propio script
+    // (.../assets/js/track.js) para que tambien funcione cuando el sitio no
+    // cuelga de la raiz del dominio (copias locales, staging en subcarpeta).
+    var url = (function () {
+      try {
+        var sc = document.currentScript || document.querySelector('script[src*="assets/js/track.js"]');
+        var m = sc && sc.src ? sc.src.match(/^(.*)\/assets\/js\/track\.js/) : null;
+        return (m ? m[1] : '') + '/api/track.php';
+      } catch (e) { return '/api/track.php'; }
+    })();
     var body = JSON.stringify(data);
 
     if (navigator.sendBeacon) {

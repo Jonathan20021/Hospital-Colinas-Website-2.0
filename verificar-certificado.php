@@ -103,6 +103,6 @@ $logo    = base_url('assets/site/logo.png');
             <div class="foot"><strong>Hospital General Las Colinas</strong> · Santiago, RD</div>
         <?php endif; ?>
     </div>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 </html>

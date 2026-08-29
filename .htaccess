@@ -1,5 +1,8 @@
 # Hospital General Las Colinas — clean URLs
-Options +FollowSymLinks -MultiViews
+# -Indexes: sin listados de directorio. Sin esto se podian navegar /includes/,
+# /database/, /deploy/, /docs/, /assets/source/ y /node_modules/ y ver todos los
+# nombres de archivo.
+Options +FollowSymLinks -MultiViews -Indexes
 DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
@@ -92,7 +95,12 @@ DirectoryIndex index.php
 </IfModule>
 
 <IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json image/svg+xml application/manifest+json
+    # OJO: Apache sirve los .js como "text/javascript"; si solo se lista
+    # "application/javascript" el JS viaja SIN comprimir.
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css
+    AddOutputFilterByType DEFLATE text/javascript application/javascript application/x-javascript
+    AddOutputFilterByType DEFLATE application/json application/ld+json application/manifest+json
+    AddOutputFilterByType DEFLATE application/xml application/rss+xml image/svg+xml
 </IfModule>
 
 # PWA — Portal del Médico
@@ -116,6 +124,11 @@ DirectoryIndex index.php
 
 # Block sensitive / development files (config, dumps, backups, dependency manifests)
 <FilesMatch "\.(sql|bak|log|ini|sh|lock|gitignore|gitattributes)$">
+    Require all denied
+</FilesMatch>
+# El patron de arriba solo cubre los que TERMINAN en .bak. Los respaldos con
+# sufijo (p. ej. app.css.bak.redesign.20260531012503) se servian con 200.
+<FilesMatch "\.(bak|old|orig|save|swp|tmp|dist|example)(\.|$)|~$">
     Require all denied
 </FilesMatch>
 <FilesMatch "^(composer\.json|composer\.lock|package\.json|package-lock\.json|tailwind\.config\.js)$">

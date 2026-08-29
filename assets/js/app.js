@@ -472,7 +472,9 @@
         function closeLightbox() {
             lightbox?.classList.add('hidden');
             lightbox?.classList.remove('flex');
-            if (lightboxImage) lightboxImage.src = '';
+            // removeAttribute, no src='': asignar cadena vacia dispara una peticion
+            // a la URL de la pagina cada vez que se cierra el lightbox.
+            if (lightboxImage) lightboxImage.removeAttribute('src');
         }
 
         document.querySelectorAll('[data-gallery-src]').forEach((button) => {

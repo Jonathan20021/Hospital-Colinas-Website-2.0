@@ -260,7 +260,7 @@ $description = 'Aprende a ver tus resultados de laboratorio, imágenes y recetas
             setTimeout(showAll, 1800);
         })();
     </script>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 
 </html>

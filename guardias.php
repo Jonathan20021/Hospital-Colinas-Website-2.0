@@ -326,6 +326,6 @@ if (window.top !== window.self) { try { window.top.location = window.self.locati
     }
 })();
 </script>
-    <script defer src="/assets/js/track.js"></script>
+    <script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
 </body>
 </html>

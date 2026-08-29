@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instalación | Admin Las Colinas</title>
     <link rel="icon" type="image/png" href="../assets/site/favicon.png">
-    <link rel="stylesheet" href="../assets/css/admin.css">
+    <link rel="stylesheet" href="../assets/css/admin.css?v=<?= e((string) (@filemtime(__DIR__ . '/../assets/css/admin.css') ?: 1)) ?>">
 </head>
 <body class="admin-login-body">
     <main class="install-card">
