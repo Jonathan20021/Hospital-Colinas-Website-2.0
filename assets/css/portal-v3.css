@@ -2530,3 +2530,37 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
     .portal-email-cta { flex-wrap: wrap; }
     .portal-email-cta .btn { width: 100%; justify-content: center; }
 }
+
+/* Cuándo es la cita, en palabras. El bloque de fecha decía "Sábado 31 Agosto"
+   y el paciente tenía que calcular si eso era mañana. */
+.portal-next-appointment .portal-cuando {
+    display: flex;
+    align-items: center;
+    gap: .45rem;
+    margin: 0 0 .9rem;
+    padding: .55rem .85rem;
+    border-radius: 10px;
+    font-size: .92rem;
+    font-weight: 700;
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.portal-next-appointment .portal-cuando i,
+.portal-next-appointment .portal-cuando svg {
+    width: 1.05rem;
+    height: 1.05rem;
+    flex: none;
+}
+
+/* Mañana: verde de marca (acción/próximo). */
+.portal-next-appointment .portal-cuando.es-manana {
+    background: #eefbe6;
+    color: #3f7a1f;
+}
+
+/* Hoy: ámbar, que es lo que de verdad hay que mirar al entrar. */
+.portal-next-appointment .portal-cuando.es-hoy {
+    background: #fef3c7;
+    color: #92400e;
+}

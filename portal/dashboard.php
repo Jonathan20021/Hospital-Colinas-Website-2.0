@@ -100,7 +100,31 @@ portal_layout_begin('Inicio', 'dashboard');
                 <h2><i data-lucide="calendar-clock"></i> Tu próxima cita</h2>
                 <a href="<?= e(base_url('portal/mis-citas.php')) ?>" class="portal-text-link">Ver todas</a>
             </div>
-            <?php if ($next): $ts = strtotime($next['appointment_time']); ?>
+            <?php if ($next):
+                $ts = strtotime($next['appointment_time']);
+                /* Cuan pronto es. Se comparan fechas (no marcas de tiempo) para que
+                   no dependa de la hora del dia ni de desfases de zona horaria. */
+                $diasFaltan = (int) floor((strtotime(date('Y-m-d', $ts)) - strtotime(date('Y-m-d'))) / 86400);
+                if ($diasFaltan < 0) {
+                    /* No deberia pasar (el API filtra desde hoy), pero si llegara una
+                       cita vieja no debe anunciarse como "es hoy". */
+                    $avisoTexto = 'Ya pasó';
+                    $avisoClase = '';
+                } elseif ($diasFaltan === 0) {
+                    $avisoTexto = 'Es hoy a las ' . date('h:i a', $ts);
+                    $avisoClase = 'es-hoy';
+                } elseif ($diasFaltan === 1) {
+                    $avisoTexto = 'Es mañana a las ' . date('h:i a', $ts);
+                    $avisoClase = 'es-manana';
+                } else {
+                    $avisoTexto = 'En ' . $diasFaltan . ' días';
+                    $avisoClase = '';
+                }
+            ?>
+                <p class="portal-cuando <?= e($avisoClase) ?>">
+                    <i data-lucide="<?= $diasFaltan <= 1 ? 'bell-ring' : 'calendar-days' ?>"></i>
+                    <?= e($avisoTexto) ?>
+                </p>
                 <div class="portal-next-body">
                     <div class="portal-date-block">
                         <span class="day-name"><?= e($diasES[(int)date('N', $ts)]) ?></span>
