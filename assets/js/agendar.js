@@ -4,8 +4,19 @@
 (function () {
     'use strict';
 
-    const doctorId = window.PORTAL_DOCTOR_ID;
-    if (!doctorId) return;
+    // Peticion en curso: si el paciente cambia de medico mientras carga, la
+    // respuesta vieja se descarta en vez de pintar horarios de otro.
+    let generacion = 0;
+
+    /**
+     * Prepara el calendario y el formulario para un medico.
+     * Se puede llamar varias veces (el wizard de una sola pagina lo hace al
+     * cambiar de medico); los listeners que solo deben atarse una vez van
+     * marcados con dataset.bound.
+     */
+    function init(doctorId) {
+        if (!doctorId) return;
+        const miGeneracion = ++generacion;
 
     const loader  = document.querySelector('.portal-slot-loader');
     const picker  = document.getElementById('slot-picker');
@@ -19,11 +30,14 @@
     const arsSelect   = document.getElementById('g-ars');
     const arsOtraWrap = document.getElementById('g-ars-otra-wrap');
     const arsOtraInput = document.getElementById('g-ars-otra');
-    arsSelect?.addEventListener('change', () => {
+    if (arsSelect && !arsSelect.dataset.bound) {
+        arsSelect.dataset.bound = '1';
+        arsSelect.addEventListener('change', () => {
         const isOtra = arsSelect.value === '__otra__';
         if (arsOtraWrap) arsOtraWrap.hidden = !isOtra;
         if (isOtra) setTimeout(() => arsOtraInput?.focus(), 50);
-    });
+        });
+    }
 
     // Devuelve el ARS elegido: texto libre si es "Otra…", '' para pago directo o sin elegir.
     function getArsValue() {
@@ -114,6 +128,8 @@
                 return r.json();
             })
             .then(r => {
+                // Si el paciente ya cambio de medico, esta respuesta es de otro.
+                if (esViejo()) return;
                 loader.classList.add('hidden');
                 picker.classList.remove('hidden');
                 if (!r.success) {
@@ -139,7 +155,10 @@
 
     loadSlots();
 
+    function esViejo() { return miGeneracion !== generacion; }
+
     function render() {
+        if (esViejo()) return;
         const monthName = new Date(viewYear, viewMonth, 1)
             .toLocaleDateString('es-DO', { month: 'long', year: 'numeric' });
         const firstDay = new Date(viewYear, viewMonth, 1);
@@ -261,7 +280,9 @@
         return null;
     }
 
-    form?.addEventListener('submit', async (event) => {
+    if (form && !form.dataset.bound) {
+        form.dataset.bound = '1';
+        form.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!apptInput.value) {
             result.innerHTML = '<div class="portal-flash portal-flash-error" style="margin-top:1rem">Selecciona un horario primero.</div>';
@@ -323,7 +344,8 @@
             submitBtn.disabled = false;
             submitBtn.innerHTML = '✓ Confirmar cita';
         }
-    });
+        });
+    }
 
     function renderConfirmation(data, email) {
         const when = new Date(data.appointment_time.replace(' ', 'T'));
@@ -383,4 +405,12 @@
         if (window.lucide) lucide.createIcons();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    } // fin de init()
+
+    // API del modulo: el wizard de una sola pagina llama a init() cada vez que
+    // el paciente elige (o cambia de) medico.
+    window.AgendarSlots = { init: init };
+
+    // Enlace directo al paso 3 (?doctor_id=...): el servidor ya deja el id puesto.
+    if (window.PORTAL_DOCTOR_ID) init(window.PORTAL_DOCTOR_ID);
 })();
