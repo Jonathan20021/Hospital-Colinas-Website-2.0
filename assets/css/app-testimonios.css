@@ -1,0 +1,63 @@
+/* Generado por tools/split-css.php desde app.css. No editar a mano:
+   los cambios van en app.css y despues se vuelve a ejecutar el script. */
+
+
+/* ══════════════════════════════════════════════════════════════
+   TESTIMONIOS + RESEÑAS  (seccion del home + pagina + formulario)
+   Marca: navy #262161 · verde #5da334 · estrellas ambar
+   ══════════════════════════════════════════════════════════════ */
+.tm-shell{max-width:1180px;margin:0 auto;padding:0 1.25rem}
+
+/* ── PAGINA /testimonios ── */
+.tm-page{background:#fff}
+.tm-hero{background:linear-gradient(135deg,#262161,#1a1747);color:#fff;padding:3rem 0 3.5rem}
+.tm-breadcrumb{display:flex;align-items:center;gap:.4rem;font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:1.25rem}
+.tm-breadcrumb a{color:rgba(255,255,255,.85);text-decoration:none}
+.tm-breadcrumb a:hover{color:#fff}
+.tm-hero h1{font-size:clamp(1.9rem,4vw,2.9rem);font-weight:900;line-height:1.1;margin:0 0 .9rem;max-width:16ch}
+.tm-hero-lead{color:rgba(255,255,255,.82);font-size:1.05rem;line-height:1.6;max-width:52ch;margin:0 0 1.75rem}
+.tm-hero-badges{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.tm-hero-cta{display:inline-flex;align-items:center;gap:.5rem;background:var(--green-2,#5da334);color:#fff;font-weight:800;padding:.8rem 1.3rem;border-radius:12px;text-decoration:none;transition:background .15s,transform .15s}
+.tm-hero-cta:hover{background:#4f8f2c;transform:translateY(-2px)}
+
+.tm-wall-section{padding:3.5rem 0}
+.tm-empty{text-align:center;padding:3rem 1rem;color:#94a3b8}
+.tm-empty svg{width:40px;height:40px;margin-bottom:.75rem;color:#cbd5e1}
+
+/* ── Formulario de envio ── */
+.tm-submit-section{padding:1rem 0 4.5rem}
+.tm-submit-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:2.5rem;align-items:start}
+.tm-submit-intro h2{font-size:1.7rem;font-weight:900;color:var(--navy,#262161);margin:0 0 .6rem}
+.tm-submit-intro p{color:#5b6478;line-height:1.6;margin:0 0 1.25rem}
+.tm-submit-notes{list-style:none;padding:0;margin:0;display:grid;gap:.65rem}
+.tm-submit-notes li{display:flex;align-items:flex-start;gap:.55rem;color:#475569;font-size:.9rem}
+.tm-submit-notes svg{color:var(--green-2,#5da334);flex:none;margin-top:2px}
+.tm-submit-card{background:#fff;border:1px solid #e8ecf4;border-radius:20px;padding:1.75rem;box-shadow:0 20px 45px -25px rgba(33,28,80,.28)}
+.tm-form-public{display:flex;flex-direction:column;gap:1rem}
+.tm-form-public label{display:flex;flex-direction:column;gap:.4rem;font-size:.85rem;font-weight:700;color:#374151}
+.tm-form-public input:focus,.tm-form-public textarea:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.14)}
+.tm-hp{position:absolute!important;left:-9999px!important;width:1px;height:1px;overflow:hidden}
+.tm-consent{flex-direction:row!important;align-items:flex-start;gap:.6rem!important;font-weight:600!important;font-size:.85rem!important;color:#5b6478!important;line-height:1.45}
+.tm-consent input{margin-top:.15rem;flex:none}
+.tm-form-submit{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;background:var(--navy,#262161);color:#fff;font-weight:800;font-size:.95rem;padding:.85rem 1.4rem;border:0;border-radius:12px;cursor:pointer;transition:background .15s,transform .15s}
+.tm-form-submit:hover{background:#1a1747;transform:translateY(-1px)}
+.tm-form-error{display:flex;align-items:center;gap:.5rem;background:#fff1f4;color:#be123c;border:1px solid #fbd0da;border-radius:11px;padding:.7rem .9rem;font-size:.88rem;font-weight:600;margin-bottom:1rem}
+
+/* Selector de estrellas (radios en orden 5->1 + row-reverse) */
+.tm-rating-field{border:0;padding:0;margin:0}
+.tm-rating-field legend{font-size:.85rem;font-weight:700;color:#374151;margin-bottom:.35rem}
+.tm-rating-input{display:inline-flex;flex-direction:row-reverse;gap:.2rem}
+.tm-rating-input input{position:absolute;opacity:0;width:0;height:0}
+.tm-rating-input label{cursor:pointer;color:#d5dae5;transition:color .12s;margin:0}
+.tm-rating-input label svg{width:30px;height:30px;fill:currentColor;stroke:currentColor}
+.tm-rating-input input:checked ~ label,
+.tm-rating-input label:hover,
+.tm-rating-input label:hover ~ label{color:#f5a623}
+.tm-rating-input input:focus-visible + label{outline:2px solid #4f46e5;outline-offset:2px;border-radius:4px}
+
+/* Confirmacion de envio */
+.tm-sent{text-align:center;padding:1.5rem .5rem}
+.tm-sent-icon{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#e7f7ee;color:var(--green-2,#5da334);margin-bottom:1rem}
+.tm-sent-icon svg{width:34px;height:34px}
+.tm-sent h3{font-size:1.3rem;font-weight:900;color:var(--navy,#262161);margin:0 0 .5rem}
+.tm-sent p{color:#5b6478;line-height:1.6;margin:0}

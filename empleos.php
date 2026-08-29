@@ -69,6 +69,9 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <?php /* Trozo de app.css exclusivo de esta pagina (ver tools/split-css.php): el nucleo
+             ya no arrastra el CSS del resto del sitio. */ ?>
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-directorio.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/app-directorio.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/empleos.css')) ?>?v=<?= e($assetVersion) ?>">
     <?php require __DIR__ . '/includes/analytics.php'; ?>
 </head>
