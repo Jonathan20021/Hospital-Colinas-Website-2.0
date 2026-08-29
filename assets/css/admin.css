@@ -79,7 +79,7 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
     font-weight: 700;
     color: var(--navy);
 }
@@ -113,8 +113,15 @@ button {
     }
 }
 
-.admin-main>* {
+.admin-main>*,
+.admin-content>* {
     animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* <main id="contenido"> es solo el landmark del "Saltar al contenido":
+   no debe animarse el bloque entero (sus hijos ya se animan arriba). */
+.admin-content {
+    animation: none;
 }
 
 /* ===== Acceso de Login (login.php) ===== */
@@ -615,7 +622,7 @@ textarea:focus {
 
 .welcome-stat-pill strong {
     font-size: 1.25rem;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
 }
 
 .welcome-stat-pill span {
@@ -665,7 +672,7 @@ textarea:focus {
 
 .admin-stats-info strong {
     font-size: 2.25rem;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
     color: var(--navy);
     font-weight: 800;
     line-height: 1.1;
@@ -1631,7 +1638,7 @@ textarea:focus {
 }
 
 .ai-fieldset legend {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Outfit', 'Inter', system-ui, sans-serif;
     font-weight: 700;
     color: var(--navy);
     padding: 0 0.5rem;
@@ -2259,3 +2266,70 @@ textarea:focus {
 .tm-form-full{margin-bottom:1rem}
 .tm-form textarea{resize:vertical;line-height:1.55}
 .tm-form-actions{display:flex;align-items:center;gap:.75rem;margin-top:.5rem}
+
+
+/* ==========================================================================
+   ACCESIBILIDAD DEL PANEL
+   ========================================================================== */
+
+/* "Saltar al contenido": invisible hasta que el teclado lo enfoca. Deja al
+   usuario de teclado brincarse las ~10 entradas del menu en cada pagina. */
+.admin-skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 200;
+    transform: translateY(-160%);
+    padding: 0.7rem 1.1rem;
+    border-radius: var(--radius-md);
+    background: var(--navy);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    box-shadow: var(--shadow-lg);
+    transition: transform 0.18s ease;
+}
+
+.admin-skip-link:focus {
+    transform: translateY(0);
+    outline: 3px solid var(--green);
+    outline-offset: 2px;
+}
+
+/* El landmark no necesita anillo propio al recibir el foco programatico. */
+.admin-content:focus {
+    outline: none;
+}
+
+/* Anillo de foco consistente para navegacion por teclado (no aparece al
+   hacer clic con el raton, solo con Tab). */
+.admin-body a:focus-visible,
+.admin-body button:focus-visible,
+.admin-body [tabindex]:focus-visible,
+.admin-login-body a:focus-visible,
+.admin-login-body button:focus-visible {
+    outline: 3px solid var(--green);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+.admin-sidebar a:focus-visible,
+.admin-sidebar button:focus-visible {
+    outline-color: var(--white);
+    outline-offset: -3px;
+}
+
+/* Respeta "reducir movimiento" del sistema: el panel anima cada bloque al
+   entrar y eso marea a quien lo tiene activado. */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

@@ -144,40 +144,40 @@ function portal_layout_begin(string $title, string $active = ''): void
                     </div>
                     <nav class="portal-nav" aria-label="Navegación del portal">
                         <a href="<?= e(base_url('portal/dashboard.php')) ?>" title="Inicio"
-                            class="portal-nav-link <?= $active === 'dashboard' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'dashboard' ? 'is-active' : '' ?>"<?= $active === 'dashboard' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="layout-dashboard" class="h-4 w-4"></i><span class="portal-nav-label">Inicio</span></a>
                         <a href="<?= e(base_url('portal/salud.php')) ?>" title="Mi Salud"
-                            class="portal-nav-link <?= in_array($active, ['salud', 'ciclo', 'vitales', 'sintomas', 'medicamentos', 'prevencion', 'embarazo'], true) ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= in_array($active, ['salud', 'ciclo', 'vitales', 'sintomas', 'medicamentos', 'prevencion', 'embarazo'], true) ? 'is-active' : '' ?>"<?= in_array($active, ['salud', 'ciclo', 'vitales', 'sintomas', 'medicamentos', 'prevencion', 'embarazo'], true) ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="heart-pulse" class="h-4 w-4"></i><span class="portal-nav-label">Mi Salud</span><span class="portal-nav-badge">Nuevo</span></a>
                         <a href="<?= e(base_url('portal/agendar.php')) ?>" title="Agendar cita"
-                            class="portal-nav-link <?= $active === 'agendar' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'agendar' ? 'is-active' : '' ?>"<?= $active === 'agendar' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="calendar-plus" class="h-4 w-4"></i><span class="portal-nav-label">Agendar cita</span></a>
                         <a href="<?= e(base_url('portal/mis-citas.php')) ?>" title="Mis citas"
-                            class="portal-nav-link <?= $active === 'mis-citas' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'mis-citas' ? 'is-active' : '' ?>"<?= $active === 'mis-citas' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="calendar-check" class="h-4 w-4"></i><span class="portal-nav-label">Mis citas</span></a>
                         <a href="<?= e(base_url('portal/solicitar-estudios.php')) ?>" title="Solicitar estudios"
-                            class="portal-nav-link <?= $active === 'solicitar-estudios' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'solicitar-estudios' ? 'is-active' : '' ?>"<?= $active === 'solicitar-estudios' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="clipboard-plus" class="h-4 w-4"></i><span class="portal-nav-label">Solicitar estudios</span></a>
                         <a href="<?= e(base_url('portal/mensajes.php')) ?>" title="Mensajes"
-                            class="portal-nav-link <?= $active === 'mensajes' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'mensajes' ? 'is-active' : '' ?>"<?= $active === 'mensajes' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="messages-square" class="h-4 w-4"></i><span class="portal-nav-label">Mensajes</span></a>
                         <a href="<?= e(base_url('portal/consultas.php')) ?>" title="Mis consultas"
-                            class="portal-nav-link <?= $active === 'consultas' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'consultas' ? 'is-active' : '' ?>"<?= $active === 'consultas' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="stethoscope" class="h-4 w-4"></i><span class="portal-nav-label">Mis consultas</span></a>
                         <a href="<?= e(base_url('portal/recetas.php')) ?>" title="Mis recetas"
-                            class="portal-nav-link <?= $active === 'recetas' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'recetas' ? 'is-active' : '' ?>"<?= $active === 'recetas' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="file-text" class="h-4 w-4"></i><span class="portal-nav-label">Mis recetas</span></a>
                         <a href="<?= e(base_url('portal/laboratorio.php')) ?>" title="Resultados de laboratorio"
-                            class="portal-nav-link <?= $active === 'laboratorio' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'laboratorio' ? 'is-active' : '' ?>"<?= $active === 'laboratorio' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="flask-conical" class="h-4 w-4"></i><span class="portal-nav-label">Resultados de laboratorio</span></a>
                         <a href="<?= e(base_url('portal/estudios.php')) ?>" title="Mis imágenes"
-                            class="portal-nav-link <?= $active === 'estudios' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'estudios' ? 'is-active' : '' ?>"<?= $active === 'estudios' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="scan" class="h-4 w-4"></i><span class="portal-nav-label">Mis imágenes</span></a>
                         <a href="<?= e(base_url('portal/mis-solicitudes.php')) ?>" title="Mis solicitudes"
-                            class="portal-nav-link <?= $active === 'mis-solicitudes' ? 'is-active' : '' ?>"><i
+                            class="portal-nav-link <?= $active === 'mis-solicitudes' ? 'is-active' : '' ?>"<?= $active === 'mis-solicitudes' ? ' aria-current="page"' : '' ?>><i
                                 data-lucide="clipboard-list" class="h-4 w-4"></i><span class="portal-nav-label">Mis solicitudes</span></a>
                         <a href="<?= e(base_url('portal/perfil.php')) ?>" title="Mi perfil"
-                            class="portal-nav-link <?= $active === 'perfil' ? 'is-active' : '' ?>"><i data-lucide="user-cog"
+                            class="portal-nav-link <?= $active === 'perfil' ? 'is-active' : '' ?>"<?= $active === 'perfil' ? ' aria-current="page"' : '' ?>><i data-lucide="user-cog"
                                 class="h-4 w-4"></i><span class="portal-nav-label">Mi perfil</span></a>
                         <a href="<?= e(base_url('portal/logout.php')) ?>" class="portal-nav-link portal-nav-logout" title="Cerrar sesión"><i
                                 data-lucide="log-out" class="h-4 w-4"></i><span class="portal-nav-label">Cerrar sesión</span></a>
@@ -231,16 +231,16 @@ function portal_layout_end(): void
             $activeResult = in_array($GLOBALS['portal_active'] ?? '', ['laboratorio', 'estudios'], true);
             ?>
             <nav class="portal-mobile-nav" aria-label="Navegación móvil">
-                <a href="<?= e(base_url('portal/dashboard.php')) ?>" class="<?= ($GLOBALS['portal_active'] ?? '') === 'dashboard' ? 'is-active' : '' ?>">
+                <a href="<?= e(base_url('portal/dashboard.php')) ?>" class="<?= ($GLOBALS['portal_active'] ?? '') === 'dashboard' ? 'is-active' : '' ?>"<?= ($GLOBALS['portal_active'] ?? '') === 'dashboard' ? ' aria-current="page"' : '' ?>>
                     <i data-lucide="house"></i><span>Inicio</span>
                 </a>
-                <a href="<?= e(base_url('portal/mis-citas.php')) ?>" class="<?= ($GLOBALS['portal_active'] ?? '') === 'mis-citas' ? 'is-active' : '' ?>">
+                <a href="<?= e(base_url('portal/mis-citas.php')) ?>" class="<?= ($GLOBALS['portal_active'] ?? '') === 'mis-citas' ? 'is-active' : '' ?>"<?= ($GLOBALS['portal_active'] ?? '') === 'mis-citas' ? ' aria-current="page"' : '' ?>>
                     <i data-lucide="calendar-days"></i><span>Citas</span>
                 </a>
-                <a href="<?= e(base_url('portal/agendar.php')) ?>" class="portal-mobile-primary <?= ($GLOBALS['portal_active'] ?? '') === 'agendar' ? 'is-active' : '' ?>">
+                <a href="<?= e(base_url('portal/agendar.php')) ?>" class="portal-mobile-primary <?= ($GLOBALS['portal_active'] ?? '') === 'agendar' ? 'is-active' : '' ?>"<?= ($GLOBALS['portal_active'] ?? '') === 'agendar' ? ' aria-current="page"' : '' ?>>
                     <span class="portal-mobile-primary-icon"><i data-lucide="plus"></i></span><span>Agendar</span>
                 </a>
-                <a href="<?= e(base_url('portal/laboratorio.php')) ?>" class="<?= $activeResult ? 'is-active' : '' ?>">
+                <a href="<?= e(base_url('portal/laboratorio.php')) ?>" class="<?= $activeResult ? 'is-active' : '' ?>"<?= $activeResult ? ' aria-current="page"' : '' ?>>
                     <i data-lucide="flask-conical"></i><span>Resultados</span>
                 </a>
                 <button type="button" class="js-open-more" aria-label="Abrir más opciones">

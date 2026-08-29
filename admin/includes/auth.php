@@ -23,6 +23,30 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+// Endurecimiento del panel, con el mismo criterio que los portales: ninguna
+// pagina del admin debe poder embeberse en un iframe (clickjacking sobre
+// acciones destructivas: borrar medico, borrar usuario, resetear 2FA) ni ser
+// indexada. Solo se declara frame-ancestors: un CSP completo rompería los
+// scripts inline del panel.
+if (!headers_sent()) {
+    header('X-Frame-Options: DENY');
+    header("Content-Security-Policy: frame-ancestors 'none'");
+    header('X-Robots-Tag: noindex, nofollow');
+    // X-Content-Type-Options, Referrer-Policy y Permissions-Policy ya los fija
+    // el .htaccess global del sitio (y su "Header set" gana sobre PHP).
+}
+
+/**
+ * Version de cache de un asset de /assets (ruta relativa a esa carpeta).
+ * Usa filemtime para que el navegador SI pueda cachear entre despliegues:
+ * el time() anterior invalidaba admin.css (48 KB) en cada request.
+ */
+function admin_asset_version(string $relative): string
+{
+    $abs = __DIR__ . '/../../assets/' . ltrim($relative, '/');
+    return (string) (@filemtime($abs) ?: 1);
+}
+
 function admin_permission_definitions(): array
 {
     return [

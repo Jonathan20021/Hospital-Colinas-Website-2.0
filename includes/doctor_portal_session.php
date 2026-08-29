@@ -11,15 +11,16 @@
 /**
  * CSP del portal del médico. `frame-ancestors` variable: 'none' en páginas
  * normales, 'self' en el layout incrustable (nota clínica dentro de la
- * teleconsulta, mismo origen). Permite los CDN realmente usados (jsDelivr:
- * FullCalendar, Chart.js, LiveKit) y conexiones https/wss (WebRTC de LiveKit);
- * blob: para los web workers del visor DICOM. Ningún script de dominio no listado.
+ * teleconsulta, mismo origen). jsDelivr queda solo como respaldo de los scripts
+ * ya auto-hospedados (FullCalendar, Chart.js) y para LiveKit; conexiones
+ * https/wss (WebRTC de LiveKit) y blob: para los web workers del visor DICOM.
+ * Las fuentes son auto-hospedadas: ya no se permite Google Fonts.
  */
 function doctor_portal_csp(string $frameAncestors = "'none'"): string {
     return "default-src 'self'; "
         . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
-        . "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-        . "font-src 'self' https://fonts.gstatic.com data:; "
+        . "style-src 'self' 'unsafe-inline'; "
+        . "font-src 'self' data:; "
         . "img-src 'self' data: blob:; "
         . "connect-src 'self' https: wss:; "
         . "worker-src 'self' blob:; child-src 'self' blob:; media-src 'self' blob:; "

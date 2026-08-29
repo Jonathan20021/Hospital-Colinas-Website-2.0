@@ -124,10 +124,10 @@ $secretGroups = $enrollSecret !== '' ? trim(chunk_split($enrollSecret, 4, ' ')) 
     <meta name="robots" content="noindex, nofollow">
     <title>Acceso Admin | Hospital General Las Colinas</title>
     <link rel="icon" type="image/png" href="../assets/site/favicon.png">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/admin.css?v=<?= time() ?>">
+    <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/outfit-latin.woff2" crossorigin>
+    <link rel="stylesheet" href="../assets/css/fonts-portal.css?v=<?= e(admin_asset_version('css/fonts-portal.css')) ?>">
+    <link rel="stylesheet" href="../assets/css/admin.css?v=<?= e(admin_asset_version('css/admin.css')) ?>">
     <style>
         .login-2fa-code { letter-spacing: .5em; text-align: center; font-size: 1.4rem; font-weight: 700; }
         .login-qr { display: flex; justify-content: center; padding: 1rem; background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; margin: .5rem auto; width: max-content; }

@@ -150,7 +150,17 @@
 
     /** Monta FullCalendar (mes/sem/dia) con rendering custom para que eventos no se corten. */
     function mountCalendar(el) {
-        if (typeof FullCalendar === 'undefined') return;
+        if (typeof FullCalendar === 'undefined') {
+            // Antes quedaba un recuadro vacio de 640px sin ninguna explicacion.
+            el.innerHTML = '<div class="doctor-empty" role="status">'
+                + '<p><strong>No se pudo cargar el calendario.</strong></p>'
+                + '<p>Revisa tu conexion y vuelve a cargar la pagina. Tus citas siguen registradas.</p>'
+                + '<p><button type="button" class="doctor-btn doctor-btn-outline" data-reload>Recargar</button></p>'
+                + '</div>';
+            var rl = el.querySelector('[data-reload]');
+            if (rl) rl.addEventListener('click', function () { location.reload(); });
+            return;
+        }
         let events = [];
         try { events = JSON.parse(el.dataset.events || '[]'); } catch (_) {}
 

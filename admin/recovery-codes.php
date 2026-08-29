@@ -26,8 +26,10 @@ $codesText = implode("\n", $codes);
     <meta name="robots" content="noindex, nofollow">
     <title>Códigos de recuperación | Administración Las Colinas</title>
     <link rel="icon" type="image/png" href="../assets/site/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/admin.css?v=<?= time() ?>">
+    <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/inter-latin.woff2" crossorigin>
+    <link rel="preload" as="font" type="font/woff2" href="../assets/fonts/outfit-latin.woff2" crossorigin>
+    <link rel="stylesheet" href="../assets/css/fonts-portal.css?v=<?= e(admin_asset_version('css/fonts-portal.css')) ?>">
+    <link rel="stylesheet" href="../assets/css/admin.css?v=<?= e(admin_asset_version('css/admin.css')) ?>">
     <style>
         .rc-wrap { max-width: 560px; margin: 4vh auto; padding: 0 1rem; }
         .rc-card { background:#fff; border:1px solid #e5e7eb; border-radius:18px; padding:1.75rem; }

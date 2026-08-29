@@ -75,8 +75,22 @@ doctor_layout_begin('Mi agenda', 'agenda');
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales/es.global.min.js"></script>
+<?php
+// FullCalendar 6.1.11 auto-hospedado, con jsDelivr solo como respaldo (mismo
+// patron que Chart.js en el dashboard): la agenda es la pantalla mas usada del
+// portal y no debe quedarse en blanco si el CDN externo falla.
+$fcVer   = (string) (@filemtime(__DIR__ . '/../assets/vendor/fullcalendar/index.global.min.js') ?: 1);
+$fcEsVer = (string) (@filemtime(__DIR__ . '/../assets/vendor/fullcalendar/locales/es.global.min.js') ?: 1);
+?>
+<script src="<?= e(base_url('assets/vendor/fullcalendar/index.global.min.js')) ?>?v=<?= e($fcVer) ?>"></script>
+<script>window.FullCalendar||document.write('<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"><\/script>');</script>
+<?php
+// Idioma espanol. La ruta anterior (fullcalendar@6.1.11/locales/es.global.min.js)
+// NO existe en ese paquete y devolvia 404: el calendario salia con los meses y
+// los dias de la semana en ingles. El bundle de idioma vive en @fullcalendar/core.
+?>
+<script src="<?= e(base_url('assets/vendor/fullcalendar/locales/es.global.min.js')) ?>?v=<?= e($fcEsVer) ?>"></script>
+<script>(window.FullCalendar&&FullCalendar.globalLocales&&FullCalendar.globalLocales.some(function(l){return l.code==='es';}))||document.write('<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales/es.global.min.js"><\/script>');</script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     window.openApptModal = async function (id) {
