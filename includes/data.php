@@ -240,3 +240,21 @@ $contact = [
     'whatsapp' => 'https://wa.me/18095012002',
     'whatsapp_phone' => '(809) 501-2002',
 ];
+
+/**
+ * Especialidades más solicitadas en la agenda web, para mostrarlas primero en
+ * /agendar. No es una opinión: sale de las citas reales con `source='web'` de
+ * JENOFONTE (agosto 2026), donde estas 5 concentran el 81 % de las reservas —
+ * ginecología sola es el 42 %.
+ *
+ * Los nombres deben coincidir EXACTAMENTE con los del directorio; si alguno
+ * cambia, esa tarjeta simplemente no se muestra arriba y sigue apareciendo en
+ * la lista completa. Para actualizarlo basta con editar esta lista.
+ */
+$topSpecialtyNames = [
+    'GINECOLOGÍA Y OBSTETRICIA',
+    'ENDOCRINOLOGÍA',
+    'UROLOGÍA',
+    'TRAUMATOLOGÍA Y ORTOPEDIA',
+    'CARDIOLOGÍA',
+];

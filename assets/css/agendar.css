@@ -634,3 +634,47 @@
 .agendar-v2 .ag-paso h2:focus {
     outline: none;
 }
+
+/* Las especialidades más solicitadas, arriba del buscador: el 81 % de las citas
+   web caen en 5 de las 25, y antes había que buscarlas en una lista plana. */
+.agendar-v2 .ag-top {
+    margin-bottom: 1.1rem;
+}
+
+.agendar-v2 .ag-top-label {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0 0 .55rem;
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--navy, #262161);
+}
+
+.agendar-v2 .ag-top-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: .55rem;
+}
+
+.agendar-v2 .specialty-card.ag-top-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .2rem;
+    border-color: rgba(93, 163, 52, .45);
+    background: linear-gradient(180deg, #f6fbf2, #fff);
+}
+
+.agendar-v2 .ag-card-count {
+    font-size: .76rem;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.agendar-v2 .specialty-card:not(.ag-top-card) .ag-card-count {
+    margin-left: auto;
+    padding-left: .5rem;
+}
