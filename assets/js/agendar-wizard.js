@@ -31,6 +31,8 @@
     const resumenDoc = document.getElementById('ag-doctor-summary');
     const tarjetaSlots = document.getElementById('ag-slot-card');
     const form = document.getElementById('guest-form');
+    const cabecera = document.getElementById('ag-cabecera');
+    const confirmMedico = document.getElementById('ag-confirm-medico');
 
     /* ---------------------------------------------------------------- utils */
 
@@ -72,6 +74,10 @@
         [1, 2, 3].forEach((i) => { secciones[i].hidden = i !== n; });
         marcarPasos(n);
         estado.step = n;
+
+        // A partir del paso 2 la cabecera se encoge: repetia en el paso 3 lo que
+        // el paciente ya leyo, y ocupaba 300 px de pantalla en movil.
+        if (cabecera) cabecera.classList.toggle('is-compacta', n > 1);
 
         if (empujar) {
             let url = baseUrl;
@@ -147,6 +153,10 @@
         estado.specialtyId = d.specialtyId;
 
         pintarResumen(d);
+        if (confirmMedico) {
+            const sub2 = d.subspecialty ? ' · ' + d.subspecialty : '';
+            confirmMedico.textContent = d.name + ' · ' + d.specialty + sub2;
+        }
         if (tarjetaSlots) tarjetaSlots.dataset.doctorId = String(id);
         if (form) {
             form.classList.add('hidden');           // se abre al elegir hora
@@ -240,6 +250,15 @@
     });
 
     // Estado inicial en el historial, para que el primer "atrás" funcione.
+    // Enlace directo al paso 3: el resumen de la cita tambien necesita el medico.
+    if (estado.doctorId && confirmMedico) {
+        const dIni = doctores.find((x) => x.id === estado.doctorId);
+        if (dIni) {
+            const subIni = dIni.subspecialty ? ' · ' + dIni.subspecialty : '';
+            confirmMedico.textContent = dIni.name + ' · ' + dIni.specialty + subIni;
+        }
+    }
+
     history.replaceState({ ...estado }, '', location.href);
 
     // Si el servidor ya pintó el paso 2, los médicos vienen del HTML; si el

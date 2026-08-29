@@ -115,7 +115,9 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
     <main id="contenido" class="portal-shell portal-shell-app agendar-v2" style="grid-template-columns: 1fr; max-width: 960px">
         <div class="portal-main">
 
-            <header class="portal-header">
+            <?php /* .is-compacta la pone el wizard a partir del paso 2: en el 3 esta
+                     cabecera ocupaba 300 px de los 4013 de la pagina en movil. */ ?>
+            <header class="portal-header<?= $step > 1 ? ' is-compacta' : '' ?>" id="ag-cabecera">
                 <div>
                     <p class="section-label">Agendamiento en línea</p>
                     <h1>Agenda tu consulta médica</h1>
@@ -294,7 +296,7 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                             <p class="portal-hint"><i data-lucide="stethoscope" class="h-3.5 w-3.5"></i>
                                 <?= e($selectedDoctor['specialty']) ?><?php if (!empty($selectedDoctor['subspecialty'])): ?> · <?= e($selectedDoctor['subspecialty']) ?><?php endif; ?></p>
                         </div>
-                        <a href="?specialty_id=<?= $specId ?>" class="portal-text-link portal-change-link">Cambiar médico</a>
+                        <a href="?specialty_id=<?= $specId ?>" class="portal-text-link portal-change-link" data-volver="2">Cambiar médico</a>
                     </div>
                 <?php endif; ?>
 
@@ -370,9 +372,12 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     <textarea name="notes" id="g-notes" rows="2" class="form-input"
                         placeholder="Síntomas, consulta general, control, etc."></textarea>
 
-                    <div class="portal-confirm-box mt-4">
-                        <p>Cita seleccionada:</p>
+                    <?php /* Se queda pegado arriba mientras el paciente rellena: el nombre
+                             del medico estaba a 900+ px de scroll y se perdia de vista. */ ?>
+                    <div class="portal-confirm-box mt-4" id="ag-confirm">
+                        <p>Tu cita</p>
                         <h3 id="confirm-when">—</h3>
+                        <p class="ag-confirm-medico" id="ag-confirm-medico"></p>
                     </div>
 
                     <?php if ($hcaptchaSiteKey): ?>

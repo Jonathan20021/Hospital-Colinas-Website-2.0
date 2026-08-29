@@ -559,3 +559,78 @@
     letter-spacing: .03em;
     font-weight: 700;
 }
+
+/* ==========================================================================
+   WIZARD DE UNA SOLA PÁGINA
+   ========================================================================== */
+
+/* La cabecera ocupaba 300 px de los ~4000 de la página en móvil, repitiendo
+   en el paso 3 lo que el paciente ya leyó en el paso 1. A partir del paso 2 se
+   queda en una línea. */
+.agendar-v2 .portal-header.is-compacta {
+    padding-block: .75rem;
+    align-items: center;
+}
+
+.agendar-v2 .portal-header.is-compacta .section-label,
+.agendar-v2 .portal-header.is-compacta .portal-subtitle {
+    display: none;
+}
+
+.agendar-v2 .portal-header.is-compacta h1 {
+    font-size: 1.35rem;
+    line-height: 1.2;
+    margin: 0;
+}
+
+@media (max-width: 720px) {
+    .agendar-v2 .portal-header.is-compacta h1 {
+        font-size: 1.15rem;
+    }
+
+    /* En móvil el botón "Ya tengo cuenta" no compite con el paso en curso. */
+    .agendar-v2 .portal-header.is-compacta .btn-outline {
+        padding: .45rem .7rem;
+        font-size: .82rem;
+    }
+}
+
+/* El resumen de la cita acompaña al paciente mientras rellena el formulario:
+   el nombre del médico quedaba a 900+ px de scroll y se perdía de vista. */
+.agendar-v2 .portal-confirm-box {
+    position: sticky;
+    top: .5rem;
+    z-index: 5;
+}
+
+.agendar-v2 .ag-confirm-medico {
+    margin: .3rem 0 0;
+    font-size: .85rem;
+    font-weight: 600;
+    opacity: .85;
+}
+
+.agendar-v2 .ag-confirm-medico:empty {
+    display: none;
+}
+
+/* Transición entre pasos: un fundido corto para que se note el cambio sin
+   marear. Se respeta "reducir movimiento" del sistema. */
+.agendar-v2 .ag-paso:not([hidden]) {
+    animation: agPasoEntra .22s ease-out both;
+}
+
+@keyframes agPasoEntra {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .agendar-v2 .ag-paso:not([hidden]) { animation: none; }
+}
+
+/* El título del paso recibe el foco al cambiar de sección (para lectores de
+   pantalla); no debe salir un anillo azul del navegador. */
+.agendar-v2 .ag-paso h2:focus {
+    outline: none;
+}
