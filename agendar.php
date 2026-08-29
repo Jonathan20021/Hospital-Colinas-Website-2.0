@@ -10,6 +10,7 @@ require __DIR__ . '/includes/doctor_avatar.php';
 $year = date('Y');
 $assetVersion = (string) max(
     filemtime(__DIR__ . '/assets/css/app.css'),
+    @filemtime(__DIR__ . '/assets/css/app-shell.css') ?: 0,
     filemtime(__DIR__ . '/assets/js/app.js'),
     @filemtime(__DIR__ . '/assets/css/portal.css') ?: 0,
     @filemtime(__DIR__ . '/assets/js/portal.js') ?: 0,
@@ -135,7 +136,11 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <?php /* app-shell.css en vez de app.css: de los 248 KB del nucleo esta
+             pagina solo usaba el 2 % (36 selectores, todos de la cascara del
+             sitio). Medido con CSS.startRuleUsageTracking recorriendo los 4
+             pasos. Se genera con tools/extract-shell-css.php. */ ?>
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-shell.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/agendar.css')) ?>?v=<?= e($assetVersion) ?>">
     <?php if ($hcaptchaSiteKey): ?>
