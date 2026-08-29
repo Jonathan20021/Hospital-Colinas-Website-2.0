@@ -536,6 +536,12 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
     <?php render_public_footer($assets, $contact, $year); ?>
     <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
     <script>if (window.lucide) lucide.createIcons();</script>
+    <?php /* app.js es quien abre el menu movil y el desplegable "Hospital".
+             Esta pagina no lo cargaba NUNCA, asi que en movil el paciente no
+             podia abrir el menu -- justo en la pagina que convierte. Ninguno de
+             los otros ganchos de app.js (filtros de medicos, pestanas, galerias,
+             modal de cita) existe aqui, asi que solo activa la navegacion. */ ?>
+    <script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <?php /* Ahora los 3 pasos viven en la misma pagina: los dos scripts van siempre. */ ?>
     <script src="<?= e(base_url('assets/js/agendar.js')) ?>?v=<?= e($assetVersion) ?>"></script>
     <script src="<?= e(base_url('assets/js/agendar-wizard.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/agendar-wizard.js') ?: 1)) ?>"></script>
