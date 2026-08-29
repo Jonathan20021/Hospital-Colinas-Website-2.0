@@ -23,6 +23,29 @@ header('Cache-Control: private, max-age=120');
 const AGP_MAX_MEDICOS = 20;   // anestesiología, la más grande, tiene 12
 const AGP_DIAS        = 21;
 
+/* Limite por IP. Sin esto el endpoint es un amplificador: UNA peticion se
+   convierte en hasta 20 llamadas al hospital, asi que un flujo modesto de
+   peticiones bastaria para castigar a JENOFONTE. Mismo patron que api/track.php.
+   30/min sobra: el cliente memoriza por especialidad y un paciente hace 3 o 4. */
+$ip = function_exists('portal_client_real_ip') ? portal_client_real_ip() : ($_SERVER['REMOTE_ADDR'] ?? '');
+$dirLimite = dirname(__DIR__) . '/storage/agendar-rate';
+if (!is_dir($dirLimite)) { @mkdir($dirLimite, 0775, true); }
+$archivo = $dirLimite . '/' . md5($ip !== '' ? $ip : 'x') . '.json';
+$ahora = time(); $ventana = 60; $tope = 30;
+$cubo = ['t' => $ahora, 'n' => 0];
+if (is_file($archivo)) {
+    $st = json_decode((string) @file_get_contents($archivo), true);
+    if (is_array($st) && ($ahora - (int) ($st['t'] ?? 0)) < $ventana) { $cubo = $st; }
+}
+$cubo['n'] = (int) $cubo['n'] + 1;
+@file_put_contents($archivo, json_encode($cubo));
+if ($cubo['n'] > $tope) {
+    // El cliente esconde las lineas al ver success:false; el paso 2 sigue igual.
+    http_response_code(429);
+    echo json_encode(['success' => false, 'message' => 'Demasiadas consultas seguidas.']);
+    exit;
+}
+
 $crudos = (string) ($_GET['doctor_ids'] ?? '');
 $ids = [];
 foreach (explode(',', $crudos) as $trozo) {

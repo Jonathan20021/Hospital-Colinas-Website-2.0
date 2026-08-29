@@ -47,3 +47,4 @@ node_modules/
 # Código desplegado DIRECTO en JENOFONTE (servidor interno) + scripts de prueba.
 # No va a GitHub/cPanel; se conserva solo la documentación de despliegue.
 /deploy/estudios/jenofonte/
+/storage/agendar-rate/
