@@ -125,7 +125,7 @@ $directoryValues = [
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
                         class="brand-logo">
                 </a>
 
@@ -387,7 +387,7 @@ $directoryValues = [
         <section class="dir-location" aria-label="Cómo llegar">
             <div class="dir-location-shell">
                 <div class="dir-location-info">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas">
+                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas">
                     <h2>Visítanos en Santiago</h2>
                     <p>Acceso conectado a Colinas Mall, con áreas de estacionamiento y orientación.</p>
                     <ul>

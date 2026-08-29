@@ -32,7 +32,7 @@ function render_public_header(array $assets, array $contact, string $active = ''
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="<?= e(base_url()) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="brand-logo">
+                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas" class="brand-logo">
                 </a>
 
                 <nav class="nav-primary" aria-label="Navegación principal">
@@ -142,7 +142,7 @@ function render_public_footer(array $assets, array $contact, string $year): void
     <footer class="site-footer">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4 lg:px-8">
             <div class="md:col-span-1">
-                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas" class="footer-logo">
+                <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas" class="footer-logo">
                 <p class="mt-5 text-sm leading-7 text-white/68">Atención médica integral, tecnología avanzada y
                     especialistas para Santiago.</p>
                 <div class="mt-5 flex gap-3">

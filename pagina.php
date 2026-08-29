@@ -266,7 +266,7 @@ $serviceCatalog = service_pages_catalog($services, $assets);
                         <?php foreach ($insurers as $insurer): ?>
                             <article class="content-insurer-card" role="listitem">
                                 <div class="content-insurer-logo">
-                                    <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>" alt="<?= e($insurer['name']) ?>" loading="lazy">
+                                    <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>"<?= img_dimensions($insurersDir . $insurer['file']) ?> alt="<?= e($insurer['name']) ?>" loading="lazy">
                                 </div>
                                 <span><?= e($insurer['name']) ?></span>
                             </article>

@@ -104,7 +104,7 @@ $categories = news_distinct_categories();
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
                         class="brand-logo">
                 </a>
                 <nav class="nav-primary" aria-label="Navegación principal">

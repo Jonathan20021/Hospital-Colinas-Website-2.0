@@ -112,3 +112,80 @@ function service_url(string $name): string
 {
     return base_url('servicios/' . content_slug($name));
 }
+
+/**
+ * Atributos width/height con las dimensiones REALES del archivo, para que el
+ * navegador pueda reservar el hueco antes de descargar la imagen y no haya
+ * salto de maquetación (CLS). Devuelve '' si no se pueden leer.
+ *
+ * Solo hace falta en las imágenes cuyo tamaño depende de la proporción de la
+ * propia imagen: el logo (height fijo + width:auto) y los logos de las
+ * aseguradoras (width/height auto dentro de un max-height). Las que llevan
+ * object-fit:cover dentro de una caja de tamaño fijo por CSS NO lo necesitan:
+ * ahí el CSS ya reserva el hueco y el atributo no aporta nada.
+ *
+ * Se cachea por request: son pocos archivos y siempre los mismos.
+ */
+function img_dimensions(string $relativePath): string
+{
+    static $cache = [];
+
+    $rel = ltrim($relativePath, '/');
+    if (array_key_exists($rel, $cache)) {
+        return $cache[$rel];
+    }
+
+    $abs = __DIR__ . '/../' . $rel;
+    if (!is_file($abs)) {
+        // Algunas rutas llegan ya en forma de URL: $insurersDir vale
+        // 'assets/LOGO%20ASEGURADORAS/', que en disco no existe con el %20.
+        $decoded = __DIR__ . '/../' . rawurldecode($rel);
+        if (is_file($decoded)) {
+            $abs = $decoded;
+        }
+    }
+    $out = '';
+
+    if (is_file($abs)) {
+        if (strtolower((string) pathinfo($abs, PATHINFO_EXTENSION)) === 'svg') {
+            $out = svg_dimensions($abs);
+        } else {
+            $size = @getimagesize($abs);
+            if ($size && (int) $size[0] > 0 && (int) $size[1] > 0) {
+                $out = ' width="' . (int) $size[0] . '" height="' . (int) $size[1] . '"';
+            }
+        }
+    }
+
+    return $cache[$rel] = $out;
+}
+
+/**
+ * Dimensiones de un SVG: getimagesize() no los entiende. Se leen del propio
+ * <svg> (width/height en px) y, si no los trae o vienen en %, del viewBox.
+ */
+function svg_dimensions(string $absolutePath): string
+{
+    $head = @file_get_contents($absolutePath, false, null, 0, 8192);
+    if ($head === false || !preg_match('/<svg\b[^>]*>/i', $head, $tag)) {
+        return '';
+    }
+    $svg = $tag[0];
+
+    $w = preg_match('/\bwidth="([0-9.]+)(?:px)?"/i', $svg, $mw) ? (float) $mw[1] : 0.0;
+    $h = preg_match('/\bheight="([0-9.]+)(?:px)?"/i', $svg, $mh) ? (float) $mh[1] : 0.0;
+
+    if ($w <= 0 || $h <= 0) {
+        // viewBox="minX minY ancho alto"
+        if (preg_match('/\bviewBox="\s*[-0-9.eE]+[\s,]+[-0-9.eE]+[\s,]+([-0-9.eE]+)[\s,]+([-0-9.eE]+)/i', $svg, $mv)) {
+            $w = (float) $mv[1];
+            $h = (float) $mv[2];
+        }
+    }
+
+    if ($w <= 0 || $h <= 0) {
+        return '';
+    }
+
+    return ' width="' . (int) round($w) . '" height="' . (int) round($h) . '"';
+}

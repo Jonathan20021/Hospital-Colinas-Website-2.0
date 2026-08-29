@@ -58,7 +58,7 @@ $segFaq = [
                     <div class="seg-logo-grid">
                         <?php foreach ($insurers as $insurer): ?>
                             <div class="seg-logo-card" title="<?= e($insurer['name']) ?>">
-                                <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>" alt="<?= e($insurer['name']) ?>" loading="eager">
+                                <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>"<?= img_dimensions($insurersDir . $insurer['file']) ?> alt="<?= e($insurer['name']) ?>" loading="eager">
                             </div>
                         <?php endforeach; ?>
                     </div>

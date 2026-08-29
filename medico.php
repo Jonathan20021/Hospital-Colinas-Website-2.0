@@ -127,7 +127,7 @@ $agendarUrl = $doctorId > 0
     <header class="profile-topbar">
         <div class="profile-topbar-inner">
             <a href="<?= e(base_url('#inicio')) ?>" class="brand-link" aria-label="Hospital General Las Colinas">
-                <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
                     class="brand-logo h-14 w-auto max-w-[260px] object-contain">
             </a>
             <nav aria-label="Navegación del perfil">

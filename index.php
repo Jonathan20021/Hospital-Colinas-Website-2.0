@@ -322,7 +322,7 @@ $leadershipGerencias = [
         <div class="main-nav">
             <div class="main-nav-inner mx-auto flex h-[110px] max-w-7xl items-center px-4 sm:px-6 lg:px-8">
                 <a href="#inicio" class="brand-link" aria-label="Hospital General Las Colinas">
-                    <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas"
+                    <img src="<?= e(base_url($assets['logo'])) ?>"<?= img_dimensions($assets['logo']) ?> alt="Hospital General Las Colinas"
                         class="brand-logo">
                 </a>
 
@@ -737,7 +737,7 @@ $leadershipGerencias = [
                         <?php for ($pass = 0; $pass < 2; $pass++): ?>
                             <?php foreach ($insurers as $insurer): ?>
                                 <div class="insurer-card" role="listitem"<?= $pass === 1 ? ' aria-hidden="true"' : '' ?>>
-                                    <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>"
+                                    <img src="<?= e(base_url($insurersDir . $insurer['file'])) ?>"<?= img_dimensions($insurersDir . $insurer['file']) ?>
                                         alt="<?= $pass === 1 ? '' : e($insurer['name']) ?>" loading="lazy"
                                         <?= $pass === 1 ? 'aria-hidden="true"' : '' ?>>
                                 </div>
