@@ -83,6 +83,12 @@ $EXCEPCIONES = [
     // La pagina de NOTICIA reutiliza la barra superior y las migas de la ficha
     // del medico: 8.719 B en 68 reglas. Se quedan donde las ve todo el mundo.
     '/^\.profile-(topbar|back|crumbs|cta)\b/',
+    // Los PORTALES (paciente y medico) tambien pasan a app-core.css. De las 238
+    // clases de familias repartidas que aparecen en sus 94 archivos, estas dos son
+    // las UNICAS que app.css definia y sus hojas propias no cubren del todo:
+    // sin ellas `.doctor-search-submit` pierde el fondo navy y `.doctor-empty`
+    // el borde punteado. Son 2 reglas; se quedan en el nucleo.
+    '/^\.doctor-(empty|search-submit)\b/',
 ];
 
 if (!is_file($entrada)) { fwrite(STDERR, "No encuentro $entrada\n"); exit(1); }

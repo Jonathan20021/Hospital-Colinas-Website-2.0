@@ -34,6 +34,7 @@ function portal_layout_begin(string $title, string $active = ''): void
     global $assets, $contact;
     $assetVersion = (string) max(
         filemtime(__DIR__ . '/../assets/css/app.css'),
+        @filemtime(__DIR__ . '/../assets/css/app-core.css') ?: 0,
         filemtime(__DIR__ . '/../assets/js/app.js'),
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0,
@@ -59,7 +60,7 @@ function portal_layout_begin(string $title, string $active = ''): void
         <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
         <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-portal.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-        <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+        <link rel="stylesheet" href="<?= e(base_url('assets/css/app-core.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-accessible.css')) ?>?v=<?= e($assetVersion) ?>">
         <link rel="stylesheet" href="<?= e(base_url('assets/css/portal-v3.css')) ?>?v=<?= e($assetVersion) ?>">
@@ -209,6 +210,7 @@ function portal_layout_end(): void
     global $assets, $contact;
     $assetVersion = (string) max(
         filemtime(__DIR__ . '/../assets/css/app.css'),
+        @filemtime(__DIR__ . '/../assets/css/app-core.css') ?: 0,
         filemtime(__DIR__ . '/../assets/js/app.js'),
         @filemtime(__DIR__ . '/../assets/css/portal.css') ?: 0,
         @filemtime(__DIR__ . '/../assets/js/portal.js') ?: 0,

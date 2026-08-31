@@ -94,6 +94,53 @@ foreach ($PAGINAS as $nombre => $ruta) {
     foreach ($sinCss as $c) printf("%22s *** .%s SIN REGLAS\n", '', $c);
 }
 
+
+
+/* ── Portales: no se pueden visitar sin sesion, asi que se analiza el CODIGO ──
+   Es mas completo que medir en runtime: ve TODAS las pantallas, incluidas las
+   que hay tras el login. Se recogen las clases literales de sus .php/.js (mas
+   los includes compartidos) y se comprueba que sigan teniendo reglas en las
+   hojas que el portal carga. Las clases dinamicas se construyen con prefijos
+   fijos (`doctor-save-`, `dm-k-`, `scribe-`, `tool-lvl-`, `mpr-`) que este
+   mismo barrido recoge por su parte literal. */
+$PORTALES = [
+    'portal'        => ['hojas' => ['app-core','portal','portal-accessible','portal-pwa'],
+                        'src'   => ['portal/*.php','portal/*.js','assets/js/portal-*.js']],
+    'portal-medico' => ['hojas' => ['app-core','portal','portal-medico','portal-medico-ui',
+                                    'portal-medico-pro','portal-medico-shell'],
+                        'src'   => ['portal-medico/*.php','portal-medico/*.js','assets/js/portal-medico*.js']],
+];
+$COMPARTIDOS = ['includes/public-layout.php','includes/content.php','includes/data.php','includes/helpers.php'];
+
+echo "\n";
+printf("%-16s %6s %7s  %s\n", 'portal (codigo)', 'clases', 'sin CSS', 'hojas');
+echo str_repeat('-', 92), "\n";
+foreach ($PORTALES as $nombre => $cfg) {
+    $codigo = '';
+    foreach (array_merge($cfg['src'], $COMPARTIDOS) as $patron) {
+        foreach (glob($raiz . '/' . $patron) as $ff) { $codigo .= "\n" . file_get_contents($ff); }
+    }
+    $cssP = '';
+    foreach ($cfg['hojas'] as $h) {
+        $ff = $raiz . '/assets/css/' . $h . '.css';
+        if (is_file($ff)) { $cssP .= "\n" . file_get_contents($ff); }
+    }
+    $cssP = preg_replace('#/\*.*?\*/#s', '', $cssP);
+
+    preg_match_all('/\b(' . implode('|', $FAMILIAS) . ')-[a-z0-9-]+/', $codigo, $mp);
+    $clasesP = array_unique($mp[0]);
+    $sinCssP = [];
+    foreach ($clasesP as $c) {
+        $re = '/\.' . preg_quote($c, '/') . '\b/';
+        if (preg_match($re, $cssP)) { continue; }
+        if (!preg_match($re, $original)) { continue; }   // nunca tuvo estilos
+        $sinCssP[] = $c;
+    }
+    $fallos += count($sinCssP);
+    printf("%-16s %6d %7d  %s\n", $nombre, count($clasesP), count($sinCssP), implode(' ', $cfg['hojas']));
+    foreach ($sinCssP as $c) { printf("%24s *** .%s SIN REGLAS\n", '', $c); }
+}
+
 echo str_repeat('-', 92), "\n";
 if ($fallos) { echo "$fallos problemas.\n"; exit(1); }
 echo "Ninguna pagina se quedo sin CSS.\n";
