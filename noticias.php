@@ -9,6 +9,7 @@ news_ensure_schema();
 $year = date('Y');
 $assetVersion = (string) max(
     filemtime(__DIR__ . '/assets/css/app.css'),
+    @filemtime(__DIR__ . '/assets/css/app-core.css') ?: 0,
     filemtime(__DIR__ . '/assets/js/app.js')
 );
 
@@ -61,7 +62,7 @@ $categories = news_distinct_categories();
     <?= preload_logo_tag($assets['logo']) ?>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-core.css')) ?>?v=<?= e($assetVersion) ?>">
     <?php /* Trozo de app.css exclusivo de esta pagina (ver tools/split-css.php): el nucleo
              ya no arrastra el CSS del resto del sitio. */ ?>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/app-noticias.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/app-noticias.css') ?: 1)) ?>">

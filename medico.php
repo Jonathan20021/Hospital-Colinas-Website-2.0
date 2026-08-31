@@ -8,6 +8,8 @@ $slug = $_GET['slug'] ?? '';
 $doctor = public_doctor_by_slug($slug, $services, $assets);
 $assetVersion = (string) max(
     filemtime(__DIR__ . '/assets/css/app.css'),
+    @filemtime(__DIR__ . '/assets/css/app-core.css') ?: 0,
+    @filemtime(__DIR__ . '/assets/css/app-medico.css') ?: 0,
     filemtime(__DIR__ . '/assets/js/app.js')
 );
 
@@ -81,7 +83,11 @@ $agendarUrl = $doctorId > 0
     <?= preload_logo_tag($assets['logo']) ?>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-core.css')) ?>?v=<?= e($assetVersion) ?>">
+    <?php /* Lo que solo usa la ficha del medico (profile-*), sacado del nucleo:
+             viajaba a las 20 paginas publicas para usarse solo aqui. Se genera
+             con tools/split-families-css.php. */ ?>
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-medico.css')) ?>?v=<?= e($assetVersion) ?>">
 
     <?php if ($doctor): ?>
         <script type="application/ld+json">

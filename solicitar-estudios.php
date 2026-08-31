@@ -29,6 +29,7 @@ $imgList = array_values(array_filter($diag, fn($n) => !in_array($n, $labNames, t
 $year = date('Y');
 $assetVersion = (string) max(
     filemtime(__DIR__ . '/assets/css/app.css'),
+    @filemtime(__DIR__ . '/assets/css/app-core.css') ?: 0,
     @filemtime(__DIR__ . '/assets/css/portal.css') ?: 0,
     @filemtime(__DIR__ . '/assets/css/estudios.css') ?: 0,
     @filemtime(__DIR__ . '/assets/js/solicitar-estudios.js') ?: 0
@@ -54,7 +55,7 @@ $hcaptchaSiteKey = defined('HCAPTCHA_SITE_KEY') ? HCAPTCHA_SITE_KEY : '';
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-core.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/portal.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/estudios.css')) ?>?v=<?= e($assetVersion) ?>">
     <?php if ($hcaptchaSiteKey): ?>

@@ -10,7 +10,10 @@ require __DIR__ . '/includes/portal_client.php';
 
 $active = 'empleos';
 $year = date('Y');
-$assetVersion = (string) (@filemtime(__DIR__ . '/assets/css/empleos.css') ?: 0);
+$assetVersion = (string) max(
+    @filemtime(__DIR__ . '/assets/css/empleos.css') ?: 0,
+    @filemtime(__DIR__ . '/assets/css/app-core.css') ?: 0
+);
 
 $token = preg_replace('/[^a-f0-9]/i', '', (string) ($_GET['token'] ?? ''));
 $r = $token !== '' ? portal_api_call('GET', '/portal/empleos/confirmar?token=' . rawurlencode($token)) : ['ok' => false];
@@ -33,7 +36,7 @@ $title = ($ok ? 'Suscripción confirmada' : 'No pudimos confirmar') . ' | Empleo
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-core.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/empleos.css')) ?>?v=<?= e($assetVersion) ?>">
 </head>
 

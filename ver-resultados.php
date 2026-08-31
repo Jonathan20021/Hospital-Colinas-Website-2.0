@@ -7,6 +7,7 @@ require __DIR__ . '/includes/public-layout.php';
 $year = date('Y');
 $assetVersion = (string) max(
     filemtime(__DIR__ . '/assets/css/app.css'),
+    @filemtime(__DIR__ . '/assets/css/app-core.css') ?: 0,
     filemtime(__DIR__ . '/assets/js/app.js'),
     @filemtime(__DIR__ . '/assets/css/ver-resultados.css') ?: 0
 );
@@ -41,7 +42,7 @@ $description = 'Aprende a ver tus resultados de laboratorio, imágenes y recetas
     <link rel="preload" as="font" type="font/woff2" href="<?= e(base_url('assets/fonts/outfit-latin.woff2')) ?>" crossorigin>
     <link rel="stylesheet" href="<?= e(base_url('assets/css/fonts-public.css')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/css/fonts-public.css') ?: 1)) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/tailwind.generated.css')) ?>?v=<?= e($assetVersion) ?>">
-    <link rel="stylesheet" href="<?= e(base_url('assets/css/app.css')) ?>?v=<?= e($assetVersion) ?>">
+    <link rel="stylesheet" href="<?= e(base_url('assets/css/app-core.css')) ?>?v=<?= e($assetVersion) ?>">
     <link rel="stylesheet" href="<?= e(base_url('assets/css/ver-resultados.css')) ?>?v=<?= e($assetVersion) ?>">
     <script>document.documentElement.className += ' vr-js';</script>
     <?php require __DIR__ . '/includes/analytics.php'; ?>

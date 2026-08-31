@@ -535,3 +535,318 @@
     font-size: clamp(1.5rem, 2.4vw, 2rem);
     font-weight: 950;
 }
+
+/* ==== repartido desde app.css (split-families-css.php) ==== */
+.news-hero-shell {
+    max-width: 880px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+.news-hero-shell {
+        padding: 0 1.5rem;
+    }
+}
+
+.news-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(2.5rem, 4vw, 4rem) 1rem clamp(4rem, 6vw, 6rem);
+}
+
+@media (min-width: 640px) {
+.news-shell {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+.news-shell {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+.news-filter.is-active {
+    background: #262161;
+    border-color: #262161;
+    color: #fff;
+}
+
+.news-filter.is-active svg {
+    color: #b6f0a3;
+}
+
+.news-filter.is-active span {
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+}
+
+.news-featured {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: clamp(1.25rem, 3vw, 2.25rem);
+    align-items: stretch;
+    margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid #ece5da;
+    background: #fff;
+    box-shadow: 0 24px 48px rgba(38, 33, 97, .08);
+}
+
+.news-featured-media {
+    position: relative;
+    display: block;
+    min-height: 320px;
+    overflow: hidden;
+    background: #f3eee6;
+}
+
+.news-featured-body .btn {
+    align-self: flex-start;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.news-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #ece5da;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(38, 33, 97, .05);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+.news-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(111, 180, 63, .5);
+    box-shadow: 0 24px 44px rgba(38, 33, 97, .12);
+}
+
+.news-card-media {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f3eee6, #e6ded2);
+}
+
+.news-card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+}
+
+.news-card:hover .news-card-media img {
+    transform: scale(1.05);
+}
+
+.news-card-fallback {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    color: #a8a39a;
+}
+
+.news-card-fallback svg {
+    width: 56px;
+    height: 56px;
+    color: #6fb43f;
+    opacity: .55;
+}
+
+.news-card-cat {
+    position: absolute;
+    top: .85rem;
+    left: .85rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    padding: .35rem .75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .95);
+    color: #262161;
+    font-size: .7rem;
+    font-weight: 950;
+    letter-spacing: .03em;
+    box-shadow: 0 6px 14px rgba(38, 33, 97, .18);
+}
+
+.news-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    padding: 1.25rem 1.35rem 1.35rem;
+}
+
+.news-card-body time {
+    color: #a8a39a;
+    font-size: .76rem;
+    font-weight: 850;
+    letter-spacing: .02em;
+}
+
+.news-card-body h3 {
+    color: #262161;
+    font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 950;
+    line-height: 1.25;
+    letter-spacing: -.005em;
+}
+
+.news-card-body h3 a {
+    color: inherit;
+}
+
+.news-card-body h3 a:hover {
+    color: #6fb43f;
+}
+
+.news-card-body p {
+    color: #6f6d68;
+    font-size: .88rem;
+    line-height: 1.6;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.news-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    margin-top: auto;
+    padding-top: .5rem;
+    color: #262161;
+    font-size: .82rem;
+    font-weight: 950;
+    transition: color .2s ease, gap .2s ease;
+}
+
+.news-card-link:hover {
+    color: #6fb43f;
+    gap: .65rem;
+}
+
+.news-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.news-empty .btn {
+    margin-top: .65rem;
+}
+
+.news-article-header {
+    max-width: 760px;
+    margin: 0 auto 2rem;
+    text-align: center;
+}
+
+.news-article-header .news-cat-pill {
+    display: inline-flex;
+}
+
+.news-article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+    color: #6f6d68;
+    font-size: .84rem;
+    font-weight: 850;
+}
+
+.news-article-body h2,
+.news-article-body h3,
+.news-article-body h4 {
+    color: #262161;
+    font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    font-weight: 950;
+    line-height: 1.2;
+    margin-top: 2.25rem;
+}
+
+.news-article-body h2 {
+    font-size: 1.65rem;
+}
+
+.news-article-body h3 {
+    font-size: 1.35rem;
+}
+
+.news-article-body h4 {
+    font-size: 1.15rem;
+}
+
+.news-related {
+    max-width: 1180px;
+    margin: clamp(3rem, 5vw, 5rem) auto 0;
+    padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+.news-related {
+        padding: 0 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+.news-related {
+        padding: 0 2rem;
+    }
+}
+
+@media (max-width: 900px) {
+.news-featured {
+        grid-template-columns: 1fr;
+    }
+.news-featured-media {
+        min-height: 240px;
+        aspect-ratio: 16/10;
+    }
+.news-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+.news-grid {
+        grid-template-columns: 1fr;
+    }
+.news-pagination {
+        flex-direction: column;
+        gap: .75rem;
+    }
+.news-article-meta {
+        flex-direction: column;
+        gap: .5rem;
+        align-items: flex-start;
+        text-align: left;
+    }
+.news-article-header {
+        text-align: left;
+    }
+.news-article-header .news-cat-pill {
+        display: inline-flex;
+    }
+}
