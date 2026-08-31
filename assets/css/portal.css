@@ -1671,3 +1671,31 @@
 .pwa-standalone body {
     overscroll-behavior-y: contain;
 }
+
+/* ── Entrada "Instalar la app" del login ──────────────────────────────
+   Tailwind declara `svg{display:block}`, asi que el icono se llevaba el
+   texto a la linea de abajo. Mismo caso que en /agendar. */
+.pwa-install-cta {
+    margin-top: .35rem;
+    text-align: center;
+}
+
+.pwa-install-cta a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.pwa-install-cta a svg {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+}
+
+/* Instalada ya: la entrada no tiene sentido. Refuerza el [hidden] del JS. */
+.pwa-standalone .pwa-install-cta {
+    display: none !important;
+}

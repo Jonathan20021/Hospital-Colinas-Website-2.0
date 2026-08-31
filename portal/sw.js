@@ -16,7 +16,7 @@
  */
 'use strict';
 
-const VERSION  = 'hglc-paciente-v2';
+const VERSION  = 'hglc-paciente-v3';
 const PRECACHE = VERSION + '-precache';
 const RUNTIME  = VERSION + '-runtime';
 

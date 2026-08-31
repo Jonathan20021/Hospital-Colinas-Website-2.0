@@ -122,6 +122,8 @@ function doctor_layout_begin(string $title, string $active = ''): void
                 <?php endforeach; ?>
                 <div class="dm-label">Cuenta</div>
                 <a href="<?= e(base_url('portal-medico/cuenta.php')) ?>" class="dm-link <?= $active==='cuenta'?'on':'' ?>" title="Mi cuenta"><i data-lucide="shield-check"></i><span class="t">Mi cuenta</span></a>
+                <?php /* Solo se ve si se puede instalar; lo destapa portal-medico-pwa.js */ ?>
+                <a href="#" class="pwa-install-entry pwa-install-cta" hidden onclick="if(window.HGLCPwa){HGLCPwa.install();}return false;"><i data-lucide="download"></i> Instalar app</a>
                 <a href="<?= e(base_url('portal-medico/logout.php')) ?>" class="dm-link dm-logout" title="Cerrar sesión"><i data-lucide="log-out"></i><span class="t">Cerrar sesión</span></a>
                 <div class="dm-status">
                     <i data-lucide="shield-check"></i>

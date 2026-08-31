@@ -209,6 +209,16 @@ portal_layout_begin('Iniciar sesión', 'login');
         </details>
 
         <p class="pa-auth-alt portal-auth-register">¿No tienes cuenta? <a href="<?= e(base_url('portal/registro.php')) ?>">Crear cuenta</a></p>
+        <?php /* En Safari/Chrome la barra del navegador NO se puede ocultar: solo
+                 desaparece con la app instalada en la pantalla de inicio. La entrada
+                 permanente vivia en _layout.php, o sea DESPUES de iniciar sesion, y
+                 aqui -- que es donde llega el paciente por primera vez -- no habia
+                 ninguna. Arranca oculta y el JS la muestra solo si se puede instalar. */ ?>
+        <p class="pa-auth-alt pwa-install-cta" hidden>
+            <a href="#" class="pwa-install-entry" onclick="if(window.HGLCPwa){HGLCPwa.install();}return false;">
+                <i data-lucide="download" class="h-4 w-4"></i> Instalar la app en este dispositivo
+            </a>
+        </p>
     <?php endif; ?>
 </div>
 </div>

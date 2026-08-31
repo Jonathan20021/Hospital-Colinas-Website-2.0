@@ -256,6 +256,26 @@
     }
   };
 
+
+  /**
+   * Descubre la entrada "Instalar la app" del login.
+   *
+   * Arranca con [hidden] en el HTML para que nunca se vea donde no sirve: en
+   * escritorio sin soporte, o cuando la app YA esta instalada. En Chrome el
+   * evento beforeinstallprompt puede llegar despues de cargar, asi que se
+   * vuelve a intentar cuando llega.
+   */
+  function revelarInstalar() {
+    var cta = document.querySelectorAll('.pwa-install-cta');
+    for (var i = 0; i < cta.length; i++) {
+      cta[i].hidden = !window.HGLCPwa.canInstall();
+    }
+    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) {} }
+  }
+  revelarInstalar();
+  window.addEventListener('beforeinstallprompt', function () { setTimeout(revelarInstalar, 0); });
+  window.addEventListener('appinstalled', revelarInstalar);
+
   // ── Estado de conexión ───────────────────────────────────────────
   var netBar = null, netTimer = null;
   function ensureNetBar() {

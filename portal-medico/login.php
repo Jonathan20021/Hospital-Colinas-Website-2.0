@@ -92,6 +92,16 @@ doctor_layout_begin('Iniciar sesión', 'login');
             <div class="doctor-auth-row">
                 <a href="<?= e(base_url('portal-medico/recuperar.php')) ?>" class="doctor-text-link">¿Olvidaste tu contraseña?</a>
             </div>
+            <?php /* En Safari/Chrome la barra del navegador NO se puede ocultar: solo
+                 desaparece con la app instalada en la pantalla de inicio. La entrada
+                 permanente vivia en _layout.php, o sea DESPUES de iniciar sesion, y
+                 aqui -- que es donde llega el paciente por primera vez -- no habia
+                 ninguna. Arranca oculta y el JS la muestra solo si se puede instalar. */ ?>
+            <div class="doctor-auth-row pwa-install-cta" hidden>
+                <a href="#" class="doctor-text-link pwa-install-entry" onclick="if(window.HGLCPwa){HGLCPwa.install();}return false;">
+                    <i data-lucide="download" class="h-4 w-4"></i> Instalar la app en este dispositivo
+                </a>
+            </div>
 
             <button type="submit" class="doctor-btn doctor-btn-primary mt-6" id="login-submit">
                 <span class="doctor-btn-content"><i data-lucide="log-in" class="h-4 w-4"></i> Iniciar sesión</span>

@@ -206,9 +206,11 @@
   });
 
   // ── Guía de instalación en iOS (Safari no dispara beforeinstallprompt) ──
-  function showIosHint() {
+  function showIosHint(force) {
     if (!isIOS() || isStandalone()) return;
-    if (snoozed(LS.ios, 30)) return;
+    // `force` lo usa el boton "Instalar app": si el paciente cerro el aviso
+    // una vez, quedaba silenciado 30 dias y no habia forma de volver a verlo.
+    if (!force && snoozed(LS.ios, 30)) return;
     var c = el('div', 'pwa-install pwa-ios');
     c.innerHTML =
       '<img class="pwa-install-ic" src="' + (CFG.icon || '') + '" alt="">' +
@@ -306,6 +308,42 @@
   }
   function pushTest() { return window.doctorApi('POST', '/portal-doctor/me/push/test'); }
 
+  // Misma API que el portal del paciente (nunca se cargan a la vez), para que
+  // el boton "Instalar app" del layout y del login funcione igual en ambos.
+  window.HGLCPwa = {
+    isStandalone: isStandalone,
+    canInstall: function () { return !isStandalone() && (!!deferredPrompt || isIOS()); },
+    install: function () {
+      if (isStandalone()) return;
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function () { deferredPrompt = null; });
+      } else if (isIOS()) {
+        showIosHint(true);
+      }
+    }
+  };
+
+
+  /**
+   * Descubre la entrada "Instalar la app" del login.
+   *
+   * Arranca con [hidden] en el HTML para que nunca se vea donde no sirve: en
+   * escritorio sin soporte, o cuando la app YA esta instalada. En Chrome el
+   * evento beforeinstallprompt puede llegar despues de cargar, asi que se
+   * vuelve a intentar cuando llega.
+   */
+  function revelarInstalar() {
+    var cta = document.querySelectorAll('.pwa-install-cta');
+    for (var i = 0; i < cta.length; i++) {
+      cta[i].hidden = !window.HGLCPwa.canInstall();
+    }
+    if (window.lucide) { try { window.lucide.createIcons(); } catch (e) {} }
+  }
+  revelarInstalar();
+  window.addEventListener('beforeinstallprompt', function () { setTimeout(revelarInstalar, 0); });
+  window.addEventListener('appinstalled', revelarInstalar);
+
   window.DMPush = {
     supported: pushSupported(),
     enable: enablePush,
