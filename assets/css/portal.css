@@ -1657,3 +1657,17 @@
         font-size: .95rem;
     }
 }
+/* ── Sensacion de app instalada ───────────────────────────────────────
+   En modo app, arrastrar hacia abajo en el borde superior disparaba el
+   rebote del navegador y, en Android, el gesto de "tirar para recargar":
+   es el tell mas claro de que esto es una web dentro de un navegador.
+
+   `contain` corta el encadenado al navegador (y con el la recarga) pero
+   deja el rebote propio de iOS, que las apps nativas SI tienen.
+
+   Solo con .pwa-standalone, la clase que ponen portal-pwa.js y
+   portal-medico-pwa.js: en pestana normal el gesto sigue como se espera. */
+.pwa-standalone,
+.pwa-standalone body {
+    overscroll-behavior-y: contain;
+}

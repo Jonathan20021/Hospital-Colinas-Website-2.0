@@ -44,6 +44,41 @@
 
   if (isStandalone()) document.documentElement.classList.add('pwa-standalone');
 
+  /**
+   * Barra de estado del sistema al color REAL de la barra superior.
+   *
+   * En modo app instalada, Android pinta la barra de estado con el
+   * `theme_color` del manifiesto — navy — pero la barra superior de la app es
+   * clara. Quedaba una franja navy justo encima de un encabezado blanco: una
+   * costura que delata que no es nativa.
+   *
+   * Se LEE el color real en vez de fijar uno a mano, para que case igual en el
+   * login y dentro de la app, y para que no se desincronice si cambia el
+   * diseño. En pestaña normal no se toca nada: ahí el navy de marca en la
+   * barra del navegador está bien.
+   */
+  function ajustarBarraEstado() {
+    if (!isStandalone()) return;
+    var barra = document.querySelector('.portal-topbar, .dm-top, header');
+    if (!barra) return;
+    var nodo = barra, color = '';
+    while (nodo) {                       // sube hasta el primer fondo opaco
+      var c = getComputedStyle(nodo).backgroundColor;
+      if (c && c !== 'transparent' && !/^rgba\(.*,\s*0\)$/.test(c)) { color = c; break; }
+      nodo = nodo.parentElement;
+    }
+    if (!color) return;
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', color);
+  }
+  ajustarBarraEstado();
+
+
   var SVG = {
     download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
     refresh: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.36 2.64L3 8"/><path d="M3 3v5h5"/></svg>',
