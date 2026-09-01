@@ -126,6 +126,34 @@
         $('#nv-next1').addEventListener('click', onNext1);
     }
 
+    /**
+     * Edad en el formato que usa un pediatra: días para un recién nacido, meses
+     * hasta los dos años, años después. Entre dos hermanos es lo que los separa.
+     */
+    function edadDe(dob) {
+        if (!dob) return '';
+        var p = String(dob).slice(0, 10).split('-');
+        if (p.length !== 3) return '';
+        var n = new Date(+p[0], +p[1] - 1, +p[2]);
+        if (isNaN(n)) return '';
+        var hoy = new Date();
+        var dias = Math.floor((hoy - n) / 86400000);
+        if (dias < 0) return '';
+        if (dias < 31)  return dias + (dias === 1 ? ' día' : ' días');
+        var meses = (hoy.getFullYear() - n.getFullYear()) * 12 + (hoy.getMonth() - n.getMonth());
+        if (hoy.getDate() < n.getDate()) meses--;
+        if (meses < 24) return meses + (meses === 1 ? ' mes' : ' meses');
+        return Math.floor(meses / 12) + ' años';
+    }
+
+    var MES_C = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    function fechaCorta(dob) {
+        if (!dob) return '';
+        var p = String(dob).slice(0, 10).split('-');
+        if (p.length !== 3) return '';
+        return (+p[2]) + ' ' + MES_C[+p[1] - 1] + ' ' + p[0];
+    }
+
     function searchPatients(term) {
         var box = $('#nv-results');
         if (term.length < 2) { box.innerHTML = '<p class="nv-hint">Escribe al menos 2 caracteres.</p>'; return; }
@@ -133,17 +161,40 @@
         window.doctorApi('GET', '/portal-doctor/me/patients', { q: term, per_page: 8 }).then(function (r) {
             var items = (r.ok && r.data && r.data.items) ? r.data.items : [];
             if (!items.length) { box.innerHTML = '<p class="nv-hint">Sin coincidencias entre tus pacientes. Usa “Paciente nuevo”.</p>'; return; }
+            // Hermanos: comparten el telefono del padre o de la madre. Si dos
+            // resultados lo repiten, se avisa en la propia fila -- es justo el
+            // caso en el que se elegia el expediente equivocado.
+            var porTel = {};
+            items.forEach(function (p) {
+                var t = (p.phone || '').replace(/\D/g, '');
+                if (t) porTel[t] = (porTel[t] || 0) + 1;
+            });
+
             box.innerHTML = items.map(function (p, i) {
+                var edad  = edadDe(p.dob);
+                var nacio = fechaCorta(p.dob);
+                var meta  = [];
+                if (edad)  meta.push('<b class="nv-res-edad">' + esc(edad) + '</b>');
+                if (nacio) meta.push(esc(nacio));
+                meta.push(p.cedula ? esc(p.cedula) : '<i class="nv-res-falta">sin cédula</i>');
+                meta.push(esc(p.phone || 'sin teléfono'));
+
+                var t = (p.phone || '').replace(/\D/g, '');
+                var repetido = t && porTel[t] > 1
+                    ? '<span class="nv-res-ojo">' + porTel[t] + ' pacientes con este teléfono — confirma cuál es</span>'
+                    : '';
+
                 return '<button type="button" class="nv-res" data-i="' + i + '">'
                     + '<span class="nv-res-av">' + esc((p.name || '?').trim().charAt(0).toUpperCase()) + '</span>'
                     + '<span class="nv-res-main"><strong>' + esc(p.name) + '</strong>'
-                    + '<span>' + (p.cedula ? esc(p.cedula) + ' · ' : '') + esc(p.phone || 's/teléfono') + '</span></span>'
+                    + '<span class="nv-res-meta">' + meta.join(' · ') + '</span>'
+                    + repetido + '</span>'
                     + '<i data-lucide="chevron-right"></i></button>';
             }).join('');
             box.querySelectorAll('.nv-res').forEach(function (b) {
                 b.addEventListener('click', function () {
                     var p = items[+b.getAttribute('data-i')];
-                    st.patient = { id: p.id, name: p.name, cedula: p.cedula, phone: p.phone };
+                    st.patient = { id: p.id, name: p.name, cedula: p.cedula, phone: p.phone, dob: p.dob };
                     render();
                 });
             });
@@ -180,7 +231,7 @@
         } catch (e) { r = { ok: false, message: 'Error de conexión.' }; }
         st.busy = false; btn.disabled = false;
         if (r.ok && r.data) {
-            st.patient = { id: r.data.id, name: r.data.name, cedula: r.data.cedula, phone: phone };
+            st.patient = { id: r.data.id, name: r.data.name, cedula: r.data.cedula, phone: phone, dob: $('#np-dob').value || null };
             go(2);
         } else {
             setStatusFoot('⚠ ' + (r.message || 'No se pudo registrar el paciente.'), 'err');
@@ -191,8 +242,14 @@
     function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
 
     function renderWhen() {
+        // Se repite la fecha de nacimiento junto al nombre: si se eligio al
+        // hermano equivocado, aqui hay una segunda oportunidad de verlo.
+        var _p = st.patient || {};
+        var _e = edadDe(_p.dob);
         $('#nv-body').innerHTML =
-            '<div class="nv-patbar"><i data-lucide="user"></i> <strong>' + esc(st.patient ? st.patient.name : '') + '</strong></div>'
+            '<div class="nv-patbar"><i data-lucide="user"></i> <strong>' + esc(_p.name || '') + '</strong>'
+            + (_e ? '<span class="nv-patbar-edad">' + esc(_e) + (fechaCorta(_p.dob) ? ' · ' + esc(fechaCorta(_p.dob)) : '') + '</span>' : '')
+            + '</div>'
             + '<div class="nv-slot-loader" id="nv-loader"><i data-lucide="loader-2" class="nv-spin"></i> Cargando horarios disponibles…</div>'
             + '<div id="nv-cal" hidden></div>'
             + '<div class="nv-manual">'

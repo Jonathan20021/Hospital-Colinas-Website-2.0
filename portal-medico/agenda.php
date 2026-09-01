@@ -217,6 +217,14 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-res-main strong{color:#0f172a;font-size:.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nv-res-main span{font-size:.78rem;color:#64748b}
 .nv-res i{width:16px;height:16px;color:#cbd5e1}
+/* La fecha de nacimiento y la edad son lo unico que distingue a dos hermanos:
+   mismo apellido, sin cedula y con el telefono del padre. */
+.nv-res-meta{font-size:.78rem;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nv-res-edad{color:#322d82;font-weight:700}
+.nv-res-falta{font-style:italic;color:#94a3b8}
+.nv-res-ojo{display:block;margin-top:3px;font-size:.72rem;font-weight:700;color:#92400e;
+  background:#fef3c7;border-radius:6px;padding:2px 7px;white-space:normal}
+.nv-patbar-edad{margin-left:8px;font-size:.78rem;font-weight:600;color:#475569}
 /* Formulario nuevo paciente */
 .nv-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .nv-f{display:flex;flex-direction:column;gap:5px;font-size:.82rem;font-weight:600;color:#334155;min-width:0}
