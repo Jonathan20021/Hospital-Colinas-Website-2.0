@@ -208,7 +208,40 @@
         el.textContent = msg || ''; el.className = 'nv-foot-msg' + (kind ? ' ' + kind : '');
     }
 
+    /**
+     * La cédula escrita ya tiene expediente, pero a otro nombre. O es la misma
+     * persona registrada de otra forma, o es un familiar y la cédula está
+     * equivocada. Eso no lo puede adivinar el sistema: lo decide el médico.
+     */
+    function confirmarOtroNombre(escrito, real, mensaje) {
+        var f = $('#nv-foot');
+        var vieja = f.querySelector('.nv-confirm');
+        if (vieja) vieja.remove();
+        setStatusFoot('', '');
+        var caja = document.createElement('div');
+        caja.className = 'nv-confirm';
+        caja.innerHTML =
+            '<p class="nv-confirm-t"><i data-lucide="alert-triangle"></i>'
+          + esc(mensaje || 'Esa cédula ya está registrada a nombre de otra persona.') + '</p>'
+          + '<p class="nv-confirm-par"><span>escribiste</span><b>' + esc(escrito) + '</b></p>'
+          + '<p class="nv-confirm-par"><span>expediente</span><b>' + esc(real) + '</b></p>'
+          + '<div class="nv-confirm-btns">'
+          + '<button type="button" class="doctor-btn doctor-btn-ghost" data-act="volver">Corregir la cédula</button>'
+          + '<button type="button" class="doctor-btn" data-act="seguir">Sí, es la misma persona</button>'
+          + '</div>';
+        f.insertBefore(caja, f.firstChild);
+        caja.querySelector('[data-act="volver"]').addEventListener('click', function () {
+            caja.remove(); st.patient = null; $('#np-ced').focus();
+        });
+        caja.querySelector('[data-act="seguir"]').addEventListener('click', function () {
+            caja.remove(); go(2);
+        });
+        if (window.lucide) lucide.createIcons();
+    }
+
     async function onNext1() {
+        var previo = $('#nv-foot').querySelector('.nv-confirm');
+        if (previo) previo.remove();
         if (st.mode === 'buscar') {
             if (!st.patient) { setStatusFoot('Selecciona un paciente o crea uno nuevo.', 'err'); return; }
             return go(2);
@@ -232,6 +265,9 @@
         st.busy = false; btn.disabled = false;
         if (r.ok && r.data) {
             st.patient = { id: r.data.id, name: r.data.name, cedula: r.data.cedula, phone: phone, dob: $('#np-dob').value || null };
+            // La cédula ya tenía expediente, y a nombre de OTRA persona. Antes se
+            // seguía sin más y la cita caía ahí sin que nadie lo notara.
+            if (r.data.mismatch) { confirmarOtroNombre(name, r.data.name, r.message); return; }
             go(2);
         } else {
             setStatusFoot('⚠ ' + (r.message || 'No se pudo registrar el paciente.'), 'err');

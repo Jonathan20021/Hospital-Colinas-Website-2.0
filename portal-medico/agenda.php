@@ -193,7 +193,9 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-x{flex:0 0 auto;width:34px;height:34px;border:0;border-radius:10px;background:#f1f5f9;color:#334155;cursor:pointer;display:grid;place-items:center}
 .nv-x:hover{background:#e2e8f0}
 .nv-body{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:18px 20px;-webkit-overflow-scrolling:touch}
-.nv-foot{display:flex;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid #eef2f7;background:#fff}
+/* flex-wrap: sin el, .nv-foot-msg y .nv-confirm piden flex-basis:100% pero el
+   contenedor no rompe fila y acaban aplastando a los botones. */
+.nv-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:14px 20px;border-top:1px solid #eef2f7;background:#fff}
 .nv-foot .doctor-btn{flex:1;min-width:0;justify-content:center;white-space:nowrap}
 .nv-foot .doctor-btn-ghost{flex:0 0 auto}
 .nv-foot .doctor-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -225,6 +227,19 @@ html.nv-locked,html.nv-locked body{overflow-x:hidden;max-width:100%}
 .nv-res-ojo{display:block;margin-top:3px;font-size:.72rem;font-weight:700;color:#92400e;
   background:#fef3c7;border-radius:6px;padding:2px 7px;white-space:normal}
 .nv-patbar-edad{margin-left:8px;font-size:.78rem;font-weight:600;color:#475569}
+/* Aviso de que la cédula pertenece a otra persona: para el asistente en seco */
+.nv-confirm{flex-basis:100%;order:-2;margin:0 0 10px;padding:12px 14px;border-radius:10px;
+  border:1px solid #fcd34d;background:#fffbeb}
+.nv-confirm-t{display:flex;gap:8px;align-items:flex-start;margin:0 0 8px;
+  font-size:.86rem;font-weight:600;color:#92400e;line-height:1.35}
+.nv-confirm-t i{flex:0 0 auto;width:17px;height:17px;margin-top:1px}
+.nv-confirm-par{display:flex;gap:8px;align-items:baseline;margin:0 0 3px;font-size:.84rem}
+.nv-confirm-par span{flex:0 0 84px;color:#92400e;font-size:.74rem;text-transform:uppercase;letter-spacing:.03em}
+.nv-confirm-par b{color:#1f2937;min-width:0;word-break:break-word}
+.nv-confirm-btns{display:flex;gap:8px;margin-top:10px}
+.nv-confirm-btns .doctor-btn{flex:1;justify-content:center;white-space:nowrap}
+@media (max-width:520px){.nv-confirm-btns{flex-direction:column}
+  .nv-confirm-btns .doctor-btn{white-space:normal}}
 /* Formulario nuevo paciente */
 .nv-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .nv-f{display:flex;flex-direction:column;gap:5px;font-size:.82rem;font-weight:600;color:#334155;min-width:0}
