@@ -252,8 +252,12 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
 
                     <p class="agendar-hint" style="margin-top:1rem">
                         <i data-lucide="info" class="h-4 w-4"></i>
-                        <?= count($specs) ?> especialidades disponibles. Si no sabes cuál elegir, llámanos al <a
-                            href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.
+                        <?php /* Un solo hijo de texto: `.agendar-hint` es flex, y dejar
+                                 texto suelto fuera del <span> lo convierte en un segundo
+                                 item y parte la frase en dos columnas. */ ?>
+                        <span class="agendar-hint-txt"><span id="specialty-count" data-total="<?= count($specs) ?>"><?= count($specs) ?> especialidades disponibles.</span>
+                            Si no sabes cuál elegir, llámanos al <a
+                                href="tel:18098060444" class="portal-text-link">(809) 806-0444</a>.</span>
                     </p>
                 </form>
 
@@ -274,6 +278,13 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                                 .replace(/[̀-ͯ]/g, '');
                         }
 
+                        // "Las más solicitadas" son un atajo a la lista de abajo, no otra
+                        // lista: mientras se filtra estorban. Buscabas "cardiología" y
+                        // arriba seguían Ginecología, Endocrinología y Urología.
+                        var top = document.querySelector('.ag-top');
+                        var cuenta = document.getElementById('specialty-count');
+                        var total = cuenta ? (cuenta.getAttribute('data-total') || items.length) : items.length;
+
                         function filter() {
                             var q = normalize(input.value.trim());
                             var visible = 0;
@@ -285,6 +296,38 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                             });
                             empty.hidden = visible !== 0;
                             clear.hidden = q.length === 0;
+                            if (top) top.hidden = q.length > 0;
+                            if (cuenta) {
+                                cuenta.textContent = q
+                                    ? (visible === 0
+                                        ? 'Ninguna de las ' + total + ' especialidades coincide.'
+                                        : visible + ' de ' + total + (visible === 1 ? ' especialidad coincide.' : ' especialidades coinciden.'))
+                                    : total + ' especialidades disponibles.';
+                            }
+                        }
+
+                        // El encabezado del sitio es sticky y cambia de alto al hacer
+                        // scroll (clase .is-scrolled). Se mide en vivo para que el
+                        // buscador pegado quede JUSTO debajo y no detrás.
+                        var cabecera = document.querySelector('.site-header');
+                        if (cabecera && window.matchMedia) {
+                            var pendiente = false;
+                            var medirCabecera = function () {
+                                pendiente = false;
+                                var alto = window.matchMedia('(max-width: 720px)').matches
+                                    ? Math.round(cabecera.getBoundingClientRect().height)
+                                    : 0;
+                                document.documentElement.style.setProperty('--ag-sticky-top', alto + 'px');
+                            };
+                            var pedirMedida = function () {
+                                if (pendiente) return;
+                                pendiente = true;
+                                requestAnimationFrame(medirCabecera);
+                            };
+                            medirCabecera();
+                            addEventListener('scroll', pedirMedida, { passive: true });
+                            addEventListener('resize', pedirMedida);
+                            addEventListener('orientationchange', pedirMedida);
                         }
 
                         input.addEventListener('input', filter);

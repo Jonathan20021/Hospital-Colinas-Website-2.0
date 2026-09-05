@@ -129,11 +129,31 @@
     color: var(--gr) !important;       /* unifica el icono al verde de marca */
 }
 
+/* ── Todos los campos, a 16 px ──────────────────────────────────────────
+   Por debajo de 16 px, iOS Safari HACE ZOOM al enfocar un campo: la página
+   salta justo cuando el paciente empieza a escribir, y hay que pellizcar para
+   volver. Medidos a 15,2 px (heredados de `.form-input` de app-core.css): el
+   buscador del paso 1 y los seis campos del paso 4 —nombre, cédula, correo,
+   teléfono, ARS y notas—, que es donde más se escribe.
+   Va scopeado a `.agendar-v2` para no mover el resto del sitio. */
+.agendar-v2 .form-input,
+.agendar-v2 input.form-input,
+.agendar-v2 select.form-input,
+.agendar-v2 textarea.form-input {
+    font-size: 1rem;
+}
+
 /* ─────────────────────────── Buscador ─────────────────────────── */
 .agendar-v2 .portal-page .form-input.agendar-search-input,
 .agendar-v2 .form-input.agendar-search-input {
     border-radius: 14px;
     border-color: var(--line);
+    /* portal.css baja este campo a .95rem dentro de `@media (max-width:560px)`
+       —justo en móvil— con un selector más específico que la regla general de
+       arriba, así que la pisaba y volvía el zoom de iOS. No se toca portal.css
+       porque lo comparte el portal del paciente: se gana aquí por
+       especificidad (.agendar-v2 + .portal-page + clase + clase). */
+    font-size: 1rem;
 }
 
 .agendar-v2 .form-input.agendar-search-input:focus {
@@ -230,12 +250,23 @@
 .agendar-v2 .cal-title {
     color: var(--nv);
     font-weight: 800;
-    text-transform: capitalize;
+    /* `capitalize` ponia "Septiembre De 2026": en español la preposición va en
+       minúscula. Se sube solo la primera letra, que es lo correcto. */
+    text-transform: none;
+}
+
+.agendar-v2 .cal-title::first-letter {
+    text-transform: uppercase;
 }
 
 .agendar-v2 .cal-nav {
     border-color: var(--line);
     color: var(--nv);
+    /* Median 36x36. Cambiar de mes es el gesto que mas se repite en el paso,
+       y fallarlo devuelve al usuario al mes equivocado. 44 es el minimo
+       tactil de la guia de iOS y del nivel AAA de WCAG (2.5.5). */
+    min-width: 44px;
+    min-height: 44px;
 }
 
 .agendar-v2 .cal-nav:hover:not(:disabled) {
@@ -339,6 +370,10 @@
     border-radius: 11px;
     border-color: var(--line);
     color: var(--ink);
+    /* A 360 px las tres columnas dejaban 94 px y "02:30 p. m." necesita ~106:
+       la hora se partia en "02:30 p." / "m.". Es el dato que el paciente lee
+       para decidir, asi que no se parte nunca. */
+    white-space: nowrap;
 }
 
 .agendar-v2 .cal-time:hover {
@@ -444,13 +479,16 @@
         padding: 1rem .85rem .85rem;
     }
 
+    /* Siete columnas en 390 px dejan ~37 px de ancho por dia: el limite lo pone
+       la pantalla, no el diseno. Lo que SI se puede dar es alto, y el area
+       tactil crece con el. Se aprieta un poco el hueco para arañar ancho. */
     .agendar-v2 .cal-grid,
     .agendar-v2 .cal-weekdays {
-        gap: .28rem;
+        gap: .22rem;
     }
 
     .agendar-v2 .cal-cell {
-        min-height: 40px;
+        min-height: 44px;
         font-size: .88rem;
         border-radius: 10px;
     }
@@ -459,8 +497,11 @@
         font-size: .66rem;
     }
 
+    /* 76 px no daban para la hora completa. Con 104 la propia rejilla decide:
+       dos columnas en un movil de 360, tres a partir de 414. Sin breakpoints
+       que mantener. */
     .agendar-v2 .cal-times-grid {
-        grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
     }
 
     .agendar-v2 .cal-legend {
@@ -588,10 +629,49 @@
         font-size: 1.15rem;
     }
 
-    /* En móvil el botón "Ya tengo cuenta" no compite con el paso en curso. */
+    /* En móvil el botón "Ya tengo cuenta" no compite con el paso en curso.
+       Se le da alto tocable sin devolverle peso visual: medía 32 px, que para
+       un botón de ancho completo es poco. El tamaño de letra no sube. */
     .agendar-v2 .portal-header.is-compacta .btn-outline {
         padding: .45rem .7rem;
         font-size: .82rem;
+        min-height: 40px;
+    }
+
+    /* Fuera del encabezado compacto sí es un botón de pleno derecho: medía 38 px
+       de alto, por debajo del mínimo táctil de 44 (WCAG 2.5.5 / iOS HIG). */
+    .agendar-v2 .portal-header:not(.is-compacta) .btn-outline {
+        min-height: 44px;
+    }
+
+    /* ── El buscador, pegado ──────────────────────────────────────────────
+       El paso 1 mide 4.835 px en un móvil de 390: 25 especialidades apiladas.
+       Quien estaba a mitad de la lista y quería filtrar tenía que subir veinte
+       pantallas. Pegándolo, filtra desde donde esté.
+
+       El `top` lo calcula el JS con la altura REAL del encabezado del sitio
+       (que es sticky y cambia de alto al hacer scroll). Si el JS no corre, el
+       respaldo es 0 y el buscador sigue siendo un campo normal: nada se rompe.
+
+       z-index 12: por debajo del encabezado (70) y por encima de las tarjetas. */
+    .agendar-v2 .agendar-search {
+        position: sticky;
+        top: var(--ag-sticky-top, 0px);
+        z-index: 12;
+        padding-block: .55rem;
+        background: #fff;
+    }
+
+    /* La línea separa el buscador de la lista que pasa por debajo. Sin ella,
+       las tarjetas parecen meterse dentro del campo. */
+    .agendar-v2 .agendar-search::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 1px;
+        background: var(--line);
     }
 }
 
@@ -668,14 +748,16 @@
 }
 
 .agendar-v2 .ag-card-count {
-    font-size: .76rem;
+    /* 12,5 px. Venía a 11,84 en todos los anchos: es el dato que dice si la
+       especialidad tiene uno o doce médicos, no letra pequeña de contrato. */
+    font-size: .78rem;
     font-weight: 600;
     color: #64748b;
     white-space: nowrap;
 }
 
 .agendar-v2 .specialty-card:not(.ag-top-card) .ag-card-count {
-    font-size: .74rem;
+    font-size: .78rem;
     font-weight: 500;
     color: var(--muted);
     text-transform: none;
@@ -974,6 +1056,11 @@
         gap: .35rem;
     }
 
+    /* Se probaron las destacadas en DOS columnas: ahorran 185 px de los 4.679
+       del paso (un 4 %) a cambio de partir "ENDOCRINOLOG / ÍA" y dejar la
+       quinta huérfana. No sale a cuenta, y menos ahora que el buscador va
+       pegado y el scroll da igual. Se quedan a una columna, legibles. */
+
     /* Con auto-fit los 4 atajos caian 3+1 y el ultimo quedaba huerfano.
        Cuatro columnas fijas los mantienen en una sola fila. */
     .agendar-v2 .cal-rapido-grid {
@@ -989,10 +1076,13 @@
         font-size: 1.3rem;
     }
 
+    /* Estaban a .62rem = 9,92 px para que los 4 atajos cupieran en una fila.
+       Caben igual a .68 (10,9 px) y se leen: "7 horas" es justo el dato que
+       decide si merece la pena tocar ese dia. */
     .agendar-v2 .cal-rapido-dia,
     .agendar-v2 .cal-rapido-mes,
     .agendar-v2 .cal-rapido-cupos {
-        font-size: .62rem;
+        font-size: .68rem;
     }
 
     .agendar-v2 .ag-continuar {
@@ -1089,7 +1179,7 @@
 }
 
 .agendar-v2 .ag-top-card .ag-card-count {
-    font-size: .74rem;
+    font-size: .78rem;
     color: var(--gr-deep);
     font-weight: 600;
 }
