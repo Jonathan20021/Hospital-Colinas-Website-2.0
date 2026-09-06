@@ -90,8 +90,15 @@ body {
     font-weight: 800;
 }
 
+.utility-bar>div>* {
+    align-self: stretch;
+}
+
 .utility-bar>div {
-    min-height: 42px;
+    /* 44 en vez de 42: el telefono se estira a lo alto de la barra, asi que su
+       area tactil es exactamente esta. Dos pixeles que no se ven y que ponen el
+       enlace mas tocado del sitio en el minimo comodo. */
+    min-height: 44px;
 }
 
 .utility-link {
@@ -100,6 +107,11 @@ body {
     gap: .55rem;
     color: rgba(255, 255, 255, .9);
     transition: color .2s ease;
+    /* El telefono del hospital medía 19 px de alto: en un movil es de lo primero
+       que se toca. La barra ya mide 42, asi que el enlace se estira dentro de
+       ella y gana area sin cambiar nada de sitio. */
+    align-self: stretch;
+    padding-block: .55rem;
 }
 
 .utility-link:hover {
@@ -165,8 +177,9 @@ body {
 
 .mobile-toggle {
     display: inline-flex;
-    height: 42px;
-    width: 42px;
+    /* 42 se quedaba dos pixeles corto del minimo tactil. */
+    height: 44px;
+    width: 44px;
     margin-left: auto;
     align-items: center;
     justify-content: center;
@@ -278,7 +291,8 @@ body {
 
 .mobile-sub-link {
     display: block;
-    padding: .65rem .85rem;
+    /* .65rem daba 42 px de alto; .75 llega a los 44 del minimo tactil. */
+    padding: .75rem .85rem;
     border-radius: 8px;
     color: #57534c;
     font-size: .9rem;
@@ -424,8 +438,9 @@ body {
     align-items: center;
     justify-content: center;
     gap: .4rem;
-    width: 42px;
-    height: 42px;
+    /* 42 se quedaba a dos pixeles del minimo tactil. */
+    width: 44px;
+    height: 44px;
     border-radius: 999px;
     border: 1px solid #e2e8f0;
     background: #fff;
@@ -593,7 +608,9 @@ body {
 .site-footer ul {
     margin-top: 1rem;
     display: grid;
-    gap: .58rem;
+    /* Sin hueco propio: lo aporta el padding de cada enlace, que ademas lo
+       hace clicable, asi que el paso entre enlaces no cambia. */
+    gap: 0;
     color: rgba(255, 255, 255, .68);
     font-size: .86rem;
 }
@@ -611,19 +628,37 @@ body {
 .footer-list {
     margin-top: 1rem;
     display: grid;
-    gap: .58rem;
+    /* Sin hueco propio: lo aporta el padding de cada enlace, que ademas lo
+       hace clicable, asi que el paso entre enlaces no cambia. */
+    gap: 0;
     color: rgba(255, 255, 255, .68);
     font-size: .86rem;
+}
+
+.footer-list a,
+.footer-brand-contact a {
+    display: block;
+    padding-block: .44rem;
+    /* `info@colinashospital.com` no tiene donde partir y se salia de la columna
+       en tablet. Ya pasaba antes; se arregla de paso. */
+    overflow-wrap: anywhere;
 }
 
 .footer-list a:hover {
     color: #fff;
 }
 
+@media (max-width: 768px) {
+.footer-list a {
+        padding-block: .82rem;
+    }
+}
+
 .footer-social {
     display: flex;
-    height: 36px;
-    width: 36px;
+    /* 36x36: los dos unicos accesos a redes del sitio, y no se acertaban. */
+    height: 44px;
+    width: 44px;
     align-items: center;
     justify-content: center;
     border-radius: 999px;
@@ -635,10 +670,23 @@ body {
     background: var(--green);
 }
 
+.footer-brand-contact a {
+    /* El telefono y el correo del pie: mismo criterio que .footer-list, pero
+       aqui no estaban cubiertos y seguian a 16 px de alto. */
+    display: block;
+    padding-block: .44rem;
+}
+
+@media (max-width: 768px) {
+.footer-brand-contact a {
+        padding-block: .82rem;
+    }
+}
+
 .footer-brand-contact {
     margin-top: 1.25rem;
     display: grid;
-    gap: .45rem;
+    gap: 0;
     color: rgba(255, 255, 255, .68);
     font-size: .8rem;
     line-height: 1.45;
@@ -662,6 +710,10 @@ body {
 .footer-bottom a {
     color: rgba(255, 255, 255, .68);
     font-weight: 800;
+    /* 19 px de alto. `.footer-bottom` ya separa 1.5rem, asi que el padding cabe
+       sin tocar el reparto. */
+    display: inline-block;
+    padding-block: .82rem;
 }
 
 .footer-bottom a:hover {
