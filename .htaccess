@@ -54,7 +54,10 @@ DirectoryIndex index.php
     RewriteRule ^teleconsulta/?$ teleconsulta.php [L,QSA]
     RewriteRule ^medico/([a-zA-Z0-9_\-]+)/?$ medico.php?slug=$1 [L,QSA]
     RewriteRule ^directorio-medico/?$ directorio-medico.php [L,QSA]
-    RewriteRule ^directorio/?$ directorio-medico.php [L,QSA,R=301]
+    # Destino ABSOLUTO. Con uno relativo y R=301, Apache construye la URL con la
+    # RUTA DEL DISCO: redirigia a /home2/<cuenta>/<dominio>/directorio-medico.php,
+    # que ademas de estar roto filtraba la estructura del hosting.
+    RewriteRule ^directorio/?$ /directorio-medico [L,R=301]
     RewriteRule ^ver-resultados/?$ ver-resultados.php [L,QSA]
     RewriteRule ^testimonios/?$ testimonios.php [L,QSA]
     RewriteRule ^guardias/?$ guardias.php [L,QSA]
@@ -62,14 +65,23 @@ DirectoryIndex index.php
     RewriteRule ^repositorio-digital/?$ /repositorio [L,R=301]
     RewriteRule ^noticias/?$ noticias.php [L,QSA]
     RewriteRule ^noticias/([a-zA-Z0-9_\-]+)/?$ noticia.php?slug=$1 [L,QSA]
-    RewriteRule ^sala-de-prensa/?$ noticias.php [L,QSA,R=301]
+    RewriteRule ^sala-de-prensa/?$ /noticias [L,R=301]
     RewriteRule ^servicios/([a-zA-Z0-9_\-]+)/?$ servicio.php?slug=$1 [L,QSA]
     RewriteRule ^(nosotros|liderazgo-institucional|servicios|instalaciones|pacientes|contacto|tu-visita|preparacion-para-tu-cita|seguros-aceptados|derechos-y-deberes|preguntas-frecuentes|politica-de-privacidad|terminos-de-uso|mapa-del-sitio)/?$ pagina.php?slug=$1 [L,QSA]
 
-    # Fallback: any unknown path → home (so SPA-like deep links don't break)
+    # Ruta desconocida: 404 de verdad, no la portada.
+    #
+    # Antes esto mandaba a index.php CON HTTP 200 "para no romper deep links tipo
+    # SPA", pero este sitio no es una SPA: son rutas PHP explicitas. Lo que hacia:
+    #   - buscadores indexando URLs inventadas como copias de la portada
+    #   - un enlace roto llevaba al home sin decir que estaba roto
+    #   - 364 KB servidos por cada URL basura, y el access_log esta lleno de bots
+    #
+    # Antes de cambiarlo se rastrearon 43 paginas y 202 enlaces internos: NINGUNO
+    # dependia de este fallback. 404.php responde el 404 con http_response_code().
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^ index.php [L]
+    RewriteRule ^ 404.php [L]
 </IfModule>
 
 <IfModule mod_headers.c>
