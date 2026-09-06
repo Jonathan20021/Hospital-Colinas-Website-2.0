@@ -1,5 +1,11 @@
 <?php
 /**
+ * ATENCION: OBSOLETO. Lo sustituyo tools/split-families-css.php.
+ * NO EJECUTAR: hoy no mueve nada (0 KB) y deja app-contenido.css VACIO, que ya
+ * no es un archivo generado sino fuente (53 de sus 86 selectores no existen en
+ * app.css). Ejecutarlo borra el CSS de las paginas de contenido, legales y
+ * seguros. Se conserva solo como referencia de como se hizo el primer reparto.
+ *
  * Parte assets/css/app.css en un nucleo + trozos por pagina.
  *
  *   php tools/split-css.php --dry     # informa, no escribe

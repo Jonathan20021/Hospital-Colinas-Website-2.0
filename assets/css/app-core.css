@@ -4805,3 +4805,27 @@ a.tm-google-badge:hover{transform:translateY(-2px);box-shadow:0 12px 28px -14px 
 .nav-cta { padding: .6rem .78rem; font-size: .8rem; }
 .nav-search { margin: 0 .1rem; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Minimo de 16 px en todos los campos
+
+   Por debajo de 16 px, iOS Safari HACE ZOOM al enfocar un campo: la pagina
+   salta justo cuando la persona empieza a escribir, y hay que pellizcar para
+   volver. Medidos siete campos entre 13,6 y 15,4 px en cinco paginas: los
+   buscadores del home (#careSearch), del directorio (#doctorSearch), de
+   noticias y del repositorio (sus dos <select>), y el formulario de
+   testimonios.
+
+   `max(1rem, 1em)` sube solo los que se quedan cortos: el que ya hereda un
+   tamano mayor no se toca.
+
+   Los `:not()` no son decorativos: suben la especificidad a (0,3,1) para
+   ganarle a reglas de clase como `.form-input` (0,1,0) y
+   `.portal-page .form-input` (0,2,0) sin recurrir a !important.
+   ══════════════════════════════════════════════════════════════════════ */
+
+input:not([type=checkbox]):not([type=radio]):not([type=range]),
+select:not([hidden]):not([disabled]),
+textarea:not([hidden]):not([disabled]) {
+    font-size: max(1rem, 1em);
+}

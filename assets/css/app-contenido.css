@@ -1,5 +1,11 @@
-/* Generado por tools/split-css.php desde app.css. No editar a mano:
-   los cambios van en app.css y despues se vuelve a ejecutar el script. */
+/* FUENTE. Ya NO se genera: 53 de sus 86 selectores no existen en app.css, y
+   `php tools/split-css.php --dry` deja este archivo en 0 KB -- ejecutarlo
+   borraria el CSS de las paginas de contenido, legales y seguros.
+   Se edita AQUI.
+
+   OJO CON EL ORDEN: esta hoja se carga DESPUES de app-core.css, asi que sus
+   reglas base pisan a los @media de aquella. Si defines algo aqui, su
+   responsive tiene que estar aqui tambien. */
 
 
 .content-hero,
@@ -871,4 +877,22 @@
 .seg-cta-phone:hover { text-decoration:underline; }
 @media (max-width:560px) {
     .seg-steps { grid-template-columns:1fr; }
+}
+
+/* ==== responsive de esta hoja =============================================
+   `.seg-hero-grid` se define arriba a dos columnas y su @media vive en
+   app-core.css, que se carga ANTES: la base ganaba y el hero de
+   /seguros-aceptados salia a dos columnas tambien en un movil de 390 px, con
+   el titulo en cinco lineas y los logos de las ARS ilegibles a un lado.
+   Repetirlo aqui es lo unico que hace que gane.
+   ======================================================================== */
+@media (max-width: 960px) {
+    .seg-hero-grid { grid-template-columns: 1fr; gap: 2.2rem; }
+    .seg-split { grid-template-columns: 1fr; gap: 2.2rem; }
+    .seg-steps { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 560px) {
+    .seg-logo-grid { grid-template-columns: repeat(2, 1fr); }
+    .seg-cta-inner { flex-direction: column; align-items: flex-start; }
 }

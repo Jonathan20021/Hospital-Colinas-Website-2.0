@@ -985,3 +985,9 @@ a.tm-google-badge:hover{transform:translateY(-2px);box-shadow:0 12px 28px -14px 
 .nav-cta { padding: .6rem .78rem; font-size: .8rem; }
 .nav-search { margin: 0 .1rem; }
 }
+
+input:not([type=checkbox]):not([type=radio]):not([type=range]),
+select:not([hidden]):not([disabled]),
+textarea:not([hidden]):not([disabled]) {
+    font-size: max(1rem, 1em);
+}

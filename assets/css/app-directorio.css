@@ -3090,7 +3090,11 @@
         grid-column: 2;
         grid-row: 1;
         min-height: 48px;
-        font-size: .9rem;
+        /* Estaba a .9rem = 14,4 px: por debajo de 16, iOS hace zoom al enfocar,
+           y este es el buscador principal del directorio. Tiene la misma
+           especificidad que la regla general del minimo (0,3,1) y esta hoja se
+           carga despues, asi que ganaba por orden. */
+        font-size: 1rem;
     }
 .directory-page .dir-directory-search .dir-search-clear {
         grid-column: 3;
