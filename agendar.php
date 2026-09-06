@@ -495,13 +495,17 @@ foreach ($specs as $sp) { $specNames[(int) $sp['id']] = (string) $sp['name']; }
                     // ARS que el hospital acepta — alineadas con el catálogo oficial
                     // de facturación (SGC, tabla `seguro`, entradas activas). Ordenadas
                     // por uso real de los pacientes.
-                    $arsOptions = [
-                        'SeNaSa', 'ARS Humano', 'ARS Primera', 'ARS Universal', 'ARS Mapfre Salud',
-                        'ARS Monumental', 'ARS Futuro', 'ARS Reservas', 'ARS Yunén', 'ARS MetaSalud',
-                        'ARS Simag', 'ARS APS', 'ARS Asemap', 'ARS SEMMA',
-                        'ARS GMA (Grupo Médico Asociado)', 'ARS CMD (Colegio Médico Dominicano)',
-                        'ARS UASD', 'IDOPRIL', 'Plan Salud Banco Central',
-                    ];
+                    // Las que el hospital ACEPTA de verdad, de $insurers (includes/data.php):
+                    // la misma fuente que pinta el muro de logos de /seguros-aceptados, para
+                    // que añadir un convenio actualice los dos sitios a la vez.
+                    //
+                    // Antes habia 19 escritas a mano y solo hay convenio con 6. Un paciente de
+                    // una ARS sin convenio la elegia aqui, agendaba tranquilo y se enteraba en
+                    // admision de que no tenia cobertura. Quien no vea la suya usa "Otra".
+                    $arsOptions = array_values(array_map(
+                        static fn(array $i): string => $i['name'],
+                        $insurers ?? []
+                    ));
                     ?>
                     <div class="portal-grid-2 mt-1">
                         <div>

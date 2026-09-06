@@ -196,6 +196,65 @@
 .agendar-v2 .portal-doctor {
     border-radius: 14px;
     border-color: var(--line);
+    /* portal.css reserva 48 px para el avatar, pero la foto lleva 56 px en el
+       propio <img>: se salia de su columna. */
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+}
+
+/* Una tablet de 768 px se toca con el dedo igual que un movil: el boton medía
+   menos de 44 px de alto en todo lo que no fuera movil. */
+.agendar-v2 .portal-doctor > .btn {
+    min-height: 44px;
+}
+
+/* ── La tarjeta del médico en móvil ───────────────────────────────────────
+   `portal.css` la monta en tres columnas (avatar · datos · botón) y no tiene
+   NINGUNA media query. A 390 px el contenido pide ~350 px y solo hay 283: el
+   botón "Ver fechas" se montaba encima del horario, el nombre caía en cuatro
+   líneas y la insignia "Puede atenderte hoy" en tres.
+
+   En móvil el botón baja a su propia fila, a lo ancho: deja de competir por el
+   espacio horizontal y de paso gana el alto táctil que no tenía. */
+@media (max-width: 640px) {
+    .agendar-v2 .portal-doctor {
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: .85rem;
+        align-items: start;
+        padding: .95rem;
+    }
+
+    /* El nombre y la especialidad tienen que poder encogerse: sin min-width:0
+       una palabra larga (OTORRINOLARINGOLOGÍA) estira la columna. */
+    .agendar-v2 .portal-doctor > div {
+        min-width: 0;
+    }
+
+    .agendar-v2 .portal-doctor > .btn {
+        grid-column: 1 / -1;
+        justify-content: center;
+        min-height: 44px;
+        margin-top: .25rem;
+    }
+
+    /* La foto queda arriba, alineada con el nombre, no centrada respecto a un
+       bloque de cuatro líneas. */
+    .agendar-v2 .portal-doctor > img {
+        align-self: start;
+    }
+}
+
+/* En 320 px (iPhone SE) el nombre se iba a tres líneas. La foto cede 8 px de
+   ancho, que ahí valen una línea entera. */
+@media (max-width: 359px) {
+    .agendar-v2 .portal-doctor {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: .7rem;
+    }
+
+    .agendar-v2 .portal-doctor > img {
+        width: 48px !important;
+        height: 48px !important;
+    }
 }
 
 .agendar-v2 .portal-doctor:hover {
@@ -1295,6 +1354,9 @@
     align-items: center;
     gap: .35rem;
     margin-top: .4rem;
+    /* "Puede atenderte hoy" se partia en tres lineas cuando la columna se
+       quedaba sin ancho. Es una insignia: o entra entera o no es una insignia. */
+    white-space: nowrap;
     padding: .2rem .6rem .2rem .5rem;
     border-radius: 999px;
     font-size: .78rem;
