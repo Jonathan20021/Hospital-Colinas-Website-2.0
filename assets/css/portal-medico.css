@@ -1554,6 +1554,29 @@
     font-size: .88rem;
 }
 
+/* El ARS se mira para decidir indicaciones, asi que resalta sobre el resto de
+   la meta (cedula, sexo, edad, telefono), que solo se lee de pasada.
+   Va con `.is-app` delante porque portal-medico-pro.css define
+   `.is-app .doctor-patient-meta span` (0,2,1) y le ganaria al color. */
+.is-app .doctor-patient-meta .doctor-meta-ars,
+.doctor-patient-meta .doctor-meta-ars {
+    background: var(--doc-green-soft, #eef6e7);
+    border: 1px solid var(--doc-green-line, #d3e7ba);
+    color: var(--doc-green-deep, #4a8f27);
+    font-weight: 700;
+}
+
+.is-app .doctor-patient-meta .doctor-meta-ars svg,
+.doctor-patient-meta .doctor-meta-ars svg { color: currentColor; }
+
+/* Sin seguro registrado: se avisa, pero sin alarmar. */
+.is-app .doctor-patient-meta .doctor-meta-ars.is-vacia,
+.doctor-patient-meta .doctor-meta-ars.is-vacia {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
 .doctor-patient-meta span {
     display: inline-flex;
     align-items: center;

@@ -46,6 +46,19 @@ $bare ? doctor_layout_begin_bare('Consulta') : doctor_layout_begin('Consulta mé
                 <?php if (!empty($appt['patient_gender'])): ?><span><i data-lucide="user" class="h-3.5 w-3.5"></i> <?= e($appt['patient_gender']) ?></span><?php endif; ?>
                 <?php if ($age !== ''): ?><span><i data-lucide="cake" class="h-3.5 w-3.5"></i> <?= e($age) ?> años</span><?php endif; ?>
                 <?php if (!empty($appt['patient_phone'])): ?><span><i data-lucide="phone" class="h-3.5 w-3.5"></i> <?= e($appt['patient_phone']) ?></span><?php endif; ?>
+                <?php /* ARS: lo pidio un medico por ticket para decidir las indicaciones.
+                         Cuando falta tambien se dice: "sin ARS" es un dato, no un hueco. */ ?>
+                <?php $ars = trim((string)($appt['patient_insurance'] ?? '')); ?>
+                <?php $poliza = trim((string)($appt['patient_insurance_policy'] ?? '')); ?>
+                <?php if ($ars !== ''): ?>
+                    <span class="doctor-meta-ars" title="Seguro del paciente<?= $poliza !== '' ? ' · póliza ' . e($poliza) : '' ?>">
+                        <i data-lucide="shield-check" class="h-3.5 w-3.5"></i> <?= e($ars) ?><?php if ($poliza !== ''): ?> · <?= e($poliza) ?><?php endif; ?>
+                    </span>
+                <?php else: ?>
+                    <span class="doctor-meta-ars is-vacia" title="No hay seguro registrado en el expediente">
+                        <i data-lucide="shield-alert" class="h-3.5 w-3.5"></i> Sin ARS registrada
+                    </span>
+                <?php endif; ?>
                 <span class="doctor-pill doctor-pill-<?= e($appt['status']) ?>"><?= e(doctor_estado_es($appt['status'])) ?></span>
             </div>
         </div>
