@@ -123,6 +123,12 @@ if (!headers_sent()) {
     .an.f-low  .vl{color:#1d4ed8}
     .an.f-critical .vl{color:#fff;background:#b91c1c;border-radius:3px;padding:0 5px;display:inline-block}
     .an .tag{font-weight:700;font-size:10px;margin-left:5px}
+    /* Un cultivo ("NO CRECIMIENTO BACTERIANO") o un "En proceso" no son numeros:
+       no caben en la columna de 90px ni tienen unidad ni rango. Ocupan el ancho. */
+    .an.t-texto .un,.an.t-texto .rg,.an.t-pendiente .un,.an.t-pendiente .rg{display:none}
+    .an.t-texto .vl,.an.t-pendiente .vl{grid-column:2/-1;font-variant-numeric:normal;font-weight:600;line-height:1.35}
+    .an.t-pendiente .vl{color:#6b7280;font-style:italic;font-weight:500}
+    .an .nota{grid-column:1/-1;color:#6b7280;font-size:9.5px;font-style:italic;padding:0 0 2px 2px}
     .an.f-high .tag{color:#b91c1c}.an.f-low .tag{color:#1d4ed8}.an.f-critical .tag{color:#b91c1c}
     .vp{font-size:9.5px;color:#555;padding:4px 2px 2px;line-height:1.5}
     .vp b{color:#333;font-weight:700}
@@ -209,11 +215,12 @@ if (!headers_sent()) {
                         $tag = $flagLabel[$flag] ?? '';
                         // si es examen de un solo analito con el mismo nombre, el "nombre" es el del examen (cursiva)
                     ?>
-                        <div class="an f-<?= e($flag) ?>">
+                        <div class="an f-<?= e($flag) ?> t-<?= e($a['tipo'] ?? 'valor') ?>">
                             <span class="nm"<?= $sameName ? ' style="font-style:italic;font-weight:800"' : '' ?>><?= e($sameName ? $ex['examen'] : $a['analito']) ?></span>
                             <span class="vl"><?= e($a['valor']) ?><?php if ($tag): ?><span class="tag"><?= $tag ?></span><?php endif; ?></span>
                             <span class="un"><?= e($a['unidad']) ?></span>
                             <span class="rg"><?= e($a['rango']) ?></span>
+                            <?php if (!empty($a['nota'])): ?><span class="nota"><?= e($a['nota']) ?></span><?php endif; ?>
                         </div>
                     <?php endforeach; ?>
                     <div class="vp">
@@ -363,7 +370,8 @@ if (!headers_sent()) {
                     brk(20);
                     if (!same) { doc.setFont('helvetica','bolditalic'); doc.setFontSize(9); doc.setTextColor(20,20,20); doc.text(ex.examen, M, y); y+=12; }
                     ex.analitos.forEach(function (a) {
-                        brk(13);
+                        // una fila de texto puede ocupar 2 lineas, y la nota otra mas
+                        brk((a.tipo==='texto'||a.tipo==='pendiente'||a.nota) ? 32 : 13);
                         var flag=a.flag||'normal';
                         doc.setFontSize(8.4);
                         if (same){ doc.setFont('helvetica','bolditalic'); } else { doc.setFont('helvetica','normal'); }
@@ -374,12 +382,33 @@ if (!headers_sent()) {
                         else if (flag==='low'){ doc.setTextColor(29,78,216); doc.setFont('helvetica','bold'); }
                         else if (flag==='critical'){ doc.setTextColor(185,28,28); doc.setFont('helvetica','bold'); }
                         else { doc.setTextColor(0,0,0); doc.setFont('helvetica','bold'); }
-                        doc.text(String(a.valor)+(tag?('  '+tag):''), COLv, y);
+                        // Un informe de cultivo no cabe en una linea: doc.text NO parte
+                        // solo, asi que se reparte a mano y la fila crece lo que haga falta.
+                        var esTexto = (a.tipo==='texto'||a.tipo==='pendiente');
+                        if (a.tipo==='pendiente'){ doc.setTextColor(107,114,128); doc.setFont('helvetica','italic'); }
+                        var txt = String(a.valor)+(tag?('  '+tag):'');
+                        var alto = 12.5;
+                        if (esTexto) {
+                            var lns = doc.splitTextToSize(txt, W-M-COLv);
+                            doc.text(lns, COLv, y);
+                            alto = Math.max(12.5, lns.length*10.5);
+                        } else {
+                            doc.text(txt, COLv, y);
+                        }
                         doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
-                        doc.text(String(a.unidad||'').slice(0,12), COLu, y);
-                        doc.text(String(a.rango||'').slice(0,24), COLr, y);
+                        if (!esTexto) {
+                            doc.text(String(a.unidad||'').slice(0,12), COLu, y);
+                            doc.text(String(a.rango||'').slice(0,24), COLr, y);
+                        }
+                        if (a.nota) {
+                            y += alto - 2;
+                            doc.setFontSize(7); doc.setTextColor(107,114,128); doc.setFont('helvetica','italic');
+                            doc.text(String(a.nota).slice(0,90), M, y);
+                            doc.setFontSize(8.4); doc.setFont('helvetica','normal');
+                            alto = 10;
+                        }
                         doc.setDrawColor(240,240,240); doc.setLineWidth(.4); doc.line(M,y+3,W-M,y+3);
-                        y+=12.5;
+                        y+=alto;
                     });
                     brk(16);
                     doc.setFont('helvetica','normal'); doc.setFontSize(7.2); doc.setTextColor(90,90,90);
