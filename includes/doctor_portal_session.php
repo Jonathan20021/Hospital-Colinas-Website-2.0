@@ -121,10 +121,29 @@ function doctor_csrf_check(): void {
     doctor_portal_session_start();
     $sent  = $_POST['_csrf'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
     $known = $_SESSION['doctor_csrf'] ?? '';
-    if (!$known || !hash_equals($known, (string)$sent)) {
-        http_response_code(419);
-        exit('CSRF token invalido. Recarga la pagina.');
+    if ($known && hash_equals($known, (string)$sent)) {
+        return;
     }
+
+    /* El token caduca con la sesión, y el portal es una PWA que se queda abierta
+       horas: al médico le pasa cada vez que vuelve a una pestaña vieja.
+       Antes esto salía SIEMPRE como texto plano, así que el JS (que hace
+       `await r.json()`) se quedaba sin mensaje y pintaba un "Error" pelado: el
+       aviso útil —"recarga la página"— nunca llegaba a la pantalla.
+       Ahora se responde en el formato que el cliente pueda leer. */
+    http_response_code(419);
+    $esperaJson = stripos((string)($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json') !== false
+        || stripos((string)($_SERVER['CONTENT_TYPE'] ?? ''), 'application/json') !== false
+        || strtoupper((string)($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '')) === 'XMLHTTPREQUEST';
+
+    if ($esperaJson) {
+        header('Content-Type: application/json; charset=UTF-8');
+        exit(json_encode([
+            'success' => false,
+            'message' => 'Tu sesión expiró por inactividad. Recarga la página e inténtalo de nuevo.',
+        ], JSON_UNESCAPED_UNICODE));
+    }
+    exit('CSRF token invalido. Recarga la pagina.');
 }
 
 /** Cookie del "dispositivo confiable" (omite 2FA durante N dias). */

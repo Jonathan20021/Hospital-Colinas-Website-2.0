@@ -57,6 +57,23 @@
         });
         let json = null;
         try { json = await r.json(); } catch (_) {}
+
+        // 419 = el token CSRF caducó con la sesión (pestaña abierta desde hace
+        // horas). Se recarga UNA vez para tomar uno nuevo: así el médico no ve
+        // ningún error, solo la página refrescándose. La marca de tiempo evita
+        // el bucle si tras recargar volviera a fallar por otro motivo.
+        if (r.status === 419) {
+            try {
+                const ultima = parseInt(sessionStorage.getItem('hglcCsrfReload') || '0', 10);
+                if (!ultima || (Date.now() - ultima) > 60000) {
+                    sessionStorage.setItem('hglcCsrfReload', String(Date.now()));
+                    location.reload();
+                }
+            } catch (_) { /* sin sessionStorage: queda el mensaje de abajo */ }
+        } else if (r.ok) {
+            try { sessionStorage.removeItem('hglcCsrfReload'); } catch (_) {}
+        }
+
         return {
             ok: r.ok && json && json.success,
             status: r.status,
