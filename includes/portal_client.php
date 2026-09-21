@@ -1,5 +1,34 @@
 <?php
 /**
+ * Interruptor de emergencia del API interno.
+ *
+ * Si existe el archivo `.api-off` en la raíz del sitio, NINGUNA llamada sale:
+ * se devuelve 503 al instante. Sirve para cuando JENOFONTE no responde — sin
+ * esto, cada visita se queda esperando el timeout y va consumiendo procesos de
+ * PHP hasta que se cae la cuenta ENTERA (todos los clientes, no solo este).
+ *
+ * Creado el 21-sep-2026, justamente por eso. Para volver a la normalidad basta
+ * con borrar el archivo; no hay que tocar código ni desplegar.
+ */
+function portal_api_apagado(): bool {
+    static $off = null;
+    if ($off !== null) return $off;
+    $f = __DIR__ . '/../.api-off';
+    /* Vale el contenido, no la mera existencia: en el cPanel de este hosting
+       se pueden subir archivos pero no borrarlos, así que un archivo con "0"
+       dentro es la única forma de volver atrás sin acceso por SSH. */
+    $off = is_file($f) && trim((string)@file_get_contents($f, false, null, 0, 16)) !== '0';
+    return $off;
+}
+
+/** Respuesta inmediata cuando el interruptor está puesto. */
+function portal_api_respuesta_apagada(): array {
+    return ['ok' => false, 'status' => 503, 'data' => null,
+            'message' => 'El servicio no está disponible en este momento.',
+            'errors' => null, 'raw' => ''];
+}
+
+/**
  * Cliente HTTP server-side que habla con la API interna del hospital.
  *
  * Se configura en `includes/config.local.php` con:
@@ -49,12 +78,17 @@ function portal_client_fwd_headers(): array {
     return $h;
 }
 
+/* EMERGENCIA 21-sep-2026: con el VIP de JENOFONTE sin responder, cada llamada
+   se comia 20 s de un worker de PHP. Unos pocos visitantes a la vez agotaban el
+   pool y se caian TODOS los sitios de la cuenta, no solo el del hospital.
+   Con 5 s el sitio degrada (sale sin los datos del API) en vez de morir. */
 /**
  * Realiza una llamada a la API.
  *
  * @return array { ok:bool, status:int, data:mixed, message:?string, errors:?array, raw:string }
  */
 function portal_api_call(string $method, string $path, array $payload = [], ?string $token = null): array {
+    if (portal_api_apagado()) return portal_api_respuesta_apagada();
     $url = portal_api_base() . '/' . ltrim($path, '/');
     $ch  = curl_init($url);
 
@@ -69,8 +103,8 @@ function portal_api_call(string $method, string $path, array $payload = [], ?str
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST  => strtoupper($method),
         CURLOPT_HTTPHEADER     => $headers,
-        CURLOPT_TIMEOUT        => 20,
-        CURLOPT_CONNECTTIMEOUT => 8,
+        CURLOPT_TIMEOUT        => 5,
+        CURLOPT_CONNECTTIMEOUT => 3,
         CURLOPT_SSL_VERIFYPEER => portal_api_verify_tls(),
         CURLOPT_SSL_VERIFYHOST => portal_api_verify_tls() ? 2 : 0,
         CURLOPT_FOLLOWLOCATION => false,
@@ -117,6 +151,7 @@ function portal_api_call(string $method, string $path, array $payload = [], ?str
  *   $r['me']['ok'], $r['lab']['data'], ...
  */
 function portal_api_multi(array $calls, ?string $token = null): array {
+    if (portal_api_apagado()) return portal_api_respuesta_apagada();
     if (!$calls) return [];
 
     $mh = curl_multi_init();
@@ -139,8 +174,8 @@ function portal_api_multi(array $calls, ?string $token = null): array {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST  => $method,
             CURLOPT_HTTPHEADER     => $headers,
-            CURLOPT_TIMEOUT        => 20,
-            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_TIMEOUT        => 5,
+            CURLOPT_CONNECTTIMEOUT => 3,
             CURLOPT_SSL_VERIFYPEER => portal_api_verify_tls(),
             CURLOPT_SSL_VERIFYHOST => portal_api_verify_tls() ? 2 : 0,
             CURLOPT_FOLLOWLOCATION => false,
@@ -208,8 +243,8 @@ function portal_api_call_binary(string $method, string $path, array $query = [],
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_CUSTOMREQUEST  => strtoupper($method),
         CURLOPT_HTTPHEADER     => $headers,
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_CONNECTTIMEOUT => 8,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_CONNECTTIMEOUT => 3,
         CURLOPT_SSL_VERIFYPEER => portal_api_verify_tls(),
         CURLOPT_SSL_VERIFYHOST => portal_api_verify_tls() ? 2 : 0,
         CURLOPT_FOLLOWLOCATION => false,
