@@ -7,17 +7,24 @@
  * esto, cada visita se queda esperando el timeout y va consumiendo procesos de
  * PHP hasta que se cae la cuenta ENTERA (todos los clientes, no solo este).
  *
- * Creado el 21-sep-2026, justamente por eso. Para volver a la normalidad basta
- * con borrar el archivo; no hay que tocar código ni desplegar.
+ * Creado el 21-sep-2026, justamente por eso. Lo que manda es la PRIMERA LÍNEA
+ * del archivo: un "0" deja pasar las llamadas, cualquier otra cosa las corta.
+ * No hay que tocar código ni desplegar para accionarlo.
  */
 function portal_api_apagado(): bool {
     static $off = null;
     if ($off !== null) return $off;
     $f = __DIR__ . '/../.api-off';
-    /* Vale el contenido, no la mera existencia: en el cPanel de este hosting
-       se pueden subir archivos pero no borrarlos, así que un archivo con "0"
-       dentro es la única forma de volver atrás sin acceso por SSH. */
-    $off = is_file($f) && trim((string)@file_get_contents($f, false, null, 0, 16)) !== '0';
+    /* Manda la PRIMERA LINEA, no el archivo entero: en el cPanel de este
+       hosting se pueden subir archivos pero no borrarlos, así que un archivo
+       cuya primera línea sea "0" es la única forma de volver atrás sin SSH.
+       El resto del archivo queda libre para explicar qué es esto a quien lo
+       encuentre. (Antes se miraban los primeros 16 bytes y el propio texto
+       de ayuda mantenía el corte puesto: el portal del médico se quedó
+       diciendo "El servicio no está disponible".) */
+    if (!is_file($f)) return $off = false;
+    $primera = strtok((string)@file_get_contents($f, false, null, 0, 512), "\r\n");
+    $off = trim((string)$primera) !== '0';
     return $off;
 }
 
