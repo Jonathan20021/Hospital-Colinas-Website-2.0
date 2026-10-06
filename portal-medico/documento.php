@@ -14,7 +14,9 @@ doctor_require_login();
 
 $apptId = (int)($_GET['appt'] ?? 0);
 $type   = $_GET['type']  ?? 'rx';
-$theme  = $_GET['theme'] ?? 'bw';
+// La constancia sale a color por defecto (marca del hospital); el resto de
+// documentos clínicos conservan el B/N por defecto.
+$theme  = $_GET['theme'] ?? ($type === 'constancia' ? 'color' : 'bw');
 $disp   = $_GET['download'] ?? '' ? 'attachment' : 'inline';
 
 if (!$apptId) {
