@@ -105,7 +105,7 @@
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
-		<string>Fondo</string>
+		<string>Navy</string>
 		<key>UIImageName</key>
 		<string>LaunchMark</string>
 		<key>UIImageRespectsSafeAreaInsets</key>
@@ -115,6 +115,8 @@
 	<array>
 		<string>arm64</string>
 	</array>
+	<key>UIStatusBarHidden</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

@@ -54,6 +54,10 @@ struct PortalView: View {
                 .transition(.opacity)
             }
         }
+        // También aquí, en la raíz, para que valga desde el primer cuadro: si
+        // solo lo dice la portada, la barra asoma un instante al arrancar.
+        .statusBarHidden(!portal.primeraCargaLista || bloqueo.cubierta
+                         || portal.estado == .sinConexion || portal.estado == .error)
         .animation(.easeOut(duration: 0.25), value: portal.primeraCargaLista)
         .animation(.easeOut(duration: 0.2), value: portal.cargando)
         .animation(.easeOut(duration: 0.2), value: portal.estado)
@@ -78,7 +82,9 @@ struct PortalView: View {
     }
 }
 
-/// Portada: el isotipo del hospital sobre el fondo del portal. Si la primera
+/// Portada: el logo del hospital sobre el navy de la marca, igual que la
+/// pantalla de arranque del sistema (`UILaunchScreen` en Info.plist): mismo
+/// color, misma imagen, misma posición, así el paso no se nota. Si la primera
 /// carga tarda (red lenta), aparece un indicador para que no parezca colgada
 /// y, si tarda mucho, la opción de reintentar.
 struct PortadaView: View {
@@ -91,7 +97,7 @@ struct PortadaView: View {
 
     var body: some View {
         ZStack {
-            Color.hglcFondo.ignoresSafeArea()
+            Color.hglcNavy.ignoresSafeArea()
             Image("LaunchMark")
                 .accessibilityLabel("Hospital General Las Colinas")
                 .ignoresSafeArea()
@@ -99,10 +105,10 @@ struct PortadaView: View {
             if cargando && espera != .normal {
                 VStack(spacing: 14) {
                     HStack(spacing: 10) {
-                        ProgressView().tint(.hglcNavy)
+                        ProgressView().tint(.white)
                         Text(espera == .lenta ? "Conectando con tu portal…" : "La conexión está lenta…")
                             .font(.outfit(.semiBold, 16, como: .callout))
-                            .foregroundColor(.hglcTexto)
+                            .foregroundColor(.white.opacity(0.85))
                     }
                     .accessibilityElement(children: .combine)
 
@@ -117,6 +123,9 @@ struct PortadaView: View {
                 .transition(.opacity)
             }
         }
+        // Sobre el navy, la barra de estado (texto oscuro) no se lee. Mientras
+        // la portada esté en pantalla, no hay barra; al irse, vuelve.
+        .statusBarHidden(true)
         .task(id: cargando) {
             espera = .normal
             guard cargando else { return }

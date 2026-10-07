@@ -92,7 +92,7 @@ struct BienvenidaView: View {
 
     private var encabezado: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Image("LaunchMark")
+            Image("Isotipo")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 72)

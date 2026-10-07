@@ -47,6 +47,14 @@ xcrun simctl launch --terminate-running-process booted com.colinashospital.pacie
 
 En Xcode: *Product › Scheme › Edit Scheme › Run › Arguments*.
 
+### La pantalla de arranque
+
+Es el logo blanco (`LaunchMark`) sobre el navy de la marca (`UILaunchScreen` en
+`Info.plist`), y la portada de la app (`PortadaView`) la repite igual para que
+el paso no se note. iOS guarda la pantalla de arranque en una caché que no se
+borra al desinstalar: si se cambia y en el simulador sigue la anterior,
+reiniciarlo (*Device › Restart*). En un iPhone, reiniciar el teléfono.
+
 ### Probar avisos sin servidor
 
 Arrastrar un archivo de `ios/Pruebas/` sobre el simulador, o:

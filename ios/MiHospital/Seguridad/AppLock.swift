@@ -237,7 +237,7 @@ final class VentanaCubierta {
             guard let escena else { return }
             let nueva = UIWindow(windowScene: escena)
             nueva.windowLevel = UIWindow.Level(rawValue: UIWindow.Level.alert.rawValue + 1)
-            nueva.rootViewController = UIHostingController(rootView: CubiertaView(bloqueo: AppLock.shared))
+            nueva.rootViewController = ControladorCubierta(rootView: CubiertaView(bloqueo: AppLock.shared))
             ventana = nueva
         }
         ventana?.isHidden = false
@@ -246,4 +246,9 @@ final class VentanaCubierta {
     func ocultar() {
         ventana?.isHidden = true
     }
+}
+
+/// Sin barra de estado sobre la portada navy: su texto oscuro no se leería.
+final class ControladorCubierta: UIHostingController<CubiertaView> {
+    override var prefersStatusBarHidden: Bool { true }
 }

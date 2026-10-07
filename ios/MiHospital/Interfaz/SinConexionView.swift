@@ -9,7 +9,9 @@ struct SinConexionView: View {
 
     var body: some View {
         ZStack {
-            Color.hglcFondo.ignoresSafeArea()
+            // El mismo navy de la portada: la pantalla se llena con la marca
+            // en vez de quedar casi en blanco.
+            Color.hglcNavy.ignoresSafeArea()
 
             GeometryReader { geometria in
                 ScrollView {
@@ -22,6 +24,7 @@ struct SinConexionView: View {
                 .rebotarSoloSiNoCabe()
             }
         }
+        .statusBarHidden(true)   // texto oscuro sobre navy: no se leería
     }
 
     private var contenido: some View {
@@ -29,7 +32,7 @@ struct SinConexionView: View {
             Image("LaunchMark")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 96)
+                .frame(width: 220)
                 .accessibilityLabel("Hospital General Las Colinas")
 
             VStack(spacing: 22) {
@@ -40,6 +43,7 @@ struct SinConexionView: View {
                         .font(.hglcTitulo)
                         .foregroundColor(.hglcNavy)
                         .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                         .accessibilityAddTraits(.isHeader)
 
                     Text(sinRed
