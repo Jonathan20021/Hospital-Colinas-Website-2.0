@@ -97,8 +97,9 @@ final class PushManager: ObservableObject {
         liberarEsperas()
     }
 
-    /// Toque en una notificación. Solo se aceptan rutas del portal; la
-    /// validación final la hace `NavigationPolicy.urlParaRuta`.
+    /// Toque en una notificación (o en un acceso rápido del ícono). Solo se
+    /// aceptan rutas del portal; la validación final la hace
+    /// `NavigationPolicy.urlParaRuta`.
     func abrirDesdeNotificacion(ruta: String?) {
         guard let ruta, !ruta.isEmpty else { return }
         rutaPendiente = ruta

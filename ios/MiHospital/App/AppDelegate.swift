@@ -24,6 +24,16 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
         return true
     }
 
+    /// Delegado de escena propio solo para los accesos rápidos del ícono
+    /// (mantener pulsado en la pantalla de inicio). SwiftUI sigue manejando la ventana.
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let configuracion = UISceneConfiguration(name: nil, sessionRole: connectingSceneSession.role)
+        configuracion.delegateClass = EscenaDelegate.self
+        return configuracion
+    }
+
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Task { @MainActor in
@@ -55,5 +65,35 @@ final class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCent
             PushManager.shared.abrirDesdeNotificacion(ruta: ruta)
         }
         completionHandler()
+    }
+}
+
+/// Accesos rápidos del ícono (Agendar cita, Mis citas, Mensajes, Recetas, en
+/// `UIApplicationShortcutItems` del Info.plist). Cada uno lleva la ruta del
+/// portal en su `userInfo`; se abre igual que una notificación tocada, con la
+/// misma validación (`NavigationPolicy.urlParaRuta`).
+final class EscenaDelegate: NSObject, UIWindowSceneDelegate {
+
+    /// App cerrada: el acceso llega con la conexión de la escena.
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession,
+               options connectionOptions: UIScene.ConnectionOptions) {
+        if let acceso = connectionOptions.shortcutItem {
+            abrir(acceso)
+        }
+    }
+
+    /// App en segundo plano.
+    func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem,
+                     completionHandler: @escaping (Bool) -> Void) {
+        completionHandler(abrir(shortcutItem))
+    }
+
+    @discardableResult
+    private func abrir(_ acceso: UIApplicationShortcutItem) -> Bool {
+        guard let ruta = acceso.userInfo?["ruta"] as? String else { return false }
+        Task { @MainActor in
+            PushManager.shared.abrirDesdeNotificacion(ruta: ruta)
+        }
+        return true
     }
 }

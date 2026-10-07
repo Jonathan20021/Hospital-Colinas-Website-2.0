@@ -42,6 +42,61 @@
 		<string>Outfit-Bold.ttf</string>
 		<string>Outfit-ExtraBold.ttf</string>
 	</array>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).agendar</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Agendar cita</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>calendar.badge.plus</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>ruta</key>
+				<string>/portal/agendar.php</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).citas</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Mis citas</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>calendar</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>ruta</key>
+				<string>/portal/mis-citas.php</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).mensajes</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Mensajes</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>bubble.left.and.bubble.right</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>ruta</key>
+				<string>/portal/mensajes.php</string>
+			</dict>
+		</dict>
+		<dict>
+			<key>UIApplicationShortcutItemType</key>
+			<string>$(PRODUCT_BUNDLE_IDENTIFIER).recetas</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Recetas</string>
+			<key>UIApplicationShortcutItemIconSymbolName</key>
+			<string>pills</string>
+			<key>UIApplicationShortcutItemUserInfo</key>
+			<dict>
+				<key>ruta</key>
+				<string>/portal/recetas.php</string>
+			</dict>
+		</dict>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

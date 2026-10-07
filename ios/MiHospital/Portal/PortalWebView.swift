@@ -28,6 +28,9 @@ final class Coordinador: NSObject, WKNavigationDelegate, WKUIDelegate, WKDownloa
     private let modelo: PortalModel
     private var observadorProgreso: NSKeyValueObservation?
     private var destinosDeDescarga: [ObjectIdentifier: URL] = [:]
+    private var progresoDeDescargas: [ObjectIdentifier: NSKeyValueObservation] = [:]
+    /// Descargas que canceló el paciente: su fallo no se avisa como error.
+    private var descargasCanceladas: Set<ObjectIdentifier> = []
 
     init(modelo: PortalModel) {
         self.modelo = modelo
@@ -238,22 +241,45 @@ final class Coordinador: NSObject, WKNavigationDelegate, WKUIDelegate, WKDownloa
             completionHandler(nil)
             return
         }
-        destinosDeDescarga[ObjectIdentifier(download)] = destino
-        modelo.descargaEmpezo()
+        let id = ObjectIdentifier(download)
+        destinosDeDescarga[id] = destino
+        modelo.descargaEmpezo { [weak self, weak download] in
+            guard let download else { return }
+            self?.descargasCanceladas.insert(ObjectIdentifier(download))
+            download.cancel(nil)
+        }
+        progresoDeDescargas[id] = download.progress.observe(\.fractionCompleted, options: [.new]) { [weak self] progreso, _ in
+            let valor = progreso.fractionCompleted
+            Task { @MainActor [weak self] in
+                self?.modelo.descargaAvanzo(valor)
+            }
+        }
         completionHandler(destino)
     }
 
     func downloadDidFinish(_ download: WKDownload) {
+        let id = ObjectIdentifier(download)
+        progresoDeDescargas.removeValue(forKey: id)
+        guard let archivo = destinosDeDescarga.removeValue(forKey: id) else {
+            modelo.descargaTermino()
+            return
+        }
+        if descargasCanceladas.remove(id) != nil {
+            Descargas.borrar(archivo)
+            return
+        }
         modelo.descargaTermino()
-        guard let archivo = destinosDeDescarga.removeValue(forKey: ObjectIdentifier(download)) else { return }
         modelo.mostrarDocumento(archivo)
     }
 
     func download(_ download: WKDownload, didFailWithError error: Error, resumeData: Data?) {
-        modelo.descargaTermino()
-        if let archivo = destinosDeDescarga.removeValue(forKey: ObjectIdentifier(download)) {
+        let id = ObjectIdentifier(download)
+        progresoDeDescargas.removeValue(forKey: id)
+        if let archivo = destinosDeDescarga.removeValue(forKey: id) {
             Descargas.borrar(archivo)
         }
+        if descargasCanceladas.remove(id) != nil { return }
+        modelo.descargaTermino()
         modelo.avisar("No se pudo abrir el documento. Revisa tu conexión e inténtalo de nuevo.")
     }
 

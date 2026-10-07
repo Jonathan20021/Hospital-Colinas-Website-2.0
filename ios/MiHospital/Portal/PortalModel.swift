@@ -32,6 +32,9 @@ final class PortalModel: ObservableObject {
     /// El iPhone tiene red. Sin ella, con el portal ya abierto, se avisa que
     /// lo que se ve puede no estar al día.
     @Published private(set) var hayRed = true
+    /// Progreso (0…1) del documento que se está descargando; `nil` si no hay.
+    @Published private(set) var progresoDocumento: Double?
+    private var cancelarDescarga: (() -> Void)?
     /// Cambia al cerrar sesión: la vista se recrea con una vista web nueva, sin
     /// el historial del paciente anterior (ver `cerrarSesion`).
     @Published private(set) var generacionVistaWeb = 0
@@ -179,14 +182,25 @@ final class PortalModel: ObservableObject {
         }
     }
 
-    func descargaEmpezo() {
-        cargando = true
-        progreso = 0.5
+    func descargaEmpezo(cancelar: @escaping () -> Void) {
+        progresoDocumento = 0
+        cancelarDescarga = cancelar
+    }
+
+    func descargaAvanzo(_ valor: Double) {
+        guard progresoDocumento != nil else { return }
+        progresoDocumento = valor
     }
 
     func descargaTermino() {
-        cargando = false
-        progreso = 0
+        progresoDocumento = nil
+        cancelarDescarga = nil
+    }
+
+    /// El paciente tocó "Cancelar" en la tarjeta del documento.
+    func cancelarDocumento() {
+        cancelarDescarga?()
+        descargaTermino()
     }
 
     func mostrarDocumento(_ archivo: URL) {

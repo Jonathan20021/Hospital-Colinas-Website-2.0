@@ -33,9 +33,9 @@ struct MiHospitalApp: App {
 ///   xcrun simctl launch booted com.colinashospital.paciente -pantalla sinConexion
 ///
 /// Valores: sinConexion, error, bloqueo, bloqueoFallido, bienvenida, portada,
-/// avisoSinRed.
+/// avisoSinRed, documento.
 enum PantallaDePrueba: String {
-    case sinConexion, error, bloqueo, bloqueoFallido, bienvenida, portada, avisoSinRed
+    case sinConexion, error, bloqueo, bloqueoFallido, bienvenida, portada, avisoSinRed, documento
 
     static var pedida: PantallaDePrueba? {
         UserDefaults.standard.string(forKey: "pantalla").flatMap(PantallaDePrueba.init(rawValue:))
@@ -59,6 +59,11 @@ enum PantallaDePrueba: String {
                 .sheet(isPresented: .constant(true)) { BienvenidaView() }
         case .portada:
             PortadaView(cargando: true) {}
+        case .documento:
+            ZStack(alignment: .bottom) {
+                Color.hglcFondo.ignoresSafeArea()
+                TarjetaDocumento(progreso: 0.4) {}
+            }
         case .avisoSinRed:
             ZStack(alignment: .top) {
                 Color.hglcFondo.ignoresSafeArea()

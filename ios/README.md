@@ -8,7 +8,8 @@ suma lo que una página no puede hacer en el iPhone:
 | **Avisos (APNs)** | Mensajes del médico, recordatorios y Mi Ciclo llegan aunque la app esté cerrada. Al tocarlos abre la sección indicada. |
 | **Face ID** | Opcional. Pide Face ID al abrir la app o al volver tras más de un minuto fuera, si hay sesión abierta. |
 | **Escudo de privacidad** | Al salir de la app se tapa la pantalla: el selector de apps no muestra datos clínicos. |
-| **Documentos** | Recetas, resúmenes e imágenes se abren en Quick Look (compartir, imprimir, guardar en Archivos). Se borran al cerrarlos. |
+| **Documentos** | Recetas, resúmenes e imágenes se abren en Quick Look (compartir, imprimir, guardar en Archivos), con su progreso y la opción de cancelar mientras bajan. Se borran al cerrarlos. |
+| **Accesos rápidos** | Mantener pulsado el ícono: Agendar cita, Mis citas, Mensajes, Recetas. |
 | **Sin conexión** | Pantalla propia con reintento automático cuando vuelve la red, y el teléfono del hospital. |
 | **Enlaces** | Teléfono y correo van al sistema; páginas que no son el portal se abren en una hoja de Safari. |
 
@@ -36,7 +37,8 @@ Para otro servidor (pruebas), cambiar `HGLC_PORTAL_HOST` en el `.xcconfig`.
 ### Ver cada pantalla nativa
 
 En depuración, la app abre una pantalla sola con `-pantalla` (`sinConexion`,
-`error`, `bloqueo`, `bloqueoFallido`, `bienvenida`, `portada`, `avisoSinRed`),
+`error`, `bloqueo`, `bloqueoFallido`, `bienvenida`, `portada`, `avisoSinRed`,
+`documento`),
 sin tener que cortar la red ni activar Face ID:
 
 ```
@@ -73,6 +75,8 @@ TestFlight conviene recorrer esto en un dispositivo real:
 - [ ] Con Face ID activo: salir más de un minuto y volver lo pide; el selector de apps muestra la portada.
 - [ ] Con una receta abierta en Quick Look, salir y volver: el bloqueo la tapa también.
 - [ ] Mi perfil muestra las tarjetas *Notificaciones* y *Proteger la app*.
+- [ ] Mantener pulsado el ícono: cada acceso rápido abre su sección, con la app cerrada y en segundo plano.
+- [ ] Una receta grande muestra la tarjeta *Abriendo el documento…*; *Cancelar* no deja ningún aviso de error.
 
 ## Avisos: falta el servidor
 
@@ -115,7 +119,7 @@ Al archivar, Xcode firma con `aps-environment = production` y la app informa
 
 | Archivo | Responsabilidad |
 |---|---|
-| `App/MiHospitalApp.swift`, `App/AppDelegate.swift` | Arranque, token de APNs, toque en una notificación. |
+| `App/MiHospitalApp.swift`, `App/AppDelegate.swift` | Arranque, token de APNs, toque en una notificación, accesos rápidos del ícono. |
 | `App/AppConfig.swift` | Servidor, versión, User-Agent (`HGLCApp-iOS/x.y`), entorno de APNs. |
 | `Portal/PortalWebView.swift` | WKWebView y sus delegados: navegación, descargas, diálogos JS, puente. |
 | `Portal/NavigationPolicy.swift` | Qué queda dentro de la app y qué se abre fuera. Con pruebas. |

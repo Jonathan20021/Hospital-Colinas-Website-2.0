@@ -106,4 +106,18 @@ final class NavigationPolicyTests: XCTestCase {
                                                      "Content-Disposition": "attachment; filename=\"x.html\""])!
         XCTAssertTrue(Descargas.esDocumento(adjunto, sePuedeMostrar: true))
     }
+
+    /// Los accesos rápidos del ícono (Info.plist) abren rutas del portal que
+    /// la política acepta: una errata en el plist no debe dejar uno muerto.
+    func testLosAccesosRapidosAbrenRutasValidas() throws {
+        let accesos = try XCTUnwrap(
+            Bundle.main.object(forInfoDictionaryKey: "UIApplicationShortcutItems") as? [[String: Any]]
+        )
+        XCTAssertFalse(accesos.isEmpty)
+        let politicaDeLaApp = NavigationPolicy(hostPortal: AppConfig.hostPortal)
+        for acceso in accesos {
+            let ruta = (acceso["UIApplicationShortcutItemUserInfo"] as? [String: Any])?["ruta"] as? String
+            XCTAssertNotNil(politicaDeLaApp.urlParaRuta(ruta), "Ruta no válida: \(ruta ?? "nil")")
+        }
+    }
 }

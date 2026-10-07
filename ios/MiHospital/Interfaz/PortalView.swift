@@ -30,6 +30,14 @@ struct PortalView: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
 
+            if let progreso = portal.progresoDocumento {
+                TarjetaDocumento(progreso: progreso) {
+                    portal.cancelarDocumento()
+                }
+                .frame(maxHeight: .infinity, alignment: .bottom)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+
             if portal.estado == .sinConexion || portal.estado == .error {
                 SinConexionView(sinRed: portal.estado == .sinConexion) {
                     portal.reintentar()
@@ -50,6 +58,7 @@ struct PortalView: View {
         .animation(.easeOut(duration: 0.2), value: portal.cargando)
         .animation(.easeOut(duration: 0.2), value: portal.estado)
         .animation(.spring(response: 0.4, dampingFraction: 0.85), value: portal.hayRed)
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: portal.progresoDocumento == nil)
         .sheet(isPresented: $portal.mostrarBienvenida) {
             BienvenidaView()
                 .environmentObject(portal)
@@ -118,6 +127,47 @@ struct PortadaView: View {
             guard !Task.isCancelled else { return }
             withAnimation { espera = .muyLenta }
         }
+    }
+}
+
+/// Mientras se descarga una receta, un resultado o un adjunto: el paciente ve
+/// que algo pasa y puede cancelarlo. Al terminar se abre en Quick Look.
+struct TarjetaDocumento: View {
+    let progreso: Double
+    let cancelar: () -> Void
+
+    var body: some View {
+        HStack(spacing: 14) {
+            IconoEnCuadro(sistema: "doc.text.fill", lado: 44)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Abriendo el documento…")
+                    .font(.outfit(.bold, 16, como: .headline))
+                    .foregroundColor(.hglcNavy)
+                // Sin tamaño conocido (el servidor no lo dice) la barra se mueve sola.
+                Group {
+                    if progreso > 0 {
+                        ProgressView(value: min(progreso, 1))
+                    } else {
+                        ProgressView(value: nil as Double?)
+                    }
+                }
+                .progressViewStyle(.linear)
+                .tint(.hglcVerde)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button("Cancelar", action: cancelar)
+                .font(.outfit(.semiBold, 15, como: .subheadline))
+                .foregroundColor(.hglcNavy)
+                .frame(minHeight: 44)
+        }
+        .tarjeta(relleno: 16)
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+        .frame(maxWidth: Medidas.anchoMaximo)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 12)
+        .accessibilityElement(children: .contain)
     }
 }
 
