@@ -17,6 +17,9 @@ require 'xcodeproj'
 RAIZ = __dir__
 RUTA_PROYECTO = File.join(RAIZ, 'MiHospital.xcodeproj')
 DESPLIEGUE = '16.0'
+# El XCTest de Xcode reciente está hecho para iOS 17: con 16.0 las pruebas
+# avisan al enlazar. Solo afecta a las pruebas; la app sigue en iOS 16.
+DESPLIEGUE_PRUEBAS = '17.0'
 
 RECURSOS = %w[.xcassets .js .xcprivacy].freeze
 NO_COPIAR = %w[Info.plist .entitlements .xcconfig .md].freeze
@@ -30,7 +33,7 @@ proyecto.root_object.attributes['LastUpgradeCheck'] = '1600'
 proyecto.root_object.attributes['ORGANIZATIONNAME'] = 'Hospital General Las Colinas'
 
 app = proyecto.new_target(:application, 'MiHospital', :ios, DESPLIEGUE, nil, :swift)
-pruebas = proyecto.new_target(:unit_test_bundle, 'MiHospitalTests', :ios, DESPLIEGUE, nil, :swift)
+pruebas = proyecto.new_target(:unit_test_bundle, 'MiHospitalTests', :ios, DESPLIEGUE_PRUEBAS, nil, :swift)
 pruebas.add_dependency(app)
 
 # La gema enlaza Foundation.framework con una ruta del SDK que lleva número de
@@ -114,7 +117,7 @@ pruebas.build_configurations.each do |c|
     'BUNDLE_LOADER' => '$(TEST_HOST)',
     'CODE_SIGN_STYLE' => 'Automatic',
     'GENERATE_INFOPLIST_FILE' => 'YES',
-    'IPHONEOS_DEPLOYMENT_TARGET' => DESPLIEGUE,
+    'IPHONEOS_DEPLOYMENT_TARGET' => DESPLIEGUE_PRUEBAS,
     'PRODUCT_BUNDLE_IDENTIFIER' => '$(HGLC_BUNDLE_ID).tests',
     'PRODUCT_NAME' => '$(TARGET_NAME)',
     'SWIFT_STRICT_CONCURRENCY' => 'minimal',
