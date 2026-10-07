@@ -73,7 +73,7 @@ enum Descargas {
 /// mientras está en pantalla (Quick Look no retiene su fuente de datos) y borra
 /// el archivo al cerrarse.
 @MainActor
-final class VistaPreviaDocumento: NSObject, QLPreviewControllerDataSource, QLPreviewControllerDelegate {
+final class VistaPreviaDocumento: NSObject, QLPreviewControllerDataSource, @preconcurrency QLPreviewControllerDelegate {
 
     private let archivo: URL
     private var retencion: VistaPreviaDocumento?
