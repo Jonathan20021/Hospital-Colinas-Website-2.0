@@ -24,6 +24,9 @@ Requiere Xcode 15 o más reciente. La app es para iOS 16 o más reciente.
    caracteres, en developer.apple.com › Membership) o elegir el equipo en
    *Signing & Capabilities*. Xcode crea solo el App ID con *Push Notifications*
    y *Data Protection*.
+   Con un Apple ID gratis (*Personal Team*) la app se firma sin avisos push
+   (Apple no los permite en esas cuentas). Con la cuenta de pago, cambiar
+   `HGLC_ENTITLEMENTS` en el mismo `.xcconfig` a `Support/MiHospital.entitlements`.
    El identificador es `com.colinashospital.paciente`; si ya existe en otra
    cuenta, cambiarlo en el mismo `.xcconfig` (y en `APNS_TOPIC` del servidor).
 3. **⌘R** en un simulador o en un iPhone conectado. **⌘U** corre las pruebas.

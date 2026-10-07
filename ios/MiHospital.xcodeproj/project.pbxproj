@@ -29,7 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		63B9EF92DBCB36E8374F07E74C4C4F89 /* PBXContainerItemProxy */ = {
+		47F0AFC5C3F1BD2328987977172AF402 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = D45E1D755C9C6BAB9633004A5F2FBB17 /* Project object */;
 			proxyType = 1;
@@ -41,15 +41,16 @@
 /* Begin PBXFileReference section */
 		04654D1F34C3B12F0E59A6EBFF038E47 /* MiHospitalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiHospitalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C7B7EDB33DA1FB2CB9364CFB9B48648 /* BienvenidaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BienvenidaView.swift; sourceTree = "<group>"; };
+		22FF48A2BCF67194657844D54AD36925 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F2F8657C025359C203199260F9A6A3F /* Documentos.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Documentos.swift; sourceTree = "<group>"; };
 		38DB7F148D768B3B857F538B7D485F31 /* llamada-proxy.js */ = {isa = PBXFileReference; includeInIndex = 1; path = "llamada-proxy.js"; sourceTree = "<group>"; };
 		4178066D227A967073612DA84970F741 /* puente.js */ = {isa = PBXFileReference; includeInIndex = 1; path = puente.js; sourceTree = "<group>"; };
-		503B0772B264C822267CA64F33530F57 /* MiHospital.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = MiHospital.entitlements; sourceTree = "<group>"; };
+		46DFE6F16AB9658CD7BE0CE1DC629CF8 /* MiHospital-basico.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = "MiHospital-basico.entitlements"; sourceTree = "<group>"; };
 		55AE3DFAC2BF4EEDD16015D38521C481 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		64FAF329D8B3BD2759500464E5C4514F /* PushManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
+		666626BA8BBFE7F01A1BEA7178AA7CD0 /* MiHospital.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = MiHospital.entitlements; sourceTree = "<group>"; };
 		70C9D915C7D647E360F70DECE59ADA6F /* NavigationPolicyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NavigationPolicyTests.swift; sourceTree = "<group>"; };
 		972BD7B3A47939BA18A89424CD15D077 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9A8F35BED45FEB82F7DF7E89CFA208D2 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9B6EB58A347A6232271A4249765AF3CC /* MiHospital.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiHospital.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A05F805917BF9E76D4CC6F0B7CAADFCC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		B066E2B459788BC8703A881F34FE694E /* SinConexionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SinConexionView.swift; sourceTree = "<group>"; };
@@ -131,7 +132,7 @@
 				1A95997FD3FFD08430C68BD399CA5748 /* MiHospital */,
 				DD8B73112DBA9A53A9BA76DAD1A38DDB /* MiHospitalTests */,
 				30F4A55C5C6AADA2A1149EAEC2D00F40 /* Products */,
-				BCBC5B9DB4D52C43BF5025D496D30A2C /* Support */,
+				79B521E2B4C193F156680979959CE1AA /* Support */,
 			);
 			sourceTree = "<group>";
 		};
@@ -154,6 +155,17 @@
 			);
 			name = Resources;
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		79B521E2B4C193F156680979959CE1AA /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				22FF48A2BCF67194657844D54AD36925 /* Info.plist */,
+				666626BA8BBFE7F01A1BEA7178AA7CD0 /* MiHospital.entitlements */,
+				46DFE6F16AB9658CD7BE0CE1DC629CF8 /* MiHospital-basico.entitlements */,
+			);
+			name = Support;
+			path = Support;
 			sourceTree = "<group>";
 		};
 		9ECDB40CE0E44F698F3B4CC1590C5E97 /* Interfaz */ = {
@@ -192,16 +204,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		BCBC5B9DB4D52C43BF5025D496D30A2C /* Support */ = {
-			isa = PBXGroup;
-			children = (
-				9A8F35BED45FEB82F7DF7E89CFA208D2 /* Info.plist */,
-				503B0772B264C822267CA64F33530F57 /* MiHospital.entitlements */,
-			);
-			name = Support;
-			path = Support;
-			sourceTree = "<group>";
-		};
 		DD8B73112DBA9A53A9BA76DAD1A38DDB /* MiHospitalTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -225,7 +227,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				ACF75E08153DD2E1B5F5F1AA0466D5F1 /* PBXTargetDependency */,
+				78333A109E145F3096A1E7EAFB7AEDFD /* PBXTargetDependency */,
 			);
 			name = MiHospitalTests;
 			productName = MiHospitalTests;
@@ -334,11 +336,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		ACF75E08153DD2E1B5F5F1AA0466D5F1 /* PBXTargetDependency */ = {
+		78333A109E145F3096A1E7EAFB7AEDFD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MiHospital;
 			target = 77E4922641DC266F9D9BFF69B17FD6F7 /* MiHospital */;
-			targetProxy = 63B9EF92DBCB36E8374F07E74C4C4F89 /* PBXContainerItemProxy */;
+			targetProxy = 47F0AFC5C3F1BD2328987977172AF402 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -458,14 +460,14 @@
 			};
 			name = Debug;
 		};
-		437816932CDD752EB49AD4E007DE22A4 /* Debug */ = {
+		43B9EB98DE66BCDB48402D913C7107A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = Support/MiHospital.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(HGLC_ENTITLEMENTS)";
 				CODE_SIGN_STYLE = Automatic;
 				ENABLE_PREVIEWS = NO;
 				ENABLE_TESTABILITY = YES;
@@ -483,6 +485,32 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		6F24113D7D60D759FA0D64D0EDEE658F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = "$(HGLC_ENTITLEMENTS)";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Support/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
 		};
 		7281AC481DD04A68A8913A93BBB86CBA /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -502,32 +530,6 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MiHospital.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MiHospital";
 			};
 			name = Debug;
-		};
-		B43B4D4BCAA96FBB30A9638046D99BCE /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				CODE_SIGN_ENTITLEMENTS = Support/MiHospital.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				ENABLE_PREVIEWS = NO;
-				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = Support/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_STRICT_CONCURRENCY = minimal;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		E9973A139958014EE950D194FE02E743 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -573,8 +575,8 @@
 		638A46C54C0C47292687EF0DB3EE4531 /* Build configuration list for PBXNativeTarget "MiHospital" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				437816932CDD752EB49AD4E007DE22A4 /* Debug */,
-				B43B4D4BCAA96FBB30A9638046D99BCE /* Release */,
+				43B9EB98DE66BCDB48402D913C7107A7 /* Debug */,
+				6F24113D7D60D759FA0D64D0EDEE658F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -75,6 +75,7 @@ agregar_carpeta(principal.new_group('MiHospitalTests', 'MiHospitalTests'), File.
 soporte = principal.new_group('Support', 'Support')
 soporte.new_file(File.join(RAIZ, 'Support', 'Info.plist'))
 soporte.new_file(File.join(RAIZ, 'Support', 'MiHospital.entitlements'))
+soporte.new_file(File.join(RAIZ, 'Support', 'MiHospital-basico.entitlements'))
 
 config = principal.new_group('Config', 'Config')
 xcconfig = config.new_file(File.join(RAIZ, 'Config', 'Base.xcconfig'))
@@ -90,7 +91,7 @@ app.build_configurations.each do |c|
   ajustes.merge!(
     'ASSETCATALOG_COMPILER_APPICON_NAME' => 'AppIcon',
     'ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME' => 'AccentColor',
-    'CODE_SIGN_ENTITLEMENTS' => 'Support/MiHospital.entitlements',
+    'CODE_SIGN_ENTITLEMENTS' => '$(HGLC_ENTITLEMENTS)',
     'CODE_SIGN_STYLE' => 'Automatic',
     'ENABLE_PREVIEWS' => 'NO',
     'GENERATE_INFOPLIST_FILE' => 'NO',

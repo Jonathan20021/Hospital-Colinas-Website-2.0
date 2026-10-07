@@ -16,3 +16,9 @@ CURRENT_PROJECT_VERSION = 1
 // Servidor del portal: SOLO el host. Nada de "https://": en un .xcconfig
 // las dos barras empiezan un comentario y cortarían el valor.
 HGLC_PORTAL_HOST = colinashospital.com
+
+// Permisos de la app. Con un Apple ID gratis ("Personal Team") Apple no
+// permite avisos push: se firma con el archivo básico y la app funciona sin
+// avisos. Con la cuenta de pago de Apple Developer, cambiar a:
+//   HGLC_ENTITLEMENTS = Support/MiHospital.entitlements
+HGLC_ENTITLEMENTS = Support/MiHospital-basico.entitlements
