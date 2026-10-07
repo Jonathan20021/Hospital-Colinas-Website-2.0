@@ -26,6 +26,11 @@
 		F2AE5E8CB29C938B93C14C58B14E8CFC /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FAF329D8B3BD2759500464E5C4514F /* PushManager.swift */; };
 		F36A13216DD6C221163A8C892E9278EB /* PortalWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE53A89635C478A8CFACB4C14BE6E87E /* PortalWebView.swift */; };
 		FDC6F3281BE6BDFACEB3039D1557FDED /* puente.js in Resources */ = {isa = PBXBuildFile; fileRef = 4178066D227A967073612DA84970F741 /* puente.js */; };
+		5C46911EFF144B25AB31A24F /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = F45E38D0004E7595063305C9 /* OFL.txt */; };
+		2D34ECC7C0DCEABC337C6001 /* Outfit-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3E55A953D683CC2A9CC8DE13 /* Outfit-Bold.ttf */; };
+		20BA552B9C0793276CC65335 /* Outfit-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5976D658FB761193F80B6A1D /* Outfit-ExtraBold.ttf */; };
+		618A4DC568D2E3C8A8EDC949 /* Outfit-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E0DEBA5553E4C9E4D9793277 /* Outfit-SemiBold.ttf */; };
+		84512EC807D52113435F7F81 /* Estilo.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D6522DDC81152450287135 /* Estilo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +69,11 @@
 		EB702506F36E8D6D7298EABE28827097 /* PortalView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PortalView.swift; sourceTree = "<group>"; };
 		EE88A43ED03E8B6D10B26C33C88D3FCB /* PortalModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PortalModel.swift; sourceTree = "<group>"; };
 		F4C996657ADF74493EDF201496C151F6 /* CubiertaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CubiertaView.swift; sourceTree = "<group>"; };
+		F45E38D0004E7595063305C9 /* OFL.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = OFL.txt; sourceTree = "<group>"; };
+		3E55A953D683CC2A9CC8DE13 /* Outfit-Bold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Outfit-Bold.ttf; sourceTree = "<group>"; };
+		5976D658FB761193F80B6A1D /* Outfit-ExtraBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Outfit-ExtraBold.ttf; sourceTree = "<group>"; };
+		E0DEBA5553E4C9E4D9793277 /* Outfit-SemiBold.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = Outfit-SemiBold.ttf; sourceTree = "<group>"; };
+		E8D6522DDC81152450287135 /* Estilo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Estilo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,10 +155,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		216D0A32F08B3F04B8CDC0FB /* Fuentes */ = {
+			isa = PBXGroup;
+			children = (
+				F45E38D0004E7595063305C9 /* OFL.txt */,
+				3E55A953D683CC2A9CC8DE13 /* Outfit-Bold.ttf */,
+				5976D658FB761193F80B6A1D /* Outfit-ExtraBold.ttf */,
+				E0DEBA5553E4C9E4D9793277 /* Outfit-SemiBold.ttf */,
+			);
+			name = Fuentes;
+			path = Fuentes;
+			sourceTree = "<group>";
+		};
 		677B7B6F06EDE3316006D0EF74720B9C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				E4ED3F90DA9D46B5628AFD0C4187971C /* Assets.xcassets */,
+				216D0A32F08B3F04B8CDC0FB /* Fuentes */,
 				38DB7F148D768B3B857F538B7D485F31 /* llamada-proxy.js */,
 				A05F805917BF9E76D4CC6F0B7CAADFCC /* PrivacyInfo.xcprivacy */,
 				4178066D227A967073612DA84970F741 /* puente.js */,
@@ -173,6 +196,7 @@
 			children = (
 				0C7B7EDB33DA1FB2CB9364CFB9B48648 /* BienvenidaView.swift */,
 				F4C996657ADF74493EDF201496C151F6 /* CubiertaView.swift */,
+				E8D6522DDC81152450287135 /* Estilo.swift */,
 				EB702506F36E8D6D7298EABE28827097 /* PortalView.swift */,
 				B066E2B459788BC8703A881F34FE694E /* SinConexionView.swift */,
 			);
@@ -298,6 +322,10 @@
 				AA06C1BDDEA39C93DFB62E6E519206F4 /* llamada-proxy.js in Resources */,
 				81BAFAA896B84F5AD485C9C14F69EB93 /* PrivacyInfo.xcprivacy in Resources */,
 				FDC6F3281BE6BDFACEB3039D1557FDED /* puente.js in Resources */,
+				5C46911EFF144B25AB31A24F /* OFL.txt in Resources */,
+				2D34ECC7C0DCEABC337C6001 /* Outfit-Bold.ttf in Resources */,
+				20BA552B9C0793276CC65335 /* Outfit-ExtraBold.ttf in Resources */,
+				618A4DC568D2E3C8A8EDC949 /* Outfit-SemiBold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,6 +347,7 @@
 				49347702BFED90EE5AA708558F147733 /* NavigationPolicy.swift in Sources */,
 				ECE4CE6C5681C4493CF6B586AEF189D7 /* PortalModel.swift in Sources */,
 				B4787DCD7A5712E12D3A80352808FC3C /* PortalView.swift in Sources */,
+				84512EC807D52113435F7F81 /* Estilo.swift in Sources */,
 				F36A13216DD6C221163A8C892E9278EB /* PortalWebView.swift in Sources */,
 				F2AE5E8CB29C938B93C14C58B14E8CFC /* PushManager.swift in Sources */,
 				18A596A4F5AD6D79B5CB74A321E512BF /* SinConexionView.swift in Sources */,

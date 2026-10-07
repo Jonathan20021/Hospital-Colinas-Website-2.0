@@ -1,49 +1,71 @@
 import SwiftUI
 
 /// Lo que se ve en la ventana de privacidad: la portada sola (escudo) o, si la
-/// app está bloqueada, la portada con el botón para desbloquear.
+/// app está bloqueada, la portada con el panel para desbloquear.
 struct CubiertaView: View {
 
     @ObservedObject var bloqueo: AppLock
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .bottom) {
             PortadaView()
 
             if bloqueo.bloqueada {
-                VStack(spacing: 14) {
-                    Spacer()
-                    Text("Tu portal está protegido")
-                        .font(.title3.weight(.semibold))
-                        .foregroundColor(.hglcNavy)
-                    Text("Desbloquéalo con \(bloqueo.nombreBiometria) para ver tu información médica.")
-                        .font(.callout)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                    Button {
-                        Task { await bloqueo.desbloquear() }
-                    } label: {
-                        Label("Desbloquear", systemImage: bloqueo.iconoBiometria)
-                            .font(.headline)
-                            .frame(maxWidth: 260)
-                            .padding(.vertical, 6)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(.hglcNavy)
-                    .padding(.top, 6)
+                PanelDeBloqueo(nombreBiometria: bloqueo.nombreBiometria,
+                               icono: bloqueo.iconoBiometria) {
+                    Task { await bloqueo.desbloquear() }
                 }
-                .padding(.horizontal, 32)
-                .padding(.bottom, 56)
-                .frame(maxWidth: 440)
-                .transition(.opacity)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeOut(duration: 0.2), value: bloqueo.bloqueada)
+        .animation(.spring(response: 0.4, dampingFraction: 0.9), value: bloqueo.bloqueada)
         .task(id: bloqueo.bloqueada) {
             // Al aparecer el bloqueo se pide Face ID sin tener que tocar nada.
             if bloqueo.bloqueada {
                 await bloqueo.desbloquear()
             }
         }
+    }
+}
+
+/// Panel inferior del bloqueo. El isotipo queda en el centro, en la misma
+/// posición que en el arranque, y el panel sube desde abajo.
+struct PanelDeBloqueo: View {
+
+    let nombreBiometria: String
+    let icono: String
+    let desbloquear: () -> Void
+
+    var body: some View {
+        VStack(spacing: 18) {
+            IconoEnCuadro(sistema: "lock.fill", lado: 52)
+
+            VStack(spacing: 8) {
+                Text("Tu portal está protegido")
+                    .font(.outfit(.extraBold, 22, como: .title3))
+                    .foregroundColor(.hglcNavy)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+                Text("Desbloquéalo con \(nombreBiometria) para ver tu información médica.")
+                    .font(.callout)
+                    .foregroundColor(.hglcTexto)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Button(action: desbloquear) {
+                Label("Desbloquear", systemImage: icono)
+            }
+            .buttonStyle(BotonPrincipal())
+            .padding(.top, 4)
+        }
+        .tarjeta(relleno: 24)
+        // El panel no se desplaza: con la letra más grande no cabría en
+        // pantalla. Hasta este tamaño se lee completo.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+        .frame(maxWidth: Medidas.anchoMaximo)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 12)
     }
 }

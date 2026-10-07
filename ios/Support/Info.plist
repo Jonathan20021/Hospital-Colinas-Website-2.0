@@ -36,6 +36,12 @@
 	<string>Si activas la protección, Face ID hace que solo tú puedas abrir el portal en este dispositivo.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Para guardar en tus fotos las imágenes del portal que tú decidas guardar.</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Outfit-SemiBold.ttf</string>
+		<string>Outfit-Bold.ttf</string>
+		<string>Outfit-ExtraBold.ttf</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

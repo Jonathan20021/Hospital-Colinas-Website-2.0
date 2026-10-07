@@ -21,7 +21,7 @@ DESPLIEGUE = '16.0'
 # avisan al enlazar. Solo afecta a las pruebas; la app sigue en iOS 16.
 DESPLIEGUE_PRUEBAS = '17.0'
 
-RECURSOS = %w[.xcassets .js .xcprivacy].freeze
+RECURSOS = %w[.xcassets .js .xcprivacy .ttf .txt].freeze
 NO_COPIAR = %w[Info.plist .entitlements .xcconfig .md].freeze
 
 FileUtils.rm_rf(RUTA_PROYECTO)

@@ -11,42 +11,97 @@ struct SinConexionView: View {
         ZStack {
             Color.hglcFondo.ignoresSafeArea()
 
-            VStack(spacing: 18) {
-                Image(systemName: sinRed ? "wifi.slash" : "exclamationmark.icloud")
-                    .font(.system(size: 44, weight: .semibold))
-                    .foregroundColor(.hglcNavy)
-                    .accessibilityHidden(true)
-
-                Text(sinRed ? "Sin conexión a internet" : "No pudimos abrir el portal")
-                    .font(.title3.weight(.semibold))
-                    .foregroundColor(.hglcNavy)
-                    .multilineTextAlignment(.center)
-
-                Text(sinRed
-                     ? "Revisa tu Wi‑Fi o tus datos móviles. La app vuelve a intentarlo sola cuando regrese la conexión."
-                     : "El servidor no respondió. Inténtalo de nuevo en unos minutos.")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-
-                Button(action: reintentar) {
-                    Label("Reintentar", systemImage: "arrow.clockwise")
-                        .font(.headline)
-                        .frame(maxWidth: 260)
-                        .padding(.vertical, 6)
+            GeometryReader { geometria in
+                ScrollView {
+                    contenido
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 32)
+                        .frame(maxWidth: Medidas.anchoMaximo)
+                        .frame(maxWidth: .infinity, minHeight: geometria.size.height)
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(.hglcNavy)
+                .rebotarSoloSiNoCabe()
+            }
+        }
+    }
 
-                Link(destination: AppConfig.telefonoMarcable) {
-                    Label("Llamar al hospital · \(AppConfig.telefonoVisible)", systemImage: "phone.fill")
-                        .font(.callout.weight(.semibold))
+    private var contenido: some View {
+        VStack(spacing: 28) {
+            Image("LaunchMark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 96)
+                .accessibilityLabel("Hospital General Las Colinas")
+
+            VStack(spacing: 22) {
+                IconoEnCuadro(sistema: sinRed ? "wifi.slash" : "exclamationmark.icloud", lado: 64)
+
+                VStack(spacing: 10) {
+                    Text(sinRed ? "Sin conexión a internet" : "No pudimos abrir el portal")
+                        .font(.hglcTitulo)
+                        .foregroundColor(.hglcNavy)
+                        .multilineTextAlignment(.center)
+                        .accessibilityAddTraits(.isHeader)
+
+                    Text(sinRed
+                         ? "Revisa tu Wi‑Fi o tus datos móviles."
+                         : "El servidor no respondió. Inténtalo de nuevo en unos minutos.")
+                        .font(.callout)
+                        .foregroundColor(.hglcTexto)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
-                .tint(.hglcVerde)
+
+                if sinRed {
+                    // La app reintenta sola al volver la red: se dice, para que
+                    // el paciente no sienta que tiene que hacer algo.
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(.hglcVerdeFuerte)
+                        Text("Esperando la conexión…")
+                            .font(.footnote.weight(.medium))
+                            .foregroundColor(.hglcVerdeFuerte)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(Capsule().fill(Color.hglcVerdeSuave))
+                    .accessibilityElement(children: .combine)
+                }
+
+                VStack(spacing: 12) {
+                    Button(action: reintentar) {
+                        Label("Reintentar", systemImage: "arrow.clockwise")
+                    }
+                    .buttonStyle(BotonPrincipal())
+
+                    Link(destination: AppConfig.telefonoMarcable) {
+                        Label("Llamar al hospital", systemImage: "phone.fill")
+                    }
+                    .buttonStyle(BotonSecundario())
+                    .accessibilityHint("Llama al \(AppConfig.telefonoVisible)")
+
+                    Text(AppConfig.telefonoVisible)
+                        .font(.outfit(.semiBold, 15, como: .footnote))
+                        .foregroundColor(.hglcTexto)
+                        .monospacedDigit()
+                        .accessibilityHidden(true)
+                }
                 .padding(.top, 4)
             }
-            .padding(32)
-            .frame(maxWidth: 440)
+            .tarjeta(relleno: 28)
+        }
+    }
+}
+
+extension View {
+    /// Sin rebote si el contenido cabe (iOS 16.4+); con letra grande se
+    /// puede desplazar.
+    @ViewBuilder
+    func rebotarSoloSiNoCabe() -> some View {
+        if #available(iOS 16.4, *) {
+            scrollBounceBehavior(.basedOnSize)
+        } else {
+            self
         }
     }
 }

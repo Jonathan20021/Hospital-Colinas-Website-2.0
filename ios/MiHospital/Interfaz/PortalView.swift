@@ -102,9 +102,3 @@ struct BarraDeProgreso: View {
         .accessibilityHidden(true)
     }
 }
-
-extension Color {
-    static let hglcNavy = Color("Navy")
-    static let hglcVerde = Color("Verde")
-    static let hglcFondo = Color("Fondo")
-}

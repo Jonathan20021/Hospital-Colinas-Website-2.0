@@ -33,6 +33,18 @@ Requiere Xcode 15 o más reciente. La app es para iOS 16 o más reciente.
 
 Para otro servidor (pruebas), cambiar `HGLC_PORTAL_HOST` en el `.xcconfig`.
 
+### Ver cada pantalla nativa
+
+En depuración, la app abre una pantalla sola con `-pantalla` (`sinConexion`,
+`error`, `bloqueo`, `bienvenida`, `portada`), sin tener que cortar la red ni
+activar Face ID:
+
+```
+xcrun simctl launch --terminate-running-process booted com.colinashospital.paciente -pantalla bloqueo
+```
+
+En Xcode: *Product › Scheme › Edit Scheme › Run › Arguments*.
+
 ### Probar avisos sin servidor
 
 Arrastrar un archivo de `ios/Pruebas/` sobre el simulador, o:
@@ -114,6 +126,8 @@ Al archivar, Xcode firma con `aps-environment = production` y la app informa
 | `Push/PushManager.swift` | Permiso y token del dispositivo. |
 | `Seguridad/AppLock.swift` | Face ID, escudo y la ventana que lo pone por encima de todo. |
 | `Interfaz/` | Portada, sin conexión, bloqueo, bienvenida. |
+| `Interfaz/Estilo.swift` | Colores, letra Outfit (la del portal), botones y tarjetas de las pantallas nativas. |
+| `Resources/Fuentes/` | Outfit 600/700/800 en TTF, sacadas de `assets/fonts/` del sitio (licencia OFL). |
 | `generar-proyecto.rb` | Regenera `MiHospital.xcodeproj` (gema `xcodeproj`). |
 
 Del lado web, el portal reconoce la app por `window.HGLCApp` (lo inyecta

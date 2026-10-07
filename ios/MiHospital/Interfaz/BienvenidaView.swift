@@ -15,70 +15,97 @@ struct BienvenidaView: View {
     @State private var activandoAvisos = false
     @State private var activandoBloqueo = false
 
+    private var algoActivado: Bool {
+        (ofrecerAvisos && push.permiso == .concedido) || (ofrecerBloqueo && bloqueo.activo)
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Tu portal, ahora como app")
-                    .font(.title2.bold())
-                    .foregroundColor(.hglcNavy)
-                Text("Dos ajustes opcionales. Puedes cambiarlos cuando quieras en Mi perfil.")
-                    .font(.callout)
-                    .foregroundColor(.secondary)
-            }
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    encabezado
 
-            if ofrecerAvisos {
-                Opcion(
-                    icono: "bell.badge.fill",
-                    titulo: "Avisos importantes",
-                    texto: "Cuando tu médico te escriba o se acerque una cita, sin mostrar detalles médicos en la pantalla bloqueada.",
-                    hecho: push.permiso == .concedido,
-                    textoHecho: "Avisos activados",
-                    nota: push.permiso == .denegado ? "Puedes activarlos luego en Ajustes del iPhone." : nil,
-                    boton: "Activar avisos",
-                    ocupado: activandoAvisos
-                ) {
-                    activandoAvisos = true
-                    _ = await portal.activarPush()
-                    activandoAvisos = false
+                    VStack(spacing: 12) {
+                        if ofrecerAvisos {
+                            Opcion(
+                                icono: "bell.badge.fill",
+                                titulo: "Avisos importantes",
+                                texto: "Cuando tu médico te escriba o se acerque una cita, sin mostrar detalles médicos en la pantalla bloqueada.",
+                                hecho: push.permiso == .concedido,
+                                textoHecho: "Avisos activados",
+                                nota: push.permiso == .denegado ? "Puedes activarlos luego en Ajustes del iPhone." : nil,
+                                boton: "Activar avisos",
+                                ocupado: activandoAvisos
+                            ) {
+                                activandoAvisos = true
+                                _ = await portal.activarPush()
+                                activandoAvisos = false
+                            }
+                        }
+
+                        if ofrecerBloqueo {
+                            Opcion(
+                                icono: bloqueo.iconoBiometria,
+                                titulo: "Protege tu información",
+                                texto: "Pide \(bloqueo.nombreBiometria) al abrir la app, para que nadie más vea tus datos si otra persona toma tu teléfono.",
+                                hecho: bloqueo.activo,
+                                textoHecho: "Protección activada",
+                                nota: nil,
+                                boton: "Activar protección",
+                                ocupado: activandoBloqueo
+                            ) {
+                                activandoBloqueo = true
+                                _ = await bloqueo.activar()
+                                activandoBloqueo = false
+                            }
+                        }
+                    }
                 }
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
+                .padding(.bottom, 16)
             }
+            .rebotarSoloSiNoCabe()
 
-            if ofrecerBloqueo {
-                Opcion(
-                    icono: bloqueo.iconoBiometria,
-                    titulo: "Protege tu información",
-                    texto: "Pide \(bloqueo.nombreBiometria) al abrir la app, para que nadie más vea tus datos si otra persona toma tu teléfono.",
-                    hecho: bloqueo.activo,
-                    textoHecho: "Protección activada",
-                    nota: nil,
-                    boton: "Activar protección",
-                    ocupado: activandoBloqueo
-                ) {
-                    activandoBloqueo = true
-                    _ = await bloqueo.activar()
-                    activandoBloqueo = false
-                }
-            }
-
-            Spacer(minLength: 0)
-
+            // Fijo abajo: con letra grande el contenido se desplaza y el botón
+            // sigue a mano.
             Button {
                 cerrar()
             } label: {
-                Text("Listo")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
+                Text(algoActivado ? "Continuar" : "Ahora no")
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.hglcNavy)
+            .buttonStyle(algoActivado ? AnyButtonStyle(BotonPrincipal()) : AnyButtonStyle(BotonSecundario()))
+            .padding(.horizontal, 24)
+            .padding(.top, 8)
+            .padding(.bottom, 16)
         }
-        .padding(24)
-        .presentationDetents([.medium, .large])
+        .background(Color.hglcFondo.ignoresSafeArea())
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
         .onAppear {
             // Se fija al abrir: al activar algo, su fila se queda y muestra "activado".
             ofrecerAvisos = push.permiso == .pendiente
             ofrecerBloqueo = bloqueo.disponible && !bloqueo.activo
+        }
+    }
+
+    private var encabezado: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Image("LaunchMark")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 72)
+                .accessibilityHidden(true)
+                .padding(.bottom, 6)
+            Text("Tu portal, ahora como app")
+                .font(.outfit(.extraBold, 30, como: .title))
+                .foregroundColor(.hglcNavy)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+            Text("Dos ajustes opcionales. Puedes cambiarlos cuando quieras en Mi perfil.")
+                .font(.callout)
+                .foregroundColor(.hglcTexto)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
@@ -96,44 +123,62 @@ private struct Opcion: View {
 
     var body: some View {
         HStack(alignment: .top, spacing: 14) {
-            Image(systemName: icono)
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundColor(.hglcVerde)
-                .frame(width: 32)
-                .accessibilityHidden(true)
+            IconoEnCuadro(sistema: icono, color: .hglcVerdeFuerte, fondo: .hglcVerdeSuave, lado: 44)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text(titulo)
-                    .font(.headline)
+                    .font(.hglcSubtitulo)
                     .foregroundColor(.hglcNavy)
                 Text(texto)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.hglcTexto)
                     .fixedSize(horizontal: false, vertical: true)
 
-                if hecho {
-                    Label(textoHecho, systemImage: "checkmark.circle.fill")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(.hglcVerde)
-                } else if let nota {
-                    Text(nota)
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                } else {
-                    Button {
-                        Task { await accion() }
-                    } label: {
-                        if ocupado {
-                            ProgressView()
-                        } else {
-                            Text(boton).font(.subheadline.weight(.semibold))
+                Group {
+                    if hecho {
+                        Label(textoHecho, systemImage: "checkmark.circle.fill")
+                            .font(.outfit(.bold, 15, como: .subheadline))
+                            .foregroundColor(.hglcVerdeFuerte)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Capsule().fill(Color.hglcVerdeSuave))
+                            .transition(.scale(scale: 0.9).combined(with: .opacity))
+                    } else if let nota {
+                        Text(nota)
+                            .font(.footnote)
+                            .foregroundColor(.hglcTexto)
+                    } else {
+                        Button {
+                            Task { await accion() }
+                        } label: {
+                            ZStack {
+                                Text(boton).opacity(ocupado ? 0 : 1)
+                                if ocupado { ProgressView().tint(.hglcNavy) }
+                            }
                         }
+                        .buttonStyle(BotonSecundario(compacto: true))
+                        .disabled(ocupado)
                     }
-                    .buttonStyle(.bordered)
-                    .tint(.hglcNavy)
-                    .disabled(ocupado)
                 }
+                .padding(.top, 6)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .tarjeta(relleno: 18)
+        .animation(.spring(response: 0.35, dampingFraction: 0.8), value: hecho)
+        .accessibilityElement(children: .contain)
+    }
+}
+
+/// Para cambiar de estilo de botón según el estado.
+struct AnyButtonStyle: ButtonStyle {
+    private let cuerpo: (Configuration) -> AnyView
+
+    init<S: ButtonStyle>(_ estilo: S) {
+        cuerpo = { AnyView(estilo.makeBody(configuration: $0)) }
+    }
+
+    func makeBody(configuration: Configuration) -> some View {
+        cuerpo(configuration)
     }
 }
