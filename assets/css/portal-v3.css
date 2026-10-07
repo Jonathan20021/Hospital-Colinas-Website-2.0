@@ -2566,19 +2566,21 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
 }
 
 /* ============================================================
-   Login del paciente — versión renovada.
-   Todos los tamaños: campo con ícono, separador y las dos formas
-   alternativas de entrar como filas (ícono, título, explicación,
-   flecha) en vez de enlaces sueltos.
+   Páginas de acceso del paciente (login, registro, recuperar y
+   restablecer contraseña, verificar correo): todas las que usan
+   portal_auth_intro() dentro de .portal-auth-shell.
+   Todos los tamaños: campos con ícono, separador y las acciones
+   alternativas como filas (ícono, título, explicación, flecha) en
+   vez de enlaces sueltos.
    Móvil (≤900px, también la app de iOS): el panel navy de
    bienvenida, que antes se ocultaba, pasa a ser una cabecera de
    ancho completo y la tarjeta del formulario se monta encima.
    ============================================================ */
-.portal-page-login .pa-input-wrap {
+.portal-auth-shell .pa-input-wrap {
     position: relative;
 }
 
-.portal-page-login .pa-input-wrap > svg {
+.portal-auth-shell .pa-input-wrap > svg {
     position: absolute;
     top: 50%;
     left: 16px;
@@ -2590,15 +2592,15 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
     transition: color .16s var(--portal-ease);
 }
 
-.portal-page-login .pa-input-wrap .pa-input {
+.portal-auth-shell .pa-input-wrap :is(.pa-input, .form-input) {
     padding-left: 48px !important;
 }
 
-.portal-page-login .pa-input-wrap:focus-within > svg {
+.portal-auth-shell .pa-input-wrap:focus-within > svg {
     color: var(--portal-navy);
 }
 
-.portal-page-login .pa-auth-or {
+.portal-auth-shell .pa-auth-or {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -2609,15 +2611,15 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
     letter-spacing: .02em;
 }
 
-.portal-page-login .pa-auth-or::before,
-.portal-page-login .pa-auth-or::after {
+.portal-auth-shell .pa-auth-or::before,
+.portal-auth-shell .pa-auth-or::after {
     content: "";
     flex: 1;
     height: 1px;
     background: var(--portal-line);
 }
 
-.portal-page-login .portal-auth-password {
+.portal-auth-shell .portal-auth-password {
     margin-top: 10px;
     border: 1px solid var(--portal-line);
     border-radius: var(--portal-radius);
@@ -2626,27 +2628,27 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
     transition: border-color .16s var(--portal-ease), box-shadow .16s var(--portal-ease);
 }
 
-.portal-page-login .portal-auth-password[open] {
+.portal-auth-shell .portal-auth-password[open] {
     border-color: #c9cfe4;
     box-shadow: var(--portal-shadow-raised);
 }
 
-.portal-page-login .portal-auth-password > .pa-hint,
-.portal-page-login .portal-auth-password > .portal-password-form {
+.portal-auth-shell .portal-auth-password > .pa-hint,
+.portal-auth-shell .portal-auth-password > .portal-password-form {
     margin-left: 16px;
     margin-right: 16px;
 }
 
-.portal-page-login .portal-auth-password > .portal-password-form {
+.portal-auth-shell .portal-auth-password > .portal-password-form {
     margin-top: 4px;
     padding-bottom: 16px;
 }
 
-.portal-page-login .portal-auth-password > .pa-hint {
+.portal-auth-shell .portal-auth-password > .pa-hint {
     margin-top: 0;
 }
 
-.portal-page-login summary.pa-auth-option {
+.portal-auth-shell .pa-auth-option {
     display: flex;
     align-items: center;
     gap: 14px;
@@ -2661,15 +2663,15 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
     -webkit-tap-highlight-color: transparent;
 }
 
-.portal-page-login summary.pa-auth-option::-webkit-details-marker {
+.portal-auth-shell .pa-auth-option::-webkit-details-marker {
     display: none;
 }
 
-.portal-page-login summary.pa-auth-option:hover {
+.portal-auth-shell .pa-auth-option:hover {
     background: var(--portal-surface-muted);
 }
 
-.portal-page-login summary.pa-auth-option:focus-visible {
+.portal-auth-shell .pa-auth-option:focus-visible {
     outline: none;
     box-shadow: var(--portal-focus);
 }
@@ -2724,7 +2726,7 @@ details[open] > summary .pa-auth-option-chevron {
     transform: rotate(180deg);
 }
 
-.portal-page-login .portal-auth-register {
+.portal-auth-shell .portal-auth-register {
     margin-top: 22px;
 }
 
@@ -2749,20 +2751,20 @@ details[open] > summary .pa-auth-option-chevron {
 }
 
 @media (max-width: 900px) {
-    .portal-page-login .portal-shell-auth {
+    .portal-shell-auth:has(.portal-auth-shell) {
         padding: 0 0 36px;
     }
 
-    .portal-page.portal-page-login .portal-main {
+    .portal-page .portal-main:has(.portal-auth-shell) {
         padding: 0 0 32px;
     }
 
-    .portal-page-login .portal-auth-shell {
+    .portal-auth-shell {
         display: block;
     }
 
     /* La bienvenida navy, de borde a borde, como cabecera. */
-    .portal-page-login .portal-auth-intro {
+    .portal-auth-shell .portal-auth-intro {
         display: block;
         min-height: 0;
         padding: 26px 24px 70px;
@@ -2773,11 +2775,11 @@ details[open] > summary .pa-auth-option-chevron {
     }
 
     /* El logo ya está en la barra superior. */
-    .portal-page-login .portal-auth-intro > img {
+    .portal-auth-shell .portal-auth-intro > img {
         display: none;
     }
 
-    .portal-page-login .portal-auth-intro h2 {
+    .portal-auth-shell .portal-auth-intro h2 {
         max-width: 14ch;
         margin: 0;
         font-size: clamp(1.75rem, 7.6vw, 2.2rem);
@@ -2787,17 +2789,17 @@ details[open] > summary .pa-auth-option-chevron {
 
     /* En el teléfono, la acción manda: el párrafo largo se queda en
        escritorio y aquí basta el título y los sellos. */
-    .portal-page-login .portal-auth-intro p {
+    .portal-auth-shell .portal-auth-intro p {
         display: none;
     }
 
-    .portal-page-login .portal-auth-trust {
+    .portal-auth-shell .portal-auth-trust {
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 16px;
     }
 
-    .portal-page-login .portal-auth-trust span {
+    .portal-auth-shell .portal-auth-trust span {
         padding: 6px 11px;
         border: 1px solid rgba(255, 255, 255, .16);
         border-radius: 999px;
@@ -2807,7 +2809,7 @@ details[open] > summary .pa-auth-option-chevron {
         font-weight: 600;
     }
 
-    .portal-page-login .pa-auth {
+    .portal-auth-shell :is(.pa-auth, .portal-auth-card) {
         position: relative;
         width: auto;
         margin: -46px 14px 0 !important;
@@ -2816,23 +2818,50 @@ details[open] > summary .pa-auth-option-chevron {
         box-shadow: 0 24px 48px -28px rgba(29, 25, 77, .55), 0 2px 6px rgba(29, 25, 77, .06);
     }
 
-    .portal-page-login .pa-auth h1 {
+    .portal-auth-shell :is(.pa-auth, .portal-auth-card) h1 {
         font-size: 1.6rem !important;
     }
 
-    .portal-page-login .pa-auth .lead {
+    .portal-auth-shell :is(.pa-auth .lead, .portal-auth-card > .portal-subtitle) {
         margin-bottom: 22px;
     }
 }
 
 @media (max-width: 380px) {
-    .portal-page-login .portal-auth-intro {
+    .portal-auth-shell .portal-auth-intro {
         padding: 22px 20px 64px;
     }
 
-    .portal-page-login .pa-auth {
+    .portal-auth-shell :is(.pa-auth, .portal-auth-card) {
         margin-left: 10px !important;
         margin-right: 10px !important;
         padding: 24px 18px 18px !important;
     }
+}
+
+/* Acción alternativa que es un enlace (registro: "Iniciar sesión";
+   recuperar: "Volver"): la misma fila, con su propio borde. */
+.portal-auth-shell a.pa-auth-option-link {
+    border: 1px solid var(--portal-line);
+    background: var(--portal-surface);
+    text-decoration: none;
+}
+
+.portal-auth-shell a.pa-auth-option-link:hover {
+    border-color: #c9cfe4;
+    text-decoration: none;
+}
+
+.portal-auth-shell a.pa-auth-option-link .pa-auth-option-chevron {
+    transition: transform .16s var(--portal-ease);
+}
+
+.portal-auth-shell a.pa-auth-option-link:hover .pa-auth-option-chevron {
+    transform: translateX(2px);
+}
+
+.portal-auth-shell .portal-auth-card .btn > svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
 }

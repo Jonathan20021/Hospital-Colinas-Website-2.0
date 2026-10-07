@@ -414,15 +414,17 @@ function portal_render_errors(?array $errors): string
     return $out . '</ul>';
 }
 
-function portal_auth_intro(): void
+function portal_auth_intro(?string $titulo = null, ?string $texto = null): void
 {
     global $assets;
+    $titulo ??= 'Tu salud, más cerca de ti.';
+    $texto ??= 'Consulta tus citas, resultados, recetas e imágenes médicas desde un espacio privado diseñado para ayudarte con claridad.';
     ?>
     <aside class="portal-auth-intro" aria-label="Información del portal">
         <img src="<?= e(base_url($assets['logo'])) ?>" alt="Hospital General Las Colinas">
         <div>
-            <h2>Tu salud, más cerca de ti.</h2>
-            <p>Consulta tus citas, resultados, recetas e imágenes médicas desde un espacio privado diseñado para ayudarte con claridad.</p>
+            <h2><?= e($titulo) ?></h2>
+            <p><?= e($texto) ?></p>
             <div class="portal-auth-trust">
                 <span><i data-lucide="lock-keyhole"></i> Acceso protegido</span>
                 <span><i data-lucide="heart-pulse"></i> Información clínica centralizada</span>

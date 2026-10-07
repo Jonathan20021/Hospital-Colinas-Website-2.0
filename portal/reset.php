@@ -29,7 +29,7 @@ if ($token === '') {
 portal_layout_begin('Restablecer contraseña', 'reset');
 ?>
 <div class="portal-auth-shell">
-    <?php portal_auth_intro(); ?>
+    <?php portal_auth_intro('Elige una contraseña nueva.', 'Usa al menos 8 caracteres. Una frase fácil de recordar para ti y difícil de adivinar para otros es la mejor opción.'); ?>
 <div class="portal-auth-card">
     <h1>Restablecer contraseña</h1>
 
@@ -44,25 +44,31 @@ portal_layout_begin('Restablecer contraseña', 'reset');
         <?php endif; ?>
         <?= portal_render_errors($errors) ?>
 
+        <p class="portal-subtitle">Escribe tu nueva contraseña dos veces para confirmarla.</p>
         <form method="POST" class="portal-form">
             <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
             <input type="hidden" name="token" value="<?= e($token) ?>">
 
             <div class="portal-password-field">
                 <label class="form-label" for="password">Nueva contraseña</label>
-                <input type="password" name="password" id="password" class="form-input" required minlength="8">
+                <div class="pa-input-wrap"><i data-lucide="lock" aria-hidden="true"></i>
+                    <input type="password" name="password" id="password" class="form-input" required minlength="8" autocomplete="new-password">
+                </div>
                 <button type="button" class="portal-password-toggle" data-target="password" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
             </div>
 
             <div class="portal-password-field">
                 <label class="form-label" for="password_confirm">Confirmar contraseña</label>
-                <input type="password" name="password_confirm" id="password_confirm" class="form-input" required minlength="8">
+                <div class="pa-input-wrap"><i data-lucide="lock" aria-hidden="true"></i>
+                    <input type="password" name="password_confirm" id="password_confirm" class="form-input" required minlength="8" autocomplete="new-password">
+                </div>
                 <button type="button" class="portal-password-toggle" data-target="password_confirm" aria-label="Mostrar contraseña"><i data-lucide="eye"></i></button>
             </div>
 
             <button type="submit" class="btn btn-green w-full justify-center py-3 mt-4">Guardar nueva contraseña</button>
         </form>
     <?php endif; ?>
+    <p class="pa-auth-secure"><i data-lucide="lock-keyhole" aria-hidden="true"></i> Conexión cifrada · Tus datos son privados</p>
 </div>
 </div>
 <?php portal_layout_end();
