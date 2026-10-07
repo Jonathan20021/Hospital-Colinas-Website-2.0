@@ -1,0 +1,11 @@
+{
+  "Simulator Target Bundle": "com.colinashospital.paciente",
+  "aps": {
+    "alert": {
+      "title": "Prueba de seguridad",
+      "body": "Al tocarlo la app NO debe salir del portal."
+    },
+    "sound": "default"
+  },
+  "url": "https://example.com/"
+}

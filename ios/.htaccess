@@ -1,0 +1,4 @@
+# ios/ — código fuente de la app de iOS. Se compila en Xcode; nada de aquí se
+# sirve por HTTP si la carpeta llega al servidor junto con el resto del repo.
+Require all denied
+Options -Indexes

@@ -1,0 +1,12 @@
+{
+  "Simulator Target Bundle": "com.colinashospital.paciente",
+  "aps": {
+    "alert": {
+      "title": "Hospital Las Colinas",
+      "body": "Tienes un mensaje nuevo de tu médico."
+    },
+    "sound": "default",
+    "thread-id": "mensajes"
+  },
+  "url": "/portal/mensajes.php"
+}

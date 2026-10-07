@@ -1,0 +1,12 @@
+{
+  "Simulator Target Bundle": "com.colinashospital.paciente",
+  "aps": {
+    "alert": {
+      "title": "Hospital Las Colinas",
+      "body": "Recordatorio: tienes una cita mañana a las 10:30 a. m."
+    },
+    "sound": "default",
+    "thread-id": "citas"
+  },
+  "url": "/portal/mis-citas.php"
+}

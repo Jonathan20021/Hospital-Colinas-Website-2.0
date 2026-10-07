@@ -10,6 +10,9 @@
  * Config inyectada por el layout en window.HGLC_PWA = { sw, scope, icon }.
  * Las notificaciones push del paciente son una fase posterior (requiere
  * emisor server-side); aquí no se suscribe nada.
+ *
+ * Dentro de la app de iOS (window.HGLCApp) el portal se comporta como
+ * instalado y window.HGLCPush habla con la app en vez de con Web Push.
  */
 (function () {
   'use strict';
@@ -28,8 +31,17 @@
     var v = parseInt(ls(key) || '0', 10);
     return v && (nowDays() - v) < days;
   }
+  /**
+   * Dentro de la app de iOS. La app inyecta window.HGLCApp antes que cualquier
+   * script de la página (ver ios/MiHospital/Resources/puente.js).
+   */
+  function enApp() {
+    return !!(window.HGLCApp && window.HGLCApp.plataforma);
+  }
   function isStandalone() {
-    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+    // La app es la forma "instalada" del portal: nada de ofrecer instalarlo.
+    return enApp() ||
+           (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
            window.navigator.standalone === true;
   }
   function isIOS() {
@@ -360,7 +372,36 @@
   }
   function pushTest() { return pushApi('POST', '/portal/me/push/test'); }
 
-  window.HGLCPush = { supported: pushSupported(), enable: enablePush, disable: disablePush, status: pushStatus, test: pushTest };
+  /**
+   * Dentro de la app los avisos van por APNs, no por Web Push (WKWebView no
+   * tiene PushManager). La app pide el permiso, obtiene el token y lo registra
+   * a nombre del paciente por el mismo proxy, con la sesión de esta página.
+   * Misma interfaz que la versión web, para que perfil.php y Mi Ciclo no
+   * tengan que distinguir.
+   */
+  function pushNativo() {
+    function llamar(accion) { return window.HGLCApp.llamar(accion); }
+    return {
+      supported: true,
+      nativo: true,
+      enable: function () {
+        return llamar('push.activar').then(function (r) {
+          if (r && r.ok) return true;
+          throw new Error(r && r.motivo === 'denied' ? 'denied' : 'save_failed');
+        });
+      },
+      disable: function () {
+        return llamar('push.desactivar').then(function () { return true; });
+      },
+      status: function () { return llamar('push.estado'); },
+      test: pushTest,
+      openSettings: function () { return llamar('push.ajustes'); }
+    };
+  }
+
+  window.HGLCPush = enApp()
+    ? pushNativo()
+    : { supported: pushSupported(), enable: enablePush, disable: disablePush, status: pushStatus, test: pushTest };
 
   // ── Arranque ─────────────────────────────────────────────────────
   function boot() {

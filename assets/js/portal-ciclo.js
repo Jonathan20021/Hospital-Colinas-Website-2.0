@@ -791,7 +791,10 @@
     }
 
     /* ====================== Recordatorios push ====================== */
+    // Dentro de la app de iOS los avisos van por la app (APNs), no por Web Push.
+    const pushDeLaApp = () => !!(window.HGLCPush && window.HGLCPush.nativo);
     function pushSupported() {
+        if (pushDeLaApp()) return true;
         return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
     }
     function urlB64ToUint8(b64) {
@@ -801,6 +804,14 @@
         return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
     }
     async function ensurePushSubscription() {
+        if (pushDeLaApp()) {
+            try {
+                await window.HGLCPush.enable();
+                return { ok: true, reason: '' };
+            } catch (e) {
+                return { ok: false, reason: e && e.message === 'denied' ? 'denied' : 'save_failed' };
+            }
+        }
         if (!pushSupported()) return { ok: false, reason: 'unsupported' };
         let perm = Notification.permission;
         if (perm === 'default') perm = await Notification.requestPermission();
@@ -848,7 +859,9 @@
             if (!res.ok) {
                 sw.classList.remove('is-busy');
                 toast(res.reason === 'denied'
-                    ? 'Activa las notificaciones en tu navegador para recibir recordatorios.'
+                    ? (pushDeLaApp()
+                        ? 'Activa los avisos de la app en Ajustes del iPhone para recibir recordatorios.'
+                        : 'Activa las notificaciones en tu navegador para recibir recordatorios.')
                     : 'No se pudieron activar los recordatorios. Intenta de nuevo.', 'error');
                 return;
             }

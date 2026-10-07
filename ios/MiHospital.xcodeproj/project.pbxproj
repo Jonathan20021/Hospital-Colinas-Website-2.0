@@ -1,0 +1,585 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0840AA22A08FFB3E7949EF1FC374E1DD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972BD7B3A47939BA18A89424CD15D077 /* AppDelegate.swift */; };
+		10F84532B9573A375485BEBFF35A640D /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AE3DFAC2BF4EEDD16015D38521C481 /* AppConfig.swift */; };
+		18A596A4F5AD6D79B5CB74A321E512BF /* SinConexionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B066E2B459788BC8703A881F34FE694E /* SinConexionView.swift */; };
+		3847A2585D4E4BB7E239EDB6E1D702E3 /* MiHospitalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7C89C0F69A4E0AFC260366F7BE1EF25 /* MiHospitalApp.swift */; };
+		385987E237DD0FCBC735299812F5DD07 /* CubiertaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4C996657ADF74493EDF201496C151F6 /* CubiertaView.swift */; };
+		49347702BFED90EE5AA708558F147733 /* NavigationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5901E4FA4780B976FCE3BC07A102129 /* NavigationPolicy.swift */; };
+		49847BC4D535D8D2BF343A1CBFB047DC /* AppLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C066E160B7AE4E6F657862951431EE2E /* AppLock.swift */; };
+		575BB56E2BB036230832ECC4FA089C5F /* BridgeScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0EFB142165FA64BEC29B6E60CF31E66 /* BridgeScript.swift */; };
+		7121DC29CAB778A6A96FE307E87665FF /* Documentos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2F8657C025359C203199260F9A6A3F /* Documentos.swift */; };
+		81BAFAA896B84F5AD485C9C14F69EB93 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A05F805917BF9E76D4CC6F0B7CAADFCC /* PrivacyInfo.xcprivacy */; };
+		88E63257591D0E8B36AB4E173CAD30EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4ED3F90DA9D46B5628AFD0C4187971C /* Assets.xcassets */; };
+		A9FB137AB3A22BA71ABFA00CC083737C /* NavigationPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70C9D915C7D647E360F70DECE59ADA6F /* NavigationPolicyTests.swift */; };
+		AA06C1BDDEA39C93DFB62E6E519206F4 /* llamada-proxy.js in Resources */ = {isa = PBXBuildFile; fileRef = 38DB7F148D768B3B857F538B7D485F31 /* llamada-proxy.js */; };
+		B4787DCD7A5712E12D3A80352808FC3C /* PortalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB702506F36E8D6D7298EABE28827097 /* PortalView.swift */; };
+		DEA9B9AF289482D4C88E6295A922A5BC /* BienvenidaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7B7EDB33DA1FB2CB9364CFB9B48648 /* BienvenidaView.swift */; };
+		ECE4CE6C5681C4493CF6B586AEF189D7 /* PortalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE88A43ED03E8B6D10B26C33C88D3FCB /* PortalModel.swift */; };
+		F2AE5E8CB29C938B93C14C58B14E8CFC /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64FAF329D8B3BD2759500464E5C4514F /* PushManager.swift */; };
+		F36A13216DD6C221163A8C892E9278EB /* PortalWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE53A89635C478A8CFACB4C14BE6E87E /* PortalWebView.swift */; };
+		FDC6F3281BE6BDFACEB3039D1557FDED /* puente.js in Resources */ = {isa = PBXBuildFile; fileRef = 4178066D227A967073612DA84970F741 /* puente.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		63B9EF92DBCB36E8374F07E74C4C4F89 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D45E1D755C9C6BAB9633004A5F2FBB17 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 77E4922641DC266F9D9BFF69B17FD6F7;
+			remoteInfo = MiHospital;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		04654D1F34C3B12F0E59A6EBFF038E47 /* MiHospitalTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MiHospitalTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C7B7EDB33DA1FB2CB9364CFB9B48648 /* BienvenidaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BienvenidaView.swift; sourceTree = "<group>"; };
+		2F2F8657C025359C203199260F9A6A3F /* Documentos.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Documentos.swift; sourceTree = "<group>"; };
+		38DB7F148D768B3B857F538B7D485F31 /* llamada-proxy.js */ = {isa = PBXFileReference; includeInIndex = 1; path = "llamada-proxy.js"; sourceTree = "<group>"; };
+		4178066D227A967073612DA84970F741 /* puente.js */ = {isa = PBXFileReference; includeInIndex = 1; path = puente.js; sourceTree = "<group>"; };
+		503B0772B264C822267CA64F33530F57 /* MiHospital.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = MiHospital.entitlements; sourceTree = "<group>"; };
+		55AE3DFAC2BF4EEDD16015D38521C481 /* AppConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		64FAF329D8B3BD2759500464E5C4514F /* PushManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PushManager.swift; sourceTree = "<group>"; };
+		70C9D915C7D647E360F70DECE59ADA6F /* NavigationPolicyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NavigationPolicyTests.swift; sourceTree = "<group>"; };
+		972BD7B3A47939BA18A89424CD15D077 /* AppDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9A8F35BED45FEB82F7DF7E89CFA208D2 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9B6EB58A347A6232271A4249765AF3CC /* MiHospital.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiHospital.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A05F805917BF9E76D4CC6F0B7CAADFCC /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B066E2B459788BC8703A881F34FE694E /* SinConexionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SinConexionView.swift; sourceTree = "<group>"; };
+		B0EFB142165FA64BEC29B6E60CF31E66 /* BridgeScript.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BridgeScript.swift; sourceTree = "<group>"; };
+		B5901E4FA4780B976FCE3BC07A102129 /* NavigationPolicy.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NavigationPolicy.swift; sourceTree = "<group>"; };
+		BE53A89635C478A8CFACB4C14BE6E87E /* PortalWebView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PortalWebView.swift; sourceTree = "<group>"; };
+		C066E160B7AE4E6F657862951431EE2E /* AppLock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AppLock.swift; sourceTree = "<group>"; };
+		C7C89C0F69A4E0AFC260366F7BE1EF25 /* MiHospitalApp.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MiHospitalApp.swift; sourceTree = "<group>"; };
+		E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		E4ED3F90DA9D46B5628AFD0C4187971C /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EB702506F36E8D6D7298EABE28827097 /* PortalView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PortalView.swift; sourceTree = "<group>"; };
+		EE88A43ED03E8B6D10B26C33C88D3FCB /* PortalModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PortalModel.swift; sourceTree = "<group>"; };
+		F4C996657ADF74493EDF201496C151F6 /* CubiertaView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CubiertaView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1FCF7D6535936A0EEFFFBE76F28B8054 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8A7A1A039D3C40D2D5A17294D647EE7F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0D883BA30974887509DA47B812E20B90 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */,
+			);
+			name = Config;
+			path = Config;
+			sourceTree = "<group>";
+		};
+		1A95997FD3FFD08430C68BD399CA5748 /* MiHospital */ = {
+			isa = PBXGroup;
+			children = (
+				AA73ACAC5B176A1D8B5E2A7C1CC02DE5 /* App */,
+				9ECDB40CE0E44F698F3B4CC1590C5E97 /* Interfaz */,
+				A06A38FAA408453209B3836F96B0D56F /* Portal */,
+				231489D8BE2CD9090938CEEAADDDB406 /* Push */,
+				677B7B6F06EDE3316006D0EF74720B9C /* Resources */,
+				2AFF230DFA84F172EF6728050CF812A4 /* Seguridad */,
+			);
+			name = MiHospital;
+			path = MiHospital;
+			sourceTree = "<group>";
+		};
+		231489D8BE2CD9090938CEEAADDDB406 /* Push */ = {
+			isa = PBXGroup;
+			children = (
+				64FAF329D8B3BD2759500464E5C4514F /* PushManager.swift */,
+			);
+			name = Push;
+			path = Push;
+			sourceTree = "<group>";
+		};
+		2AFF230DFA84F172EF6728050CF812A4 /* Seguridad */ = {
+			isa = PBXGroup;
+			children = (
+				C066E160B7AE4E6F657862951431EE2E /* AppLock.swift */,
+			);
+			name = Seguridad;
+			path = Seguridad;
+			sourceTree = "<group>";
+		};
+		2E6325EC3A53E06E3B4E5B5C471CE077 = {
+			isa = PBXGroup;
+			children = (
+				0D883BA30974887509DA47B812E20B90 /* Config */,
+				1A95997FD3FFD08430C68BD399CA5748 /* MiHospital */,
+				DD8B73112DBA9A53A9BA76DAD1A38DDB /* MiHospitalTests */,
+				30F4A55C5C6AADA2A1149EAEC2D00F40 /* Products */,
+				BCBC5B9DB4D52C43BF5025D496D30A2C /* Support */,
+			);
+			sourceTree = "<group>";
+		};
+		30F4A55C5C6AADA2A1149EAEC2D00F40 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9B6EB58A347A6232271A4249765AF3CC /* MiHospital.app */,
+				04654D1F34C3B12F0E59A6EBFF038E47 /* MiHospitalTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		677B7B6F06EDE3316006D0EF74720B9C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E4ED3F90DA9D46B5628AFD0C4187971C /* Assets.xcassets */,
+				38DB7F148D768B3B857F538B7D485F31 /* llamada-proxy.js */,
+				A05F805917BF9E76D4CC6F0B7CAADFCC /* PrivacyInfo.xcprivacy */,
+				4178066D227A967073612DA84970F741 /* puente.js */,
+			);
+			name = Resources;
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		9ECDB40CE0E44F698F3B4CC1590C5E97 /* Interfaz */ = {
+			isa = PBXGroup;
+			children = (
+				0C7B7EDB33DA1FB2CB9364CFB9B48648 /* BienvenidaView.swift */,
+				F4C996657ADF74493EDF201496C151F6 /* CubiertaView.swift */,
+				EB702506F36E8D6D7298EABE28827097 /* PortalView.swift */,
+				B066E2B459788BC8703A881F34FE694E /* SinConexionView.swift */,
+			);
+			name = Interfaz;
+			path = Interfaz;
+			sourceTree = "<group>";
+		};
+		A06A38FAA408453209B3836F96B0D56F /* Portal */ = {
+			isa = PBXGroup;
+			children = (
+				B0EFB142165FA64BEC29B6E60CF31E66 /* BridgeScript.swift */,
+				2F2F8657C025359C203199260F9A6A3F /* Documentos.swift */,
+				B5901E4FA4780B976FCE3BC07A102129 /* NavigationPolicy.swift */,
+				EE88A43ED03E8B6D10B26C33C88D3FCB /* PortalModel.swift */,
+				BE53A89635C478A8CFACB4C14BE6E87E /* PortalWebView.swift */,
+			);
+			name = Portal;
+			path = Portal;
+			sourceTree = "<group>";
+		};
+		AA73ACAC5B176A1D8B5E2A7C1CC02DE5 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				55AE3DFAC2BF4EEDD16015D38521C481 /* AppConfig.swift */,
+				972BD7B3A47939BA18A89424CD15D077 /* AppDelegate.swift */,
+				C7C89C0F69A4E0AFC260366F7BE1EF25 /* MiHospitalApp.swift */,
+			);
+			name = App;
+			path = App;
+			sourceTree = "<group>";
+		};
+		BCBC5B9DB4D52C43BF5025D496D30A2C /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				9A8F35BED45FEB82F7DF7E89CFA208D2 /* Info.plist */,
+				503B0772B264C822267CA64F33530F57 /* MiHospital.entitlements */,
+			);
+			name = Support;
+			path = Support;
+			sourceTree = "<group>";
+		};
+		DD8B73112DBA9A53A9BA76DAD1A38DDB /* MiHospitalTests */ = {
+			isa = PBXGroup;
+			children = (
+				70C9D915C7D647E360F70DECE59ADA6F /* NavigationPolicyTests.swift */,
+			);
+			name = MiHospitalTests;
+			path = MiHospitalTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		77116DE77AAD4ECBFF14CB9486E0FAF8 /* MiHospitalTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 22AA11281DDF5BD15E36FE3C75549516 /* Build configuration list for PBXNativeTarget "MiHospitalTests" */;
+			buildPhases = (
+				BDAFD606EA2D50A7F83C51F2E8D21D83 /* Sources */,
+				8A7A1A039D3C40D2D5A17294D647EE7F /* Frameworks */,
+				22D57585FDBD6E64D6DE2957AE714133 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				ACF75E08153DD2E1B5F5F1AA0466D5F1 /* PBXTargetDependency */,
+			);
+			name = MiHospitalTests;
+			productName = MiHospitalTests;
+			productReference = 04654D1F34C3B12F0E59A6EBFF038E47 /* MiHospitalTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		77E4922641DC266F9D9BFF69B17FD6F7 /* MiHospital */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 638A46C54C0C47292687EF0DB3EE4531 /* Build configuration list for PBXNativeTarget "MiHospital" */;
+			buildPhases = (
+				2759AE0645FB2A2C069BB74510C2194C /* Sources */,
+				1FCF7D6535936A0EEFFFBE76F28B8054 /* Frameworks */,
+				58848C770C41B5654654A82D62D13ED6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MiHospital;
+			productName = MiHospital;
+			productReference = 9B6EB58A347A6232271A4249765AF3CC /* MiHospital.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D45E1D755C9C6BAB9633004A5F2FBB17 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				ORGANIZATIONNAME = "Hospital General Las Colinas";
+			};
+			buildConfigurationList = 5C963AF280DB89540334FA15DCA0E07D /* Build configuration list for PBXProject "MiHospital" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = es;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				es,
+				Base,
+			);
+			mainGroup = 2E6325EC3A53E06E3B4E5B5C471CE077;
+			minimizedProjectReferenceProxies = 0;
+			preferredProjectObjectVersion = 100;
+			productRefGroup = 30F4A55C5C6AADA2A1149EAEC2D00F40 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				77E4922641DC266F9D9BFF69B17FD6F7 /* MiHospital */,
+				77116DE77AAD4ECBFF14CB9486E0FAF8 /* MiHospitalTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		22D57585FDBD6E64D6DE2957AE714133 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		58848C770C41B5654654A82D62D13ED6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				88E63257591D0E8B36AB4E173CAD30EE /* Assets.xcassets in Resources */,
+				AA06C1BDDEA39C93DFB62E6E519206F4 /* llamada-proxy.js in Resources */,
+				81BAFAA896B84F5AD485C9C14F69EB93 /* PrivacyInfo.xcprivacy in Resources */,
+				FDC6F3281BE6BDFACEB3039D1557FDED /* puente.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2759AE0645FB2A2C069BB74510C2194C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				10F84532B9573A375485BEBFF35A640D /* AppConfig.swift in Sources */,
+				0840AA22A08FFB3E7949EF1FC374E1DD /* AppDelegate.swift in Sources */,
+				49847BC4D535D8D2BF343A1CBFB047DC /* AppLock.swift in Sources */,
+				DEA9B9AF289482D4C88E6295A922A5BC /* BienvenidaView.swift in Sources */,
+				575BB56E2BB036230832ECC4FA089C5F /* BridgeScript.swift in Sources */,
+				385987E237DD0FCBC735299812F5DD07 /* CubiertaView.swift in Sources */,
+				7121DC29CAB778A6A96FE307E87665FF /* Documentos.swift in Sources */,
+				3847A2585D4E4BB7E239EDB6E1D702E3 /* MiHospitalApp.swift in Sources */,
+				49347702BFED90EE5AA708558F147733 /* NavigationPolicy.swift in Sources */,
+				ECE4CE6C5681C4493CF6B586AEF189D7 /* PortalModel.swift in Sources */,
+				B4787DCD7A5712E12D3A80352808FC3C /* PortalView.swift in Sources */,
+				F36A13216DD6C221163A8C892E9278EB /* PortalWebView.swift in Sources */,
+				F2AE5E8CB29C938B93C14C58B14E8CFC /* PushManager.swift in Sources */,
+				18A596A4F5AD6D79B5CB74A321E512BF /* SinConexionView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BDAFD606EA2D50A7F83C51F2E8D21D83 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A9FB137AB3A22BA71ABFA00CC083737C /* NavigationPolicyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		ACF75E08153DD2E1B5F5F1AA0466D5F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MiHospital;
+			target = 77E4922641DC266F9D9BFF69B17FD6F7 /* MiHospital */;
+			targetProxy = 63B9EF92DBCB36E8374F07E74C4C4F89 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		191A1AA73FABF74CCE2893E551777EF9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		2F7F8A80AFB86FC80E56002F89BFCF07 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		437816932CDD752EB49AD4E007DE22A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = Support/MiHospital.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = NO;
+				ENABLE_TESTABILITY = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Support/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7281AC481DD04A68A8913A93BBB86CBA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HGLC_BUNDLE_ID).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MiHospital.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MiHospital";
+			};
+			name = Debug;
+		};
+		B43B4D4BCAA96FBB30A9638046D99BCE /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = Support/MiHospital.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = NO;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Support/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E9973A139958014EE950D194FE02E743 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E15C0099B631C08FA3D7D595CB6EDD68 /* Base.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(HGLC_BUNDLE_ID).tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_STRICT_CONCURRENCY = minimal;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MiHospital.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MiHospital";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		22AA11281DDF5BD15E36FE3C75549516 /* Build configuration list for PBXNativeTarget "MiHospitalTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7281AC481DD04A68A8913A93BBB86CBA /* Debug */,
+				E9973A139958014EE950D194FE02E743 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5C963AF280DB89540334FA15DCA0E07D /* Build configuration list for PBXProject "MiHospital" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2F7F8A80AFB86FC80E56002F89BFCF07 /* Debug */,
+				191A1AA73FABF74CCE2893E551777EF9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		638A46C54C0C47292687EF0DB3EE4531 /* Build configuration list for PBXNativeTarget "MiHospital" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				437816932CDD752EB49AD4E007DE22A4 /* Debug */,
+				B43B4D4BCAA96FBB30A9638046D99BCE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D45E1D755C9C6BAB9633004A5F2FBB17 /* Project object */;
+}

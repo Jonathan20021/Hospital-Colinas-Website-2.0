@@ -236,9 +236,53 @@ portal_layout_begin('Mi perfil', 'perfil');
         <button type="button" class="btn btn-green" id="pa-notif-enable"><i data-lucide="bell-ring"></i> Activar notificaciones</button>
         <button type="button" class="btn btn-outline" id="pa-notif-disable" hidden><i data-lucide="bell-off"></i> Desactivar</button>
         <button type="button" class="btn btn-outline" id="pa-notif-test" hidden><i data-lucide="send"></i> Probar</button>
+        <button type="button" class="btn btn-outline" id="pa-notif-settings" hidden><i data-lucide="smartphone"></i> Abrir Ajustes</button>
     </div>
     <p class="portal-notif-status" id="pa-notif-status" aria-live="polite"></p>
 </section>
+
+<?php /* Solo dentro de la app de iOS (window.HGLCApp): el bloqueo es de la app, no del navegador. */ ?>
+<section class="portal-card portal-notif-card" id="pa-lock-card" hidden>
+    <div class="portal-password-card-head">
+        <span><i data-lucide="shield-check"></i></span>
+        <div>
+            <h3>Proteger la app</h3>
+            <p id="pa-lock-desc">Pide Face ID al abrir la app en este teléfono, para que nadie más vea tu información.</p>
+        </div>
+    </div>
+    <div class="portal-notif-actions">
+        <button type="button" class="btn btn-green" id="pa-lock-on"><i data-lucide="lock-keyhole"></i> Activar protección</button>
+        <button type="button" class="btn btn-outline" id="pa-lock-off" hidden>Quitar protección</button>
+    </div>
+    <p class="portal-notif-status" id="pa-lock-status" aria-live="polite"></p>
+</section>
+<script>
+window.addEventListener('load', function () {
+    var card = document.getElementById('pa-lock-card');
+    if (!card || !window.HGLCApp) return;
+    var bOn = document.getElementById('pa-lock-on');
+    var bOff = document.getElementById('pa-lock-off');
+    var st = document.getElementById('pa-lock-status');
+    var desc = document.getElementById('pa-lock-desc');
+    function render(s) {
+        if (!s || !s.disponible) { card.hidden = true; return; }
+        card.hidden = false;
+        desc.textContent = 'Pide ' + s.tipo + ' al abrir la app en este teléfono, para que nadie más vea tu información.';
+        bOn.hidden = !!s.activo; bOff.hidden = !s.activo;
+        st.textContent = s.activo ? 'Activada: la app pide ' + s.tipo + ' al abrirla.' : 'Desactivada en este teléfono.';
+    }
+    function cambiar(accion) {
+        bOn.disabled = bOff.disabled = true;
+        HGLCApp.llamar(accion)
+            .then(function (r) { render(r && r.estado); if (r && !r.ok) st.textContent = 'No se confirmó tu identidad. No se hizo ningún cambio.'; })
+            .catch(function () { st.textContent = 'No se pudo cambiar la protección.'; })
+            .finally(function () { bOn.disabled = bOff.disabled = false; });
+    }
+    HGLCApp.llamar('bloqueo.estado').then(render).catch(function () {});
+    bOn.addEventListener('click', function () { cambiar('bloqueo.activar'); });
+    bOff.addEventListener('click', function () { cambiar('bloqueo.desactivar'); });
+});
+</script>
 <script>
 window.addEventListener('load', function () {
     var card = document.getElementById('pa-notif-card');
@@ -247,17 +291,29 @@ window.addEventListener('load', function () {
     var bEn = document.getElementById('pa-notif-enable');
     var bDis = document.getElementById('pa-notif-disable');
     var bTest = document.getElementById('pa-notif-test');
+    var bSet = document.getElementById('pa-notif-settings');
     var st = document.getElementById('pa-notif-status');
     function render(s) {
         var on = !!(s && s.subscribed);
-        bEn.hidden = on; bDis.hidden = !on; bTest.hidden = !on;
+        bEn.hidden = on; bDis.hidden = !on; bTest.hidden = !on; bSet.hidden = true;
         if (s && s.permission === 'denied') {
-            st.textContent = 'Las notificaciones están bloqueadas en tu navegador. Habilítalas desde los ajustes del sitio.';
-            bEn.disabled = true;
+            if (HGLCPush.nativo) {
+                // En la app el permiso es del iPhone: solo se cambia en Ajustes.
+                st.textContent = 'Los avisos están desactivados para la app. Actívalos en Ajustes › Mi Hospital › Notificaciones.';
+                bEn.hidden = true; bSet.hidden = false;
+            } else {
+                st.textContent = 'Las notificaciones están bloqueadas en tu navegador. Habilítalas desde los ajustes del sitio.';
+                bEn.disabled = true;
+            }
         } else {
             st.textContent = on ? 'Activadas en este dispositivo.' : 'Están desactivadas en este dispositivo.';
         }
     }
+    bSet.addEventListener('click', function () { if (HGLCPush.openSettings) HGLCPush.openSettings(); });
+    // Al volver de Ajustes, refrescar el estado.
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) HGLCPush.status().then(render).catch(function () {});
+    });
     HGLCPush.status().then(render).catch(function () {});
     bEn.addEventListener('click', function () {
         bEn.disabled = true; st.textContent = 'Activando…';

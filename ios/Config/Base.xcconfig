@@ -1,0 +1,18 @@
+// Configuración de la app del Portal del Paciente.
+// Lo único que hay que tocar para firmar en un iPhone es DEVELOPMENT_TEAM
+// (ver ios/README.md). Todo lo demás tiene un valor por defecto válido.
+
+// Equipo de Apple Developer (10 caracteres, en developer.apple.com > Membership).
+DEVELOPMENT_TEAM =
+
+// Identificador de la app. Debe coincidir con el App ID creado en Apple
+// Developer y con el "apns-topic" que usa el servidor para enviar avisos.
+HGLC_BUNDLE_ID = com.colinashospital.paciente
+PRODUCT_BUNDLE_IDENTIFIER = $(HGLC_BUNDLE_ID)
+
+MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1
+
+// Servidor del portal: SOLO el host. Nada de "https://": en un .xcconfig
+// las dos barras empiezan un comentario y cortarían el valor.
+HGLC_PORTAL_HOST = colinashospital.com
