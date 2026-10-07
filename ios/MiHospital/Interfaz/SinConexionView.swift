@@ -69,7 +69,10 @@ struct SinConexionView: View {
                 }
 
                 VStack(spacing: 12) {
-                    Button(action: reintentar) {
+                    Button {
+                        Haptica.toque()
+                        reintentar()
+                    } label: {
                         Label("Reintentar", systemImage: "arrow.clockwise")
                     }
                     .buttonStyle(BotonPrincipal())

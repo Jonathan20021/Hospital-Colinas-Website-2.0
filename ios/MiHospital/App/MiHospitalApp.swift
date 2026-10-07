@@ -32,9 +32,10 @@ struct MiHospitalApp: App {
 ///
 ///   xcrun simctl launch booted com.colinashospital.paciente -pantalla sinConexion
 ///
-/// Valores: sinConexion, error, bloqueo, bienvenida, portada.
+/// Valores: sinConexion, error, bloqueo, bloqueoFallido, bienvenida, portada,
+/// avisoSinRed.
 enum PantallaDePrueba: String {
-    case sinConexion, error, bloqueo, bienvenida, portada
+    case sinConexion, error, bloqueo, bloqueoFallido, bienvenida, portada, avisoSinRed
 
     static var pedida: PantallaDePrueba? {
         UserDefaults.standard.string(forKey: "pantalla").flatMap(PantallaDePrueba.init(rawValue:))
@@ -47,16 +48,22 @@ enum PantallaDePrueba: String {
             SinConexionView(sinRed: true) {}
         case .error:
             SinConexionView(sinRed: false) {}
-        case .bloqueo:
+        case .bloqueo, .bloqueoFallido:
             ZStack(alignment: .bottom) {
                 PortadaView()
-                PanelDeBloqueo(nombreBiometria: "Face ID", icono: "faceid") {}
+                PanelDeBloqueo(nombreBiometria: "Face ID", icono: "faceid",
+                               fallo: self == .bloqueoFallido) {}
             }
         case .bienvenida:
             Color.hglcFondo.ignoresSafeArea()
                 .sheet(isPresented: .constant(true)) { BienvenidaView() }
         case .portada:
-            PortadaView(cargando: true)
+            PortadaView(cargando: true) {}
+        case .avisoSinRed:
+            ZStack(alignment: .top) {
+                Color.hglcFondo.ignoresSafeArea()
+                AvisoSinRed().padding(.top, 6)
+            }
         }
     }
 }

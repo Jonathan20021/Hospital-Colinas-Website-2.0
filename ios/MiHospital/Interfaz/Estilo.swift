@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Lenguaje visual del portal llevado a las pantallas nativas: la misma letra
 /// (Outfit en títulos y botones), los mismos colores y radios. Así el paso de
@@ -17,6 +18,25 @@ extension Color {
     /// Texto secundario y bordes de tarjeta, como en el portal.
     static let hglcTexto = Color(red: 0x47 / 255, green: 0x55 / 255, blue: 0x69 / 255)
     static let hglcBorde = Color(red: 0xE2 / 255, green: 0xE8 / 255, blue: 0xF0 / 255)
+    /// Errores: rojo con contraste AA sobre blanco.
+    static let hglcAlerta = Color(red: 0xB9 / 255, green: 0x1C / 255, blue: 0x1C / 255)
+}
+
+/// Vibraciones de confirmación: el paciente siente que algo salió bien (o no)
+/// sin tener que leer.
+@MainActor
+enum Haptica {
+    static func exito() {
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
+    }
+
+    static func error() {
+        UINotificationFeedbackGenerator().notificationOccurred(.error)
+    }
+
+    static func toque() {
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
 }
 
 extension Font {

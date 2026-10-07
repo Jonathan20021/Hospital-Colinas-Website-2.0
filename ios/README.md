@@ -36,8 +36,8 @@ Para otro servidor (pruebas), cambiar `HGLC_PORTAL_HOST` en el `.xcconfig`.
 ### Ver cada pantalla nativa
 
 En depuración, la app abre una pantalla sola con `-pantalla` (`sinConexion`,
-`error`, `bloqueo`, `bienvenida`, `portada`), sin tener que cortar la red ni
-activar Face ID:
+`error`, `bloqueo`, `bloqueoFallido`, `bienvenida`, `portada`, `avisoSinRed`),
+sin tener que cortar la red ni activar Face ID:
 
 ```
 xcrun simctl launch --terminate-running-process booted com.colinashospital.paciente -pantalla bloqueo

@@ -12,7 +12,8 @@ struct CubiertaView: View {
 
             if bloqueo.bloqueada {
                 PanelDeBloqueo(nombreBiometria: bloqueo.nombreBiometria,
-                               icono: bloqueo.iconoBiometria) {
+                               icono: bloqueo.iconoBiometria,
+                               fallo: bloqueo.falloDesbloqueo) {
                     Task { await bloqueo.desbloquear() }
                 }
                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -34,6 +35,7 @@ struct PanelDeBloqueo: View {
 
     let nombreBiometria: String
     let icono: String
+    var fallo = false
     let desbloquear: () -> Void
 
     var body: some View {
@@ -54,12 +56,23 @@ struct PanelDeBloqueo: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            if fallo {
+                Label("No pudimos confirmar que eres tú. Inténtalo de nuevo.",
+                      systemImage: "exclamationmark.circle.fill")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundColor(.hglcAlerta)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .transition(.opacity)
+            }
+
             Button(action: desbloquear) {
                 Label("Desbloquear", systemImage: icono)
             }
             .buttonStyle(BotonPrincipal())
             .padding(.top, 4)
         }
+        .animation(.easeOut(duration: 0.2), value: fallo)
         .tarjeta(relleno: 24)
         // El panel no se desplaza: con la letra más grande no cabría en
         // pantalla. Hasta este tamaño se lee completo.

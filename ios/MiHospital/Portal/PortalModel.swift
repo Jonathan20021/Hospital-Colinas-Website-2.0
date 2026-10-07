@@ -29,6 +29,9 @@ final class PortalModel: ObservableObject {
     /// La primera página terminó (o falló): se retira la portada.
     @Published private(set) var primeraCargaLista = false
     @Published var mostrarBienvenida = false
+    /// El iPhone tiene red. Sin ella, con el portal ya abierto, se avisa que
+    /// lo que se ve puede no estar al día.
+    @Published private(set) var hayRed = true
     /// Cambia al cerrar sesión: la vista se recrea con una vista web nueva, sin
     /// el historial del paciente anterior (ver `cerrarSesion`).
     @Published private(set) var generacionVistaWeb = 0
@@ -49,7 +52,6 @@ final class PortalModel: ObservableObject {
     private var urlPendiente: URL?
     private var ultimaURL: URL?
     private let monitorRed = NWPathMonitor()
-    private var hayRed = true
 
     private enum Claves {
         static let bienvenida = "hglc.bienvenida.mostrada"
@@ -149,7 +151,7 @@ final class PortalModel: ObservableObject {
 
     private func redCambio(_ conectado: Bool) {
         let volvio = conectado && !hayRed
-        hayRed = conectado
+        if hayRed != conectado { hayRed = conectado }
         if volvio && estado == .sinConexion {
             reintentar()
         }

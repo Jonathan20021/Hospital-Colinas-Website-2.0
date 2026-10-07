@@ -22,6 +22,8 @@ final class AppLock: NSObject, ObservableObject {
     @Published private(set) var cubierta = false
     /// El paciente activó el bloqueo.
     @Published private(set) var activo: Bool
+    /// El último intento de desbloqueo falló (no cuenta si el paciente canceló).
+    @Published private(set) var falloDesbloqueo = false
 
     /// Mientras la app muestra una alerta del sistema que pidió ella misma
     /// (permiso de avisos), perder el foco no debe tapar la pantalla.
@@ -89,7 +91,7 @@ final class AppLock: NSObject, ObservableObject {
 
     func activar() async -> Bool {
         guard disponible else { return false }
-        guard await autenticar(razon: "Confirma que eres tú para proteger el portal en este dispositivo.") else {
+        guard await autenticar(razon: "Confirma que eres tú para proteger el portal en este dispositivo.") == .ok else {
             return false
         }
         activo = true
@@ -98,7 +100,7 @@ final class AppLock: NSObject, ObservableObject {
     }
 
     func desactivar() async -> Bool {
-        guard await autenticar(razon: "Confirma que eres tú para quitar la protección del portal.") else {
+        guard await autenticar(razon: "Confirma que eres tú para quitar la protección del portal.") == .ok else {
             return false
         }
         activo = false
@@ -108,9 +110,17 @@ final class AppLock: NSObject, ObservableObject {
 
     func desbloquear() async {
         guard bloqueada, !autenticando else { return }
-        if await autenticar(razon: "Desbloquea el portal para ver tu información médica.") {
+        switch await autenticar(razon: "Desbloquea el portal para ver tu información médica.") {
+        case .ok:
+            falloDesbloqueo = false
+            Haptica.exito()
             bloqueada = false
             descubrir()
+        case .fallo:
+            falloDesbloqueo = true
+            Haptica.error()
+        case .cancelado:
+            break
         }
     }
 
@@ -174,17 +184,22 @@ final class AppLock: NSObject, ObservableObject {
         ventana.ocultar()
     }
 
-    private func autenticar(razon: String) async -> Bool {
+    private enum Resultado { case ok, fallo, cancelado }
+
+    private func autenticar(razon: String) async -> Resultado {
         let contexto = LAContext()
         contexto.localizedCancelTitle = "Cancelar"
         var error: NSError?
-        guard contexto.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else { return false }
+        guard contexto.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else { return .fallo }
         autenticando = true
         defer { autenticando = false }
         do {
-            return try await contexto.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: razon)
+            let ok = try await contexto.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: razon)
+            return ok ? .ok : .fallo
+        } catch let error as LAError where [.userCancel, .systemCancel, .appCancel].contains(error.code) {
+            return .cancelado
         } catch {
-            return false
+            return .fallo
         }
     }
 

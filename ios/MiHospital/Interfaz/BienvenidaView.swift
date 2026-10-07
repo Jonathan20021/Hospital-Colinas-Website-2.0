@@ -33,7 +33,8 @@ struct BienvenidaView: View {
                                 texto: "Cuando tu médico te escriba o se acerque una cita, sin mostrar detalles médicos en la pantalla bloqueada.",
                                 hecho: push.permiso == .concedido,
                                 textoHecho: "Avisos activados",
-                                nota: push.permiso == .denegado ? "Puedes activarlos luego en Ajustes del iPhone." : nil,
+                                nota: push.permiso == .denegado ? "Los avisos están apagados en los Ajustes del iPhone." : nil,
+                                accionNota: push.permiso == .denegado ? ("Abrir Ajustes", { push.abrirAjustesDelSistema() }) : nil,
                                 boton: "Activar avisos",
                                 ocupado: activandoAvisos
                             ) {
@@ -117,6 +118,7 @@ private struct Opcion: View {
     let hecho: Bool
     let textoHecho: String
     let nota: String?
+    var accionNota: (String, () -> Void)? = nil
     let boton: String
     let ocupado: Bool
     let accion: () async -> Void
@@ -144,9 +146,16 @@ private struct Opcion: View {
                             .background(Capsule().fill(Color.hglcVerdeSuave))
                             .transition(.scale(scale: 0.9).combined(with: .opacity))
                     } else if let nota {
-                        Text(nota)
-                            .font(.footnote)
-                            .foregroundColor(.hglcTexto)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text(nota)
+                                .font(.footnote)
+                                .foregroundColor(.hglcTexto)
+                                .fixedSize(horizontal: false, vertical: true)
+                            if let (titulo, accion) = accionNota {
+                                Button(titulo, action: accion)
+                                    .buttonStyle(BotonSecundario(compacto: true))
+                            }
+                        }
                     } else {
                         Button {
                             Task { await accion() }
@@ -166,6 +175,9 @@ private struct Opcion: View {
         }
         .tarjeta(relleno: 18)
         .animation(.spring(response: 0.35, dampingFraction: 0.8), value: hecho)
+        .onChange(of: hecho) { activado in
+            if activado { Haptica.exito() }
+        }
         .accessibilityElement(children: .contain)
     }
 }
