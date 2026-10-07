@@ -14,6 +14,7 @@ struct PortalView: View {
             Color.hglcFondo.ignoresSafeArea()
 
             PortalWebView(modelo: portal)
+                .id(portal.generacionVistaWeb)
                 .ignoresSafeArea()
 
             if portal.cargando && portal.primeraCargaLista {
@@ -48,6 +49,7 @@ struct PortalView: View {
             portal.abrir(ruta: ruta)
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
+            portal.appActiva()
             Task { await push.appActiva() }
         }
         .task {

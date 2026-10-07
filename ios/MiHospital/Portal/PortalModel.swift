@@ -29,6 +29,9 @@ final class PortalModel: ObservableObject {
     /// La primera página terminó (o falló): se retira la portada.
     @Published private(set) var primeraCargaLista = false
     @Published var mostrarBienvenida = false
+    /// Cambia al cerrar sesión: la vista se recrea con una vista web nueva, sin
+    /// el historial del paciente anterior (ver `cerrarSesion`).
+    @Published private(set) var generacionVistaWeb = 0
 
     let politica = NavigationPolicy(hostPortal: AppConfig.hostPortal)
 
@@ -133,6 +136,14 @@ final class PortalModel: ObservableObject {
             vistaWeb.reload()
         } else {
             vistaWeb.load(URLRequest(url: ultimaURL ?? AppConfig.urlInicial))
+        }
+    }
+
+    /// Al volver a la app: si quedó la pantalla sin conexión o de error, se
+    /// reintenta sin esperar a que el paciente toque "Reintentar".
+    func appActiva() {
+        if estado == .sinConexion || estado == .error {
+            reintentar()
         }
     }
 
@@ -360,7 +371,20 @@ final class PortalModel: ObservableObject {
             }
             pushRegistradoEnSesion = false
             haySesion = false
-            vistaWeb?.load(URLRequest(url: url))
+            // El historial de la vista web guarda las páginas del paciente: con
+            // el gesto de volver desde el borde se verían (WebKit muestra una
+            // captura de la página anterior) en un iPhone que usa otra persona.
+            // WKWebView no deja borrar su historial, así que se cambia por una
+            // vista web nueva que arranca en el cierre de sesión. La caché se
+            // vacía también; las cookies no (las borra el propio logout).
+            await WKWebsiteDataStore.default().removeData(
+                ofTypes: [WKWebsiteDataTypeDiskCache, WKWebsiteDataTypeMemoryCache],
+                modifiedSince: .distantPast
+            )
+            urlPendiente = url
+            ultimaURL = nil
+            primeraCargaLista = false
+            generacionVistaWeb += 1
         }
     }
 
