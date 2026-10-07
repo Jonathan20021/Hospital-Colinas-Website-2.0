@@ -2564,3 +2564,275 @@ html.portal-sidebar-collapsed .portal-sidebar-support svg {
     background: #fef3c7;
     color: #92400e;
 }
+
+/* ============================================================
+   Login del paciente — versión renovada.
+   Todos los tamaños: campo con ícono, separador y las dos formas
+   alternativas de entrar como filas (ícono, título, explicación,
+   flecha) en vez de enlaces sueltos.
+   Móvil (≤900px, también la app de iOS): el panel navy de
+   bienvenida, que antes se ocultaba, pasa a ser una cabecera de
+   ancho completo y la tarjeta del formulario se monta encima.
+   ============================================================ */
+.portal-page-login .pa-input-wrap {
+    position: relative;
+}
+
+.portal-page-login .pa-input-wrap > svg {
+    position: absolute;
+    top: 50%;
+    left: 16px;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-50%);
+    color: var(--portal-muted);
+    pointer-events: none;
+    transition: color .16s var(--portal-ease);
+}
+
+.portal-page-login .pa-input-wrap .pa-input {
+    padding-left: 48px !important;
+}
+
+.portal-page-login .pa-input-wrap:focus-within > svg {
+    color: var(--portal-navy);
+}
+
+.portal-page-login .pa-auth-or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 26px 0 12px;
+    color: var(--portal-muted);
+    font-size: .82rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+}
+
+.portal-page-login .pa-auth-or::before,
+.portal-page-login .pa-auth-or::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--portal-line);
+}
+
+.portal-page-login .portal-auth-password {
+    margin-top: 10px;
+    border: 1px solid var(--portal-line);
+    border-radius: var(--portal-radius);
+    background: var(--portal-surface);
+    text-align: left;
+    transition: border-color .16s var(--portal-ease), box-shadow .16s var(--portal-ease);
+}
+
+.portal-page-login .portal-auth-password[open] {
+    border-color: #c9cfe4;
+    box-shadow: var(--portal-shadow-raised);
+}
+
+.portal-page-login .portal-auth-password > .pa-hint,
+.portal-page-login .portal-auth-password > .portal-password-form {
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.portal-page-login .portal-auth-password > .portal-password-form {
+    margin-top: 4px;
+    padding-bottom: 16px;
+}
+
+.portal-page-login .portal-auth-password > .pa-hint {
+    margin-top: 0;
+}
+
+.portal-page-login summary.pa-auth-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 68px;
+    padding: 12px 14px;
+    border-radius: var(--portal-radius);
+    color: var(--portal-ink);
+    font-weight: 400;
+    text-align: left;
+    list-style: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.portal-page-login summary.pa-auth-option::-webkit-details-marker {
+    display: none;
+}
+
+.portal-page-login summary.pa-auth-option:hover {
+    background: var(--portal-surface-muted);
+}
+
+.portal-page-login summary.pa-auth-option:focus-visible {
+    outline: none;
+    box-shadow: var(--portal-focus);
+}
+
+.pa-auth-option-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: var(--portal-navy-soft);
+    color: var(--portal-navy);
+}
+
+.pa-auth-option-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.pa-auth-option-text {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pa-auth-option-text strong {
+    color: var(--portal-navy);
+    font-family: "Outfit", "Inter", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.pa-auth-option-text small {
+    color: var(--portal-muted);
+    font-size: .86rem;
+    line-height: 1.35;
+}
+
+.pa-auth-option-chevron {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    color: var(--portal-muted);
+    transition: transform .2s var(--portal-ease);
+}
+
+details[open] > summary .pa-auth-option-chevron {
+    transform: rotate(180deg);
+}
+
+.portal-page-login .portal-auth-register {
+    margin-top: 22px;
+}
+
+.pa-auth-secure {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin: 18px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--portal-line-soft);
+    color: var(--portal-muted);
+    font-size: .8rem;
+    text-align: center;
+}
+
+.pa-auth-secure svg {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    color: var(--portal-green-strong);
+}
+
+@media (max-width: 900px) {
+    .portal-page-login .portal-shell-auth {
+        padding: 0 0 36px;
+    }
+
+    .portal-page.portal-page-login .portal-main {
+        padding: 0 0 32px;
+    }
+
+    .portal-page-login .portal-auth-shell {
+        display: block;
+    }
+
+    /* La bienvenida navy, de borde a borde, como cabecera. */
+    .portal-page-login .portal-auth-intro {
+        display: block;
+        min-height: 0;
+        padding: 26px 24px 70px;
+        border-radius: 0;
+        background:
+            radial-gradient(120% 90% at 100% 0%, rgba(111, 180, 63, .22) 0%, rgba(111, 180, 63, 0) 55%),
+            linear-gradient(160deg, #2c2670 0%, var(--portal-navy) 55%, var(--portal-navy-strong) 100%);
+    }
+
+    /* El logo ya está en la barra superior. */
+    .portal-page-login .portal-auth-intro > img {
+        display: none;
+    }
+
+    .portal-page-login .portal-auth-intro h2 {
+        max-width: 14ch;
+        margin: 0;
+        font-size: clamp(1.75rem, 7.6vw, 2.2rem);
+        font-weight: 800;
+        line-height: 1.08;
+    }
+
+    /* En el teléfono, la acción manda: el párrafo largo se queda en
+       escritorio y aquí basta el título y los sellos. */
+    .portal-page-login .portal-auth-intro p {
+        display: none;
+    }
+
+    .portal-page-login .portal-auth-trust {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+    }
+
+    .portal-page-login .portal-auth-trust span {
+        padding: 6px 11px;
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, .08);
+        color: rgba(255, 255, 255, .9);
+        font-size: .78rem;
+        font-weight: 600;
+    }
+
+    .portal-page-login .pa-auth {
+        position: relative;
+        width: auto;
+        margin: -46px 14px 0 !important;
+        padding: 28px 22px 22px !important;
+        border-radius: 22px;
+        box-shadow: 0 24px 48px -28px rgba(29, 25, 77, .55), 0 2px 6px rgba(29, 25, 77, .06);
+    }
+
+    .portal-page-login .pa-auth h1 {
+        font-size: 1.6rem !important;
+    }
+
+    .portal-page-login .pa-auth .lead {
+        margin-bottom: 22px;
+    }
+}
+
+@media (max-width: 380px) {
+    .portal-page-login .portal-auth-intro {
+        padding: 22px 20px 64px;
+    }
+
+    .portal-page-login .pa-auth {
+        margin-left: 10px !important;
+        margin-right: 10px !important;
+        padding: 24px 18px 18px !important;
+    }
+}

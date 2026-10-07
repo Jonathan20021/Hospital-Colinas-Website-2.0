@@ -152,16 +152,28 @@ portal_layout_begin('Iniciar sesión', 'login');
             <input type="hidden" name="step" value="request">
             <div class="pa-field">
                 <label class="pa-label" for="identifier">Cédula o correo electrónico</label>
-                <input class="pa-input" type="text" name="identifier" id="identifier" required autofocus
-                       value="<?= e($idInput) ?>" placeholder="Ej.: 001-1234567-8  o  nombre@correo.com">
+                <div class="pa-input-wrap">
+                    <i data-lucide="id-card" aria-hidden="true"></i>
+                    <input class="pa-input" type="text" name="identifier" id="identifier" required autofocus
+                           value="<?= e($idInput) ?>" placeholder="Ej.: 001-1234567-8  o  nombre@correo.com">
+                </div>
             </div>
             <button type="submit" class="pa-btn pa-btn-green pa-btn-block">
                 <i data-lucide="mail"></i> Enviarme un código
             </button>
         </form>
 
+        <p class="pa-auth-or"><span>¿Otra forma de entrar?</span></p>
+
         <details class="pa-auth-alt portal-auth-password" <?= $openPassword ? 'open' : '' ?>>
-            <summary>Tengo contraseña y prefiero usarla</summary>
+            <summary class="pa-auth-option">
+                <span class="pa-auth-option-icon" aria-hidden="true"><i data-lucide="key-round"></i></span>
+                <span class="pa-auth-option-text">
+                    <strong>Usar mi contraseña</strong>
+                    <small>Entra con tu cédula o correo y tu contraseña</small>
+                </span>
+                <i data-lucide="chevron-down" class="pa-auth-option-chevron" aria-hidden="true"></i>
+            </summary>
             <form method="POST" autocomplete="on" class="portal-password-form">
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
                 <input type="hidden" name="step" value="password">
@@ -180,7 +192,14 @@ portal_layout_begin('Iniciar sesión', 'login');
         </details>
 
         <details class="pa-auth-alt portal-auth-password" <?= $openActivate ? 'open' : '' ?>>
-            <summary>Primera vez · No tengo correo</summary>
+            <summary class="pa-auth-option">
+                <span class="pa-auth-option-icon" aria-hidden="true"><i data-lucide="smartphone"></i></span>
+                <span class="pa-auth-option-text">
+                    <strong>Primera vez · Sin correo</strong>
+                    <small>Activa tu cuenta con tu cédula y tu celular</small>
+                </span>
+                <i data-lucide="chevron-down" class="pa-auth-option-chevron" aria-hidden="true"></i>
+            </summary>
             <p class="pa-hint">Si no tienes correo registrado, activa tu cuenta con tu <strong>cédula</strong> y el <strong>número de celular</strong> que diste en el hospital. No necesitas contraseña previa.</p>
             <form method="POST" autocomplete="off" class="portal-password-form">
                 <input type="hidden" name="_csrf" value="<?= e(portal_csrf_token()) ?>">
@@ -209,6 +228,7 @@ portal_layout_begin('Iniciar sesión', 'login');
         </details>
 
         <p class="pa-auth-alt portal-auth-register">¿No tienes cuenta? <a href="<?= e(base_url('portal/registro.php')) ?>">Crear cuenta</a></p>
+        <p class="pa-auth-secure"><i data-lucide="lock-keyhole" aria-hidden="true"></i> Conexión cifrada · Tus datos son privados</p>
         <?php /* En Safari/Chrome la barra del navegador NO se puede ocultar: solo
                  desaparece con la app instalada en la pantalla de inicio. La entrada
                  permanente vivia en _layout.php, o sea DESPUES de iniciar sesion, y
