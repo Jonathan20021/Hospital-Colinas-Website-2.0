@@ -40,42 +40,172 @@
     .bien-hero-visual { min-height: 280px; order: -1; }
 }
 
-/* ---------- Programa por día ---------- */
-.bien-dia + .bien-dia { margin-top: 2.5rem; }
-.bien-dia-head { display: flex; align-items: baseline; gap: .75rem; padding-bottom: .65rem; border-bottom: 1px solid var(--warm-line); }
-.bien-dia-head h2 { margin: 0; font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif; font-size: 1.45rem; font-weight: 800; color: var(--navy); letter-spacing: -.01em; }
-.bien-dia-head span { color: var(--muted); font-size: .85rem; font-weight: 600; }
+/* ---------- Banda de sensibilización (mes del cáncer de mama) ---------- */
+.bien-cinta {
+    display: inline-flex; align-items: center; gap: .55rem; margin-top: 1.1rem;
+    padding: .5rem 1rem; border-radius: 999px;
+    background: rgba(236, 72, 153, .16); color: #ffd6e8;
+    font-size: .8rem; font-weight: 800; letter-spacing: .02em;
+    border: 1px solid rgba(236, 72, 153, .35);
+}
+.bien-cinta svg { width: 1rem; height: 1rem; color: #f9a8d4; flex: none; }
 
-.bien-grid { margin-top: 1.25rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.25rem; }
+/* ---------- Agenda: raíl del día + actividades ------------------------
+   Calcada de la estructura del póster oficial: FECHA a la izquierda en un
+   bloque de color, y el contenido del día a la derecha. Cada día tiene su
+   acento, como en el impreso, pero aplicado solo al raíl: la tipografía y
+   las superficies siguen siendo las del sitio (navy + warm). */
+.bien-agenda { margin-top: 2rem; }
 
+.bien-dia {
+    display: grid; grid-template-columns: 148px minmax(0, 1fr); gap: 1.75rem;
+    padding: 1.75rem 0;
+}
+.bien-dia + .bien-dia { border-top: 1px solid var(--warm-line); }
+
+.bien-rail { position: relative; }
+/* Guia vertical: sin ella el bloque de la fecha flota suelto y no se lee como
+   la cabecera de la fila, que es lo que es en el poster impreso. */
+.bien-rail::after {
+    content: ''; position: absolute; left: 50%; top: calc(100% + .35rem); bottom: -.4rem;
+    width: 1px; background: linear-gradient(var(--dia-linea, var(--warm-line)), transparent);
+}
+.bien-dia:last-child .bien-rail::after { display: none; }
+.bien-rail-inner {
+    position: sticky; top: 96px;
+    border-radius: 16px; padding: 1.1rem .9rem 1rem;
+    background: var(--dia-suave, var(--warm));
+    border: 1px solid var(--dia-linea, var(--warm-line));
+    text-align: center;
+}
+.bien-rail-dow {
+    display: block; font-size: .72rem; font-weight: 950; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--dia, var(--navy)); opacity: .85;
+}
+.bien-rail-num {
+    display: block; margin-top: .1rem;
+    font-family: "Outfit", "Plus Jakarta Sans", sans-serif;
+    font-size: 2.9rem; font-weight: 800; line-height: 1; letter-spacing: -.04em;
+    color: var(--dia, var(--navy));
+}
+.bien-rail-mes { display: block; margin-top: .15rem; font-size: .75rem; font-weight: 700; color: var(--muted); }
+.bien-rail-n {
+    display: block; margin-top: .7rem; padding-top: .6rem;
+    border-top: 1px solid var(--dia-linea, var(--warm-line));
+    font-size: .72rem; font-weight: 700; color: var(--muted);
+}
+.bien-rail-hoy {
+    display: inline-block; margin-top: .55rem; padding: .18rem .55rem; border-radius: 999px;
+    background: var(--dia, var(--navy)); color: #fff;
+    font-size: .64rem; font-weight: 950; letter-spacing: .08em; text-transform: uppercase;
+}
+
+.bien-dia-lista { display: flex; flex-direction: column; gap: .9rem; min-width: 0; }
+
+/* ---------- La charla del día: la pieza principal ---------- */
 .bien-card {
-    display: flex; flex-direction: column; gap: .9rem; position: relative;
+    position: relative; overflow: hidden;
     border: 1px solid var(--warm-line); border-radius: 16px; background: var(--paper);
-    padding: 1.55rem; box-shadow: 0 14px 32px rgba(38, 33, 97, .06);
+    padding: 1.5rem 1.6rem; box-shadow: 0 14px 32px rgba(38, 33, 97, .06);
     transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
 }
-.bien-card:hover { transform: translateY(-4px); border-color: rgba(111, 180, 63, .55); box-shadow: 0 26px 48px rgba(38, 33, 97, .14); }
-.bien-card.is-past { opacity: .62; }
+.bien-card::before {
+    content: ''; position: absolute; inset: 0 auto 0 0; width: 4px;
+    background: var(--dia, var(--green));
+}
+.bien-card:hover { transform: translateY(-3px); border-color: rgba(111, 180, 63, .5); box-shadow: 0 26px 48px rgba(38, 33, 97, .13); }
+.bien-card.is-past { opacity: .55; }
 .bien-card.is-past:hover { transform: none; border-color: var(--warm-line); box-shadow: 0 14px 32px rgba(38, 33, 97, .06); }
 
-.bien-card-tags { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
-.bien-tag {
-    display: inline-flex; align-items: center; gap: .4rem; background: var(--warm); color: var(--navy);
-    font-size: .7rem; font-weight: 950; letter-spacing: .04em; text-transform: uppercase;
-    padding: .35rem .65rem; border-radius: 999px;
+/* Dos columnas, como la tabla del poster: a la izquierda quien y de que va,
+   a la derecha cuando, donde y el boton. Antes la tarjeta ocupaba todo el
+   ancho con el texto apelotonado a la izquierda y medio metro de vacio. */
+.bien-card-grid { display: grid; grid-template-columns: minmax(0, 1fr) 232px; gap: 1.5rem; align-items: start; }
+.bien-card-main { min-width: 0; }
+.bien-card-side {
+    display: flex; flex-direction: column; gap: .75rem; align-items: flex-start;
+    padding-left: 1.5rem; border-left: 1px solid var(--warm-line);
 }
-.bien-tag svg { width: .85rem; height: .85rem; color: var(--green); }
+.bien-card.is-sec .bien-card-grid { grid-template-columns: minmax(0, 1fr) 200px; gap: 1.25rem; }
+.bien-card.is-sec .bien-card-side { border-left-color: var(--dia-linea, var(--warm-line)); }
+.bien-card-side .btn { width: 100%; justify-content: center; }
+
+.bien-card-top { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin-bottom: .7rem; }
+.bien-tag {
+    display: inline-flex; align-items: center; gap: .35rem; background: var(--warm); color: var(--navy);
+    font-size: .68rem; font-weight: 950; letter-spacing: .05em; text-transform: uppercase;
+    padding: .32rem .6rem; border-radius: 999px;
+}
+.bien-tag svg { width: .8rem; height: .8rem; color: var(--dia, var(--green)); }
 .bien-tag.is-green { background: rgba(111, 180, 63, .14); color: var(--green-2); }
 .bien-tag.is-muted { background: #f1efeb; color: var(--muted); }
+.bien-tag.is-live { background: rgba(111, 180, 63, .16); color: var(--green-2); }
+.bien-tag.is-live::before {
+    content: ''; width: .4rem; height: .4rem; border-radius: 50%; background: var(--green-2);
+    animation: bien-latido 1.6s ease-in-out infinite;
+}
+@keyframes bien-latido { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .bien-tag.is-live::before { animation: none; } }
 
-.bien-card h3 { margin: 0; font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif; font-weight: 800; font-size: 1.2rem; line-height: 1.25; color: var(--navy); letter-spacing: -.01em; }
-.bien-card-speakers { margin: 0; color: var(--ink-2); font-size: .93rem; line-height: 1.5; }
-.bien-card-meta { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; }
-.bien-card-meta li { display: inline-flex; align-items: center; gap: .45rem; color: var(--muted); font-size: .89rem; }
-.bien-card-meta svg { width: 1rem; height: 1rem; color: var(--green); flex: none; }
-.bien-card-foot { margin-top: auto; padding-top: .9rem; border-top: 1px solid var(--warm-line); }
-.bien-card-foot .btn { width: 100%; justify-content: center; }
-.bien-card-cerrada { color: var(--muted); font-size: .88rem; font-weight: 700; text-align: center; display: block; }
+.bien-card h3 {
+    margin: 0; font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    font-weight: 800; font-size: 1.32rem; line-height: 1.22; color: var(--navy); letter-spacing: -.018em;
+    text-wrap: balance;
+}
+.bien-card.is-sec h3 { font-size: 1.06rem; }
+
+/* Ponentes: el nombre manda, la especialidad acompaña */
+.bien-ponentes { margin: .7rem 0 0; display: flex; flex-wrap: wrap; gap: .4rem .9rem; }
+.bien-ponente { display: inline-flex; align-items: baseline; gap: .4rem; font-size: .92rem; }
+.bien-ponente b { font-weight: 700; color: var(--ink-2); }
+.bien-ponente span { color: var(--muted); font-size: .8rem; }
+
+.bien-meta { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; }
+.bien-meta li { display: inline-flex; align-items: center; gap: .4rem; color: var(--muted); font-size: .87rem; }
+.bien-meta svg { width: .95rem; height: .95rem; color: var(--dia, var(--green)); flex: none; }
+.bien-meta .bien-hora { font-weight: 700; color: var(--ink-2); }
+
+.bien-card-foot { margin-top: .15rem; width: 100%; }
+.bien-card-foot .btn { min-height: 44px; }
+.bien-cerrada { color: var(--muted); font-size: .86rem; font-weight: 700; }
+
+/* ---------- Estaciones y ferias: fila compacta ---------- */
+.bien-card.is-sec { padding: 1.1rem 1.3rem; box-shadow: none; background: var(--warm); border-style: dashed; }
+.bien-card.is-sec::before { width: 3px; opacity: .55; }
+.bien-card.is-sec:hover { background: #fff; box-shadow: 0 14px 30px rgba(38, 33, 97, .07); }
+.bien-card.is-sec .bien-card-foot { margin-top: .85rem; }
+.bien-card.is-sec .bien-card-foot .btn { min-height: 40px; font-size: .86rem; }
+
+@media (max-width: 860px) {
+    .bien-dia { grid-template-columns: 1fr; gap: .9rem; padding: 1.35rem 0; }
+    .bien-rail-inner {
+        position: static; display: flex; align-items: center; gap: .75rem;
+        text-align: left; padding: .7rem .95rem;
+    }
+    .bien-rail-num { font-size: 1.75rem; }
+    .bien-rail-dow, .bien-rail-mes { font-size: .72rem; }
+    .bien-rail-mes { margin-top: 0; }
+    .bien-rail-n { margin: 0 0 0 auto; padding: 0; border: 0; text-align: right; }
+    .bien-rail-hoy { margin: 0 0 0 .4rem; }
+    .bien-card { padding: 1.2rem 1.25rem; }
+    .bien-card h3 { font-size: 1.14rem; }
+    .bien-card-grid, .bien-card.is-sec .bien-card-grid { grid-template-columns: 1fr; gap: 1rem; }
+    .bien-card-side { padding-left: 0; padding-top: .9rem; border-left: 0; border-top: 1px solid var(--warm-line); }
+    .bien-meta { flex-direction: row; flex-wrap: wrap; gap: .35rem 1.1rem; }
+    .bien-rail::after { display: none; }
+}
+
+/* ---------- Patrocinadores ---------- */
+.bien-patro { margin-top: 2.5rem; padding-top: 1.75rem; border-top: 1px solid var(--warm-line); text-align: center; }
+.bien-patro p {
+    margin: 0 0 .9rem; font-size: .7rem; font-weight: 900; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted);
+}
+.bien-patro ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: .55rem .7rem; }
+.bien-patro li {
+    padding: .45rem .95rem; border: 1px solid var(--warm-line); border-radius: 10px;
+    background: var(--paper); color: var(--navy); font-size: .85rem; font-weight: 700;
+}
 
 /* ---------- Estado vacío ---------- */
 .bien-vacio { text-align: center; padding: 4rem 1.5rem; border: 1px dashed var(--line); border-radius: 18px; background: var(--paper); }

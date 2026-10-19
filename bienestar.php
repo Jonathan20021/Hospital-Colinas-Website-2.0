@@ -33,6 +33,55 @@ $event = is_array($data['event'] ?? null) ? $data['event'] : null;
 $activities = is_array($data['activities'] ?? null) ? $data['activities'] : [];
 
 $KIND_LABEL = ['CHARLA' => 'Charla', 'ESTACION' => 'Estación', 'FERIA' => 'Feria'];
+// Solo iconos presentes en `assets/js/lucide-subset.js`: el sitio NO carga
+// la libreria completa, y uno que falte sale como un hueco vacio.
+$KIND_ICON  = ['CHARLA' => 'message-square-quote', 'ESTACION' => 'stethoscope', 'FERIA' => 'handshake'];
+
+/**
+ * Acento por dia de la semana: [color, fondo suave, linea].
+ *
+ * Son los del poster oficial —rosa, verde, azul, coral, violeta—, pero aqui
+ * solo tinen el rail del dia. La tipografia y las tarjetas se quedan en el
+ * navy y el warm del sitio: el evento pone el acento, no la identidad.
+ */
+$COLOR_DIA = [
+    1 => ['#d6468c', 'rgba(214,70,140,.07)', 'rgba(214,70,140,.22)'],  // lunes
+    2 => ['#5da334', 'rgba(93,163,52,.08)',  'rgba(93,163,52,.24)'],   // martes
+    3 => ['#2f6fb5', 'rgba(47,111,181,.07)', 'rgba(47,111,181,.22)'],  // miercoles
+    4 => ['#d4584a', 'rgba(212,88,74,.07)',  'rgba(212,88,74,.22)'],   // jueves
+    5 => ['#6b4fa8', 'rgba(107,79,168,.07)', 'rgba(107,79,168,.22)'],  // viernes
+    6 => ['#262161', 'rgba(38,33,97,.06)',   'rgba(38,33,97,.18)'],
+    0 => ['#262161', 'rgba(38,33,97,.06)',   'rgba(38,33,97,.18)'],
+];
+
+/**
+ * Parte el texto libre de ponentes en nombre + especialidad.
+ *
+ * Viene como «Dra. Neyda Minaya & Dra. Madeline Zapata» o
+ * «Dra. Franceska Martinez (dermatologa tricologa) - The Beauty Duo». Lo que
+ * va entre parentesis es la especialidad y se muestra mas tenue, como en el
+ * poster. Si no hay separadores, devuelve una sola entrada.
+ */
+function bien_ponentes(string $crudo): array {
+    $crudo = trim($crudo);
+    if ($crudo === '') return [];
+    // Solo & y ·, NO la coma: una especialidad como «psicologa, INFOTEP»
+    // se partiria en dos ponentes y el segundo saldria sin nombre.
+    $partes = preg_split('/\s*(?:&|·)\s*/u', $crudo) ?: [$crudo];
+    $out = [];
+    foreach ($partes as $x) {
+        $x = trim($x);
+        if ($x === '') continue;
+        $esp = '';
+        if (preg_match('/^(.*?)\s*\(([^)]+)\)\s*(.*)$/u', $x, $m)) {
+            $x = trim($m[1]);
+            $esp = trim($m[2]);
+            if (trim($m[3]) !== '') $esp .= ' ' . trim($m[3]);
+        }
+        if ($x !== '') $out[] = [$x, $esp];
+    }
+    return $out;
+}
 $DIAS = ['Sunday' => 'domingo', 'Monday' => 'lunes', 'Tuesday' => 'martes', 'Wednesday' => 'miércoles',
          'Thursday' => 'jueves', 'Friday' => 'viernes', 'Saturday' => 'sábado'];
 $MESES = [1 => 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
@@ -64,6 +113,18 @@ foreach ($activities as $a) {
     if (($a['state'] ?? '') === 'abierta' && !empty($a['publicOpen'])) $abiertas++;
 }
 $total = count($activities);
+
+// Patrocinadores: salen de las propias actividades, no se escriben a mano, asi
+// que la proxima jornada trae los suyos sin tocar codigo.
+$patrocinadores = [];
+foreach ($activities as $a) {
+    foreach (preg_split('/\s*·\s*/u', trim((string) ($a['sponsor'] ?? ''))) ?: [] as $pt) {
+        $pt = trim($pt);
+        if ($pt !== '') $patrocinadores[$pt] = true;
+    }
+}
+$patrocinadores = array_keys($patrocinadores);
+sort($patrocinadores, SORT_NATURAL | SORT_FLAG_CASE);
 
 $nombreEvento = $event['name'] ?? 'Jornada de salud y bienestar';
 $lema = trim((string) ($event['tagline'] ?? ''));
@@ -130,6 +191,14 @@ function e_strip(string $s): string { return trim(strip_tags($s)); }
                 <?php if ($lema !== ''): ?>
                     <p class="bien-hero-lema">«<?= e($lema) ?>»</p>
                 <?php endif; ?>
+                <?php /* Octubre es el mes de sensibilizacion sobre el cancer de mama, y
+                         asi lo encabeza la agenda oficial del hospital. */ ?>
+                <?php if ($event && (int) date('n', strtotime($event['startDate'] . ' 12:00:00')) === 10): ?>
+                    <span class="bien-cinta">
+                        <i data-lucide="ribbon"></i>
+                        Mes de sensibilización sobre el cáncer de mama
+                    </span>
+                <?php endif; ?>
                 <p>
                     <?php if ($event): ?>
                         Charlas, estaciones y ferias de salud abiertas a la comunidad. La entrada es
@@ -161,16 +230,16 @@ function e_strip(string $s): string { return trim(strip_tags($s)); }
         </div>
     </section>
 
-    <!-- Programa -->
+    <!-- Programa: raíl del día + actividades, como la tabla del póster oficial -->
     <section id="programa" class="dir-section">
         <div class="dir-section-shell">
             <div class="dir-section-head">
                 <div>
                     <p class="section-label"><i data-lucide="heart-pulse" class="h-4 w-4"></i> Programa</p>
-                    <h2>Actividades</h2>
+                    <h2>Agenda de la jornada</h2>
                     <span>
                         <?php if ($total > 0): ?>
-                            <?= e((string) $total) ?> actividad<?= $total === 1 ? '' : 'es' ?> en el programa<?php
+                            <?= e((string) $total) ?> actividad<?= $total === 1 ? '' : 'es' ?> en cinco días<?php
                                 if ($abiertas > 0) { echo ', ' . e((string) $abiertas) . ' con inscripción abierta'; }
                             ?>.
                         <?php else: ?>
@@ -190,62 +259,83 @@ function e_strip(string $s): string { return trim(strip_tags($s)); }
                     </p>
                 </div>
             <?php else: ?>
+                <div class="bien-agenda">
                 <?php foreach ($porDia as $dia => $acts): ?>
-                    <?php $tsDia = strtotime($dia . ' 12:00:00'); ?>
-                    <div class="bien-dia">
-                        <div class="bien-dia-head">
-                            <h2><?= e(ucfirst($DIAS[date('l', $tsDia)] ?? '')) ?>,
-                                <?= e(date('j', $tsDia)) ?> de <?= e($MESES[(int) date('n', $tsDia)]) ?></h2>
-                            <span><?= e((string) count($acts)) ?> actividad<?= count($acts) === 1 ? '' : 'es' ?></span>
+                    <?php
+                        $tsDia = strtotime($dia . ' 12:00:00');
+                        $dow   = date('w', $tsDia);          // 0=domingo
+                        $c     = $COLOR_DIA[$dow] ?? $COLOR_DIA[1];
+                        $esHoy = $dia === date('Y-m-d');
+                        // La charla del día manda; estaciones y ferias acompañan.
+                        usort($acts, static fn($a, $b) => [$a['kind'] !== 'CHARLA', $a['_ts']] <=> [$b['kind'] !== 'CHARLA', $b['_ts']]);
+                    ?>
+                    <div class="bien-dia" style="--dia: <?= e($c[0]) ?>; --dia-suave: <?= e($c[1]) ?>; --dia-linea: <?= e($c[2]) ?>;">
+                        <div class="bien-rail">
+                            <div class="bien-rail-inner">
+                                <span class="bien-rail-dow"><?= e(mb_substr($DIAS[date('l', $tsDia)] ?? '', 0, 3, 'UTF-8')) ?></span>
+                                <span class="bien-rail-num"><?= e(date('j', $tsDia)) ?></span>
+                                <span class="bien-rail-mes"><?= e($MESES[(int) date('n', $tsDia)]) ?></span>
+                                <?php if ($esHoy): ?><span class="bien-rail-hoy">Hoy</span><?php endif; ?>
+                                <span class="bien-rail-n"><?= e((string) count($acts)) ?> actividad<?= count($acts) === 1 ? '' : 'es' ?></span>
+                            </div>
                         </div>
 
-                        <div class="bien-grid">
+                        <div class="bien-dia-lista">
                             <?php foreach ($acts as $a):
                                 $estado   = (string) ($a['state'] ?? 'abierta');
                                 $pasada   = $estado === 'terminada';
+                                $curso    = $estado === 'en_curso';
                                 $llena    = $estado === 'llena';
                                 $abierta  = !empty($a['publicOpen']) && !$pasada && !$llena;
                                 $plazas   = $a['seatsLeft'] ?? null;
+                                $sec      = ($a['kind'] ?? '') !== 'CHARLA';
                             ?>
-                            <article class="bien-card<?= $pasada ? ' is-past' : '' ?>">
-                                <div class="bien-card-tags">
+                            <article class="bien-card<?= $sec ? ' is-sec' : '' ?><?= $pasada ? ' is-past' : '' ?>">
+                                <div class="bien-card-grid">
+                                <div class="bien-card-main">
+                                <div class="bien-card-top">
                                     <span class="bien-tag">
-                                        <i data-lucide="sparkles"></i>
+                                        <i data-lucide="<?= e($KIND_ICON[$a['kind'] ?? ''] ?? 'sparkles') ?>"></i>
                                         <?= e($KIND_LABEL[$a['kind'] ?? ''] ?? (string) ($a['kind'] ?? '')) ?>
                                     </span>
-                                    <?php if (!empty($a['publicOpen']) && !$pasada): ?>
-                                        <span class="bien-tag is-green">Entrada libre</span>
-                                    <?php endif; ?>
-                                    <?php if ($pasada): ?>
+                                    <?php if ($curso): ?>
+                                        <span class="bien-tag is-live">En curso</span>
+                                    <?php elseif ($pasada): ?>
                                         <span class="bien-tag is-muted">Terminada</span>
                                     <?php elseif ($llena): ?>
                                         <span class="bien-tag is-muted">Cupo lleno</span>
-                                    <?php elseif ($estado === 'en_curso'): ?>
-                                        <span class="bien-tag is-green">En curso</span>
+                                    <?php elseif (!empty($a['publicOpen'])): ?>
+                                        <span class="bien-tag is-green">Entrada libre</span>
                                     <?php endif; ?>
                                 </div>
 
                                 <h3><?= e((string) ($a['title'] ?? '')) ?></h3>
 
-                                <?php if (!empty($a['speakers'])): ?>
-                                    <p class="bien-card-speakers"><?= e((string) $a['speakers']) ?></p>
+                                <?php $ponentes = bien_ponentes((string) ($a['speakers'] ?? '')); ?>
+                                <?php if ($ponentes): ?>
+                                    <p class="bien-ponentes">
+                                        <?php foreach ($ponentes as $pn): ?>
+                                            <span class="bien-ponente">
+                                                <b><?= e($pn[0]) ?></b><?php if ($pn[1] !== ''): ?><span><?= e($pn[1]) ?></span><?php endif; ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    </p>
                                 <?php endif; ?>
 
-                                <ul class="bien-card-meta">
+                                </div>
+
+                                <div class="bien-card-side">
+                                <ul class="bien-meta">
                                     <li>
                                         <i data-lucide="clock"></i>
-                                        <?= e(bien_hora((int) $a['_ts'])) ?><?php
-                                            if (!empty($a['_tsFin'])) echo ' – ' . e(bien_hora((int) $a['_tsFin']));
-                                        ?>
+                                        <span class="bien-hora"><?= e(bien_hora((int) $a['_ts'])) ?></span>
+                                        <?php if (!empty($a['_tsFin'])): ?>– <?= e(bien_hora((int) $a['_tsFin'])) ?><?php endif; ?>
                                     </li>
                                     <?php if (!empty($a['location'])): ?>
                                         <li><i data-lucide="map-pin"></i><?= e((string) $a['location']) ?></li>
                                     <?php endif; ?>
                                     <?php if ($plazas !== null && $abierta): ?>
                                         <li><i data-lucide="users"></i><?= e((string) $plazas) ?> plaza<?= (int) $plazas === 1 ? '' : 's' ?></li>
-                                    <?php endif; ?>
-                                    <?php if (!empty($a['sponsor'])): ?>
-                                        <li><i data-lucide="handshake"></i><?= e((string) $a['sponsor']) ?></li>
                                     <?php endif; ?>
                                 </ul>
 
@@ -260,18 +350,32 @@ function e_strip(string $s): string { return trim(strip_tags($s)); }
                                             Inscribirme
                                         </button>
                                     <?php elseif ($pasada): ?>
-                                        <span class="bien-card-cerrada">Esta actividad ya terminó</span>
+                                        <span class="bien-cerrada">Esta actividad ya terminó</span>
                                     <?php elseif ($llena): ?>
-                                        <span class="bien-card-cerrada">Sin plazas disponibles</span>
+                                        <span class="bien-cerrada">Sin plazas disponibles</span>
                                     <?php else: ?>
-                                        <span class="bien-card-cerrada">Actividad interna del hospital</span>
+                                        <span class="bien-cerrada">Actividad interna del hospital</span>
                                     <?php endif; ?>
+                                </div>
+                                </div>
                                 </div>
                             </article>
                             <?php endforeach; ?>
                         </div>
                     </div>
                 <?php endforeach; ?>
+                </div>
+
+                <?php if ($patrocinadores): ?>
+                    <div class="bien-patro">
+                        <p>Con el apoyo de</p>
+                        <ul>
+                            <?php foreach ($patrocinadores as $pt): ?>
+                                <li><?= e($pt) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
 
                 <p class="bien-nota">
                     <strong>¿Trabajas en el hospital?</strong> No te inscribas aquí: hazlo desde la
