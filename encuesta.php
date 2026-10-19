@@ -150,7 +150,7 @@ $MOTIVOS = [
                                     <i data-lucide="thumbs-up"></i> Sí
                                 </button>
                                 <button type="button" class="enc-opcion" data-reco="0" aria-pressed="false">
-                                    <i data-lucide="thumbs-down"></i> No
+                                    <i data-lucide="x"></i> No
                                 </button>
                             </div>
                             <input type="hidden" name="recommends" value="">
@@ -208,7 +208,10 @@ $MOTIVOS = [
     </p>
 </main>
 
-<script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e($assetVersion) ?>" defer></script>
+<script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+<?php /* Sin `defer` y con la llamada explicita: el subset NO se auto-invoca,
+       y con `defer` las estrellas salian como cajas vacias. */ ?>
+<script>if (window.lucide) lucide.createIcons();</script>
 <script>
 (function () {
     'use strict';
@@ -262,6 +265,7 @@ $MOTIVOS = [
     function fallo(msg) {
         error.querySelector('span').textContent = msg;
         error.hidden = false;
+        if (window.lucide) lucide.createIcons();
         boton.disabled = false;
         boton.querySelector('span').textContent = form.querySelector('[name=absenceReason]') ? 'Enviar' : 'Enviar mi opinión';
     }
@@ -287,6 +291,7 @@ $MOTIVOS = [
                 if (!d || !d.ok) return fallo((d && d.error) || 'No pudimos guardar tu respuesta. Inténtalo de nuevo.');
                 form.hidden = true;
                 gracias.hidden = false;
+                if (window.lucide) lucide.createIcons();
                 gracias.scrollIntoView({ behavior: 'smooth', block: 'center' });
             })
             .catch(function () { fallo('Sin conexión. Revisa tus datos e inténtalo de nuevo.'); });
