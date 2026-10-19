@@ -253,58 +253,148 @@
 /* ============================================================================
    /registro/{token} — lo que ve quien escanea el QR del cartel.
 
-   Pantalla de pasillo: una sola cosa que hacer, con el pulgar, de pie y a
-   veces con mala señal. Sin cabecera del sitio ni nada que distraiga.
+   Contexto real: de pie en un pasillo, con el teléfono en una mano, a veces
+   con mala señal y con gente esperando detrás. Una sola cosa que hacer, y
+   dicha sin rodeos.
+
+   La versión anterior era una tarjeta blanca flotando en medio de la nada y,
+   peor, cuando el registro no estaba abierto decía «aún no ha abierto» SIN
+   decir a qué hora abría — que es justo lo que uno necesita saber ahí parado.
    ============================================================================ */
-.registro-page { min-height: 100dvh; background: var(--canvas); color: var(--ink-2); }
-.reg-wrap { width: min(100%, 460px); margin: 0 auto; padding: 1.5rem 1.1rem 3rem; }
-.reg-marca { text-align: center; padding: .5rem 0 1.25rem; }
-.reg-logo { height: 42px; width: auto; }
+.registro-page {
+    min-height: 100dvh; margin: 0; background: var(--canvas); color: var(--ink-2);
+    display: flex; flex-direction: column;
+    /* La familia va explicita: esta pagina NO carga el bundle de Tailwind, asi
+       que la utilidad `font-sans` no existe aqui y el cuerpo caia en el serif
+       del navegador. Cargar todo Tailwind por una utilidad seria un lastre en
+       un telefono con mala senal, que es justo el escenario de esta pantalla. */
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
 
+/* ---------- Cabecera de marca ---------- */
+.reg-top {
+    background: linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 100%);
+    padding: 1.5rem 1.25rem 3.5rem; text-align: center; position: relative; overflow: hidden;
+}
+.reg-top::after {
+    content: ''; position: absolute; left: 50%; bottom: -18rem; transform: translateX(-50%);
+    width: 26rem; height: 26rem; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .07);
+}
+.reg-logo { height: 38px; width: auto; filter: brightness(0) invert(1); opacity: .95; }
+.reg-evento {
+    margin: 1rem 0 0; position: relative; z-index: 1;
+    font-size: .68rem; font-weight: 950; letter-spacing: .14em; text-transform: uppercase;
+    color: #b6f0a3;
+}
+.reg-lema { margin: .3rem 0 0; position: relative; z-index: 1; font-size: .86rem; font-style: italic; color: rgba(255, 255, 255, .72); }
+
+/* ---------- Tarjeta, montada sobre la cabecera ---------- */
+.reg-wrap { width: min(100%, 480px); margin: -2.5rem auto 0; padding: 0 1rem 2rem; flex: 1; }
 .reg-card {
-    background: var(--paper); border: 1px solid var(--warm-line); border-radius: 18px;
-    padding: 1.6rem 1.4rem; box-shadow: 0 18px 42px rgba(38, 33, 97, .08);
+    position: relative; overflow: hidden;
+    background: var(--paper); border: 1px solid var(--warm-line); border-radius: 20px;
+    box-shadow: 0 22px 54px rgba(24, 21, 79, .16);
 }
-.reg-evento { margin: 0; font-size: .7rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; color: var(--green-2); }
-.reg-lema { margin: .25rem 0 0; font-size: .85rem; font-style: italic; color: var(--muted); }
-.reg-card h1 {
-    margin: .9rem 0 0; font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
-    font-size: 1.35rem; font-weight: 800; line-height: 1.25; color: var(--navy); letter-spacing: -.015em;
-}
-.reg-ponentes { margin: .5rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--ink-2); }
-.reg-meta { list-style: none; margin: 1.1rem 0 0; padding: .95rem 0 0; border-top: 1px solid var(--warm-line); display: flex; flex-direction: column; gap: .5rem; }
-.reg-meta li { display: flex; align-items: center; gap: .55rem; color: var(--muted); font-size: .92rem; }
-.reg-meta svg { width: 1rem; height: 1rem; color: var(--green); flex: none; }
-.reg-meta .tabular { font-variant-numeric: tabular-nums; }
+.reg-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--dia, var(--green)); }
+.reg-card-cuerpo { padding: 1.6rem 1.35rem 1.5rem; }
 
-.reg-form { margin-top: 1.4rem; }
+.reg-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin-bottom: .85rem; }
+.reg-chip {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: var(--warm); color: var(--navy); border-radius: 999px;
+    padding: .34rem .66rem; font-size: .68rem; font-weight: 950; letter-spacing: .05em; text-transform: uppercase;
+}
+.reg-chip svg { width: .82rem; height: .82rem; color: var(--dia, var(--green)); }
+.reg-chip.is-dia { background: var(--dia-suave, var(--warm)); color: var(--dia, var(--navy)); }
+
+.reg-card h1 {
+    margin: 0; font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    font-size: 1.42rem; font-weight: 800; line-height: 1.22; letter-spacing: -.02em;
+    color: var(--navy); text-wrap: balance;
+}
+
+/* Ponentes: uno por línea, con su especialidad debajo. En el teléfono, dos
+   nombres largos en una sola línea se vuelven ilegibles. */
+.reg-ponentes { list-style: none; margin: 1rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .5rem; }
+.reg-ponentes li { display: flex; align-items: baseline; gap: .5rem; }
+.reg-ponentes b { font-weight: 700; font-size: .95rem; color: var(--ink-2); }
+.reg-ponentes span { font-size: .78rem; color: var(--muted); }
+
+.reg-meta { list-style: none; margin: 1.15rem 0 0; padding: 1rem 0 0; border-top: 1px solid var(--warm-line); display: flex; flex-direction: column; gap: .55rem; }
+.reg-meta li { display: flex; align-items: center; gap: .6rem; color: var(--ink-2); font-size: .95rem; }
+.reg-meta svg { width: 1.05rem; height: 1.05rem; color: var(--dia, var(--green)); flex: none; }
+.reg-meta .tabular { font-variant-numeric: tabular-nums; font-weight: 600; }
+
+/* ---------- Zona de acción: el pie de la tarjeta ---------- */
+.reg-accion { padding: 1.35rem; background: var(--warm); border-top: 1px solid var(--warm-line); }
+
+.reg-estado { display: flex; gap: .75rem; align-items: flex-start; }
+.reg-estado-ico {
+    flex: none; width: 2.5rem; height: 2.5rem; border-radius: 12px;
+    display: grid; place-items: center; background: #fff; border: 1px solid var(--warm-line);
+}
+.reg-estado-ico svg { width: 1.2rem; height: 1.2rem; color: var(--muted); }
+.reg-estado h2 { margin: 0; font-size: .98rem; font-weight: 800; color: var(--navy); font-family: "Outfit", sans-serif; }
+.reg-estado p { margin: .3rem 0 0; font-size: .89rem; line-height: 1.55; color: var(--muted); }
+/* La cuenta atrás es el dato que faltaba: de pie en el pasillo, «abre en 6
+   minutos» sirve; «aún no ha abierto» no. */
+.reg-cuenta {
+    display: inline-block; margin-top: .6rem; padding: .35rem .75rem; border-radius: 999px;
+    background: #fff; border: 1px solid var(--warm-line);
+    font-size: .82rem; font-weight: 800; color: var(--navy); font-variant-numeric: tabular-nums;
+}
+.reg-estado.is-abierta .reg-estado-ico { background: rgba(111, 180, 63, .14); border-color: rgba(111, 180, 63, .34); }
+.reg-estado.is-abierta .reg-estado-ico svg { color: var(--green-2); }
+
+/* ---------- Formulario ---------- */
+.reg-form { margin: 0; }
 .reg-campo { display: block; }
-.reg-campo > span { display: block; margin-bottom: .5rem; font-size: .95rem; font-weight: 700; color: var(--ink-2); }
-/* Campo grande y centrado: se escribe de pie, con una mano. */
+.reg-campo > span { display: block; margin-bottom: .55rem; font-size: .95rem; font-weight: 700; color: var(--ink-2); text-align: center; }
+/* Campo grande, centrado y con teclado numérico: se escribe con una mano. */
 .reg-campo input {
-    width: 100%; min-height: 58px; padding: .7rem 1rem; text-align: center;
-    border: 1px solid var(--line); border-radius: 14px; background: #fff;
-    font: inherit; font-size: 1.35rem; font-weight: 700; letter-spacing: .04em;
+    width: 100%; min-height: 60px; padding: .7rem 1rem; text-align: center;
+    border: 1.5px solid var(--line); border-radius: 14px; background: #fff;
+    font: inherit; font-size: 1.4rem; font-weight: 700; letter-spacing: .05em;
     font-variant-numeric: tabular-nums; color: var(--navy);
     transition: border-color .15s ease, box-shadow .15s ease;
 }
-.reg-campo input:focus { outline: 0; border-color: var(--green); box-shadow: 0 0 0 4px rgba(111, 180, 63, .18); }
-.reg-form .btn { width: 100%; justify-content: center; min-height: 54px; margin-top: 1rem; font-size: 1rem; }
+.reg-campo input::placeholder { font-weight: 500; color: #c3bfb8; letter-spacing: .02em; }
+.reg-campo input:focus { outline: 0; border-color: var(--green); box-shadow: 0 0 0 4px rgba(111, 180, 63, .2); }
+.reg-form .btn { width: 100%; justify-content: center; min-height: 56px; margin-top: .85rem; font-size: 1.02rem; }
+.reg-ayuda { margin: .7rem 0 0; text-align: center; font-size: .78rem; line-height: 1.5; color: var(--muted); }
 
-.reg-aviso { display: flex; align-items: flex-start; gap: .6rem; margin: 1.1rem 0 0; padding: .85rem 1rem; border-radius: 12px; font-size: .92rem; line-height: 1.55; }
-.reg-aviso svg { width: 1.05rem; height: 1.05rem; flex: none; margin-top: .1rem; }
+.reg-aviso { display: flex; align-items: flex-start; gap: .55rem; margin: .9rem 0 0; padding: .8rem .95rem; border-radius: 12px; font-size: .88rem; line-height: 1.55; }
+.reg-aviso svg { width: 1rem; height: 1rem; flex: none; margin-top: .12rem; }
 .reg-aviso.is-error { background: #fdeceb; color: #9b2c2c; border: 1px solid #f5c6c3; }
-.reg-aviso.is-espera { background: var(--warm); color: var(--ink-2); border: 1px solid var(--warm-line); }
 
-.reg-ok { text-align: center; padding: .9rem 0 .25rem; }
-.reg-ok svg { width: 3.2rem; height: 3.2rem; color: var(--green); }
-.reg-ok h2 { margin: .9rem 0 .45rem; font-family: "Outfit", "Plus Jakarta Sans", sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--navy); }
-.reg-ok p { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.6; }
+/* ---------- Confirmación ---------- */
+.reg-ok { text-align: center; }
+.reg-ok-ico {
+    width: 3.6rem; height: 3.6rem; margin: 0 auto; border-radius: 50%;
+    display: grid; place-items: center; background: rgba(111, 180, 63, .15);
+}
+.reg-ok-ico svg { width: 2rem; height: 2rem; color: var(--green-2); }
+.reg-ok h2 { margin: .85rem 0 .4rem; font-family: "Outfit", sans-serif; font-size: 1.28rem; font-weight: 800; color: var(--navy); }
+.reg-ok p { margin: 0; color: var(--muted); font-size: .93rem; line-height: 1.6; }
+.reg-progreso {
+    margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--warm-line);
+    font-size: .88rem; color: var(--ink-2); line-height: 1.6;
+}
+.reg-progreso b { color: var(--navy); }
+.reg-barra { height: 7px; border-radius: 99px; background: #e6e1d8; overflow: hidden; margin: .65rem 0 .55rem; }
+.reg-barra i { display: block; height: 100%; border-radius: 99px; background: var(--green); transition: width .5s ease; }
 
-.reg-card-aviso { text-align: center; }
-.reg-card-aviso svg { width: 2.6rem; height: 2.6rem; color: var(--muted); }
-.reg-card-aviso h1 { margin-top: .9rem; }
-.reg-card-aviso p { margin: .6rem 0 1.2rem; color: var(--muted); font-size: .93rem; line-height: 1.6; }
+/* ---------- Código no reconocido ---------- */
+.reg-card-aviso { text-align: center; padding: 2.25rem 1.5rem; }
+.reg-card-aviso .reg-estado-ico { margin: 0 auto 1rem; width: 3rem; height: 3rem; }
+.reg-card-aviso h1 { font-size: 1.2rem; }
+.reg-card-aviso p { margin: .65rem 0 1.3rem; color: var(--muted); font-size: .92rem; line-height: 1.6; }
 
-.reg-pie { margin: 1.5rem 0 0; text-align: center; font-size: .8rem; line-height: 1.7; color: var(--muted); }
+.reg-pie { margin: 1.35rem 0 0; text-align: center; font-size: .78rem; line-height: 1.75; color: var(--muted); }
 .reg-pie a { color: var(--navy); font-weight: 700; }
+
+@media (min-width: 540px) {
+    .reg-top { padding-top: 2.25rem; }
+    .reg-card h1 { font-size: 1.55rem; }
+}
