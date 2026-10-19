@@ -188,7 +188,7 @@ $MOTIVOS = [
                         <i data-lucide="alert-circle"></i><span></span>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" id="enc-enviar">
+                    <button type="submit" class="btn btn-green" id="enc-enviar">
                         <span><?= $asistio ? 'Enviar mi opinión' : 'Enviar' ?></span>
                     </button>
                     <?php if ($asistio): ?>
