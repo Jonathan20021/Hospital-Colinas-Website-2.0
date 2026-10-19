@@ -351,6 +351,8 @@ $leadershipGerencias = [
                                     class="h-4 w-4"></i>Instalaciones</a>
                             <a href="#pacientes" role="menuitem"><i data-lucide="heart-handshake"
                                     class="h-4 w-4"></i>Pacientes</a>
+                            <a href="<?= e(base_url('bienestar')) ?>" role="menuitem"><i data-lucide="heart-pulse"
+                                    class="h-4 w-4"></i>Salud y bienestar</a>
                             <a href="#contacto" role="menuitem"><i data-lucide="map-pin"
                                     class="h-4 w-4"></i>Contacto</a>
                         </div>
@@ -392,6 +394,7 @@ $leadershipGerencias = [
                             <a href="#liderazgo" class="mobile-sub-link">Liderazgo institucional</a>
                             <a href="#instalaciones" class="mobile-sub-link">Instalaciones</a>
                             <a href="#pacientes" class="mobile-sub-link">Pacientes</a>
+                            <a href="<?= e(base_url('bienestar')) ?>" class="mobile-sub-link">Salud y bienestar</a>
                             <a href="#contacto" class="mobile-sub-link">Contacto</a>
                         </div>
                     </details>

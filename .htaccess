@@ -44,6 +44,7 @@ DirectoryIndex index.php
     RewriteRule ^portal-medico/?$ portal-medico/index.php [L,QSA]
     RewriteRule ^portal-medico/([a-zA-Z0-9_\-]+)/?$ portal-medico/$1.php [L,QSA]
     RewriteRule ^agendar/?$ agendar.php [L,QSA]
+    RewriteRule ^bienestar/?$ bienestar.php [L,QSA]
     RewriteRule ^empleos/?$ empleos.php [L,QSA]
     RewriteRule ^empleos/confirmar/?$ empleos-confirmar.php [L,QSA]
     RewriteRule ^empleos/baja/?$ empleos-baja.php [L,QSA]

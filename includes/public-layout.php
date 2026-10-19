@@ -56,6 +56,8 @@ function render_public_header(array $assets, array $contact, string $active = ''
                                     class="h-4 w-4"></i>Instalaciones</a>
                             <a href="<?= e(base_url('pacientes')) ?>" role="menuitem"><i data-lucide="heart-handshake"
                                     class="h-4 w-4"></i>Pacientes</a>
+                            <a href="<?= e(base_url('bienestar')) ?>" role="menuitem"><i data-lucide="heart-pulse"
+                                    class="h-4 w-4"></i>Salud y bienestar</a>
                             <a href="<?= e(base_url('testimonios')) ?>" role="menuitem"><i data-lucide="message-square-quote"
                                     class="h-4 w-4"></i>Testimonios</a>
                             <a href="<?= e(base_url('contacto')) ?>" role="menuitem"><i data-lucide="map-pin"
@@ -101,6 +103,7 @@ function render_public_header(array $assets, array $contact, string $active = ''
                                 institucional</a>
                             <a href="<?= e(base_url('instalaciones')) ?>" class="mobile-sub-link">Instalaciones</a>
                             <a href="<?= e(base_url('pacientes')) ?>" class="mobile-sub-link">Pacientes</a>
+                            <a href="<?= e(base_url('bienestar')) ?>" class="mobile-sub-link">Salud y bienestar</a>
                             <a href="<?= e(base_url('testimonios')) ?>" class="mobile-sub-link">Testimonios</a>
                             <a href="<?= e(base_url('contacto')) ?>" class="mobile-sub-link">Contacto</a>
                         </div>
