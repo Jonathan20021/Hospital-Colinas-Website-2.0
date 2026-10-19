@@ -249,3 +249,62 @@
 .bien-ok svg { width: 3rem; height: 3rem; color: var(--green); }
 .bien-ok h3 { margin: .85rem 0 .4rem; font-family: "Outfit", "Plus Jakarta Sans", sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--navy); }
 .bien-ok p { margin: 0 auto; max-width: 40ch; color: var(--muted); font-size: .93rem; line-height: 1.65; }
+
+/* ============================================================================
+   /registro/{token} — lo que ve quien escanea el QR del cartel.
+
+   Pantalla de pasillo: una sola cosa que hacer, con el pulgar, de pie y a
+   veces con mala señal. Sin cabecera del sitio ni nada que distraiga.
+   ============================================================================ */
+.registro-page { min-height: 100dvh; background: var(--canvas); color: var(--ink-2); }
+.reg-wrap { width: min(100%, 460px); margin: 0 auto; padding: 1.5rem 1.1rem 3rem; }
+.reg-marca { text-align: center; padding: .5rem 0 1.25rem; }
+.reg-logo { height: 42px; width: auto; }
+
+.reg-card {
+    background: var(--paper); border: 1px solid var(--warm-line); border-radius: 18px;
+    padding: 1.6rem 1.4rem; box-shadow: 0 18px 42px rgba(38, 33, 97, .08);
+}
+.reg-evento { margin: 0; font-size: .7rem; font-weight: 950; letter-spacing: .1em; text-transform: uppercase; color: var(--green-2); }
+.reg-lema { margin: .25rem 0 0; font-size: .85rem; font-style: italic; color: var(--muted); }
+.reg-card h1 {
+    margin: .9rem 0 0; font-family: "Outfit", "Plus Jakarta Sans", Inter, system-ui, sans-serif;
+    font-size: 1.35rem; font-weight: 800; line-height: 1.25; color: var(--navy); letter-spacing: -.015em;
+}
+.reg-ponentes { margin: .5rem 0 0; font-size: .92rem; line-height: 1.5; color: var(--ink-2); }
+.reg-meta { list-style: none; margin: 1.1rem 0 0; padding: .95rem 0 0; border-top: 1px solid var(--warm-line); display: flex; flex-direction: column; gap: .5rem; }
+.reg-meta li { display: flex; align-items: center; gap: .55rem; color: var(--muted); font-size: .92rem; }
+.reg-meta svg { width: 1rem; height: 1rem; color: var(--green); flex: none; }
+.reg-meta .tabular { font-variant-numeric: tabular-nums; }
+
+.reg-form { margin-top: 1.4rem; }
+.reg-campo { display: block; }
+.reg-campo > span { display: block; margin-bottom: .5rem; font-size: .95rem; font-weight: 700; color: var(--ink-2); }
+/* Campo grande y centrado: se escribe de pie, con una mano. */
+.reg-campo input {
+    width: 100%; min-height: 58px; padding: .7rem 1rem; text-align: center;
+    border: 1px solid var(--line); border-radius: 14px; background: #fff;
+    font: inherit; font-size: 1.35rem; font-weight: 700; letter-spacing: .04em;
+    font-variant-numeric: tabular-nums; color: var(--navy);
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+.reg-campo input:focus { outline: 0; border-color: var(--green); box-shadow: 0 0 0 4px rgba(111, 180, 63, .18); }
+.reg-form .btn { width: 100%; justify-content: center; min-height: 54px; margin-top: 1rem; font-size: 1rem; }
+
+.reg-aviso { display: flex; align-items: flex-start; gap: .6rem; margin: 1.1rem 0 0; padding: .85rem 1rem; border-radius: 12px; font-size: .92rem; line-height: 1.55; }
+.reg-aviso svg { width: 1.05rem; height: 1.05rem; flex: none; margin-top: .1rem; }
+.reg-aviso.is-error { background: #fdeceb; color: #9b2c2c; border: 1px solid #f5c6c3; }
+.reg-aviso.is-espera { background: var(--warm); color: var(--ink-2); border: 1px solid var(--warm-line); }
+
+.reg-ok { text-align: center; padding: .9rem 0 .25rem; }
+.reg-ok svg { width: 3.2rem; height: 3.2rem; color: var(--green); }
+.reg-ok h2 { margin: .9rem 0 .45rem; font-family: "Outfit", "Plus Jakarta Sans", sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--navy); }
+.reg-ok p { margin: 0; color: var(--muted); font-size: .95rem; line-height: 1.6; }
+
+.reg-card-aviso { text-align: center; }
+.reg-card-aviso svg { width: 2.6rem; height: 2.6rem; color: var(--muted); }
+.reg-card-aviso h1 { margin-top: .9rem; }
+.reg-card-aviso p { margin: .6rem 0 1.2rem; color: var(--muted); font-size: .93rem; line-height: 1.6; }
+
+.reg-pie { margin: 1.5rem 0 0; text-align: center; font-size: .8rem; line-height: 1.7; color: var(--muted); }
+.reg-pie a { color: var(--navy); font-weight: 700; }
