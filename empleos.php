@@ -229,6 +229,9 @@ $description = 'Trabaja con nosotros. Vacantes abiertas en el Hospital General L
 <?php require __DIR__ . '/includes/widget-colinas-ai.php'; ?>
 
 <script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
+<?php /* app.js mueve el chasis (menu movil, desplegables). Faltaba: en el
+         telefono el boton del menu no respondia en esta pagina. */ ?>
+<script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
 <script>if (window.lucide) lucide.createIcons();</script>
 <script>
 (function () {

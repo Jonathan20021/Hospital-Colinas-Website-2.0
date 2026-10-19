@@ -349,6 +349,16 @@ function e_strip(string $s): string { return trim(strip_tags($s)); }
 
 <?php render_public_footer($assets, $contact, $year); ?>
 
+<?php require __DIR__ . '/includes/widget-colinas-ai.php'; ?>
+
+<?php /* Cola estandar del sitio: lucide dibuja los iconos y app.js mueve el
+         chasis (menu movil, desplegables). Sin app.js el boton del menu no
+         responde en el telefono. */ ?>
+<script src="<?= e(base_url('assets/js/lucide-subset.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/lucide-subset.js') ?: 1)) ?>"></script>
+<script src="<?= e(base_url('assets/js/app.js')) ?>?v=<?= e($assetVersion) ?>"></script>
+<script defer src="<?= e(base_url('assets/js/track.js')) ?>?v=<?= e((string) (@filemtime(__DIR__ . '/assets/js/track.js') ?: 1)) ?>"></script>
+
+
 <?php if ($abiertas > 0): ?>
 <script>
 (function () {
