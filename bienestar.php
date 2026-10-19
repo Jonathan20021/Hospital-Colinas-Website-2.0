@@ -114,17 +114,25 @@ foreach ($activities as $a) {
 }
 $total = count($activities);
 
-// Patrocinadores: salen de las propias actividades, no se escriben a mano, asi
-// que la proxima jornada trae los suyos sin tocar codigo.
+// Patrocinadores del pie. Primero los de la JORNADA, en el orden en que RRHH
+// los escribio —en el cartel impreso ese orden no es alfabetico—, y despues
+// los de actividades sueltas que no esten ya listados. Nada se escribe a mano:
+// la proxima jornada trae los suyos sin tocar codigo.
 $patrocinadores = [];
+foreach (($event['sponsors'] ?? []) as $pt) {
+    $pt = trim((string) $pt);
+    if ($pt !== '') $patrocinadores[mb_strtolower($pt, 'UTF-8')] = $pt;
+}
+$deActividades = [];
 foreach ($activities as $a) {
     foreach (preg_split('/\s*·\s*/u', trim((string) ($a['sponsor'] ?? ''))) ?: [] as $pt) {
         $pt = trim($pt);
-        if ($pt !== '') $patrocinadores[$pt] = true;
+        $k = mb_strtolower($pt, 'UTF-8');
+        if ($pt !== '' && !isset($patrocinadores[$k])) $deActividades[$k] = $pt;
     }
 }
-$patrocinadores = array_keys($patrocinadores);
-sort($patrocinadores, SORT_NATURAL | SORT_FLAG_CASE);
+sort($deActividades, SORT_NATURAL | SORT_FLAG_CASE);
+$patrocinadores = array_merge(array_values($patrocinadores), array_values($deActividades));
 
 $nombreEvento = $event['name'] ?? 'Jornada de salud y bienestar';
 $lema = trim((string) ($event['tagline'] ?? ''));
