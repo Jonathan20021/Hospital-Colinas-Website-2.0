@@ -407,3 +407,67 @@
     .reg-top { padding-top: 2.25rem; }
     .reg-card h1 { font-size: 1.55rem; }
 }
+
+/* ============================================================================
+   /encuesta/{token} — encuesta de satisfacción de una charla.
+
+   Se abre desde el correo, casi siempre en el teléfono y casi siempre de pie o
+   entre dos cosas. Las estrellas se tocan con el pulgar, lo obligatorio es una
+   sola pregunta y todo cabe sin hacer zoom.
+
+   Reutiliza el armazón de `.registro-page` (misma cabecera, misma tarjeta): es
+   la misma jornada y debe reconocerse.
+   ============================================================================ */
+.enc-ponentes { margin: .35rem 0 0; font-size: .9rem; line-height: 1.5; color: var(--muted); }
+
+.enc-intro { margin: 0 0 1.1rem; font-size: .94rem; line-height: 1.6; color: var(--ink-2); }
+.enc-intro b { color: var(--navy); }
+
+.enc-grupo { margin: 0 0 1.1rem; padding: 0; border: 0; }
+.enc-grupo legend {
+    padding: 0; margin-bottom: .5rem;
+    font-size: .92rem; font-weight: 700; color: var(--ink-2);
+}
+.enc-req { color: #d6468c; }
+
+/* Cinco cajas iguales que llenan el ancho: no hay que apuntar. */
+.enc-estrellas { display: flex; gap: .4rem; }
+.enc-estrella {
+    flex: 1; min-height: 52px; display: grid; place-items: center;
+    background: #fff; border: 1.5px solid var(--line); border-radius: 14px;
+    cursor: pointer; transition: border-color .15s ease, background .15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.enc-estrella svg { width: 1.45rem; height: 1.45rem; color: #d8d3ca; transition: color .15s ease, fill .15s ease; }
+.enc-estrella.is-on { border-color: #f0c850; background: #fdf8e8; }
+.enc-estrella.is-on svg { color: #e8b230; fill: #e8b230; }
+
+.enc-si-no { display: flex; gap: .5rem; }
+.enc-opcion, .enc-motivo {
+    background: #fff; border: 1.5px solid var(--line); border-radius: 14px;
+    font: inherit; color: var(--ink-2); cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.enc-opcion {
+    flex: 1; min-height: 52px; display: inline-flex; align-items: center; justify-content: center;
+    gap: .45rem; font-size: .95rem; font-weight: 700;
+}
+.enc-opcion svg { width: 1.05rem; height: 1.05rem; }
+.enc-opcion.is-on { border-color: var(--green); background: rgba(111, 180, 63, .12); color: var(--green-2); }
+
+.enc-motivos { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.1rem; }
+.enc-motivo { width: 100%; padding: .85rem 1rem; text-align: left; font-size: .95rem; }
+.enc-motivo.is-on { border-color: var(--navy); background: var(--warm); font-weight: 700; color: var(--navy); }
+
+.enc-campo { display: block; margin-bottom: 1rem; }
+.enc-campo > span { display: block; margin-bottom: .45rem; font-size: .92rem; font-weight: 700; color: var(--ink-2); }
+.enc-campo small { font-weight: 500; color: var(--muted); }
+.enc-campo textarea {
+    width: 100%; padding: .75rem .9rem; resize: vertical;
+    border: 1.5px solid var(--line); border-radius: 14px; background: #fff;
+    font: inherit; font-size: .95rem; line-height: 1.55; color: var(--ink-2);
+}
+.enc-campo textarea:focus {
+    outline: 0; border-color: var(--green); box-shadow: 0 0 0 4px rgba(111, 180, 63, .18);
+}
