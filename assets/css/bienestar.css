@@ -261,6 +261,15 @@
    peor, cuando el registro no estaba abierto decía «aún no ha abierto» SIN
    decir a qué hora abría — que es justo lo que uno necesita saber ahí parado.
    ============================================================================ */
+/* Dos reglas que parecen de adorno y no lo son:
+   - `box-sizing`: sin esto, `width:100%` + padding hace el campo MAS ancho que
+     su contenedor. Se veia: el input salia 379px donde el boton media 345 y la
+     tarjeta lo recortaba por la derecha.
+   - `[hidden]`: un `display:flex` posterior GANA al atributo `hidden`, asi que
+     la caja de error se quedaba pintada vacia debajo del campo. */
+.registro-page *, .registro-page *::before, .registro-page *::after { box-sizing: border-box; }
+.registro-page [hidden] { display: none !important; }
+
 .registro-page {
     min-height: 100dvh; margin: 0; background: var(--canvas); color: var(--ink-2);
     display: flex; flex-direction: column;
